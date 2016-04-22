@@ -1,3 +1,7 @@
+# Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa 
+# The file is distributed under the MIT license
+# The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+
 ### TOOLS ###
 TOOLCHAIN_PREFIX := $(HOME)/opt/cross/bin/x86_64-elf-
 CC      := $(TOOLCHAIN_PREFIX)gcc
