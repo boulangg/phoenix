@@ -1,0 +1,21 @@
+# Object Files #
+*.o
+*.d
+*/out/
+
+# Temporary Files #
+*.tmp
+*~
+*.swp
+
+# Kernel #
+kernel/phoenix.bin
+
+# Eclipse #
+.settings/
+.cproject
+.project
+
+# Image disk #
+disk.iso
+iso/boot/phoenix.bin
