@@ -6,8 +6,8 @@
 include ../build/utils.mk
 
 ### Compilation sources ###
-SRC_DIRS 		:= boot core 
-INCLUDE_DIRS 	:= 
+SRC_DIRS 		:= boot core lib/libc/src mm
+INCLUDE_DIRS 	:= lib/libc/include
 SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), c) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), S)
@@ -52,7 +52,7 @@ $(OUTPUT)/%.d: % | $(OUTPUT)
 	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
 
 $(OUTPUT)/%.o : % $(OUTPUT)/%.d | $(OUTPUT)
-	$(AS) $(ASFLAGS) $(INCLUDES) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 ### Add dependency between object file and the directory containing it ###
 $(call create-dir-files, $(OBJS))
