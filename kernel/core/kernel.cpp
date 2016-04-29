@@ -6,7 +6,12 @@
 
 #include "kernel.hpp"
 
+#include "console.hpp"
+
 void kernel_main() {
+	Console::initConsole();
+	Console::write("Hello world !!\n");
+
 	int i = 0;
 	(void)i;
 	asm("sti");
