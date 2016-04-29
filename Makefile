@@ -14,7 +14,7 @@ DISK_DIR := iso
 
 QEMU := qemu-system-x86_64
 QEMU_OPTS := -m 256 -hda $(DISK)
-QEMU_OPTS_DEBUG := $(QEMU_OPTS) -s -S
+QEMU_OPTS_DEBUG := $(QEMU_OPTS) -s -S -d int,cpu_reset
 
 ### Basic rules ###
 .PHONY: all launch debug clean clean_disk

@@ -6,10 +6,14 @@
 
 #include "boot.h"
 
+#include "processor_struct.h"
 #include "../core/kernel.hpp"
 
 void boot()
 {
+	setup_cpu();
+	//asm("sti");
 	kernel_main();
+	//asm("cli");
 }
 

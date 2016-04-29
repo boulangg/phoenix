@@ -7,6 +7,10 @@
 #include "kernel.hpp"
 
 void kernel_main() {
-
+	int i = 0;
+	(void)i;
+	asm("sti");
+	asm("int $49");
+	asm("cli");
 }
 

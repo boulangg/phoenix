@@ -25,12 +25,17 @@ multiboot_magic_end:
 	.long 8
 multiboot_header_end:
 
-# Default stack
+# Default stacks
 .section .bootstrap_stack, "aw", @nobits
 .globl stack_top
 stack_bottom:
 	.skip 16384 # 16 KiB
 stack_top:
+
+.globl stack_top_ist1
+stack_bottom_ist1:
+	.skip 16384 # 16 KiB
+stack_top_ist1:
 
 # Kernel entry point _start
 .section .text

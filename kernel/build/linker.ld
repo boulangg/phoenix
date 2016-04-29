@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 /* Bootloader entry point. */
 ENTRY(_start)
 
@@ -55,7 +61,8 @@ SECTIONS
 	_end = .;
 	
 	/* The default memory map for some cpu specific data structures */
-	idt = 0x1000;
+	idt = 0x1000;	
+	idt_2 = 0x1000;
 	pml4t = 0x2000;
 	pdpt = 0x3000;
 	pdt = 0x4000;

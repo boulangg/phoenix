@@ -138,7 +138,7 @@ _switch_to_64bit:
 	# KERNEL_DS Descriptor (64 bits mode)
 	movl $0x00000000, (%eax)
 	addl $4, %eax
-	movl $0x00009000, (%eax)
+	movl $0x00009200, (%eax)
 
 # # Load GDT
 	lgdt gdtr
@@ -186,6 +186,7 @@ _start64:
 	mov $0x00, %eax
 	mov %ax, %fs
 	mov %ax, %gs
+	//sti
 	call boot
 
 0:
@@ -208,10 +209,53 @@ _start64:
 	hlt
 	jmp 0b
 
+.global setTSS
+setTSS:
+	mov %edi, tr
+	ltr tr
+	ret
+
+.global setIDT
+setIDT:
+	//mov %eax, %rax
+	//mov %esi, %rax
+	//mov 16(%rsp), %rax
+	//mov 34(%rsp), %rax
+	mov %eax, idtr
+	mov %esi, idtr+2
+	lidt idtr
+	ret
+
+.global setGDT
+setGDT:
+	/*mov 4(%esp), %eax
+	mov %eax, gdtr+4
+	mov 8(%esp), %ax
+	mov %eax, gdtr*/
+	lgdt gdtr
+	ret
+
+.global default_handler
+default_handler:
+	iretq
+
+.global reserved_handler
+reserved_handler:
+	iretq
+
 .align 8
 gdtr:
     .word GDT_SIZE	# limit
     .quad gdt		# base
+
+.align 8
+idtr:
+    .word IDT_SIZE	# limit
+    .quad idt		# base
+
+.align 8
+tr:
+	.word 0x00		# selector
 
 noCPUIDMessage:
 	.ascii "CPUID not supported by the processor\0"
