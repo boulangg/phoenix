@@ -19,3 +19,7 @@ kernel/phoenix.bin
 # Image disk #
 disk.iso
 iso/boot/phoenix.bin
+
+# CLion #
+.idea
+CMakeLists.txt
