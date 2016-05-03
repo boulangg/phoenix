@@ -4,18 +4,13 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include "kernel.hpp"
+#ifndef _KERNEL_HPP_
+#define _KERNEL_HPP_
 
-#include "console.hpp"
+class Kernel
+{
+public:
+	static void Start();
+};
 
-void kernel_main() {
-	Console::initConsole();
-	Console::write("Hello world !!\n");
-
-	int i = 0;
-	(void)i;
-	asm("sti");
-	asm("int $49");
-	asm("cli");
-}
-
+#endif /* _KERNEL_HPP_ */

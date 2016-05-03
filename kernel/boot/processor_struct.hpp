@@ -4,11 +4,15 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef KERNEL_BOOT_PROCESS_STRUCT_
-#define KERNEL_BOOT_PROCESS_STRUCT_
+#ifndef _BOOT_PROCESSOR_STRUCT_
+#define _BOOT_PROCESSOR_STRUCT_
 
 #define GDT_ENTRIES 512
 #define IDT_ENTRIES 256
+
+#define GDT_SIZE (GDT_ENTRIES*8-1)
+#define IDT_SIZE (IDT_ENTRIES*16-1)
+#define KERNEL_HIGH_VMA 0xFFFFFFFFC0000000
 
 #ifndef ASM_FILE
 
@@ -32,7 +36,22 @@ struct gate_desc {
 	uint64_t offset_2:16;
 	uint64_t offset_3:32;
 	uint64_t reserved_2:32;
-}__attribute__ ((packed));
+} __attribute__ ((packed));
+
+struct page_entry {
+	uint8_t P: 1;
+	uint8_t RW: 1;
+	uint8_t US: 1;
+	uint8_t PWT: 1;
+	uint8_t PCD: 1;
+	uint8_t A: 1;
+	uint8_t IGN: 1;
+	uint8_t MBZ: 2;
+	uint8_t AVL: 3;
+	uint64_t base_addr: 40;
+	uint16_t Available: 11;
+	uint8_t NX: 1;
+} __attribute__ ((packed));
 
 struct x86_64_tss {
 	uint32_t reserved_1:32;
@@ -53,20 +72,20 @@ struct x86_64_tss {
 } __attribute__ ((packed));
 
 extern struct gate_desc idt[IDT_ENTRIES];
+//extern struct page_entry kernel_pml4t[512];
+extern uint64_t kernel_pml4t[512];
+extern uint64_t kernel_low_pdpt[512];
+extern uint64_t kernel_pdpt[512];
+extern uint64_t kernel_pdt[512];
+extern uint64_t kernel_pt[512];
+
 extern uint64_t gdt[];
 extern struct x86_64_tss tss;
 extern uint64_t stack_top;
 extern uint64_t stack_top_ist1;
-
-void setup_gdt();
-void setup_idt();
-void setup_tss();
-void setup_cpu();
-
-extern void setIDT(uint16_t limit, struct gate_desc* base);
-extern void setGDT(uint16_t limit, uint64_t* base);
-extern void setTSS(uint16_t selector);
-
+extern uint32_t multiboot_info_tags[1024];
+extern uint32_t multiboot_magic;
+extern uint32_t multiboot_info;
 
 #ifdef __cplusplus
 }
@@ -74,4 +93,4 @@ extern void setTSS(uint16_t selector);
 
 #endif
 
-#endif // KERNEL_BOOT_PROCESS_STRUCT_
+#endif // _BOOT_PROCESSOR_STRUCT_

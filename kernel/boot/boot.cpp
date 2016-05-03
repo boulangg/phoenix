@@ -4,17 +4,15 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef KERNEL_KERNEL_HPP_
-#define KERNEL_KERNEL_HPP_
+#include "boot.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "../core/Kernel.hpp"
+#include "processor_struct.hpp"
+#include "SetupProcessor.hpp"
 
-void kernel_main();
-
-#ifdef __cplusplus
+void boot()
+{
+	SetupProcessor::setupAll();
+	Kernel::Start();
 }
-#endif
 
-#endif /* KERNEL_KERNEL_HPP_ */

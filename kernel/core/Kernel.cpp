@@ -4,16 +4,18 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include "boot.h"
+#include "Kernel.hpp"
 
-#include "processor_struct.h"
-#include "../core/kernel.hpp"
+#include "Console.hpp"
 
-void boot()
-{
-	setup_cpu();
-	//asm("sti");
-	kernel_main();
-	//asm("cli");
+void Kernel::Start() {
+	Console::initConsole();
+	Console::write("Hello world !!\n");
+
+	int i = 0;
+	(void)i;
+	asm("sti");
+	asm("int $49");
+	asm("cli");
 }
 

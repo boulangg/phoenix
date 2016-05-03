@@ -21,9 +21,12 @@ BIN=phoenix.bin
 CXXFLAGS	:= -ffreestanding \
 			   -Wall -Wextra \
 		  	   -g -std=c++11 \
-		  	   -fno-exceptions -fno-rtti
+		  	   -fno-exceptions -fno-rtti \
+		  	   -mcmodel=kernel -m64 \
+		  	   -Wno-packed-bitfield-compat
 LDFLAGS 	:= -ffreestanding \
-		   	   -g -nostdlib
+		   	   -g -nostdlib \
+		  	   -mcmodel=large
 #CFLAGS 		:= -ffreestanding \
 #		  	   -Wall -Wextra \
 #		  	   -g -std=c11
@@ -69,9 +72,9 @@ $(OUTPUT):
 	$(MKDIR) -p $@
 	
 ### Include auto-generated dependencies
-#ifneq ($(MAKECMDGOALS),clean)
-#    -include $(DEPS)
-#endif
+ifneq ($(MAKECMDGOALS),clean)
+    -include $(DEPS)
+endif
 
 ### Clean ###
 .PHONY: clean

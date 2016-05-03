@@ -4,7 +4,7 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include "console.hpp"
+#include "Console.hpp"
 
 #include "cpu.h"
 
