@@ -6,7 +6,7 @@
 include ../build/utils.mk
 
 ### Compilation sources ###
-SRC_DIRS 		:= boot core lib/libc/src mm lib/libcpp/src
+SRC_DIRS 		:= boot core lib/libc/src mm lib/libcpp/src lib/libc/src/stdio
 INCLUDE_DIRS 	:= lib/libc/include lib/libcpp/include
 SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), c) \

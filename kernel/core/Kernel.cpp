@@ -7,10 +7,14 @@
 #include "Kernel.hpp"
 
 #include "Console.hpp"
+#include <stdio.h>
 
 void Kernel::Start() {
 	Console::initConsole();
+	char str[512];
+	sprintf(str, "0x%x, %i, %i\n", 152, 2, 3);
 	Console::write("Hello world !!\n");
+	Console::write(str);
 
 	int i = 0;
 	(void)i;
