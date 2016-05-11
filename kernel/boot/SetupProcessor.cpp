@@ -5,6 +5,7 @@
  */
 
 #include "SetupProcessor.hpp"
+#include "../core/cpu.h"
 
 // Size Bits
 #define SZ_A		0x1
@@ -182,10 +183,34 @@ void SetupProcessor::copyMultibootInfo()
 	}
 }
 
+void SetupProcessor::setupPIC()
+{
+	/* Initialize the master. */
+	outb(0x20, 0x11);		// Init command
+	outb(0x21, 0x20);		// Set offset (IRQ0->7 use IVT[0x20->0x27])
+	outb(0x21, 0x4);		// Set slave at IRQ2
+	outb(0x21, 0x1);		// Set 8086 mode ?
+
+	/* Initialize the slave. */
+	outb(0xa0, 0x11);		// Init command
+	outb(0xa1, 0x28);		// Set offset (IRQ8->15 use IVT[0x28->0x2F]
+	outb(0xa1, 0x2);		// Set master
+	outb(0xa1, 0x1);		// Set 8086 mode ?
+
+	/* Ack any bogus intrs by setting the End Of Interrupt bit. */
+	outb(0x20, 0x20);
+	outb(0xa0, 0x20);
+
+	/* Disable all IRQs */
+	outb(0xff, 0x21);
+	outb(0xff, 0xa1);
+}
+
 void SetupProcessor::setupAll()
 {
 	copyMultibootInfo();
 	setupGDT();
 	setupIDT();
 	setupTSS();
+	setupPIC();
 }

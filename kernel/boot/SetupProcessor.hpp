@@ -36,6 +36,7 @@ private:
 	static void setupGDT();
 	static void setupIDT();
 	static void setupTSS();
+	static void setupPIC();
 };
 
 #endif // ASM_FILE
