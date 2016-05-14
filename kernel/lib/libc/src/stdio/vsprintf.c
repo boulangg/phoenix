@@ -7,12 +7,12 @@
 
 // Supported flags options
 enum ARG_FLAG {
-	FLAG_NONE,		// "(none)"
-	FLAG_MINUS,		// "-"
-	FLAG_PLUS,		// "+"
-	FLAG_SPACE,		// "(space)"
-	FLAG_HASH,		// "#"
-	FLAG_ZERO		// "0"
+	FLAG_NONE 	= 0x00,		// "(none)"
+	FLAG_MINUS	= 0x01,		// "-"
+	FLAG_PLUS	= 0x02,		// "+"
+	FLAG_SPACE	= 0x04,		// "(space)"
+	FLAG_HASH	= 0x08,		// "#"
+	FLAG_ZERO	= 0x10		// "0"
 };
 
 // Supported length options
@@ -60,7 +60,7 @@ enum ARG_SPEC {
 // ".*"
 
 struct arg_info {
-	enum ARG_FLAG flags;
+	int flags;
 	int width;
 	int precision;
 	enum ARG_LENGTH length;
@@ -72,6 +72,9 @@ void print_error(char** str, struct arg_info* arg_info, va_list arg, const char*
 
 void print_int(char** str, struct arg_info* arg_info, va_list arg, const char* start)
 {
+	if (arg_info->precision == -1) {
+		arg_info->precision = 1;
+	}
 	(void)start;
 	long long int num = 0;
 	switch (arg_info->length) {
@@ -90,30 +93,41 @@ void print_int(char** str, struct arg_info* arg_info, va_list arg, const char* s
 		print_error(str, arg_info, arg, start);
 		return;
 	}
-	int len = 0, n = num;
-
-	if (num < 0) {
-		*((*str)++) = '-';
-		num = -num;
-	}
+	long long int len = 0, n = num;
+	int BASE = 10;
 
 	while (n != 0) {
 		len++;
-		n /= 10;
+		n /= BASE;
 	}
 
-	int rem;
-	for (int i = 1; i <= len; i++) {
-		rem = num % 10;
-		num = num / 10;
-		(*str)[len - i] = rem +'0';
+	if (len < arg_info->precision) {
+		len = arg_info->precision;
 	}
-	(*str)+=len;
-	(void)arg_info;
+
+	int width = len;
+	if (width < arg_info->width) {
+		width = arg_info->width;
+	}
+
+	unsigned long long rem;
+	for (int i = 1; i <= len; i++) {
+		rem = num % BASE;
+		num = num / BASE;
+		(*str)[width - i] = rem + '0';
+	}
+	for (int i = len+1; i <= width; i++) {
+		(*str)[width - i] = ' ';
+	}
+
+	(*str)+=width;
 }
 
 void print_uint(char** str, struct arg_info* arg_info, va_list arg, const char* start)
 {
+	if (arg_info->precision == -1) {
+		arg_info->precision = 1;
+	}
 	(void)start;
 	unsigned long long int num = 0;
 	switch (arg_info->length) {
@@ -132,8 +146,9 @@ void print_uint(char** str, struct arg_info* arg_info, va_list arg, const char* 
 		print_error(str, arg_info, arg, start);
 		return;
 	}
-	int len = 0, n = num;
-	int base = 10;
+	int len = 0;
+	unsigned long long n = num;
+	unsigned long long base = 10;
 	char hex_offset = 'a'-10;
 	switch (arg_info->specifier) {
 	case SPEC_UINT_DEC:
@@ -160,18 +175,30 @@ void print_uint(char** str, struct arg_info* arg_info, va_list arg, const char* 
 		n /= base;
 	}
 
-	int rem;
+	if (len < arg_info->precision) {
+		len = arg_info->precision;
+	}
+
+	int width = len;
+	if (width < arg_info->width) {
+		width = arg_info->width;
+	}
+
+	unsigned long long rem;
 	for (int i = 1; i <= len; i++) {
 		rem = num % base;
 		num = num / base;
 		if (rem < 10) {
-			(*str)[len - i] = rem + '0';
+			(*str)[width - i] = rem + '0';
 		} else {
-			(*str)[len - i] = rem + hex_offset;
+			(*str)[width - i] = rem + hex_offset;
 		}
 	}
-	(*str)+=len;
-	(void)arg_info;
+	for (int i = len+1; i <= width; i++) {
+		(*str)[width - i] = ' ';
+	}
+
+	(*str)+=width;
 }
 
 void print_float(char** str, struct arg_info* arg_info, va_list arg, const char* start)
@@ -204,7 +231,11 @@ void print_str(char** str, struct arg_info* arg_info, va_list arg, const char* s
 void print_ptr(char** str, struct arg_info* arg_info, va_list arg, const char* start)
 {
 	(void)start;
-	print_error(str, arg_info, arg, start);
+	arg_info->specifier = SPEC_UINT_HEX;
+	arg_info->precision = 16;
+	arg_info->length = LENGTH_LL;
+	print_uint(str, arg_info, arg, start);
+	//print_error(str, arg_info, arg, start);
 	(void)str;
 	(void)arg_info;
 	(void)arg;
@@ -255,31 +286,32 @@ void (*sprint_arg_table[])(char** str, struct arg_info* arg_info, va_list arg, c
 // Identify "flag" option, if any
 void get_arg_flag(const char** format, struct arg_info* arg_info)
 {
+	arg_info->flags = FLAG_NONE;
+	while(1) {
 	switch(**format) {
 	case '-':
 		++(*format);
-		arg_info->flags = FLAG_MINUS;
+		arg_info->flags |= FLAG_MINUS;
 		break;
 	case '+':
 		++(*format);
-		arg_info->flags = FLAG_PLUS;
+		arg_info->flags |= FLAG_PLUS;
 		break;
 	case ' ':
 		++(*format);
-		arg_info->flags = FLAG_SPACE;
+		arg_info->flags |= FLAG_SPACE;
 		break;
 	case '#':
 		++(*format);
-		arg_info->flags = FLAG_HASH;
+		arg_info->flags |= FLAG_HASH;
 		break;
 	case '0':
 		++(*format);
-		arg_info->flags = FLAG_ZERO;
+		arg_info->flags |= FLAG_ZERO;
 		break;
 	default:
-		//++(*format);
-		arg_info->flags = FLAG_NONE;
 		return;
+	}
 	}
 	return;
 }
@@ -294,7 +326,7 @@ int read_int(const char** format)
 		val += curr;
 		++(*format);
 	}
-	return 0;
+	return val;
 }
 
 void get_arg_number(const char** format, int* number, va_list arg)
@@ -337,7 +369,7 @@ void get_arg_precision(const char** format, struct arg_info* arg_info, va_list a
 		get_arg_number(format, &(arg_info->precision), arg);
 		return;
 	default:
-		arg_info->precision = 0;
+		arg_info->precision = -1; // Default
 		return;
 	}
 }
