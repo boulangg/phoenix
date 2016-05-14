@@ -197,13 +197,13 @@ void SetupProcessor::setupPIC()
 	outb(0xa1, 0x2);		// Set master
 	outb(0xa1, 0x1);		// Set 8086 mode ?
 
+	/* Disable all IRQs */
+	outb(0x21, 0xff);
+	outb(0xa1, 0xff);
+
 	/* Ack any bogus intrs by setting the End Of Interrupt bit. */
 	outb(0x20, 0x20);
 	outb(0xa0, 0x20);
-
-	/* Disable all IRQs */
-	outb(0xff, 0x21);
-	outb(0xff, 0xa1);
 }
 
 void SetupProcessor::setupAll()
