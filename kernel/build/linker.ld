@@ -7,9 +7,13 @@
 /* Bootloader entry point. */
 ENTRY(_start)
 
+KERNEL_MULTIBOOT = 0x00001000;
+KERNEL_BOOT_VMA = 0x00100000;
+KERNEL_HIGH_VMA = 0xFFFFFFFFC0000000;
+
 SECTIONS
 {
-	. = 1K;
+	. = KERNEL_MULTIBOOT;
 
 	/* Multiboot header section */
 	.multiboot BLOCK(4K) : ALIGN(4K)
@@ -20,20 +24,42 @@ SECTIONS
         _multiboot_end = .;
     }
     
-	. = 1M;
+	. = KERNEL_BOOT_VMA;
 	
-	/* Text section */
-	.text BLOCK(4K) : ALIGN(4K)
+	/* Low mem section */
+	.low_mem BLOCK(4K) : ALIGN(4K)
+	{
+		_low_mem_start = .;
+		. = ALIGN(4K);
+		*/boot.S.o(.text)
+		*/long_mode.S.o(.text)
+		_low_mem_end = ALIGN(4K);
+	}
+	
+	.bootstrap_stack BLOCK(4K) : ALIGN(4K)
+	{
+		*(.bootstrap_stack)
+	}
+	
+	.low_mem_data BLOCK(4K) : ALIGN(4K)
+	{
+		*/boot.S.o(.data)
+		*/long_mode.S.o(.data)
+	}
+	
+	
+	. += KERNEL_HIGH_VMA;
+	
+	/* High mem section */
+	.text ALIGN(4K) : AT(ADDR(.text) - KERNEL_HIGH_VMA)
 	{
 		_text_start = .;
-		*/boot.S.o(.text)
-		. = ALIGN(4K);
 		*(.text)
 		_text_end = ALIGN(4K);
 	}
 
 	/* Read-only data section */
-	.rodata BLOCK(4K) : ALIGN(4K)
+	.rodata ALIGN(4K) : AT(ADDR(.rodata) - KERNEL_HIGH_VMA)
 	{
 		_rodata_start = .;
 		*(.rodata)
@@ -41,7 +67,7 @@ SECTIONS
 	}
 
 	/* Read-write data (initialized) section */
-	.data BLOCK(4K) : ALIGN(4K)
+	.data ALIGN(4K) : AT(ADDR(.data) - KERNEL_HIGH_VMA)
 	{
 		_data_start = .;
 		*(.data)
@@ -49,10 +75,9 @@ SECTIONS
 	}
 
 	/* Read-write data (uninitialized) and bootstrap stack sections */
-	.bss BLOCK(4K) : ALIGN(4K)
+	.bss ALIGN(4K) : AT(ADDR(.bss) - KERNEL_HIGH_VMA)
 	{
 		_bss_start = .;
-		*(.bootstrap_stack)
 		*(COMMON)
 		*(.bss)
 		_bss_end = .;
@@ -60,19 +85,8 @@ SECTIONS
 	
 	_end = .;
 	
-	/* The default memory map for some cpu specific data structures */
-	idt = 0x1000;	
-	idt_2 = 0x1000;
-	pml4t = 0x2000;
-	pdpt = 0x3000;
-	pdt = 0x4000;
-	pt = 0x5000;
-	gdt = 0x10000;
-	tss = 0x20000;
-	
 	/* Beginning of kernel memory heap */
-	kernel_mem_heap = _end;
-
+	_kernel_mem_heap = _end;
 	/* End of kernel memory heap: 64MB */
-    kernel_mem_heap_end = 0x4000000;
+    _kernel_mem_heap_end = KERNEL_HIGH_VMA + 0x4000000;
 }

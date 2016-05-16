@@ -4,13 +4,17 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include "kernel.hpp"
+#include "Kernel.hpp"
 
-#include "console.hpp"
+#include "Console.hpp"
+#include <stdio.h>
 
-void kernel_main() {
+void Kernel::Start() {
 	Console::initConsole();
+	char str[512];
+	sprintf(str, "0x%x, %i, %i\n", 152, 2, 3);
 	Console::write("Hello world !!\n");
+	Console::write(str);
 
 	int i = 0;
 	(void)i;

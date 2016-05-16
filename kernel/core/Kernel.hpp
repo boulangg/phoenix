@@ -4,16 +4,13 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include "boot.h"
+#ifndef _KERNEL_HPP_
+#define _KERNEL_HPP_
 
-#include "processor_struct.h"
-#include "../core/kernel.hpp"
-
-void boot()
+class Kernel
 {
-	setup_cpu();
-	//asm("sti");
-	kernel_main();
-	//asm("cli");
-}
+public:
+	static void Start();
+};
 
+#endif /* _KERNEL_HPP_ */

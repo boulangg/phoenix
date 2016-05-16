@@ -5,6 +5,8 @@
 #define ASM_FILE
 #include "multiboot2.h"
 
+#include "processor_struct.hpp"
+
 #define BOOT_MAGIC	MULTIBOOT2_HEADER_MAGIC
 #define BOOT_ARCHI	MULTIBOOT_ARCHITECTURE_I386
 #define BOOT_HDLEN  multiboot_header_end - multiboot_header_start
@@ -45,20 +47,16 @@ _start:
 	movl $stack_top, %esp
 
 	# Save multiboot_info
-	movl %eax, multiboot_magic
-	movl %ebx, multiboot_info
+	movl %eax, multiboot_magic-KERNEL_HIGH_VMA
+	movl %ebx, multiboot_info-KERNEL_HIGH_VMA
 
 	# Call main function in C
 	call switch_to_long_mode
 
-	# Infinite loop
 0:
 	hlt
 	jmp 0b
 
-# Set the size of the _start symbol to the current location '.' minus its start.
-# This is useful when debugging or when you implement call tracing.
-#.size _start, . - _start
 .global multiboot_info
 .global multiboot_magic
 	.comm multiboot_magic, 4

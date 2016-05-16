@@ -4,7 +4,8 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include "processor_struct.h"
+#include "SetupProcessor.hpp"
+#include "../core/cpu.h"
 
 // Size Bits
 #define SZ_A		0x1
@@ -83,7 +84,7 @@
 #define USER_DS_32_FLAGS	(FLAG_DPL3 | FLAG_DATA | FLAG_W)
 #define USER_DS_32_SIZEB	SZ_D
 
-void fill_segment_descriptor_64(uint8_t index, uint64_t base, uint32_t limit,
+static void fill_segment_descriptor_64(uint8_t index, uint64_t base, uint32_t limit,
 		uint8_t flags, uint8_t sizebits)
 {
 	uint32_t p0, p1, p2, p3;
@@ -106,7 +107,7 @@ void fill_segment_descriptor_64(uint8_t index, uint64_t base, uint32_t limit,
 	gdt[index+1] = (((uint64_t) p3) << 32) | p2;
 }
 
-void fill_segment_descriptor(uint8_t index, uint32_t base, uint32_t limit,
+static void fill_segment_descriptor(uint8_t index, uint32_t base, uint32_t limit,
 		uint8_t flags, uint8_t sizebits)
 {
 	uint32_t p0, p1;
@@ -127,7 +128,7 @@ void fill_segment_descriptor(uint8_t index, uint32_t base, uint32_t limit,
 
 }
 
-void fill_idt_descriptor_64(uint8_t index, uint64_t offset, uint16_t selector,
+static void fill_idt_descriptor_64(uint8_t index, uint64_t offset, uint16_t selector,
 		uint8_t flags, uint8_t ist)
 {
 	struct gate_desc* gate = &(idt[index]);
@@ -142,8 +143,10 @@ void fill_idt_descriptor_64(uint8_t index, uint64_t offset, uint16_t selector,
 	gate->reserved_2 = 0;
 }
 
-void setup_gdt()
+void SetupProcessor::setupGDT()
 {
+	// KERNEL_CS and KERNEL_DS are already set
+	// TSS is set separately
 	fill_segment_descriptor(USER_CS_INDEX, USER_CS_BASE,
 			USER_CS_LIMIT, USER_CS_FLAGS, USER_CS_SIZEB);
 	fill_segment_descriptor(USER_DS_INDEX, USER_DS_BASE,
@@ -154,28 +157,60 @@ void setup_gdt()
 			USER_DS_32_LIMIT, USER_DS_32_FLAGS, USER_DS_32_SIZEB);
 }
 
-void setup_idt()
+
+void SetupProcessor::setupIDT()
 {
 	uint8_t idt_flags = FLAG_P | FLAG_DPL0 | FLAG_INT;
-	for (int i = 0; i < IDT_ENTRIES; i++) {
-		idt[i] = {0,0,0,0,0,0,0,0};
-	}
 	fill_idt_descriptor_64(49, (uint64_t)default_handler, SEL_KERNEL_CS, idt_flags, 1);
-	setIDT(sizeof(idt)-1, idt);
+	set_IDT(sizeof(idt)-1, idt);
 }
 
-void setup_tss()
+void SetupProcessor::setupTSS()
 {
 	tss.rsp0 = &stack_top;
 	tss.ist1 = &stack_top_ist1;
 	fill_segment_descriptor_64(TSS_INDEX, TSS_BASE,
 			TSS_LIMIT, TSS_FLAGS, TSS_SIZEB);
-	setTSS(SEL_TSS);
+	set_TSS(SEL_TSS);
 }
 
-void setup_cpu()
+void SetupProcessor::copyMultibootInfo()
 {
-	setup_gdt();
-	setup_idt();
-	setup_tss();
+	uint32_t* orig_multiboot_info_ptr = (uint32_t*)(uint64_t)multiboot_info;
+	uint32_t size = ((orig_multiboot_info_ptr[0]-1)>> 2) + 1;
+	for (uint32_t i = 0; i < size ; ++i) {
+		multiboot_info_tags[i] = orig_multiboot_info_ptr[i];
+	}
+}
+
+void SetupProcessor::setupPIC()
+{
+	/* Initialize the master. */
+	outb(0x20, 0x11);		// Init command
+	outb(0x21, 0x20);		// Set offset (IRQ0->7 use IVT[0x20->0x27])
+	outb(0x21, 0x4);		// Set slave at IRQ2
+	outb(0x21, 0x1);		// Set 8086 mode ?
+
+	/* Initialize the slave. */
+	outb(0xa0, 0x11);		// Init command
+	outb(0xa1, 0x28);		// Set offset (IRQ8->15 use IVT[0x28->0x2F]
+	outb(0xa1, 0x2);		// Set master
+	outb(0xa1, 0x1);		// Set 8086 mode ?
+
+	/* Disable all IRQs */
+	outb(0x21, 0xff);
+	outb(0xa1, 0xff);
+
+	/* Ack any bogus intrs by setting the End Of Interrupt bit. */
+	outb(0x20, 0x20);
+	outb(0xa0, 0x20);
+}
+
+void SetupProcessor::setupAll()
+{
+	copyMultibootInfo();
+	setupGDT();
+	setupIDT();
+	setupTSS();
+	setupPIC();
 }

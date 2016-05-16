@@ -1,0 +1,102 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
+#ifndef _STDCPP_LIST_
+#define _STDCPP_LIST_
+
+#include <cstddef>
+#include <utility>
+
+namespace std {
+
+template <class T>
+class _list_node {
+public:
+	typedef _list_node<T> _self;
+	_list_node(T data, _self* prev, _self* next);
+	T data;
+	_self* prev;
+	_self* next;
+};
+
+template <class T>
+class _list_iterator {
+	public:
+		typedef T value_type;
+		typedef value_type& reference;
+		typedef value_type* pointer;
+		typedef _list_node<T> _node;
+
+		_list_iterator();
+		_list_iterator(const _list_iterator& b);
+		_list_iterator(_node* node);
+		~_list_iterator();
+
+		_list_iterator& operator=(const _list_iterator&b);
+
+		bool operator==(const _list_iterator& b);
+		bool operator!=(const _list_iterator& b);
+
+		value_type& operator*();
+		value_type& operator->();
+
+		_list_iterator& operator++();
+		_list_iterator& operator--();
+		_list_iterator operator++(int);
+		_list_iterator operator--(int);
+
+		void swap(_list_iterator& b);
+
+		_node* node;
+	};
+
+
+template <class T>
+class list {
+public:
+	typedef T value_type;
+	typedef value_type& reference;
+	typedef value_type* pointer;
+	typedef _list_iterator<T> iterator;
+	typedef size_t size_type;
+	typedef typename iterator::_node _node;
+
+	list();
+	~list();
+
+	list& operator= (const list& x);
+	list& operator= (list&& x);
+
+	iterator begin();
+	iterator end();
+
+	bool empty() const;
+	size_type size() const;
+
+	reference front();
+	reference back();
+
+	void push_front(value_type&& val);
+	void pop_front();
+	void push_back(value_type&& val);
+	void pop_back();
+
+	iterator insert(iterator pos, const value_type& val);
+	iterator erase(iterator pos);
+	void swap(list& x);
+	void clear();
+
+private:
+	iterator _begin;
+	iterator _end;
+	size_type _size;
+};
+
+#include "internal/list.tpp"
+
+}
+
+#endif // _STDCPP_LIST_

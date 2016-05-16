@@ -6,9 +6,7 @@
 .code32
 
 #define ASM_FILE
-#include "processor_struct.h"
-#define GDT_SIZE (GDT_ENTRIES*8-1)
-#define IDT_SIZE (IDT_ENTRIES*16-1)
+#include "processor_struct.hpp"
 
 .globl switch_to_long_mode
 switch_to_long_mode:
@@ -41,44 +39,36 @@ switch_to_long_mode:
 	jz _no_long_mode
 
 # Setting up the Paging
-# # Clear the tables
-#_paging_clear_tables:
-	mov $pml4t, %edi
-	mov %edi, %cr3
-	xor %eax, %eax
-	mov $1024, %ecx
-	rep stosl
-	mov $pdpt, %edi
-	xor %eax, %eax
-	mov $1024, %ecx
-	rep stosl
-	mov $pdt, %edi
-	xor %eax, %eax
-	mov $1024, %ecx
-	rep stosl
-	mov $pt, %edi
-	xor %eax, %eax
-	mov $1024, %ecx
-	rep stosl
 
 # # Init basic hierarchy
 #_paging_init_hierarchy:
-	movl $pml4t, %edi
-	movl $pdpt, %eax
+	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
+	movl $(kernel_low_pdpt-KERNEL_HIGH_VMA), %eax
 	orl $0x3, %eax
 	movl %eax, (%edi)
-	movl $pdpt, %edi
-	movl $pdt, %eax
+	# Init High mem
+	movl $(kernel_pdpt-KERNEL_HIGH_VMA), %eax
+	add $(8*511), %edi
 	orl $0x3, %eax
 	movl %eax, (%edi)
-	movl $pdt, %edi
-	movl $pt, %eax
+	movl $(kernel_pdpt-KERNEL_HIGH_VMA), %edi
+	movl $(kernel_pdt-KERNEL_HIGH_VMA), %eax
+	orl $0x3, %eax
+	add $(511*8), %edi
+	movl %eax, (%edi)
+	#
+	movl $(kernel_low_pdpt-KERNEL_HIGH_VMA), %edi
+	movl $(kernel_pdt-KERNEL_HIGH_VMA), %eax
+	orl $0x3, %eax
+	movl %eax, (%edi)
+	movl $(kernel_pdt-KERNEL_HIGH_VMA), %edi
+	movl $(kernel_pt-KERNEL_HIGH_VMA), %eax
 	orl $0x3, %eax
 	movl %eax, (%edi)
 
 # # Init first 2 MB
 #_paging_init_2MB:
-	mov $pt, %edi
+	mov $(kernel_pt-KERNEL_HIGH_VMA), %edi
 	mov $0x3, %ebx
 	mov $512, %ecx
 0:
@@ -93,7 +83,7 @@ switch_to_long_mode:
 	or $(1 << 5), %eax
 	mov %eax, %cr4
 
-	movl $pml4t, %edi
+	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
     movl %edi, %cr3
 
 
@@ -118,8 +108,11 @@ _switch_to_64bit:
 	movl $0xC0000080, %ecx
     rdmsr
 
+	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
+    movl %edi, %cr3
+
 # # Initialize GDT
-	movl $gdt, %eax
+	movl $(gdt-KERNEL_HIGH_VMA), %eax
 	# NULL descriptor
 	movl $0x00000000, (%eax)
 	addl $4, %eax
@@ -141,8 +134,8 @@ _switch_to_64bit:
 	movl $0x00009200, (%eax)
 
 # # Load GDT
-	lgdt gdtr
-	ljmp $0x10, $_start64
+	lgdt boot_gdtr
+	jmpl $0x10, $_start64
 
 
 _no_cpuid:
@@ -187,7 +180,8 @@ _start64:
 	mov %ax, %fs
 	mov %ax, %gs
 	//sti
-	call boot
+	movabsq $(boot), %rax
+	callq *%rax
 
 0:
 	hlt
@@ -209,53 +203,12 @@ _start64:
 	hlt
 	jmp 0b
 
-.global setTSS
-setTSS:
-	mov %edi, tr
-	ltr tr
-	ret
-
-.global setIDT
-setIDT:
-	//mov %eax, %rax
-	//mov %esi, %rax
-	//mov 16(%rsp), %rax
-	//mov 34(%rsp), %rax
-	mov %eax, idtr
-	mov %esi, idtr+2
-	lidt idtr
-	ret
-
-.global setGDT
-setGDT:
-	/*mov 4(%esp), %eax
-	mov %eax, gdtr+4
-	mov 8(%esp), %ax
-	mov %eax, gdtr*/
-	lgdt gdtr
-	ret
-
-.global default_handler
-default_handler:
-	iretq
-
-.global reserved_handler
-reserved_handler:
-	iretq
+.section .data
 
 .align 8
-gdtr:
+boot_gdtr:
     .word GDT_SIZE	# limit
-    .quad gdt		# base
-
-.align 8
-idtr:
-    .word IDT_SIZE	# limit
-    .quad idt		# base
-
-.align 8
-tr:
-	.word 0x00		# selector
+    .quad (gdt-KERNEL_HIGH_VMA)		# base
 
 noCPUIDMessage:
 	.ascii "CPUID not supported by the processor\0"
