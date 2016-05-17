@@ -7,11 +7,12 @@ include ../build/utils.mk
 
 ### Compilation sources ###
 SRC_DIRS 		:= boot core lib/libc/src mm lib/libcpp/src lib/libc/src/stdio
-INCLUDE_DIRS 	:= lib/libc/include lib/libcpp/include
+INCLUDE_DIRS 	:= lib/libc/include lib/libcpp/include arch/x64/include
 SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), c) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), S)
 INCLUDES 		:= $(addprefix -I, $(INCLUDE_DIRS))
+LINKER 			:= arch/x64/build/linker.gen
 
 ### Output directory ###
 OUTPUT=out
@@ -46,8 +47,16 @@ DEPS		:= $(addprefix $(OUTPUT)/, $(call get-deps, $(SRC)))
 OBJS		:= $(addprefix $(OUTPUT)/, $(call get-objs, $(SRC)))
 OUTPUT_DIRS	:= $(addprefix $(OUTPUT)/, $(SRC_DIRS))
 
+### Generate linker script ###
+$(OUTPUT)/build/linker.ld: $(LINKER) $(OUTPUT)/build/linker.ld.d | $(OUTPUT)
+	$(CXX) -P -E $(INCLUDES) -x c $< -o $@
+	
+$(OUTPUT)/build/linker.ld.d: $(LINKER) | $(OUTPUT)
+	$(MKDIR) -p $(OUTPUT)/build
+	$(DEP) $(INCLUDES) -x c -MM $< -MT $@ > $@
+
 ### Generate kernel ###
-$(BIN): build/linker.ld $(OBJS)
+$(BIN): $(OUTPUT)/build/linker.ld $(OBJS)
 	$(LD) $(LDFLAGS) -T$< $(filter-out %.ld, $^) -o $@
 
 ### Generic rules ###

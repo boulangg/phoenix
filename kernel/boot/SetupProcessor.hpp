@@ -37,6 +37,7 @@ private:
 	static void setupIDT();
 	static void setupTSS();
 	static void setupPIC();
+	static void setupMemoryMapping();
 };
 
 #endif // ASM_FILE

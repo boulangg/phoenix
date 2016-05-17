@@ -6,7 +6,7 @@
 
 #include "Console.hpp"
 
-#include "cpu.h"
+#include <io.h>
 
 using namespace std;
 

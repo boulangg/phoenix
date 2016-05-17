@@ -1,32 +1,5 @@
-/*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
- * The file is distributed under the MIT license
- * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
- */
-
-#ifndef KERNEL_CPU_H_
-#define KERNEL_CPU_H_
-
-#include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-__inline__ static void cli(void)
-{
-	__asm__ __volatile__("cli":::"memory");
-}
-
-__inline__ static void sti(void)
-{
-	__asm__ __volatile__("sti":::"memory");
-}
-
-__inline__ static void hlt(void)
-{
-    __asm__ __volatile__ ("hlt":::"memory");
-}
+#ifndef __ARCH_IO_H__
+#define __ARCH_IO_H__
 
 __inline__ static void outb(uint16_t port, uint8_t value)
 {
@@ -64,8 +37,4 @@ __inline__ static uint32_t inl(unsigned short port)
 	return rega;
 }
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* KERNEL_CPU_H_ */
+#endif // __ARCH_IO_H__

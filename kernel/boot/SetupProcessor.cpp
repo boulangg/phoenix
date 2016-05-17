@@ -5,7 +5,10 @@
  */
 
 #include "SetupProcessor.hpp"
-#include "../core/cpu.h"
+#include "multiboot2.h"
+#include "processor_struct.hpp"
+
+#include <io.h>
 
 // Size Bits
 #define SZ_A		0x1
@@ -204,6 +207,10 @@ void SetupProcessor::setupPIC()
 	/* Ack any bogus intrs by setting the End Of Interrupt bit. */
 	outb(0x20, 0x20);
 	outb(0xa0, 0x20);
+}
+
+void SetupProcessor::setupMemoryMapping() {
+	// Nothing yet
 }
 
 void SetupProcessor::setupAll()
