@@ -42,7 +42,7 @@ private:
 
 	size_type _capacity;
 	size_type _size;
-	value_type* _data;
+	pointer _data;
 };
 
 #include "internal/vector.tpp"
