@@ -18,17 +18,17 @@ vector<T>::~vector() {
 }
 
 template <class T>
-reference vector<T>::operator[](int pos) const {
+typename vector<T>::reference vector<T>::operator[](int pos) const {
 	return _data[pos];
 }
 
 template <class T>
-reference vector<T>::front() {
+typename vector<T>::reference vector<T>::front() {
 	return _data[0];
 }
 
 template <class T>
-reference vector<T>::back() {
+typename vector<T>::reference vector<T>::back() {
 	return _data[_size];
 }
 
@@ -40,13 +40,19 @@ void vector<T>::push_back(const_reference val) {
 }
 
 template <class T>
+void vector<T>::push_back(value_type&& val) {
+	value_type v = val;
+	push_back(v);
+}
+
+template <class T>
 void vector<T>::pop_back() {
 	if(_size>0)
 		_size--;
 }
 
 template <class T>
-size_type vector<T>::size() const {
+typename vector<T>::size_type vector<T>::size() const {
 	return _size;
 }
 

@@ -31,6 +31,7 @@ public:
 	reference back();
 
 	void push_back(const_reference val);
+	void push_back(value_type&& val);
 	void pop_back();
 
 	size_type size() const;
@@ -43,6 +44,8 @@ private:
 	size_type _size;
 	value_type* _data;
 };
+
+#include "internal/vector.tpp"
 
 }
 
