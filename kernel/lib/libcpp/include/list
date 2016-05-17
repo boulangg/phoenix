@@ -24,34 +24,34 @@ public:
 
 template <class T>
 class _list_iterator {
-	public:
-		typedef T value_type;
-		typedef value_type& reference;
-		typedef value_type* pointer;
-		typedef _list_node<T> _node;
+public:
+	typedef T value_type;
+	typedef value_type& reference;
+	typedef value_type* pointer;
+	typedef _list_node<T> _node;
 
-		_list_iterator();
-		_list_iterator(const _list_iterator& b);
-		_list_iterator(_node* node);
-		~_list_iterator();
+	_list_iterator();
+	_list_iterator(const _list_iterator& b);
+	_list_iterator(_node* node);
+	~_list_iterator();
 
-		_list_iterator& operator=(const _list_iterator&b);
+	_list_iterator& operator=(const _list_iterator&b);
 
-		bool operator==(const _list_iterator& b);
-		bool operator!=(const _list_iterator& b);
+	bool operator==(const _list_iterator& b);
+	bool operator!=(const _list_iterator& b);
 
-		value_type& operator*();
-		value_type& operator->();
+	value_type& operator*();
+	value_type& operator->();
 
-		_list_iterator& operator++();
-		_list_iterator& operator--();
-		_list_iterator operator++(int);
-		_list_iterator operator--(int);
+	_list_iterator& operator++();
+	_list_iterator& operator--();
+	_list_iterator operator++(int);
+	_list_iterator operator--(int);
 
-		void swap(_list_iterator& b);
+	void swap(_list_iterator& b);
 
-		_node* node;
-	};
+	_node* node;
+};
 
 
 template <class T>
