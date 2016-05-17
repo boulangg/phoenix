@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
+#ifndef PHOENIX_VECTOR_H
+#define PHOENIX_VECTOR_H
+
+#define DEFAULT_CAPACITY 4
+
+#include "stddef.h"
+#include "../../libc/include/stddef.h"
+#include "../../../core/Console.hpp"
+
+namespace std{
+    template <class T>
+    class vector {
+    public:
+        vector();
+        ~vector();
+        T& operator[](int pos) const;
+        void push_back(const T& val);
+        T& front();
+        T& back();
+        bool empty() const ;
+        size_t size() const ;
+        void pop_back();
+    private:
+        size_t _capacity;
+        size_t _size;
+        T* _data;
+        void resize();
+    };
+
+
+    template <class T>
+    std::vector<T>::vector():_capacity(DEFAULT_CAPACITY),_size(0) {
+        _data = new T[_capacity];
+    }
+
+    template <class T>
+    T& std::vector<T>::operator[](int pos) const {
+        return _data[pos];
+    }
+
+    template <class T>
+    void std::vector<T>::push_back(const T &val) {
+        if(_size ==_capacity)
+            resize();
+        _data[_size++] = val;
+    }
+
+    template <class T>
+    void std::vector<T>::resize() {
+        T* tmp = new T[_capacity*2];
+        for(size_t i=0;i<_size;i++)
+            tmp[i] = _data[i];
+        delete[] _data;
+        _data = tmp;
+        _capacity*=2;
+    }
+
+    template <class T>
+    T& std::vector<T>::front() {
+        return _data[0];
+    }
+
+    template <class T>
+    T& std::vector<T>::back() {
+        return _data[_size];
+    }
+
+    template <class T>
+    size_t std::vector<T>::size() const {
+        return _size;
+    }
+
+    template <class T>
+    vector<T>::~vector() {
+        delete[] _data;
+    }
+
+    template <class T>
+    bool vector<T>::empty() const {
+        return _size==0;
+    }
+
+    template <class T>
+    void vector<T>::pop_back() {
+        if(_size>0)
+            _size--;
+    }
+
+}
+
+
+
+#endif //PHOENIX_VECTOR_H
