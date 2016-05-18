@@ -6,6 +6,7 @@
 #include "multiboot2.h"
 
 #include "processor_struct.hpp"
+#include <constant.h>
 
 #define BOOT_MAGIC	MULTIBOOT2_HEADER_MAGIC
 #define BOOT_ARCHI	MULTIBOOT_ARCHITECTURE_I386
@@ -33,11 +34,6 @@ multiboot_header_end:
 stack_bottom:
 	.skip 16384 # 16 KiB
 stack_top:
-
-.globl stack_top_ist1
-stack_bottom_ist1:
-	.skip 16384 # 16 KiB
-stack_top_ist1:
 
 # Kernel entry point _start
 .section .text

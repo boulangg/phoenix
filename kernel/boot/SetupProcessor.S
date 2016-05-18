@@ -3,6 +3,7 @@
 # The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
 
 #define ASM_FILE
+#include <constant.h>
 #include "SetupProcessor.hpp"
 
 .section .text
@@ -36,7 +37,14 @@ default_handler:
 reserved_handler:
 	iretq
 
+.section .bss
+.globl stack_top_ist1
+stack_bottom_ist1:
+	.skip 16384 # 16 KiB
+stack_top_ist1:
+
 .section .data
+
 .align 8
 gdtr:
     .word GDT_SIZE	# limit

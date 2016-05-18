@@ -5,13 +5,11 @@
  */
 
 #include "processor_struct.hpp"
+#include <constant.h>
 
 //static_assert(sizeof(struct page_entry) == 8, "page_entry size incorrect");
 uint64_t kernel_pml4t[512] 		__attribute__ ((aligned (4096)));
-uint64_t kernel_low_pdpt[512] 	__attribute__ ((aligned (4096)));
-uint64_t kernel_pdpt[512] 		__attribute__ ((aligned (4096)));
-uint64_t kernel_pdt[512] 		__attribute__ ((aligned (4096)));
-uint64_t kernel_pt[512] 		__attribute__ ((aligned (4096)));
+uint32_t kernel_page_limit;
 
 static_assert(sizeof(struct gate_desc) == 16, "gate_desc size incorrect");
 struct gate_desc idt[IDT_ENTRIES] __attribute__ ((aligned (4096)));

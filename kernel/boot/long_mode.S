@@ -6,6 +6,7 @@
 .code32
 
 #define ASM_FILE
+#include <constant.h>
 #include "processor_struct.hpp"
 
 .globl switch_to_long_mode
@@ -38,47 +39,108 @@ switch_to_long_mode:
 	test $(1 << 29), %edx
 	jz _no_long_mode
 
-# Setting up the Paging
+#define PAGE_SIZE 0x1000
+#define PAGE_MASK ~(PAGE_SIZE-1)
 
-# # Init basic hierarchy
-#_paging_init_hierarchy:
+#Init linear mapping (64 Mo)
+_init_virtual_mem:
+	# init kernel_page_limit
+	mov $(kernel_page_limit-KERNEL_HIGH_VMA), %eax
+	mov $(_kernel_end-KERNEL_HIGH_VMA), %ecx
+	mov %ecx, (%eax)
+
+	#level 4
 	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
-	movl $(kernel_low_pdpt-KERNEL_HIGH_VMA), %eax
+	call _get_free_page
+	movl %eax, %esi
 	orl $0x3, %eax
 	movl %eax, (%edi)
-	# Init High mem
-	movl $(kernel_pdpt-KERNEL_HIGH_VMA), %eax
-	add $(8*511), %edi
-	orl $0x3, %eax
+	addl $(8*256), %edi
 	movl %eax, (%edi)
-	movl $(kernel_pdpt-KERNEL_HIGH_VMA), %edi
-	movl $(kernel_pdt-KERNEL_HIGH_VMA), %eax
-	orl $0x3, %eax
-	add $(511*8), %edi
-	movl %eax, (%edi)
-	#
-	movl $(kernel_low_pdpt-KERNEL_HIGH_VMA), %edi
-	movl $(kernel_pdt-KERNEL_HIGH_VMA), %eax
-	orl $0x3, %eax
-	movl %eax, (%edi)
-	movl $(kernel_pdt-KERNEL_HIGH_VMA), %edi
-	movl $(kernel_pt-KERNEL_HIGH_VMA), %eax
+
+	#level 3
+	movl %esi, %edi
+	call _get_free_page
+	movl %eax, %esi
 	orl $0x3, %eax
 	movl %eax, (%edi)
 
-# # Init first 2 MB
-#_paging_init_2MB:
-	mov $(kernel_pt-KERNEL_HIGH_VMA), %edi
-	mov $0x3, %ebx
-	mov $512, %ecx
+	#level 2
+	movl %esi, %edi
+	movl $32, %ecx	// counter (=64Mo)
+	movl $0, %ebx	// start
 0:
-	mov %ebx, (%edi)
-	add $0x1000, %ebx
-	add $8, %edi
+	push %ecx		// save current counter
+	call _get_free_page
+	movl %eax, %esi
+	orl $0x3, %eax
+	movl %eax, (%edi)	// save level 1 pointer into lvl 2 table
+	push $(512)		// counter lvl 1
+	push %ebx		// start_addr lvl 1
+	push %esi		// page to fill in lvl 1
+	#level 1
+	call _init_page_linear_mapping_lvl1
+	add $12, %esp
+	pop %ecx		// restore %ecx
+
+	add $0x8, %edi
+	add $0x200000, %ebx
 	loop 0b
 
+	#init kernel mapping
+	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
+	call _get_free_page
+	movl %eax, %esi
+	orl $0x3, %eax
+	addl $(8*511), %edi
+	movl %eax, (%edi)
+
+	movl %esi, %edi
+	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %eax
+	movl (%eax), %eax
+	andl $(~0x3), %eax
+	movl (%eax), %eax
+	addl $(8*511), %edi
+	movl %eax, (%edi)
+
+	jmp _paging_init_PAE
+
+# arg1 = page_addr, arg2 = start_addr (align on 4Ko), arg3 = nb_iteration, incr = 0x1000, flag = 0x3
+_init_page_linear_mapping_lvl1:
+	pushl %ebp
+	movl %esp, %ebp
+	push %ebx
+	push %edi
+	push %esi
+	mov 8(%ebp), %edi
+	mov 12(%ebp), %ebx
+	andl $PAGE_MASK, %ebx
+	orl $0x3, %ebx
+	mov 16(%ebp), %ecx
+0:
+	mov %ebx, (%edi)
+	add $PAGE_SIZE, %ebx
+	add $8, %edi
+	loop 0b
+	pop %esi
+	pop %edi
+	pop %ebx
+	pop %ebp
+	ret
+
+# return %eax = free page addr
+_get_free_page:
+	push %edi
+	mov $(kernel_page_limit-KERNEL_HIGH_VMA), %edi
+	mov (%edi), %eax
+	mov $PAGE_SIZE, %ecx
+	add (%edi), %ecx
+	mov %ecx, (%edi)
+	pop %edi
+	ret
+
 # # Enable PAE-paging
-#_paging_init_PAE:
+_paging_init_PAE:
 	mov %cr4, %eax
 	or $(1 << 5), %eax
 	mov %eax, %cr4
@@ -179,7 +241,6 @@ _start64:
 	mov $0x00, %eax
 	mov %ax, %fs
 	mov %ax, %gs
-	//sti
 	movabsq $(boot), %rax
 	callq *%rax
 
@@ -187,7 +248,7 @@ _start64:
 	hlt
 	jmp 0b
 
-	cli
+/*	cli
 	mov $0x18, %eax
 	mov %ax, %ds
 	mov %ax, %es
@@ -201,7 +262,7 @@ _start64:
 
 0:
 	hlt
-	jmp 0b
+	jmp 0b*/
 
 .section .data
 
@@ -209,6 +270,9 @@ _start64:
 boot_gdtr:
     .word GDT_SIZE	# limit
     .quad (gdt-KERNEL_HIGH_VMA)		# base
+
+/*kernel_page_limit:
+	.long (_kernel_end-KERNEL_HIGH_VMA)*/
 
 noCPUIDMessage:
 	.ascii "CPUID not supported by the processor\0"

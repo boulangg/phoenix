@@ -13,6 +13,7 @@ ENTRY(_start)
 LINKER_KERNEL_MULTIBOOT = KERNEL_MULTIBOOT;
 LINKER_KERNEL_BOOT_VMA = KERNEL_BOOT_VMA;
 LINKER_KERNEL_HIGH_VMA = KERNEL_HIGH_VMA;
+LINKER_KERNEL_PHYSICAL_START = KERNEL_PHYSICAL_START;
 
 SECTIONS
 {
@@ -30,27 +31,35 @@ SECTIONS
 	. = LINKER_KERNEL_BOOT_VMA;
 
 	/* Low mem section */
-	.low_mem BLOCK(4K) : ALIGN(4K)
+	bootstrap_start = .;
+	.bootstrap_text BLOCK(4K) : ALIGN(4K)
 	{
-		_low_mem_start = .;
+		_bootstrap_text_start = .;
 		. = ALIGN(4K);
 		*/boot.S.o(.text)
 		*/long_mode.S.o(.text)
-		_low_mem_end = ALIGN(4K);
+		_bootstrap_text_end = .;
 	}
 
 	.bootstrap_stack BLOCK(4K) : ALIGN(4K)
 	{
+		_bootstrap_stack_bottom = .;
 		*(.bootstrap_stack)
+		_bootstrap_stack_top = .;
 	}
 
-	.low_mem_data BLOCK(4K) : ALIGN(4K)
+	.bootstrap_data BLOCK(4K) : ALIGN(4K)
 	{
+		_bootstrap_data_start = .;
 		*/boot.S.o(.data)
 		*/long_mode.S.o(.data)
+		_bootstrap_data_end = .;
 	}
+	bootstrap_end = .;
 
 
+	. = LINKER_KERNEL_PHYSICAL_START;
+	
 	. += LINKER_KERNEL_HIGH_VMA;
 
 	/* High mem section */
@@ -78,7 +87,7 @@ SECTIONS
 		_data_end = .;
 	}
 
-	/* Read-write data (uninitialized) and bootstrap stack sections */
+	/* Read-write data (uninitialized) section */
 	.bss ALIGN(4K) : AT(ADDR(.bss) - LINKER_KERNEL_HIGH_VMA)
 	{
 		_bss_start = .;
@@ -88,10 +97,12 @@ SECTIONS
 	}
 	_kernel_data_end = .;
 
-	_end = .;
-
+	. = ALIGN(4K);
 	/* Beginning of kernel memory heap */
-	_kernel_mem_heap = _end;
-	/* End of kernel memory heap: 64MB */
-    _kernel_mem_heap_end = LINKER_KERNEL_HIGH_VMA + 0x4000000;
+	_kernel_mem_heap = _kernel_end;
+	/* End of kernel memory heap: 2MB */
+    _kernel_mem_heap_end = LINKER_KERNEL_HIGH_VMA + 0x100000;
+
+	. = ALIGN(4K);
+	_kernel_end = .;
 }
