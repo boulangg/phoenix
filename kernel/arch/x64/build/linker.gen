@@ -63,6 +63,7 @@ SECTIONS
 	. += LINKER_KERNEL_HIGH_VMA;
 
 	/* High mem section */
+	_kernel_start = .;
 	.text ALIGN(4K) : AT(ADDR(.text) - LINKER_KERNEL_HIGH_VMA)
 	{
 		_kernel_text_start = .;
@@ -99,9 +100,9 @@ SECTIONS
 
 	. = ALIGN(4K);
 	/* Beginning of kernel memory heap */
-	_kernel_mem_heap = _kernel_end;
-	/* End of kernel memory heap: 2MB */
-    _kernel_mem_heap_end = LINKER_KERNEL_HIGH_VMA + 0x100000;
+	_kernel_mem_heap = .;
+	. += 0x100000;
+    _kernel_mem_heap_end = .;
 
 	. = ALIGN(4K);
 	_kernel_end = .;
