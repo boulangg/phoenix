@@ -7,9 +7,16 @@
 #ifndef _VECTOR_TPP_
 #define _VECTOR_TPP_
 
+
+
 template <class T>
-vector<T>::vector():_capacity(DEFAULT_CAPACITY), _size(0) {
-	_data = new T[_capacity];
+vector<T>::vector():_capacity(DEFAULT_CAPACITY), _size(0),_data(new T[_capacity]) {
+}
+
+template <class T>
+vector<T>::vector(const vector<T>& v):_capacity(v._capacity), _size(v._size),_data(new T[_capacity]) {
+    for(size_t i=0;i<_size;i++)
+        _data[i]=v._data[i];
 }
 
 template <class T>
