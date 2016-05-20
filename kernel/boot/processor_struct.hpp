@@ -18,7 +18,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -74,7 +73,10 @@ extern struct gate_desc idt[IDT_ENTRIES];
 //extern struct page_entry kernel_pml4t[512];
 extern uint64_t kernel_pml4t[512];
 extern uint32_t kernel_page_limit;
+extern uint64_t _kernel_start;
 extern uint64_t _kernel_end;
+extern uint64_t _bootstrap_stack_bottom;
+extern uint64_t _bootstrap_stack_top;
 
 extern uint64_t gdt[];
 extern struct x86_64_tss tss;

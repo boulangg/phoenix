@@ -49,6 +49,15 @@ _init_virtual_mem:
 	mov $(_kernel_end-KERNEL_HIGH_VMA), %ecx
 	mov %ecx, (%eax)
 
+	# clear kernel_pml4t
+	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
+	mov $1024, %ecx
+	mov $0, %ebx
+0:
+	mov %ebx, (%edi)
+	add $4, %edi
+	loop 0b
+
 	#level 4
 	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
 	call _get_free_page
@@ -88,6 +97,7 @@ _init_virtual_mem:
 	loop 0b
 
 	#init kernel mapping
+_init_kernel_mem:
 	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
 	call _get_free_page
 	movl %eax, %esi
@@ -102,6 +112,42 @@ _init_virtual_mem:
 	movl (%eax), %eax
 	addl $(8*511), %edi
 	movl %eax, (%edi)
+
+	#init heap mapping
+	# level 4
+	movl $(kernel_pml4t-KERNEL_HIGH_VMA), %edi
+	call _get_free_page
+	movl %eax, %esi
+	orl $0x3, %eax
+	addl $(8*264), %edi
+	movl %eax, (%edi)
+
+	#level 3
+	movl %esi, %edi
+	call _get_free_page
+	movl %eax, %esi
+	orl $0x3, %eax
+	movl %eax, (%edi)
+
+	#level 2 (64 Ko)
+	movl %esi, %edi
+	call _get_free_page
+	movl %eax, %esi
+	orl $0x3, %eax
+	movl %eax, (%edi)
+
+	#level 1
+	movl %esi, %edi
+	movl $(16), %ecx
+0:
+	push %ecx
+	call _get_free_page
+	movl %eax, %esi
+	orl $0x3, %eax
+	movl %eax, (%edi)
+	add $8, %edi
+	pop %ecx
+	loop 0b
 
 	jmp _paging_init_PAE
 
@@ -136,6 +182,14 @@ _get_free_page:
 	mov $PAGE_SIZE, %ecx
 	add (%edi), %ecx
 	mov %ecx, (%edi)
+	push %eax
+	mov $1024, %ecx
+	mov $0, %edx
+0:
+	mov %edx, (%eax)
+	add $4, %eax
+	loop 0b
+	pop %eax
 	pop %edi
 	ret
 
@@ -235,6 +289,11 @@ _print_asm:
 .globl _start64
 _start64:
 	cli
+	#set kernel stack
+	movq $(KERNEL_STACK_TOP), %rsp
+	mov $0, %ebp
+
+	#set segments
 	mov $0x18, %eax
 	mov %ax, %ds
 	mov %ax, %es

@@ -9,9 +9,11 @@
 #include "Console.hpp"
 #include <stdio.h>
 #include <vector>
+#include <stdlib.h>
+
+#include "../mm/PhysicalAllocator.hpp"
 
 void Kernel::Start() {
-	Console::initConsole();
 	char str[512];
 	sprintf(str, "0x%x, %i, %i\n", 152, 2, 3);
 	Console::write("Hello world !!\n");
@@ -54,5 +56,7 @@ void Kernel::Start() {
 	asm("sti");
 	asm("int $49");
 	asm("cli");
+
+	PhysicalAllocator::printStats();
 }
 

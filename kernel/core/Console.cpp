@@ -7,6 +7,7 @@
 #include "Console.hpp"
 
 #include <io.h>
+#include <constant.h>
 
 using namespace std;
 
@@ -14,7 +15,7 @@ using namespace std;
 std::size_t Console::row = 0;
 std::size_t Console::column = 0;
 std::uint8_t Console::color = 0;
-std::uint16_t* Console::screen = (uint16_t*) 0xB8000;
+std::uint16_t* Console::screen = (uint16_t*) (0xB8000 | KERNEL_MAPPING_START);
 bool Console::cursor_enabled = true;
 
 void Console::initConsole() {

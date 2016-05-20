@@ -7,8 +7,15 @@
 #include "SetupProcessor.hpp"
 #include "multiboot2.h"
 #include "processor_struct.hpp"
+#include "../mm/PhysicalAllocator.hpp"
 
 #include <io.h>
+#include <constant.h>
+
+#include "../core/Console.hpp"
+#include <stdio.h>
+#include "../mm/Page.hpp"
+#include "../mm/PageTable.hpp"
 
 // Size Bits
 #define SZ_A		0x1
@@ -158,6 +165,7 @@ void SetupProcessor::setupGDT()
 			USER_CS_32_LIMIT, USER_CS_FLAGS, USER_CS_32_SIZEB);
 	fill_segment_descriptor(USER_DS_32_INDEX, USER_DS_32_BASE,
 			USER_DS_32_LIMIT, USER_DS_32_FLAGS, USER_DS_32_SIZEB);
+	set_GDT(GDT_SIZE, gdt);
 }
 
 
@@ -170,8 +178,8 @@ void SetupProcessor::setupIDT()
 
 void SetupProcessor::setupTSS()
 {
-	tss.rsp0 = &stack_top;
-	tss.ist1 = &stack_top_ist1;
+	tss.rsp0 = (uint64_t*)KERNEL_STACK_TOP;
+	tss.ist1 = (uint64_t*)KERNEL_IST1_TOP;
 	fill_segment_descriptor_64(TSS_INDEX, TSS_BASE,
 			TSS_LIMIT, TSS_FLAGS, TSS_SIZEB);
 	set_TSS(SEL_TSS);
@@ -209,8 +217,122 @@ void SetupProcessor::setupPIC()
 	outb(0xa0, 0x20);
 }
 
+static uint64_t* get_free_page(uint64_t nb_pages, uint64_t page_size) {
+	uint64_t* physical_pages = (uint64_t*)(uint64_t)kernel_page_limit;
+	kernel_page_limit += nb_pages*page_size;
+	for (uint64_t i = 0; i < nb_pages*page_size/8; i++) {
+		physical_pages[i] = 0;
+	}
+	return physical_pages;
+}
+
+static void initPageArray(Page* page_array, uint64_t nb_phys_pages, multiboot_tag_mmap *mmap) {
+	for (uint64_t i=0; i < nb_phys_pages; ++i) {
+		page_array[i].physAddr = (uint64_t*)(i*PAGE_SIZE);
+		page_array[i].kernelMappAddr = (uint64_t*)(i*PAGE_SIZE+KERNEL_START);
+		page_array[i].type = PageType::UNUSABLE;
+	}
+
+	multiboot_mmap_entry* mmap_entry;
+	mmap_entry = mmap->entries;
+	while ((char*)mmap_entry < ((char*)mmap + mmap->size)) {
+		if (mmap_entry->type == MULTIBOOT_MEMORY_AVAILABLE) {
+			uint64_t index_start = (mmap_entry->addr + PAGE_SIZE - 1) / PAGE_SIZE;
+			uint64_t index_end = (mmap_entry->addr + mmap_entry->len) / PAGE_SIZE;
+
+			for (uint64_t i = index_start; i < index_end; i++) {
+				page_array[i].type = PageType::FREE;
+			}
+		}
+		mmap_entry = (multiboot_memory_map_t *)((unsigned long)mmap_entry + mmap->entry_size);
+	}
+
+	uint64_t kernel_index_start = (((uint64_t)&_kernel_start)- KERNEL_HIGH_VMA) / PAGE_SIZE;
+	uint64_t kernel_index_end = (kernel_page_limit) / PAGE_SIZE;
+
+	for (uint64_t i = kernel_index_start; i < kernel_index_end; i++) {
+		page_array[i].type = PageType::KERNEL;
+	}
+
+
+
+}
+
+static void mapLinearPage(uint64_t* PML4T, uint64_t* physAddr, uint64_t* virtAddr) {
+	uint16_t highLvlFlags = 0x3;
+	uint16_t flags = 0x3;
+	uint64_t PML4T_index = ((uint64_t)virtAddr >> PML4E_INDEX_OFFSET) & PML4E_INDEX_MASK;
+	if (PML4T[PML4T_index] == 0) {
+		PML4T[PML4T_index] = (uint64_t)get_free_page(1, PAGE_SIZE) | highLvlFlags;
+	}
+	uint64_t* PDPT = (uint64_t*)(PML4T[PML4T_index] & PAGE_ADDR_MASK);
+	uint64_t PDPT_index = ((uint64_t)virtAddr >> PDPE_INDEX_OFFSET) & PDPE_INDEX_MASK;
+	if (PDPT[PDPT_index] == 0) {
+		PDPT[PDPT_index] = (uint64_t)get_free_page(1, PAGE_SIZE) | highLvlFlags;
+	}
+	uint64_t* PD = (uint64_t*)(PDPT[PDPT_index] & PAGE_ADDR_MASK);
+	uint64_t PD_index = ((uint64_t)virtAddr >> PDE_INDEX_OFFSET) & PDE_INDEX_MASK;
+	if (PD[PD_index] == 0) {
+		PD[PD_index] = (uint64_t)get_free_page(1, PAGE_SIZE) | highLvlFlags;
+	}
+	uint64_t* PT = (uint64_t*)(PD[PD_index] & PAGE_ADDR_MASK);
+	uint64_t PTE_index = ((uint64_t)virtAddr >> PTE_INDEX_OFFSET) & PTE_INDEX_MASK;
+
+	uint64_t PTE = (uint64_t)physAddr & PAGE_ADDR_MASK;
+	PT[PTE_index] = PTE | flags;
+}
+
 void SetupProcessor::setupMemoryMapping() {
-	// Nothing yet
+	uint64_t max_available_addr = 0x0;
+	multiboot_tag *tag;
+	tag = (multiboot_tag*) (multiboot_info_tags+2);
+	while (tag->type != MULTIBOOT_TAG_TYPE_MMAP &&
+			tag->type != MULTIBOOT_TAG_TYPE_END) {
+		tag=(multiboot_tag *)((uint8_t*)tag+((tag->size+7)&~7));
+	}
+
+	if (tag->type == MULTIBOOT_TAG_TYPE_MMAP) {
+		multiboot_tag_mmap *mmap = (multiboot_tag_mmap*)tag;
+		multiboot_mmap_entry* mmap_entry;
+		mmap_entry = mmap->entries;
+		while ((char*)mmap_entry < ((char*)tag + tag->size)) {
+			uint64_t mmap_entry_addr_end = mmap_entry->addr + mmap_entry->len;
+			if (mmap_entry->type == MULTIBOOT_MEMORY_AVAILABLE) {
+				if ( mmap_entry_addr_end > max_available_addr) {
+					max_available_addr = mmap_entry_addr_end;
+				}
+			}
+			// Finish the full linear memory mapping
+
+			uint64_t mmap_entry_addr_start = mmap_entry->addr;
+			if (mmap_entry_addr_start < EARLY_FULL_MAPPING) {
+				mmap_entry_addr_start = EARLY_FULL_MAPPING;
+			}
+			for (uint64_t i = mmap_entry_addr_start; i < mmap_entry_addr_end; i+= PAGE_SIZE) {
+				mapLinearPage(kernel_pml4t, (uint64_t*)i, (uint64_t*)(KERNEL_MAPPING_START+i));
+			}
+
+			mmap_entry = (multiboot_memory_map_t *)((unsigned long)mmap_entry + mmap->entry_size);
+		}
+
+		// Initialize physical pages allocator
+		uint64_t nb_physical_pages = (max_available_addr + PAGE_SIZE-1) / PAGE_SIZE;
+		uint64_t nb_pages_required = (nb_physical_pages*sizeof(Page) + PAGE_SIZE-1) / PAGE_SIZE;
+		Page* page_array = (Page*)get_free_page(nb_pages_required, PAGE_SIZE);
+		page_array = (Page*)((uint64_t)page_array+KERNEL_MAPPING_START);
+		initPageArray(page_array, nb_physical_pages, mmap);
+		PhysicalAllocator::initAllocator(page_array, nb_physical_pages);
+
+		// Setup interruption stack
+		PageTable kernelPageTable = PageTable::getKernelPageTable();
+		for (uint64_t addr = KERNEL_IST1_BOTTOM; addr < KERNEL_IST1_TOP; addr+=PAGE_SIZE)  {
+			Page* page = PhysicalAllocator::allocZeroedPage();
+			kernelPageTable.mapPage(page->physAddr, (uint64_t*)addr, 0x3, 0x3);
+		}
+
+		// Clear low memory mapping
+		kernel_pml4t[0] = 0;
+	}
 }
 
 void SetupProcessor::setupAll()
@@ -220,4 +342,5 @@ void SetupProcessor::setupAll()
 	setupIDT();
 	setupTSS();
 	setupPIC();
+	setupMemoryMapping();
 }

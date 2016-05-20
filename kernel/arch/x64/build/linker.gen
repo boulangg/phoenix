@@ -99,11 +99,5 @@ SECTIONS
 	_kernel_data_end = .;
 
 	. = ALIGN(4K);
-	/* Beginning of kernel memory heap */
-	_kernel_mem_heap = .;
-	. += 0x100000;
-    _kernel_mem_heap_end = .;
-
-	. = ALIGN(4K);
 	_kernel_end = .;
 }

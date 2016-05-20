@@ -28,7 +28,7 @@ multiboot_magic_end:
 	.long 8
 multiboot_header_end:
 
-# Default stacks
+# Default stack
 .section .bootstrap_stack, "aw", @nobits
 .globl stack_top
 stack_bottom:

@@ -25,7 +25,7 @@ set_IDT:
 .global set_GDT
 set_GDT:
 	mov %edi, gdtr
-	mov %esi, gdtr+2
+	mov %rsi, gdtr+2
 	lgdt gdtr
 	ret
 
@@ -36,12 +36,6 @@ default_handler:
 .global reserved_handler
 reserved_handler:
 	iretq
-
-.section .bss
-.globl stack_top_ist1
-stack_bottom_ist1:
-	.skip 16384 # 16 KiB
-stack_top_ist1:
 
 .section .data
 
