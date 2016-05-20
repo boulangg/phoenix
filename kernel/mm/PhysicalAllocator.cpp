@@ -98,7 +98,7 @@ uint64_t* PhysicalAllocator::fusion(uint64_t* addr, uint8_t order)
 uint64_t* PhysicalAllocator::calculAddrBuddy(uint64_t* addr, uint8_t order)
 {
 	uint64_t buddy = (uint64_t)addr;
-	buddy = buddy ^(PAGE_SIZE << order);
+	buddy = buddy ^ (PAGE_SIZE << order);
 	return (uint64_t*)buddy;
 }
 
@@ -121,6 +121,11 @@ uint64_t* PhysicalAllocator::allocPagesInternal(uint8_t order)
 		k0--;
 		FBT[k0]= (uintptr_t)addr_buddy;
 		*addr_buddy = 0;
+	}
+
+	Page* page = getPageFromAddr(addr);
+	for (uint64_t i = 0; i < (uint64_t)(1 << order); ++i) {
+		page[i].type = PageType::ALLOCATED;
 	}
 
 	return addr;
@@ -176,6 +181,11 @@ int PhysicalAllocator::freePages(Page* page, uint8_t order) {
 
 int PhysicalAllocator::freePagesInternal(uint64_t* addr, uint8_t order)
 {
+	Page* page = getPageFromAddr(addr);
+	for (uint64_t i = 0; i < (uint64_t)(1 << order); ++i) {
+		page[i].type = PageType::FREE;
+	}
+
 	uint64_t* tmp = addr;
 	/* Fusion of blocs when possible */
 	while(tmp != NULL) {
@@ -183,17 +193,29 @@ int PhysicalAllocator::freePagesInternal(uint64_t* addr, uint8_t order)
 		order++;
 	}
 
+
 	return 0;
 }
 
 void PhysicalAllocator::printStats() {
-	uint64_t stats[5] = {0, 0, 0, 0, 0};
+	uint64_t stats[5*2] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	for (uint64_t i = 0; i < PhysicalAllocator::nb_physical_pages; ++i) {
 		stats[PhysicalAllocator::page_array[i].type] ++;
+		if (i < 256) {
+			stats[PhysicalAllocator::page_array[i].type + 5] ++;
+		}
 	}
 	char str[512];
-	Console::write("Memory (in pages, 4Ko):\n");
-	sprintf(str, "  Unavailable: %u\n  Free: %u\n  Allocated: %u\n  Kernel: %u\n  Cache: %u\n", stats[0], stats[1], stats[2], stats[3], stats[4]);
+	Console::write("Memory (low_mem < 1Mo): pages (4Ko)\n");
+	sprintf(str, "  Unavailable: %u (low_mem : %u)\n", stats[0], stats[5]);
+	Console::write(str);
+	sprintf(str, "  Free: %u (low_mem : %u)\n", stats[1], stats[6]);
+	Console::write(str);
+	sprintf(str, "  Allocated: %u (low_mem : %u)\n", stats[2], stats[7]);
+	Console::write(str);
+	sprintf(str, "  Kernel: %u (low_mem : %u)\n", stats[3], stats[8]);
+	Console::write(str);
+	sprintf(str, "  Cache: %u\n", stats[4]);
 	Console::write(str);
 }
 
