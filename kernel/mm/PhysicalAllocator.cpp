@@ -163,7 +163,7 @@ Page* PhysicalAllocator::allocZeroedPages(uint8_t order)
 {
 	Page* page = allocPages(order);
 	uint64_t *addr = getAddrFromPage(page);
-	for (uint64_t i=0; i < (uint64_t)(PAGE_SIZE << (order-sizeof(uint64_t))); i++) {
+	for (uint64_t i=0; i < (uint64_t)((PAGE_SIZE/sizeof(uint64_t)) << order); i++) {
 		addr[i] = 0;
 	}
 	return page;
