@@ -3,7 +3,7 @@
 # The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
 
 ### TOOLS ###
-TOOLCHAIN_PREFIX := $(HOME)/opt/cross/bin/x86_64-elf-
+TOOLCHAIN_PREFIX := #$(HOME)/opt/cross/bin/x86_64-elf-
 CC      := $(TOOLCHAIN_PREFIX)gcc
 CXX		:= $(TOOLCHAIN_PREFIX)g++
 AS      := $(TOOLCHAIN_PREFIX)gcc

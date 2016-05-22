@@ -2,6 +2,9 @@
 *.o
 *.d
 */out/
+*.a
+*.out
+*.bin
 
 # Temporary Files #
 *.tmp

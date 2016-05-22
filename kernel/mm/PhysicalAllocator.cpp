@@ -207,15 +207,15 @@ void PhysicalAllocator::printStats() {
 	}
 	char str[512];
 	Console::write("Memory (low_mem < 1Mo): pages (4Ko)\n");
-	sprintf(str, "  Unavailable: %u (low_mem : %u)\n", stats[0], stats[5]);
+	sprintf(str, "  Unavailable: %llu (low_mem : %llu)\n", stats[0], stats[5]);
 	Console::write(str);
-	sprintf(str, "  Free: %u (low_mem : %u)\n", stats[1], stats[6]);
+	sprintf(str, "  Free: %llu (low_mem : %llu)\n", stats[1], stats[6]);
 	Console::write(str);
-	sprintf(str, "  Allocated: %u (low_mem : %u)\n", stats[2], stats[7]);
+	sprintf(str, "  Allocated: %llu (low_mem : %llu)\n", stats[2], stats[7]);
 	Console::write(str);
-	sprintf(str, "  Kernel: %u (low_mem : %u)\n", stats[3], stats[8]);
+	sprintf(str, "  Kernel: %llu (low_mem : %llu)\n", stats[3], stats[8]);
 	Console::write(str);
-	sprintf(str, "  Cache: %u\n", stats[4]);
+	sprintf(str, "  Cache: %llu\n", stats[4]);
 	Console::write(str);
 }
 

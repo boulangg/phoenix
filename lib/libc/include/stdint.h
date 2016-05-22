@@ -8,7 +8,7 @@
 #define _KERNEL_STDINT_H_
 
 // 7.18 Integer types <stdint.h>
-#include "limits.h"
+//#include "limits.h"
 #include "bits/wordsize.h"
 
 // 7.18.1 Integer types
