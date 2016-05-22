@@ -10,7 +10,8 @@ LIBSTDCPP_DIR := ../lib/libstdcpp
 
 ### Compilation sources ###
 SRC_DIRS 		:= boot core mm 
-INCLUDE_DIRS 	:= $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include arch/x64/include 
+LIB_INCLUDE_DIRS := $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include
+INCLUDE_DIRS 	:= $(LIB_INCLUDE_DIRS) arch/x64 . 
 LIBRARY_DIRS	:= $(LIBC_DIR) $(LIBSTDCPP_DIR)
 SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), c) \

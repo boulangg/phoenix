@@ -7,25 +7,20 @@
 #ifndef __ARCH_CPU_H__
 #define __ARCH_CPU_H__
 
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-__inline__ static void cli(void)
-{
+__inline__ static void cli(void) {
 	__asm__ __volatile__("cli":::"memory");
 }
 
-__inline__ static void sti(void)
-{
+__inline__ static void sti(void) {
 	__asm__ __volatile__("sti":::"memory");
 }
 
-__inline__ static void hlt(void)
-{
-    __asm__ __volatile__ ("hlt":::"memory");
+__inline__ static void hlt(void) {
+	__asm__ __volatile__ ("hlt":::"memory");
 }
 
 #ifdef __cplusplus

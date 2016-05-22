@@ -5,7 +5,7 @@
  */
 
 #include "processor_struct.hpp"
-#include <constant.h>
+#include <include/constant.h>
 
 //static_assert(sizeof(struct page_entry) == 8, "page_entry size incorrect");
 uint64_t kernel_pml4t[512] 		__attribute__ ((aligned (4096)));

@@ -5,17 +5,17 @@
  */
 
 #include "SetupProcessor.hpp"
-#include "multiboot2.h"
-#include "processor_struct.hpp"
-#include "../mm/PhysicalAllocator.hpp"
 
-#include <io.h>
-#include <constant.h>
-
-#include "../core/Console.hpp"
 #include <stdio.h>
-#include "../mm/Page.hpp"
-#include "../mm/PageTable.hpp"
+
+#include <include/constant.h>
+#include <asm/io.h>
+#include <core/Console.hpp>
+#include <mm/PhysicalAllocator.hpp>
+#include <mm/Page.hpp>
+#include <mm/PageTable.hpp>
+
+#include "multiboot2.h"
 
 // Size Bits
 #define SZ_A		0x1

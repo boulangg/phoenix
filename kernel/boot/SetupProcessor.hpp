@@ -26,8 +26,7 @@ extern void reserved_handler();
 }
 #endif
 
-class SetupProcessor
-{
+class SetupProcessor {
 public:
 	static void setupAll();
 

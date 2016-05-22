@@ -1,12 +1,14 @@
-# Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
-# The file is distributed under the MIT license
-# The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
 
 .section .text
 .code32
 
 #define ASM_FILE
-#include <constant.h>
+#include <include/constant.h>
 #include "processor_struct.hpp"
 
 .globl switch_to_long_mode

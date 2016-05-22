@@ -1,7 +1,15 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #include "PageTable.hpp"
-#include <constant.h>
+
+#include <include/constant.h>
+#include <boot/processor_struct.hpp>
+
 #include "PhysicalAllocator.hpp"
-#include "../boot/processor_struct.hpp"
 
 
 uint64_t* PageTable::kernelPML4T(kernel_pml4t);

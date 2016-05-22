@@ -70,7 +70,6 @@ struct x86_64_tss {
 } __attribute__ ((packed));
 
 extern struct gate_desc idt[IDT_ENTRIES];
-//extern struct page_entry kernel_pml4t[512];
 extern uint64_t kernel_pml4t[512];
 extern uint32_t kernel_page_limit;
 extern uint64_t _kernel_start;

@@ -6,16 +6,17 @@
 
 #include "Console.hpp"
 
-#include <io.h>
-#include <constant.h>
+#include <asm/io.h>
+#include <include/constant.h>
+
 
 using namespace std;
 
 /* Public members */
-std::size_t Console::row = 0;
-std::size_t Console::column = 0;
-std::uint8_t Console::color = 0;
-std::uint16_t* Console::screen = (uint16_t*) (0xB8000 | KERNEL_MAPPING_START);
+size_t Console::row = 0;
+size_t Console::column = 0;
+uint8_t Console::color = 0;
+uint16_t* Console::screen = (uint16_t*) (0xB8000 | KERNEL_MAPPING_START);
 bool Console::cursor_enabled = true;
 
 void Console::initConsole() {
@@ -58,15 +59,15 @@ void Console::write(const char *str)
 }
 
 void Console::write(const std::string& str) {
-    Console::write(str.c_str());
+	Console::write(str.c_str());
 }
 
 void Console::write(std::string& str) {
-    Console::write(str.c_str());
+	Console::write(str.c_str());
 }
 
 void Console::write(std::string&& str) {
-    Console::write(str.c_str());
+	Console::write(str.c_str());
 }
 
 void Console::toggleCursor(bool enabled)

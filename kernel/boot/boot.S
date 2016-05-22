@@ -1,12 +1,14 @@
-# Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
-# The file is distributed under the MIT license
-# The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
 
 #define ASM_FILE
 #include "multiboot2.h"
 
 #include "processor_struct.hpp"
-#include <constant.h>
+#include <include/constant.h>
 
 #define BOOT_MAGIC	MULTIBOOT2_HEADER_MAGIC
 #define BOOT_ARCHI	MULTIBOOT_ARCHITECTURE_I386

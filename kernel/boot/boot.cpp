@@ -6,19 +6,19 @@
 
 #include "boot.h"
 
-#include "../core/Kernel.hpp"
+#include <asm/cpu.h>
+#include <core/Kernel.hpp>
+#include <core/Console.hpp>
+
 #include "processor_struct.hpp"
 #include "SetupProcessor.hpp"
-#include "../core/Console.hpp"
 
-#include <cpu.h>
 
 void idle() {
 	hlt();
 }
 
-void boot()
-{
+void boot() {
 	Console::initConsole();
 	SetupProcessor::setupAll();
 	Kernel::Start();

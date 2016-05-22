@@ -6,12 +6,14 @@
 
 #include "Kernel.hpp"
 
-#include "Console.hpp"
 #include <stdio.h>
 #include <vector>
 #include <stdlib.h>
+#include <string>
 
-#include "../mm/PhysicalAllocator.hpp"
+#include "Console.hpp"
+
+#include <mm/PhysicalAllocator.hpp>
 
 
 void Kernel::Start() {
@@ -20,10 +22,10 @@ void Kernel::Start() {
 	Console::write("Hello world !!\n");
 	Console::write(str);
 
-    std::vector<char> vec;
-    std::string stri("Hello how are U?\n");
-    stri+="Fine\n";
-    Console::write(stri);
+	std::vector<char> vec;
+	std::string stri("Hello how are U?\n");
+	stri+="Fine\n";
+	Console::write(stri);
 
 
 	asm("sti");
