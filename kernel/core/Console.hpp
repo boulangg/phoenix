@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 namespace VGA {
 enum class Color {
@@ -39,6 +40,9 @@ public:
 	static void clear();
 	static void write(char c);
 	static void write(const char *str);
+    static void write(std::string& str);
+    static void write(std::string&& str);
+	static void write(const std::string& str);
 	static void toggleCursor(bool enabled);
 
 private:

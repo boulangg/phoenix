@@ -57,6 +57,18 @@ void Console::write(const char *str)
 	updateCursor();
 }
 
+void Console::write(const std::string& str) {
+    Console::write(str.c_str());
+}
+
+void Console::write(std::string& str) {
+    Console::write(str.c_str());
+}
+
+void Console::write(std::string&& str) {
+    Console::write(str.c_str());
+}
+
 void Console::toggleCursor(bool enabled)
 {
 	cursor_enabled = enabled;
