@@ -13,6 +13,7 @@
 
 #include "../mm/PhysicalAllocator.hpp"
 
+
 void Kernel::Start() {
 	char str[512];
 	sprintf(str, "0x%x, %i, %i\n", 152, 2, 3);
@@ -20,39 +21,11 @@ void Kernel::Start() {
 	Console::write(str);
 
     std::vector<char> vec;
-    vec.push_back('H');
-    vec.push_back('e');
-    vec.push_back('l');
-    vec.push_back('l');
-    vec.push_back('o');
-    vec.push_back(' ');
-    vec.push_back('h');
-    vec.push_back('o');
-    vec.push_back('w');
-    vec.push_back(' ');
-    vec.push_back('a');
-    vec.push_back('r');
-    vec.push_back('e');
-    vec.push_back(' ');
-    vec.push_back('U');
-    vec.push_back('?');
-    vec.push_back('\n');
-    for(unsigned int i=0;i<vec.size();i++)
-        Console::write(vec[i]);
+    std::string stri("Hello how are U?\n");
+    stri+="Fine\n";
+    Console::write(stri);
 
-    unsigned int size = vec.size();
-    for(unsigned int i=0;i<size;i++)
-        vec.pop_back();
-    vec.push_back('F');
-    vec.push_back('i');
-    vec.push_back('n');
-    vec.push_back('e');
-    vec.push_back('\n');
-    for(unsigned int i=0;i<vec.size();i++)
-        Console::write(vec[i]);
 
-	int i = 0;
-	(void)i;
 	asm("sti");
 	asm("int $49");
 	asm("cli");
