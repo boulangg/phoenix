@@ -10,24 +10,28 @@
 #include <cstddef>
 
 namespace std {
-    class string {
-    public:
-        string();
-        string(const char* s);
-        string(const string& s);
 
-        string(string&& s);
+class string {
+public:
+	string();
+	string(const char* s);
+	string(const string& s);
 
-        string& operator+=(const string& str);
-        string& operator+=(const char* str);
+	string(string&& s);
 
-        const char* c_str() const;
-    private:
-        static size_t length(const char*s);
-        size_t _size;
-        size_t _capacity;
-        char* _data;
-    };
+	string& operator+=(const string& str);
+	string& operator+=(const char* str);
+
+	string& append (const char* s, size_t n);
+
+	const char* c_str() const;
+private:
+	static size_t length(const char*s);
+	size_t _size;
+	size_t _capacity;
+	char* _data;
+};
+
 }
 
 

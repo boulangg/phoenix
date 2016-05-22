@@ -5,25 +5,14 @@
 
 namespace std {
 
-    template< class T >
-    void swap( T& a, T& b ) {
-        T tmp = a;
-        a = b;
-        b = tmp;
-    }
+template< class T >
+void swap( T& a, T& b ) {
+	T tmp = a;
+	a = b;
+	b = tmp;
+}
 
-    size_t nearest_power_2(size_t num){
-        num--;
-        num |= num >> 1;   // Divide by 2^k for consecutive doublings of k up to 32,
-        num |= num >> 2;   // and then or the results.
-        num |= num >> 4;
-        num |= num >> 8;
-        num |= num >> 16;
-        if(sizeof(size_t)==8)
-            num|=num >>32;
-        num++;
-        return num;
-    }
+size_t nearest_power_2(size_t num);
 
 }
 
