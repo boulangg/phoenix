@@ -11,6 +11,24 @@
 
 namespace std {
 
+size_t char_traits<char>::length(const char_type* s){
+	size_t len = 0;
+	while(*s++!='\0')
+		len++;
+	return len;
+}
+
+void char_traits<char>::assign(char_type& r, const char_type& c) {
+	r = c;
+}
+
+char_traits<char>::char_type* char_traits<char>::copy(char_type* dest, const char_type* src, size_t n) {
+	for (size_t i = 0; i < n; ++i) {
+		dest[i] = src[i];
+	}
+	return dest;
+}
+
 size_t string::length(const char *s) {
     size_t len = 0;
     while(*s++!='\0')
@@ -23,14 +41,12 @@ string::string(): _size(0), _capacity(DEFAULT_CAPACITY), _data(new char[_capacit
 }
 
 string::string(const char *s): _size(length(s)),_capacity(nearest_power_2(_size+1)),_data(new char[_capacity]) {
-    for(size_t i=0;i<_size;i++)
-        _data[i]=s[i];
+	char_traits<char>::copy(_data, s, _size);
     _data[_size]='\0';
 }
 
 string::string(const string& s): _size(s._size),_capacity(s._capacity),_data(new char[_capacity]) {
-    for(size_t i=0;i<_size+1;i++)
-        _data[i] = s._data[i];
+	char_traits<char>::copy(_data, s._data, _size+1);
 }
 
 string::string(string&& s): _size(s._size), _capacity(s._capacity),_data(s._data) {
@@ -44,19 +60,19 @@ string& string::operator+=(const string& str) {
 }
 
 string& string::operator+=(const char* str) {
-	return append(str, length(str));
+	size_t len = char_traits<char>::length(str);
+	return append(str, len);
 }
 
-string& string::append (const char* str, size_t len) {
+string& string::append(const char* str, size_t len) {
     if(_size+len>_capacity){
         _capacity = std::nearest_power_2(_size+len+1);
         char * tmp = new char[_capacity];
-        for(size_t i=0;i<_size;i++)
-            tmp[i]= _data[i];
+    	char_traits<char>::copy(tmp, _data, _size);
         delete[] _data;
+        _data = tmp;
     }
-    for(size_t i=0;i<len;i++)
-        _data[_size+i]=str[i];
+	char_traits<char>::copy(_data+_size, str, len);
     _size+=len;
     _data[_size] = '\0';
     return *this;
