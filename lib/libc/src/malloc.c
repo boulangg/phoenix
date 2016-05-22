@@ -1,7 +1,4 @@
 
-/*
-#define assert(...) (void)(0)
-*/
 #define LACKS_UNISTD_H
 #define LACKS_FCNTL_H
 #define LACKS_SYS_PARAM_H
