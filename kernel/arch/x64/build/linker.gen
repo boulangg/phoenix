@@ -86,6 +86,10 @@ SECTIONS
 		_data_start = .;
 		*(.data)
 		_data_end = .;
+		. = ALIGN(4K);
+		_apps_start = .;
+		*(.rawdata)
+		_apps_end = .;
 	}
 
 	/* Read-write data (uninitialized) section */
