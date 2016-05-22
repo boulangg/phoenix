@@ -20,6 +20,8 @@ kernel/phoenix.bin
 disk.iso
 iso/boot/phoenix.bin
 
-# CLion #
-.idea
-CMakeLists.txt
+# gcc cross compile #
+cross/
+gcc-*/
+gcc-*
+
