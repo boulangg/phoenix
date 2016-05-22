@@ -24,10 +24,14 @@ public:
 
 	vector();
 	vector(const vector& v);
+	vector(vector&& v);
+
 	~vector();
 
 	reference operator[](int pos) const;
+
     vector<T>& operator=(const vector<T>& v);
+    vector<T>& operator=(vector<T>&& v);
 
 	reference front();
 	reference back();

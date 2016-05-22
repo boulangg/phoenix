@@ -8,7 +8,6 @@
 #define _VECTOR_TPP_
 
 
-
 template <class T>
 vector<T>::vector():_capacity(DEFAULT_CAPACITY), _size(0),_data(new T[_capacity]) {
 }
@@ -20,6 +19,13 @@ vector<T>::vector(const vector<T>& v):_capacity(v._capacity), _size(v._size),_da
 }
 
 template <class T>
+vector<T>::vector(vector<T>&& v):_capacity(v._capacity), _size(v._size),_data(v._data) {
+    v._data= nullptr;
+    v._size = 0;
+    v._capacity = 0;
+}
+
+template <class T>
 vector<T>::~vector() {
 	delete[] _data;
 }
@@ -27,6 +33,32 @@ vector<T>::~vector() {
 template <class T>
 typename vector<T>::reference vector<T>::operator[](int pos) const {
 	return _data[pos];
+}
+
+template <class T>
+vector<T>& vector<T>::operator=(const vector<T>& v) {
+    T* tmp = new T[v._capacity];
+    for(size_t i=0;i<v._size;i++)
+        tmp[i]=v._data[i];
+    delete[] _data;
+    _data = tmp;
+    _size = v._size;
+    _capacity = v._capacity;
+    return *this;
+}
+
+template <class T>
+vector<T>& vector<T>::operator=(vector<T>&& v) {
+    delete[] _data;
+    _data = v._data;
+    _size = v._size;
+    _capacity = v._capacity;
+
+    v._data = nullptr;
+    v._size = 0;
+    v._capacity = 0;
+
+    return *this;
 }
 
 template <class T>
