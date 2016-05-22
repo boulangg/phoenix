@@ -29,20 +29,13 @@ char_traits<char>::char_type* char_traits<char>::copy(char_type* dest, const cha
 	return dest;
 }
 
-size_t string::length(const char *s) {
-    size_t len = 0;
-    while(*s++!='\0')
-        len++;
-    return len;
-}
-
 string::string(): _size(0), _capacity(DEFAULT_CAPACITY), _data(new char[_capacity]) {
 
 }
 
-string::string(const char *s): _size(length(s)),_capacity(nearest_power_2(_size+1)),_data(new char[_capacity]) {
+string::string(const char *s): _size(char_traits<char>::length(s)),_capacity(nearest_power_2(_size+1)),_data(new char[_capacity]) {
 	char_traits<char>::copy(_data, s, _size);
-    _data[_size]='\0';
+	_data[_size]='\0';
 }
 
 string::string(const string& s): _size(s._size),_capacity(s._capacity),_data(new char[_capacity]) {
@@ -50,9 +43,9 @@ string::string(const string& s): _size(s._size),_capacity(s._capacity),_data(new
 }
 
 string::string(string&& s): _size(s._size), _capacity(s._capacity),_data(s._data) {
-    s._data = nullptr;
-    s._size =0;
-    s._capacity=0;
+	s._data = nullptr;
+	s._size =0;
+	s._capacity=0;
 }
 
 string& string::operator+=(const string& str) {
@@ -64,22 +57,72 @@ string& string::operator+=(const char* str) {
 	return append(str, len);
 }
 
+char& string::operator[](int pos){
+	return _data[pos];
+}
+
+const char& string::operator[](int pos) const{
+	return _data[pos];
+}
+
+string& string::operator=(const string& str){
+	_size= str._size;
+	_capacity = str._capacity;
+	delete[] _data;
+	_data = new char[str._capacity];
+	char_traits<char>::copy(_data, str._data, _size);
+	return *this;
+}
+
+string& string::operator=(const char* str){
+	_size= char_traits<char>::length(str);
+	_capacity = nearest_power_2(_size+1);
+	delete[] _data;
+	_data = new char[_capacity];
+	char_traits<char>::copy(_data, str, _size);
+	return *this;
+}
+string& string::operator=(string&& str){
+	delete[] _data;
+	_data= str._data;
+	_size= str._size;
+	_capacity = str._capacity;
+
+	_data = nullptr;
+	_size=0;
+	_capacity =0;
+
+	return *this;
+}
+
+size_t string::size() const{
+	return _size;
+}
+
+size_t string::length() const{
+	return _size;
+}
+
+size_t string::capacity() const{
+	return _capacity;
+}
+
 string& string::append(const char* str, size_t len) {
-    if(_size+len>_capacity){
-        _capacity = std::nearest_power_2(_size+len+1);
-        char * tmp = new char[_capacity];
-    	char_traits<char>::copy(tmp, _data, _size);
-        delete[] _data;
-        _data = tmp;
-    }
+	if(_size+len>_capacity){
+		_capacity = std::nearest_power_2(_size+len+1);
+		char * tmp = new char[_capacity];
+		char_traits<char>::copy(tmp, _data, _size);
+		delete[] _data;
+		_data = tmp;
+	}
 	char_traits<char>::copy(_data+_size, str, len);
-    _size+=len;
-    _data[_size] = '\0';
-    return *this;
+	_size+=len;
+	_data[_size] = '\0';
+	return *this;
 }
 
 const char* string::c_str() const {
-    return _data;
+	return _data;
 }
 
 }

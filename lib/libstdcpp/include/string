@@ -41,11 +41,21 @@ public:
 	string& operator+=(const string& str);
 	string& operator+=(const char* str);
 
+	string& operator=(const string& str);
+	string& operator=(const char* str);
+	string& operator=(string&& str);
+
+	char& operator[](int pos);
+	const char& operator[](int pos) const;
+
 	string& append (const char* s, size_t n);
+
+	size_t size() const;
+	size_t length() const;
+	size_t capacity() const;
 
 	const char* c_str() const;
 private:
-	static size_t length(const char*s);
 	size_t _size;
 	size_t _capacity;
 	char* _data;
