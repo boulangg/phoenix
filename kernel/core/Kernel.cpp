@@ -27,6 +27,8 @@ void Kernel::Start() {
 	stri+="Fine\n";
 	Console::write(stri);
 
+	int* a = (int*)malloc(4096);
+
 
 	asm("sti");
 	asm("int $49");

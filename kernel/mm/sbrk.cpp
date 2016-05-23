@@ -25,6 +25,7 @@ void *sbrk(ptrdiff_t diff)
 		errno = ENOMEM;
 		return (void*)(-1);
 	}
+	kernel_sbrk_curr = new_brk;
 	while (new_brk > kernel_max_heap_curr) {
 		Page* new_page = PhysicalAllocator::allocZeroedPage();
 		PageTable kernelPageTable = PageTable::getKernelPageTable();
