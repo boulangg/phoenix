@@ -37,6 +37,7 @@ public:
 	string(const string& s);
 
 	string(string&& s);
+	~string();
 
 	string& operator+=(const string& str);
 	string& operator+=(const char* str);

@@ -125,5 +125,9 @@ const char* string::c_str() const {
 	return _data;
 }
 
+string::~string(){
+	delete[] _data;
+}
+
 }
 
