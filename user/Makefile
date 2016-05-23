@@ -7,10 +7,11 @@ include ../build/utils.mk
 
 ### Compilation sources ###
 SRC_DIRS 		:= test1 glue
+APPS_NAMES		:= $(notdir $(call clean-dir-names, $(sort $(dir $(wildcard apps/*/)))))
 INCLUDE_DIRS 	:= ../lib/libc/include
 LIBRARY_DIRS	:= ../lib/libc
-SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
-	               $(call get-all-files-with-ext, $(SRC_DIRS), c) \
+SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), c) \
+	               $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), S)
 INCLUDES 		:= $(addprefix -I, $(INCLUDE_DIRS))
 LIBRARIES		:= $(addprefix -L, $(LIBRARY_DIRS))
@@ -47,17 +48,25 @@ CRT_OBJ		:= $(addprefix $(OUTPUT)/, $(call get-objs, $(CRT_SRC)))
 CRT_DEP		:= $(addprefix $(OUTPUT)/, $(call get-deps, $(CRT_SRC)))
 OUTPUT_DIRS	:= $(addprefix $(OUTPUT)/, $(SRC_DIRS))  $(addprefix $(OUTPUT)/, $(CRT_DIR))
 
-$(info $$CRT_OBJ is [${CRT_OBJ}])
+.PHONY:all user_apps
+user_apps: all
+	@echo "\033[0;32m  User apps succesfully built\033[0m"
 
-.PHONY:all
-all: $(APPS)
+### Import targets for apps ###
+include build/apps.mk
+
+all: $(APPS_TARGETS)
 
 ### Generate application ###
 $(APPS): $(OBJS) | $(CRT_OBJ)
 	$(LD) $(LDFLAGS) $^ $(LIBFLAGS) -o $@
 
 ### Generic rules ###
-$(OUTPUT)/%.d: % | $(OUTPUT)
+$(OUTPUT)/%.S.d: %.S | $(OUTPUT)
+	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
+$(OUTPUT)/%.c.d: %.c | $(OUTPUT)
+	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
+$(OUTPUT)/%.cpp.d: %.cpp | $(OUTPUT)
 	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
 
 $(OUTPUT)/%.o : % $(OUTPUT)/%.d | $(OUTPUT)
@@ -71,7 +80,6 @@ $(call create-dir-files, $(CRT_DEP))
 
 ### Create a target for output dirs ###
 $(call create-dir-targets, $(OUTPUT_DIRS))
-
 	
 ### Output directory ###
 $(CRT_OBJ): | $(OUTPUT)

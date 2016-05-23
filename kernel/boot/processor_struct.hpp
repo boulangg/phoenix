@@ -69,6 +69,19 @@ struct x86_64_tss {
 	uint16_t io_bit_map_offset;	/* offset to start of IO permission bit map */
 } __attribute__ ((packed));
 
+struct apps_desc {
+	char* apps_name[];
+	uint64_t* apps_start;
+	uint64_t* apps_end;
+};
+
+struct apps_symbol_table {
+	uint32_t nb_user_apps;
+	struct apps_desc apps[];
+};
+
+extern struct apps_symbol_table user_apps_symbol_table;
+
 extern struct gate_desc idt[IDT_ENTRIES];
 extern uint64_t kernel_pml4t[512];
 extern uint32_t kernel_page_limit;

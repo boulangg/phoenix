@@ -30,7 +30,7 @@ endif
 
 .PHONY:all static_lib
 static_lib: all
-	@echo "\033[0;32m  libc.a succesfully build\033[0m"
+	@echo "\033[0;32m  libc.a succesfully built\033[0m"
 	
 all: $(STATIC_LIB)
 

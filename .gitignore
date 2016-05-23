@@ -6,6 +6,9 @@
 *.out
 *.bin
 
+kernel/user
+kernel/gen
+
 # Temporary Files #
 *.tmp
 *~

@@ -337,6 +337,7 @@ void SetupProcessor::setupMemoryMapping() {
 
 void SetupProcessor::setupAll()
 {
+	(apps_symbol_table)user_apps_symbol_table;
 	copyMultibootInfo();
 	setupGDT();
 	setupIDT();
