@@ -166,13 +166,13 @@ void list<T>::pop_back() {
 template <class T>
 typename list<T>::iterator list<T>::insert(iterator pos, const value_type& val) {
 	if (pos == _begin) {
-		_node* curr = new _node(val, nullptr, begin);
+		_node* curr = new _node(val, nullptr, _begin.node);
 		_begin.node->prev = curr;
 		_begin.node = curr;
 		++_size;
 		return _begin;
 	} else {
-		_node* prev = pos.node.prev;
+		_node* prev = pos.node->prev;
 		_node* next = pos.node;
 		_node* curr = new _node(val, prev, next);
 		prev->next = curr;
