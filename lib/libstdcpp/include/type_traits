@@ -1,0 +1,18 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
+#ifndef LIB_LIBSTDCPP_INCLUDE_TYPE_TRAITS_
+#define LIB_LIBSTDCPP_INCLUDE_TYPE_TRAITS_
+
+namespace std{
+template< class T > struct remove_reference      {typedef T type;};
+template< class T > struct remove_reference<T&>  {typedef T type;};
+template< class T > struct remove_reference<T&&> {typedef T type;};
+}
+
+
+
+#endif /* LIB_LIBSTDCPP_INCLUDE_TYPE_TRAITS_ */
