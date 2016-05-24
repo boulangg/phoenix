@@ -9,17 +9,24 @@
 
 
 template <class T>
-vector<T>::vector():_capacity(DEFAULT_CAPACITY), _size(0),_data(new T[_capacity]) {
+vector<T>::vector(): _capacity(DEFAULT_CAPACITY), _size(0),_data(new T[_capacity]) {
 }
 
 template <class T>
-vector<T>::vector(const vector<T>& v):_capacity(v._capacity), _size(v._size),_data(new T[_capacity]) {
+vector<T>::vector(size_type n, const_reference val): _capacity(DEFAULT_CAPACITY), _size(0),_data(new T[_capacity]) {
+	for (int i = 0; i < n; ++i) {
+		this->push_back(val);
+	}
+}
+
+template <class T>
+vector<T>::vector(const vector<T>& v): _capacity(v._capacity), _size(v._size),_data(new T[_capacity]) {
     for(size_t i=0;i<_size;i++)
         _data[i]=v._data[i];
 }
 
 template <class T>
-vector<T>::vector(vector<T>&& v):_capacity(v._capacity), _size(v._size),_data(v._data) {
+vector<T>::vector(vector<T>&& v): _capacity(v._capacity), _size(v._size),_data(v._data) {
     v._data= nullptr;
     v._size = 0;
     v._capacity = 0;

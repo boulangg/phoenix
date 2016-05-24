@@ -23,6 +23,7 @@ public:
 	typedef size_t size_type;
 
 	vector();
+	vector (size_type n, const_reference val);
 	vector(const vector& v);
 	vector(vector&& v);
 
