@@ -88,7 +88,11 @@ void _list_iterator<T>::swap(_list_iterator<T>& b) {
 }
 
 template <class T>
-list<T>::list() : _begin(), _end(), _size(0) {}
+list<T>::list() : _begin(), _end(), _size(0) {
+	_node* node = new _node(T(), 0, 0);
+	_begin.node = node;
+	_end.node = node;
+}
 
 template <class T>
 list<T>::~list() {
