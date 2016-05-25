@@ -47,6 +47,10 @@
 #define KERNEL_IST1_BOTTOM		0xFFFF860000000000
 #define KERNEL_IST1_TOP	    	0xFFFF860000002000
 
+// Default syscall stack of 8 Ko
+#define KERNEL_SYSCALL_BOTTOM	0xFFFF860000004000
+#define KERNEL_SYSCALL_TOP		0xFFFF860000006000
+
 #if !defined(LINKER_FILE) && !defined(ASM_FILE)
 #include <stdint.h>
 

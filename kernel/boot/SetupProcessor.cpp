@@ -94,6 +94,24 @@
 #define USER_DS_32_FLAGS	(FLAG_DPL3 | FLAG_DATA | FLAG_W)
 #define USER_DS_32_SIZEB	SZ_D
 
+
+uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t num) {
+	(void)a; (void)b; (void)c; (void)d; (void)e; (void)f;
+	switch(num) {
+	case 12:
+		// return do_brk(a);
+		break;
+	case 60:
+		// return do_exit();
+		// should never return
+		break;
+	default:
+		break;
+	}
+	return 0;
+}
+
+
 static void fill_segment_descriptor_64(uint8_t index, uint64_t base, uint32_t limit,
 		uint8_t flags, uint8_t sizebits)
 {
@@ -326,9 +344,15 @@ void SetupProcessor::setupMemoryMapping() {
 		initPageArray(page_array, nb_physical_pages, mmap);
 		PhysicalAllocator::initAllocator(page_array, nb_physical_pages);
 
-		// Setup interruption stack
 		PageTable kernelPageTable = PageTable::getKernelPageTable();
+		// Setup interruption stack
 		for (uint64_t addr = KERNEL_IST1_BOTTOM; addr < KERNEL_IST1_TOP; addr+=PAGE_SIZE)  {
+			Page* page = PhysicalAllocator::allocZeroedPage();
+			kernelPageTable.mapPage(page->physAddr, (uint64_t*)addr, 0x3, 0x3);
+		}
+
+		// Setup syscall stack
+		for (uint64_t addr = KERNEL_SYSCALL_BOTTOM; addr < KERNEL_SYSCALL_TOP; addr+=PAGE_SIZE)  {
 			Page* page = PhysicalAllocator::allocZeroedPage();
 			kernelPageTable.mapPage(page->physAddr, (uint64_t*)addr, 0x3, 0x3);
 		}
@@ -336,6 +360,12 @@ void SetupProcessor::setupMemoryMapping() {
 		// Clear low memory mapping
 		kernel_pml4t[0] = 0;
 	}
+}
+
+void SetupProcessor::setupSyscall() {
+	enable_syscall();
+	uint64_t STAR = ((((uint64_t)SEL_USER_CS) << 48) | (((uint64_t)SEL_KERNEL_CS) << 32) | 0);
+	load_syscall(STAR, (uint64_t)syscall64_handler, 0, 0);
 }
 
 void SetupProcessor::setupAll()
@@ -347,4 +377,5 @@ void SetupProcessor::setupAll()
 	setupTSS();
 	setupPIC();
 	setupMemoryMapping();
+	setupSyscall();
 }

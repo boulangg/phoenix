@@ -5,6 +5,7 @@
 	fn:						\
 		push %rbp;			\
 		mov %rsp, %rbp;		\
+		mov %rcx, %r10;		\
 		mov $number, %rax;	\
 		syscall;			\
 		pop %rbp;			\

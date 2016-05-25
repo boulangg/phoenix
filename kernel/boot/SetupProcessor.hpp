@@ -19,9 +19,14 @@ extern void set_IDT(uint16_t limit, struct gate_desc* base);
 extern void set_GDT(uint16_t limit, uint64_t* base);
 extern void set_TSS(uint16_t selector);
 extern void set_CR3(uint64_t pml4t);
+extern void enable_syscall();
+extern void load_syscall(uint64_t STAR,  uint64_t LSTAR, uint64_t CSTAR, uint32_t SFMASK);
+extern void syscall64_handler();
 
 extern void default_handler();
 extern void reserved_handler();
+
+uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t num);
 
 #ifdef __cplusplus
 }
@@ -38,6 +43,7 @@ private:
 	static void setupTSS();
 	static void setupPIC();
 	static void setupMemoryMapping();
+	static void setupSyscall();
 };
 
 #endif // ASM_FILE
