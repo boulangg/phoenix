@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <algorithm>
 
 #define DEFAULT_CAPACITY 4
 
@@ -119,6 +120,21 @@ string& string::append(const char* str, size_t len) {
 	_size+=len;
 	_data[_size] = '\0';
 	return *this;
+}
+
+int string::compare(const string& str) const {
+	size_t i = 0;
+	while ((str._data[i] != '\0') & (_data[i] != '\0')) {
+		if (str._data[i] != _data[i]) {
+			return (str._data[i] - _data[i]);
+		}
+		++i;
+	}
+	return (str._size - _size);
+}
+
+int string::compare(const char* s) const {
+	return compare(std::string(s));
 }
 
 const char* string::c_str() const {
