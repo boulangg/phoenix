@@ -4,24 +4,17 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef __PAGE_HPP__
-#define __PAGE_HPP__
+#ifndef __kernelFS_HPP__
+#define __kernelFS_HPP__
 
-#include <cstdint>
+#include <string>
+#include <boot/processor_struct.hpp>
+#include <fs/File.hpp>
 
-enum PageType {
-	UNUSABLE,
-	FREE,
-	ALLOCATED,
-	KERNEL,
-	CACHE
-};
-
-class Page {
+class KernelFS {
 public:
-	uint64_t* physAddr;
-	uint64_t* kernelMappAddr;
-	PageType type;
+	static File* getUserApp(std::string name);
 };
 
-#endif // __PAGE_HPP__
+
+#endif // __kernelFS_HPP__

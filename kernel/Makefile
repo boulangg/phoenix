@@ -15,7 +15,7 @@ USER_APPS_GEN_DIR := gen
 USER_APPS_GEN_FILE := $(USER_APPS_GEN_DIR)/user_apps.S
 
 ### Compilation sources ###
-SRC_DIRS 		:= boot core mm
+SRC_DIRS 		:= boot core mm fs
 LIB_INCLUDE_DIRS := $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include
 INCLUDE_DIRS 	:= $(LIB_INCLUDE_DIRS) arch/x64 . 
 LIBRARY_DIRS	:= $(LIBC_DIR) $(LIBSTDCPP_DIR)
@@ -55,7 +55,7 @@ ifneq "$(VERBOSE)" "1"
     include ../build/quiet.mk
 endif
 
-.PHONY:all static_libc static_libcpp user_apps
+.PHONY:all static_libc static_libstdcpp user_apps
 all: phoenix.bin
 	@echo "\033[0;32m  Kernel succesfully built\033[0m"
 
@@ -70,12 +70,12 @@ static_libc:
 	@$(MAKE) static_lib --no-print-directory -C $(LIBC_DIR) VERBOSE=$(VERBOSE)
 
 ### Generate CPP librairy ###
-static_libcpp:
+static_libstdcpp:
 	@echo "\033[0;33m  Build libstdcpp.a\033[0m"
 	@$(MAKE) static_lib --no-print-directory -C $(LIBSTDCPP_DIR) VERBOSE=$(VERBOSE)
 	
 ### Generate user applications ###
-user_apps: 
+user_apps: static_libc static_libstdcpp
 	@echo "\033[0;33m  Build user applications\033[0m"
 	@$(MAKE) user_apps --no-print-directory -C $(USER_APPS_DIR) VERBOSE=$(VERBOSE)
 
@@ -111,7 +111,7 @@ $(OUTPUT)/build/linker.ld.d: $(LINKER) | $(OUTPUT)
 	$(DEP) $(INCLUDES) -x c -MM $< -MT $@ > $@
 
 ### Generate kernel ###
-$(BIN): $(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o | static_libc static_libcpp user_apps 
+$(BIN): $(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o | static_libc static_libstdcpp user_apps 
 	$(LD) $(LDFLAGS) -T$(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o  $(LIBFLAGS) -o $@
 
 ### Generic rules ###

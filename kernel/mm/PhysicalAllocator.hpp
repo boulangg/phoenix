@@ -27,6 +27,8 @@ public:
 	static int freePages(Page* page, uint8_t order);
 	static void printStats();
 
+	static Page* getPageFromAddr(uint64_t* addr);
+
 private:
 	static uint64_t* allocPagesInternal(uint8_t order);
 	static int freePagesInternal(uint64_t* addr, uint8_t order);
@@ -37,7 +39,6 @@ private:
 	// Free bloc table
 	static uint64_t FBT[MAX_ORDER];
 
-	static Page* getPageFromAddr(uint64_t* addr);
 	static uint64_t* getAddrFromPage(Page* page);
 	static uint64_t* calculAddrBuddy(uint64_t* addr, uint8_t order);
 	static uint64_t* fusion(uint64_t* addr, uint8_t order);

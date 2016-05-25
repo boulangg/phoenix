@@ -10,10 +10,15 @@
 #include <vector>
 #include <stdlib.h>
 #include <string>
+#include <list>
 
 #include "Console.hpp"
 
 #include <mm/PhysicalAllocator.hpp>
+#include <mm/VirtualMapping.hpp>
+#include <fs/Elf64.hpp>
+#include <fs/KernelFS.hpp>
+#include <fs/File.hpp>
 
 
 void Kernel::Start() {
@@ -27,7 +32,18 @@ void Kernel::Start() {
 	stri+="Fine\n";
 	Console::write(stri);
 
-	int* a = (int*)malloc(4096);
+	std::list<int> listInt;
+	listInt.push_back(0);
+
+	File* f;
+	VirtualMapping* mapping;
+	f = KernelFS::getUserApp("test1");
+	mapping = Elf64::getVirtualMapping(f);
+	PageTable* pgTable = mapping->getPageTable();
+	f = KernelFS::getUserApp("test2");
+	mapping = Elf64::getVirtualMapping(f);
+	f = KernelFS::getUserApp("don't exist");
+	(void)f;
 
 
 	asm("sti");

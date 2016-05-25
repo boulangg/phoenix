@@ -11,14 +11,17 @@
 #define PAGE_WRITE_MASK     0x2
 #define PAGE_USER_MASK      0x4
 #define PAGE_UWP_MASK       (PAGE_USER_MASK | PAGE_WRITE_MASK | PAGE_PRESENT_MASK)
+#define PAGE_UROP_MASK      (PAGE_USER_MASK | PAGE_PRESENT_MASK)
 
 #include <cstdint>
+#include <list>
+#include <mm/VirtualArea.hpp>
 
 class PageTable {
 public:
-	PageTable(uint64_t* pml4t);
+	PageTable(std::list<VirtualArea*>& list);
 
-	void mapKernel(uint64_t kernelLimit);
+	void mapUserVirtualArea(VirtualArea* area);
 
 	int mapPage(uint64_t* physAddr, uint64_t* virtAddr,
 			uint16_t flags, uint16_t highLvlFlags = PAGE_UWP_MASK);
@@ -31,6 +34,18 @@ public:
 
 
 private:
+	PageTable(uint64_t* pml4t);
+
+	void copyKernelAddressSpace() {
+		for (int i = 256; i < 512; ++i) {
+			this->PML4T[i] = PageTable::kernelPML4T[i];
+		}
+	}
+
+	/*uint64_t* getPhysicalPage(uint64_t* virtAddr) {
+		return nullptr;
+	}*/
+
 	static uint64_t* kernelPML4T;
 
 	uint64_t* PML4T;
