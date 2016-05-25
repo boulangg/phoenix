@@ -18,5 +18,5 @@ uint64_t gdt[GDT_ENTRIES] __attribute__ ((aligned (4096)));
 
 struct x86_64_tss tss __attribute__ ((aligned (4096)));
 
-uint32_t multiboot_info_tags[1024] __attribute__ ((aligned (4096)));
+uint32_t multiboot_info_tags[MULTIBOOT_INFO_SIZE] __attribute__ ((aligned (4096)));
 

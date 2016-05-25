@@ -189,6 +189,9 @@ void SetupProcessor::copyMultibootInfo()
 {
 	uint32_t* orig_multiboot_info_ptr = (uint32_t*)(uint64_t)multiboot_info;
 	uint32_t size = ((orig_multiboot_info_ptr[0]-1)>> 2) + 1;
+	if (size > MULTIBOOT_INFO_SIZE) {
+		size = MULTIBOOT_INFO_SIZE;
+	}
 	for (uint32_t i = 0; i < size ; ++i) {
 		multiboot_info_tags[i] = orig_multiboot_info_ptr[i];
 	}

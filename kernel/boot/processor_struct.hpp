@@ -13,6 +13,8 @@
 #define GDT_SIZE (GDT_ENTRIES*8-1)
 #define IDT_SIZE (IDT_ENTRIES*16-1)
 
+#define MULTIBOOT_INFO_SIZE 2048
+
 #ifndef ASM_FILE
 
 #include <stddef.h>
@@ -70,7 +72,7 @@ struct x86_64_tss {
 } __attribute__ ((packed));
 
 struct apps_desc {
-	char* apps_name[];
+	char (*apps_name)[];
 	uint64_t* apps_start;
 	uint64_t* apps_end;
 };
@@ -94,7 +96,7 @@ extern uint64_t gdt[];
 extern struct x86_64_tss tss;
 extern uint64_t stack_top;
 extern uint64_t stack_top_ist1;
-extern uint32_t multiboot_info_tags[1024];
+extern uint32_t multiboot_info_tags[MULTIBOOT_INFO_SIZE];
 extern uint32_t multiboot_magic;
 extern uint32_t multiboot_info;
 
