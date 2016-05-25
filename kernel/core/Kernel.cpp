@@ -22,6 +22,14 @@
 
 
 void Kernel::Start() {
+
+	File* f;
+	VirtualMapping* mapping;
+	f = KernelFS::getUserApp("test1");
+	mapping = Elf64::getVirtualMapping(f);
+	PageTable* pgTable = mapping->getPageTable();
+	PageTable::setActivePageTable(pgTable);
+
 	char str[512];
 	sprintf(str, "0x%x, %i, %i\n", 152, 2, 3);
 	Console::write("Hello world !!\n");
@@ -34,16 +42,6 @@ void Kernel::Start() {
 
 	std::list<int> listInt;
 	listInt.push_back(0);
-
-	File* f;
-	VirtualMapping* mapping;
-	f = KernelFS::getUserApp("test1");
-	mapping = Elf64::getVirtualMapping(f);
-	PageTable* pgTable = mapping->getPageTable();
-	f = KernelFS::getUserApp("test2");
-	mapping = Elf64::getVirtualMapping(f);
-	f = KernelFS::getUserApp("don't exist");
-	(void)f;
 
 
 	asm("sti");

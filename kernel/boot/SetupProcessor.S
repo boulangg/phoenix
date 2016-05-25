@@ -31,6 +31,11 @@ set_GDT:
 	lgdt gdtr
 	ret
 
+.global set_CR3
+set_CR3:
+	mov %rdi, %cr3
+	ret
+
 .global default_handler
 default_handler:
 	iretq

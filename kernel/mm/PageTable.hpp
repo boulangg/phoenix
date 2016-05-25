@@ -16,6 +16,8 @@
 #include <cstdint>
 #include <list>
 #include <mm/VirtualArea.hpp>
+#include <boot/SetupProcessor.hpp>
+#include <include/constant.h>
 
 class PageTable {
 public:
@@ -32,6 +34,11 @@ public:
 		return PageTable(PageTable::kernelPML4T);
 	}
 
+	static void setActivePageTable(PageTable* pgTable) {
+		if (pgTable->PML4T != nullptr) {
+			set_CR3(((uint64_t)pgTable->PML4T) & ~(KERNEL_MAPPING_START));
+		}
+	}
 
 private:
 	PageTable(uint64_t* pml4t);

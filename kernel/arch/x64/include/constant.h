@@ -27,6 +27,14 @@
 #define PTE_INDEX_OFFSET		12
 #define PTE_INDEX_MASK				0x1FF;
 
+// User malloc space
+#define USER_HEAP_START			0x00007fffffff0000
+#define USER_HEAP_END			0x0000800000000000
+
+// User stack space
+#define USER_STACK_START		0x0000700000000000
+#define USER_STACK_END			0x0000700000010000
+
 // Kernel malloc space up to 1 Go
 #define KERNEL_HEAP_START		0xFFFF820000000000
 #define KERNEL_HEAP_END		    0xFFFF820040000000

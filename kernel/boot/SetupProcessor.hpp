@@ -18,6 +18,7 @@ extern "C" {
 extern void set_IDT(uint16_t limit, struct gate_desc* base);
 extern void set_GDT(uint16_t limit, uint64_t* base);
 extern void set_TSS(uint16_t selector);
+extern void set_CR3(uint64_t pml4t);
 
 extern void default_handler();
 extern void reserved_handler();
