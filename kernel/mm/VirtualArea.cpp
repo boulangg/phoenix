@@ -21,6 +21,8 @@ VirtualArea::VirtualArea(uint64_t* addrStart, uint64_t* addrEnd, uint64_t flags,
 		uint64_t nbPages = (((uint64_t)addrEnd)+PAGE_SIZE-1)/PAGE_SIZE
 				- ((uint64_t)addrStart)/PAGE_SIZE;
 		physicalPages = new PhysicalMapping(nbPages);
+	} else {
+		physicalPages = nullptr;
 	}
 }
 
