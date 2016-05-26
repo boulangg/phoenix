@@ -25,33 +25,12 @@
 
 class TestElemHeap {
 public:
-	TestElemHeap(std::string name = ""): indexPrio1(0), prio1(0), indexPrio2(0), prio2(0)
-		, name(name) {}
+	TestElemHeap(std::string name): prio1(0), name(name) {}
 
-	TestElemHeap(const TestElemHeap& elem): indexPrio1(elem.indexPrio1),
-			prio1(elem.prio1), indexPrio2(elem.prio2), prio2(elem.prio2),
-			name(elem.name) {
+	TestElemHeap(const TestElemHeap& elem): prio1(elem.prio1), name(elem.name) {
 	}
 
-
-	TestElemHeap& operator=(const TestElemHeap& elem) {
-		indexPrio1 = elem.indexPrio1;
-		prio1 = elem.prio1;
-		indexPrio2 = elem.indexPrio2;
-		prio2 = elem.prio2;
-		name = elem.name;
-
-		return *this;
-	}
-
-	bool operator ==(const TestElemHeap& elem) {
-		return name.compare(elem.name) == 0;
-	}
-
-	int64_t indexPrio1;
 	int64_t prio1;
-	int64_t indexPrio2;
-	uint64_t prio2;
 	std::string name;
 };
 
