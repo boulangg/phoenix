@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string>
 #include <list>
+#include <functional>
 
 #include "Console.hpp"
 
@@ -20,8 +21,76 @@
 #include <fs/KernelFS.hpp>
 #include <fs/File.hpp>
 
+#include <lib/Heap.hpp>
+
+class TestElemHeap {
+public:
+	TestElemHeap(std::string name = ""): indexPrio1(0), prio1(0), indexPrio2(0), prio2(0)
+		, name(name) {}
+
+	TestElemHeap(const TestElemHeap& elem): indexPrio1(elem.indexPrio1),
+			prio1(elem.prio1), indexPrio2(elem.prio2), prio2(elem.prio2),
+			name(elem.name) {
+	}
+
+
+	TestElemHeap& operator=(const TestElemHeap& elem) {
+		indexPrio1 = elem.indexPrio1;
+		prio1 = elem.prio1;
+		indexPrio2 = elem.indexPrio2;
+		prio2 = elem.prio2;
+		name = elem.name;
+
+		return *this;
+	}
+
+	bool operator ==(const TestElemHeap& elem) {
+		return name.compare(elem.name) == 0;
+	}
+
+	int64_t indexPrio1;
+	int64_t prio1;
+	int64_t indexPrio2;
+	uint64_t prio2;
+	std::string name;
+};
+
+typedef Heap<TestElemHeap, int64_t, &TestElemHeap::prio1, std::greater<int64_t>> TestHeap1;
 
 void Kernel::Start() {
+
+	TestHeap1 heap1;
+	TestElemHeap* elem;
+	TestElemHeap elem1(std::string("3"));
+	TestElemHeap elem2(std::string("20"));
+	TestElemHeap elem3(std::string("1"));
+	TestElemHeap elem4(std::string("10"));
+
+	heap1.insert(&elem1, 3);
+	heap1.insert(&elem2, 5);
+	heap1.insert(&elem3, 1);
+	heap1.insert(&elem4, 10);
+
+	heap1.update(&elem2, 20);
+
+	elem = heap1.top();
+	Console::write(elem->name);
+	Console::write(" < ");
+	heap1.pop();
+	elem = heap1.top();
+	Console::write(elem->name);
+	Console::write(" < ");
+	heap1.pop();
+	elem = heap1.top();
+	Console::write(elem->name);
+	Console::write(" < ");
+	heap1.pop();
+	elem = heap1.top();
+	Console::write(elem->name);
+	Console::write("\n");
+	heap1.pop();
+	heap1.pop();
+
 
 	File* f;
 	VirtualMapping* mapping;
