@@ -75,7 +75,7 @@ typename vector<T>::reference vector<T>::front() {
 
 template <class T>
 typename vector<T>::reference vector<T>::back() {
-	return _data[_size];
+	return _data[_size-1];
 }
 
 template <class T>

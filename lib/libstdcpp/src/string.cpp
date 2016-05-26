@@ -71,7 +71,7 @@ string& string::operator=(const string& str){
 	_capacity = str._capacity;
 	delete[] _data;
 	_data = new char[str._capacity];
-	char_traits<char>::copy(_data, str._data, _size);
+	char_traits<char>::copy(_data, str._data, _size+1);
 	return *this;
 }
 
@@ -80,7 +80,7 @@ string& string::operator=(const char* str){
 	_capacity = nearest_power_2(_size+1);
 	delete[] _data;
 	_data = new char[_capacity];
-	char_traits<char>::copy(_data, str, _size);
+	char_traits<char>::copy(_data, str, _size+1);
 	return *this;
 }
 string& string::operator=(string&& str){

@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
+#ifndef _STDCPP_FUNCTIONAL_
+#define _STDCPP_FUNCTIONAL_
+
+
+namespace std {
+
+template< class T >
+class less {
+public:
+	bool operator()( const T& lhs, const T& rhs ) const {
+		return lhs < rhs;
+	}
+};
+
+template< class T >
+class greater {
+public:
+	bool operator()( const T& lhs, const T& rhs ) const {
+		return lhs > rhs;
+	}
+};
+
+}
+
+#endif // _STDCPP_FUNCTIONAL_
