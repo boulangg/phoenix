@@ -11,8 +11,8 @@ LIBSTDCPP_DIR := ../lib/libstdcpp
 ### Compilation sources ###
 SRC_DIRS 			:= test1 glue
 APPS_NAMES			:= $(notdir $(call clean-dir-names, $(sort $(dir $(wildcard apps/*/)))))
-INCLUDE_DIRS 		:= 
 LIB_INCLUDE_DIRS 	:= $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include
+INCLUDE_DIRS 		:= $(LIB_INCLUDE_DIRS)
 LIBRARY_DIRS		:= ../lib/libc ../lib/libstdcpp
 SRC 				:= $(call get-all-files-with-ext, $(SRC_DIRS), c) \
 	               	   $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
@@ -31,7 +31,7 @@ OUTPUT=out
 #APPS=test1.out
 
 ### Tool flags ###
-CXXFLAGS	:= -Wall -Wextra \
+CXXFLAGS	:= -Wall -Wextra -nostdinc -nostdinc++ \
 		  	   -g -std=c++11 \
 		  	   -fno-exceptions -fno-rtti \
 		  	   -Wno-packed-bitfield-compat \
