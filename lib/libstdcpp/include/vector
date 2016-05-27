@@ -10,6 +10,9 @@
 #define DEFAULT_CAPACITY 4
 
 #include <cstddef>
+#include <iterator>
+
+#include <extension/generic_iterator.hpp>
 
 namespace std {
 
@@ -22,12 +25,16 @@ public:
 	typedef value_type* pointer;
 	typedef size_t size_type;
 
+	typedef generic_iterator<pointer> iterator;
+
 	vector();
 	vector (size_type n, const_reference val);
 	vector(const vector& v);
 	vector(vector&& v);
 
 	~vector();
+
+	iterator begin() {return iterator(_data);}
 
 	reference operator[](int pos) const;
 
