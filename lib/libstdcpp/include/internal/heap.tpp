@@ -109,6 +109,15 @@ void remove_heap(RandomAccessIterator first, RandomAccessIterator item,
 }
 
 template <class RandomAccessIterator, class Compare>
+void sort_heap (RandomAccessIterator first, RandomAccessIterator last,
+		Compare comp) {
+	while ((last - first) > 1) {
+		pop_heap(first, last, comp);
+		--last;
+	}
+}
+
+template <class RandomAccessIterator, class Compare>
 bool is_heap(RandomAccessIterator first, RandomAccessIterator last,
 		Compare comp) {
 	return is_heap_until(first, last, comp) == last;
