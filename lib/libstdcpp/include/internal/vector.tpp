@@ -69,7 +69,7 @@ vector<T>& vector<T>::operator=(vector<T>&& v) {
 }
 
 template <class T>
-typename vector<T>::reference vector<T>::front() {
+typename vector<T>::reference vector<T>::front() const {
 	return _data[0];
 }
 

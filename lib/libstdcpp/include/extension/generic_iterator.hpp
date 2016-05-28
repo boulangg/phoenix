@@ -43,6 +43,15 @@ public:
 		return generic_iterator(_current++);
 	}
 
+	generic_iterator& operator--() noexcept {
+		--_current;
+		return *this;
+	}
+
+	generic_iterator operator--(int) noexcept {
+		return generic_iterator(_current--);
+	}
+
 	reference operator[](difference_type n) const noexcept {
 		return _current[n];
 	}
@@ -89,9 +98,21 @@ public:
 		return (_current >= it._current);
 	}
 
+	const Iterator& base() const {
+		return _current;
+	}
+
 protected:
 	Iterator _current;
 };
+
+template <class Iterator>
+inline typename generic_iterator<Iterator>::difference_type operator-(
+		const generic_iterator<Iterator> lhs,
+		const generic_iterator<Iterator> rhs) {
+	return lhs.base() - rhs.base();
+}
+
 }
 
 #endif // _GENERIC_ITERATOR_HPP_

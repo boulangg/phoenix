@@ -34,14 +34,15 @@ public:
 
 	~vector();
 
-	iterator begin() {return iterator(_data);}
+	iterator begin() const {return iterator(_data);}
+	iterator end() const {return iterator(_data+_size);}
 
 	reference operator[](int pos) const;
 
     vector<T>& operator=(const vector<T>& v);
     vector<T>& operator=(vector<T>&& v);
 
-	reference front();
+	reference front() const ;
 	reference back();
 
 	void push_back(const_reference val);

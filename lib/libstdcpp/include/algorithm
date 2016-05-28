@@ -28,6 +28,37 @@ const T& max (const T& a, const T& b, Compare comp) {
 	return comp(a, b) ? b : a;
 }
 
+// Heap
+template <class RandomAccessIterator, class Compare>
+void push_heap(RandomAccessIterator first, RandomAccessIterator last);
+
+template <class RandomAccessIterator, class Compare>
+void push_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compare comp);
+
+template <class RandomAccessIterator, class Compare>
+void pop_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compare comp);
+
+template <class RandomAccessIterator, class Compare>
+void make_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compare comp );
+
+template <class RandomAccessIterator, class Compare>
+void remove_heap(RandomAccessIterator first, RandomAccessIterator item,
+		RandomAccessIterator last, Compare comp);
+
+template <class RandomAccessIterator, class Compare>
+void sort_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compare comp);
+
+template <class RandomAccessIterator, class Compare>
+bool is_heap(RandomAccessIterator first, RandomAccessIterator last,
+		Compare comp);
+
+template <class RandomAccessIterator, class Compare>
+RandomAccessIterator is_heap_until(RandomAccessIterator first,
+		RandomAccessIterator last, Compare comp);
 }
 
 #endif // _STDCPP_ALGORITHM_

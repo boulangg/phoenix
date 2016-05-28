@@ -22,10 +22,11 @@
 #include <fs/File.hpp>
 
 #include <lib/Heap.hpp>
+#include <queue>
 
 class TestElemHeap {
 public:
-	TestElemHeap(std::string name): prio1(0), name(name) {}
+	TestElemHeap(std::string name, int64_t prio): prio1(prio), name(name) {}
 
 	TestElemHeap(const TestElemHeap& elem): prio1(elem.prio1), name(elem.name) {
 	}
@@ -34,42 +35,63 @@ public:
 	std::string name;
 };
 
-typedef Heap<TestElemHeap, int64_t, &TestElemHeap::prio1, std::greater<int64_t>> TestHeap1;
+class TestElemHeapCompare {
+public:
+	bool operator()( const TestElemHeap* lhs, const TestElemHeap* rhs ) const {
+		return lhs->prio1 > rhs->prio1;
+	}
+};
+
+bool compareTestElemHeap(const TestElemHeap* lhs, const TestElemHeap* rhs) {
+	return lhs->prio1 > rhs->prio1;
+}
+
+typedef std::priority_queue<TestElemHeap*, std::vector<TestElemHeap*>,
+		bool(*)(const TestElemHeap*, const TestElemHeap*)> TestHeap;
 
 void Kernel::Start() {
 
-	TestHeap1 heap1;
 	TestElemHeap* elem;
-	TestElemHeap elem1(std::string("3"));
-	TestElemHeap elem2(std::string("20"));
-	TestElemHeap elem3(std::string("1"));
-	TestElemHeap elem4(std::string("10"));
+	TestElemHeap elem1(std::string("3"), 3);
+	TestElemHeap elem2(std::string("20"), 20);
+	TestElemHeap elem3(std::string("1"), 1);
+	TestElemHeap elem4(std::string("10"), 10);
+	TestElemHeap elem5(std::string("7"), 7);
 
-	heap1.insert(&elem1, 3);
-	heap1.insert(&elem2, 5);
-	heap1.insert(&elem3, 1);
-	heap1.insert(&elem4, 10);
+	TestHeap heap(&compareTestElemHeap, std::vector<TestElemHeap*>());
 
-	heap1.update(&elem2, 20);
 
-	elem = heap1.top();
+	heap.push(&elem1);
+	heap.push(&elem2);
+	heap.push(&elem3);
+	heap.push(&elem4);
+	heap.push(&elem5);
+
+	heap.remove(&elem3);
+
+	elem = heap.top();
 	Console::write(elem->name);
 	Console::write(" < ");
-	heap1.pop();
-	elem = heap1.top();
+	heap.pop();
+	elem = heap.top();
 	Console::write(elem->name);
 	Console::write(" < ");
-	heap1.pop();
-	elem = heap1.top();
+	heap.pop();
+	elem = heap.top();
 	Console::write(elem->name);
 	Console::write(" < ");
-	heap1.pop();
-	elem = heap1.top();
+	heap.pop();
+	elem = heap.top();
 	Console::write(elem->name);
 	Console::write("\n");
-	heap1.pop();
-	heap1.pop();
+	heap.pop();
+	heap.pop();
 
+	std::vector<int> vect;
+	vect.push_back(2);
+
+	auto it = vect.begin();
+	int a = *it;
 
 	File* f;
 	VirtualMapping* mapping;
