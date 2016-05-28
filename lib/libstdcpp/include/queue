@@ -56,13 +56,11 @@ public:
 	}
 
 	void remove(const value_type& val) {
-		for (auto it = _ctnr.begin(); it < _ctnr.end(); ++it) {
-			if (*it == val) {
-				std::remove_heap(_ctnr.begin(), it, _ctnr.end(), _cmp);
-				break;
-			}
+		auto it = std::find(_ctnr.begin(), _ctnr.end(), val);
+		if (it != _ctnr.end()) {
+			std::remove_heap(_ctnr.begin(), it, _ctnr.end(), _cmp);
+			_ctnr.pop_back();
 		}
-		_ctnr.pop_back();
 	}
 
 private:

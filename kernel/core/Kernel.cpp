@@ -21,7 +21,6 @@
 #include <fs/KernelFS.hpp>
 #include <fs/File.hpp>
 
-#include <lib/Heap.hpp>
 #include <queue>
 
 class TestElemHeap {

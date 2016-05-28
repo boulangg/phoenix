@@ -10,21 +10,35 @@
 
 namespace std {
 
-template <class T> const T& min (const T& a, const T& b) {
+// Non-modifying sequence operations
+template <class InputIterator, class T>
+InputIterator find (InputIterator first, InputIterator last, const T& val) {
+	for (auto it = first; it != last; ++it) {
+		if (*first == val) {
+			return first;
+		}
+	}
+	return last;
+}
+
+// Min/max
+template <class T>
+const T& min(const T& a, const T& b) {
 	return !(b < a) ? a : b;
 }
 
 template <class T, class Compare>
-const T& min (const T& a, const T& b, Compare comp) {
+const T& min(const T& a, const T& b, Compare comp) {
 	return !comp(b, a) ? a : b;
 }
 
-template <class T> const T& max (const T& a, const T& b) {
+template <class T>
+const T& max(const T& a, const T& b) {
 	return (a < b) ? b : a;
 }
 
 template <class T, class Compare>
-const T& max (const T& a, const T& b, Compare comp) {
+const T& max(const T& a, const T& b, Compare comp) {
 	return comp(a, b) ? b : a;
 }
 
