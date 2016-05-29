@@ -90,21 +90,23 @@ reserved_handler:
 
 .global syscall64_handler
 syscall64_handler:
-	wrgsbase %rsp					// Save user %rsp in gsbase
+	//wrgsbase %rsp					// Save user %rsp in gsbase
+	mov %rsp, %r11
 	mov $KERNEL_SYSCALL_TOP, %rsp
 	push %r11
-	rdgsbase %r11
-	push %r11
+	//rdgsbase %r11
+	//push %r11
 	push %rcx						// rcx contain user rip
 	mov %r10, %rcx
 	push %rax						// rax contains the number of the function (7th argument on the stack according to the System V ABI)
 	call syscall64
 	pop %rcx
 	pop %rcx
-	pop %r11
-	wrgsbase %r11
-	pop %r11
-	rdgsbase %rsp					// Restore user %rsp
+	//pop %r11
+	//wrgsbase %r11
+	//pop %r11
+	//rdgsbase %rsp					// Restore user %rsp
+	pop %rsp
 	sysret
 
 
