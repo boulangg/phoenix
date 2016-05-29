@@ -29,7 +29,7 @@ $$($(1)_OUT):
 	$$(MKDIR) -p $$@
 
 ### Generate application ###
-$$($(1)_TARGET): $$($(1)_OBJS) | $$(CRT_OBJ)
+$$($(1)_TARGET): $$($(1)_OBJS) $(OBJS) | $$(CRT_OBJ) static_libc static_libstdcpp
 	$$(LD) $$(LDFLAGS) $$^ $$(LIBFLAGS) -o $$@
 
 endef

@@ -9,7 +9,7 @@ LIBC_DIR := ../lib/libc
 LIBSTDCPP_DIR := ../lib/libstdcpp
 
 ### Compilation sources ###
-SRC_DIRS 			:= test1 glue
+SRC_DIRS 			:= glue
 APPS_NAMES			:= $(notdir $(call clean-dir-names, $(sort $(dir $(wildcard apps/*/)))))
 LIB_INCLUDE_DIRS 	:= $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include
 INCLUDE_DIRS 		:= $(LIB_INCLUDE_DIRS)
@@ -28,7 +28,6 @@ CRT_SRC		:= init/x86_64/crt0.S init/x86_64/crti.S init/x86_64/crtn.S
 
 ### Output directory ###
 OUTPUT=out
-#APPS=test1.out
 
 ### Tool flags ###
 CXXFLAGS	:= -Wall -Wextra -nostdinc -nostdinc++ \
@@ -59,11 +58,6 @@ OUTPUT_DIRS	:= $(addprefix $(OUTPUT)/, $(SRC_DIRS))  $(addprefix $(OUTPUT)/, $(C
 user_apps: all static_libc static_libstdcpp
 	@echo "\033[0;32m  User apps succesfully built\033[0m"
 
-### Import targets for apps ###
-include build/apps.mk
-
-all: $(APPS_TARGETS) 
-
 ### Generate C librairy ###
 static_libc:
 	@echo "\033[0;33m  Build libc.a\033[0m"
@@ -74,10 +68,10 @@ static_libstdcpp:
 	@echo "\033[0;33m  Build libstdcpp.a\033[0m"
 	@$(MAKE) static_lib --no-print-directory -C $(LIBSTDCPP_DIR) VERBOSE=$(VERBOSE)
 
+### Import targets for apps ###
+include build/apps.mk
 
-### Generate application ###
-$(APPS): $(OBJS) | $(CRT_OBJ)
-	$(LD) $(LDFLAGS) $^ $(LIBFLAGS) -o $@
+all: $(APPS_TARGETS) 
 
 ### Generic rules ###
 $(OUTPUT)/%.S.d: %.S | $(OUTPUT)
