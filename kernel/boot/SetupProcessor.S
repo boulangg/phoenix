@@ -100,6 +100,7 @@ syscall64_handler:
 	push %rax						// rax contains the number of the function (7th argument on the stack according to the System V ABI)
 	call syscall64
 	pop %rcx
+	pop %rcx
 	pop %r11
 	wrgsbase %r11
 	pop %r11

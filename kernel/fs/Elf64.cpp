@@ -53,10 +53,10 @@ VirtualMapping* Elf64::getVirtualMapping(File* file) {
 			| VirtualMapping::FLAGS::EXECUTABLE
 			| VirtualMapping::FLAGS::GROWNSDOWN
 			| VirtualMapping::FLAGS::FIXED;
-	uint64_t* addr = (uint64_t*)(USER_HEAP_START);
-	uint64_t len = USER_HEAP_END-USER_HEAP_START;
+	uint64_t* addr = (uint64_t*)(USER_STACK_START);
+	uint64_t len = USER_STACK_END-USER_STACK_START;
 
-	virtualMap->topStack = (uint64_t*)(USER_HEAP_END);
+	virtualMap->topStack = (uint64_t*)(USER_STACK_END);
 
 	virtualMap->mmap(addr, len, prot, flags, nullptr, 0, 0);
 	}
@@ -70,11 +70,11 @@ VirtualMapping* Elf64::getVirtualMapping(File* file) {
 			| VirtualMapping::FLAGS::ANONYMOUS
 			| VirtualMapping::FLAGS::EXECUTABLE
 			| VirtualMapping::FLAGS::FIXED;
-	uint64_t* addr = (uint64_t*)(USER_STACK_START);
-	uint64_t len = (USER_STACK_END-USER_STACK_START);
+	uint64_t* addr = (uint64_t*)(USER_HEAP_START);
+	uint64_t len = (USER_HEAP_END-USER_HEAP_START);
 
-	virtualMap->startBrk = (uint64_t*)(USER_STACK_START);
-	virtualMap->currBrk = (uint64_t*)(USER_STACK_START);
+	virtualMap->startBrk = (uint64_t*)(USER_HEAP_START);
+	virtualMap->currBrk = (uint64_t*)(USER_HEAP_START);
 
 	virtualMap->mmap(addr, len, prot, flags, nullptr, 0, 0);
 	}
