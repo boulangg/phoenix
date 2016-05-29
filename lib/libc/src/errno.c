@@ -5,5 +5,12 @@
  */
 
 #include <errno.h>
+#include <stddef.h>
 
 int errno=0;
+
+char* strerror(int errnum) {
+	// TODO not yet implemented
+	(void)errnum;
+	return NULL;
+}
