@@ -15,8 +15,8 @@ _start:
 	movq %rsp, %rbp
 
 	# We need those in a moment when we call main.
-	pushq %rsi
-	pushq %rdi
+	# pushq %rsi
+	# pushq %rdi
 
 	# Prepare signals, memory allocation, stdio and such.
 	# call initialize_standard_library
@@ -24,9 +24,13 @@ _start:
 	# Run the global constructors.
 	call _init
 
+	# get argc and argv
+	mov 16(%rbp), %rdi
+	mov 24(%rbp), %rsi
+
 	# Restore argc and argv.
-	popq %rdi
-	popq %rsi
+	#popq %rdi
+	#popq %rsi
 
 	# Run main
 	call main
