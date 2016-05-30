@@ -16,6 +16,8 @@
 #include <mm/PageTable.hpp>
 
 #include "multiboot2.h"
+#include <core/Clock.hpp>
+#include <core/ProcessTable.hpp>
 
 // Size Bits
 #define SZ_A		0x1
@@ -102,7 +104,7 @@ uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, u
 		// return do_brk(a);
 		break;
 	case 60:
-		// return do_exit();
+		ProcessTable::do_exit(a);
 		// should never return
 		break;
 	default:
@@ -169,6 +171,25 @@ static void fill_idt_descriptor_64(uint8_t index, uint64_t offset, uint16_t sele
 	gate->offset_2 = (offset >> 16) & 0xFFFF;
 	gate->offset_3 = (offset >> 32);
 	gate->reserved_2 = 0;
+}
+
+static void IRQ_mask(uint16_t index,bool mask){
+	unsigned char m;
+	unsigned char port;
+	if (index < 8) {
+		port = 0x21;
+	} else {
+		port = 0xa1;
+		index -= 8;
+	}
+
+	m = inb(port);
+	if (mask) {
+		m |= (1 << index);
+	} else {
+		m &= ~(1 << index);
+	}
+	outb( port, m);
 }
 
 void SetupProcessor::setupGDT()
@@ -378,4 +399,15 @@ void SetupProcessor::setupAll()
 	setupPIC();
 	setupMemoryMapping();
 	setupSyscall();
+	setupHandlers();
+}
+
+void SetupProcessor::setupHandlers(){
+	uint8_t idt_flags = FLAG_P | FLAG_DPL0 | FLAG_INT;
+	fill_idt_descriptor_64(32,(uint64_t)IT_32_handler,SEL_KERNEL_CS,idt_flags,1);
+
+	Clock::setFreq();
+
+	IRQ_mask(0,false);
+
 }

@@ -22,6 +22,8 @@
 #include <fs/File.hpp>
 
 #include <queue>
+#include "ProcessTable.hpp"
+#include <asm/cpu.h>
 
 class TestElemHeap {
 public:
@@ -112,10 +114,11 @@ void Kernel::Start() {
 	std::list<int> listInt;
 	listInt.push_back(0);
 
-
-	asm("sti");
-	asm("int $49");
-	asm("cli");
+	ProcessTable::init();
+	idle(0,nullptr,nullptr);
+	while(1)
+		hlt();
+		return;
 
 	PhysicalAllocator::printStats();
 }
