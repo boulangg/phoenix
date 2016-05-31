@@ -19,6 +19,7 @@ extern void set_IDT(uint16_t limit, struct gate_desc* base);
 extern void set_GDT(uint16_t limit, uint64_t* base);
 extern void set_TSS(uint16_t selector);
 extern void set_CR3(uint64_t pml4t);
+extern uint64_t get_CR3();
 extern void enable_syscall();
 extern void load_syscall(uint64_t STAR,  uint64_t LSTAR, uint64_t CSTAR, uint32_t SFMASK);
 extern void syscall64_handler();

@@ -36,6 +36,11 @@ set_CR3:
 	mov %rdi, %cr3
 	ret
 
+.global get_CR3
+get_CR3:
+	mov %cr3, %rax
+	ret
+
 .global load_syscall
 load_syscall:
 	push %rcx
