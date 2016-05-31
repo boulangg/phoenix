@@ -11,7 +11,15 @@
 
 #include <utility>
 
-
+Process::Process(int pid, int prio, const std::string& name, VirtualMapping* mapping) :
+		pid(pid),name(name),prio(prio),state(ProcessState::Ready),topStack(mapping->topStack),kernelStack(nullptr),wakeUp(0),daddy(0),sonPid(0),
+	retval(0),killed(false) {
+	// TODO save mapping, remove topStack variable (and use startStack directly from mapping)
+	// remove kernelStack: fix address mapped to different physical page for different process
+	// don't need to init stack: done by initMainArgs(argv, envp)
+	// require call to initMainArgs(argv, envp) before first context switch
+	// require setKernelPageTable call before every context switch
+}
 
 Process::Process(int pid,code_type code,std::string&& name,unsigned long ssize,int prio):
 	pid(pid),name(std::move(name)),prio(prio),state(ProcessState::Ready),topStack(new size_type[STACK_SIZE]),kernelStack(nullptr),wakeUp(0),daddy(0),sonPid(0),

@@ -48,6 +48,8 @@ public:
 	Process(int pid,std::string&& name,const VirtualMapping& mapping,unsigned long ssize,int prio,int argc,char* argv[], char* envp[]);
 	~Process();
 
+	Process(int pid, int prio, const std::string& name, VirtualMapping* mapping);
+
 	bool operator<(const Process& p) const;
 
 	void setState(ProcessState s){state=s;}
