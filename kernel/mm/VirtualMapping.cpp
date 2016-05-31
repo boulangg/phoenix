@@ -8,12 +8,43 @@
 #include <list>
 #include <include/constant.h>
 #include <iterator>
+#include <cstring>
 
 
 VirtualMapping::VirtualMapping(): pageTable(nullptr), entryPoint(nullptr),
 	startCode(nullptr), endCode(nullptr), startData(nullptr), endData(nullptr),
-	topStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
+	topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
+	// Add syscall stack
+	{
+		uint64_t prot = VirtualMapping::PROT::EXEC
+				| VirtualMapping::PROT::WRITE
+				| VirtualMapping::PROT::READ;
+		uint64_t flags = VirtualMapping::FLAGS::PRIVATE
+				| VirtualMapping::FLAGS::ANONYMOUS
+				| VirtualMapping::FLAGS::EXECUTABLE
+				| VirtualMapping::FLAGS::FIXED
+				| VirtualMapping::FLAGS::KERNEL;
+		uint64_t* addr = (uint64_t*)(USER_SYSCALL_STACK_START);
+		uint64_t len = (USER_SYSCALL_STACK_END-USER_SYSCALL_STACK_START);
 
+		mmap(addr, len, prot, flags, nullptr, 0, 0);
+	}
+
+	// Add interrupt stack
+	{
+		uint64_t prot = VirtualMapping::PROT::EXEC
+				| VirtualMapping::PROT::WRITE
+				| VirtualMapping::PROT::READ;
+		uint64_t flags = VirtualMapping::FLAGS::PRIVATE
+				| VirtualMapping::FLAGS::ANONYMOUS
+				| VirtualMapping::FLAGS::EXECUTABLE
+				| VirtualMapping::FLAGS::FIXED
+				| VirtualMapping::FLAGS::KERNEL;
+		uint64_t* addr = (uint64_t*)(USER_INT_STACK_START);
+		uint64_t len = (USER_INT_STACK_END-USER_INT_STACK_START);
+
+		mmap(addr, len, prot, flags, nullptr, 0, 0);
+	}
 }
 
 PageTable* VirtualMapping::getPageTable() {
@@ -30,6 +61,64 @@ PageTable* VirtualMapping::reloadPageTable() {
 	}
 	pageTable = new PageTable(virtualAreas);
 	return pageTable;
+}
+
+/*typedef struct
+{
+	int a_type;
+	union {
+		long a_val;
+		void *a_ptr;
+		void (*a_fnc)();
+	} a_un;
+} auxv_t;*/
+
+void VirtualMapping::initMainArgs(const char*argv[], const char*envp[]) {
+	size_t argc = 0;
+	size_t argSize = 0;
+	while (argv[argc] != nullptr) {
+		argSize += strlen(argv[argc]) + 1;
+		++argc;
+	}
+	size_t envc = 0;
+	size_t envSize = 0;
+	while(envp[envc]) {
+		envSize += strlen(envp[envc]) + 1;
+		++envc;
+	}
+
+	size_t totalSize = (1 + argc + 1 + envc + 1 + 1)*sizeof(uint64_t) + argSize + envSize;
+	totalSize  = (totalSize+sizeof(uint64_t)-1) / sizeof(uint64_t);
+
+	PageTable::setActivePageTable(getPageTable());
+
+	startStack = topStack - totalSize - 1;
+
+	startStack[0] = (uint64_t)entryPoint;
+	startStack[1] = argc;
+
+	char* infoStart = (char*)(startStack + 4 + argc + envc + 1);
+	for (size_t i = 0; i < argc; ++i) {
+		startStack[2+i] = (uint64_t)strcpy(infoStart, argv[i]);
+		infoStart += strlen(argv[i]);
+	}
+	startStack[2+argc] = 0;      // Null pointer to end argv
+	for (size_t i = 0; i < envc; ++i) {
+		startStack[3+argc+i] = (uint64_t)strcpy(infoStart, envp[i]);
+		infoStart += strlen(argv[i]);
+	}
+	startStack[3+argc+envc] = 0; // Null pointer to end envp
+	startStack[4+argc+envc] = 0;	// Null auxiliary vector
+
+	PageTable::restorePreviousPageTable();
+}
+
+void VirtualMapping::setEntryPoint(uint64_t* entryPoint) {
+	if (startStack == nullptr) {
+		startStack = topStack-1;
+	}
+	//startStack[0] = (uint64_t)entryPoint;
+	this->entryPoint = entryPoint;
 }
 
 uint64_t* VirtualMapping::mmap(uint64_t* addr, uint64_t len, uint64_t prot,
@@ -65,6 +154,9 @@ uint64_t* VirtualMapping::mmap(uint64_t* addr, uint64_t len, uint64_t prot,
 	if (flags & FLAGS::ANONYMOUS) {
 		file = nullptr;
 		offset = 0;
+	}
+	if (flags & FLAGS::KERNEL) {
+		vmaFlags |= VirtualArea::FLAGS::VM_KERNEL;
 	}
 
 	uint64_t* addrEnd = (uint64_t*)((uint64_t)addr+len);

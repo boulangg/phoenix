@@ -39,6 +39,7 @@ public:
 		VM_SHM = 0x200,
 		VM_DENYWRITE = 0x400,
 		VM_EXECUTABLE = 0x1000,
+		VM_KERNEL = 0x2000,
 	};
 
 	uint64_t* addrStart;

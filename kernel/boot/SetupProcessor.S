@@ -97,7 +97,7 @@ reserved_handler:
 syscall64_handler:
 	//wrgsbase %rsp					// Save user %rsp in gsbase
 	mov %rsp, %r11
-	mov $KERNEL_SYSCALL_TOP, %rsp
+	mov $USER_SYSCALL_STACK_END, %rsp
 	push %r11
 	//rdgsbase %r11
 	//push %r11

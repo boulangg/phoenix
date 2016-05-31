@@ -11,7 +11,7 @@ VirtualMapping* Elf64::getVirtualMapping(File* file) {
 	char* startAddr = file->getKernelStartAddr();
 	Elf64_Ehdr *fileHeader = (Elf64_Ehdr*)startAddr;
 	// TODO check if supported elf file
-	virtualMap->entryPoint = (uint64_t*)fileHeader->e_entry;
+	//virtualMap->entryPoint = (uint64_t*)fileHeader->e_entry;
 	char* programHeaderAddr = startAddr + fileHeader->e_phoff;
 	for (uint32_t i = 0; i < fileHeader->e_phnum; ++i) {
 		Elf64_Phdr *programHeader = (Elf64_Phdr*)programHeaderAddr;
@@ -57,6 +57,8 @@ VirtualMapping* Elf64::getVirtualMapping(File* file) {
 	uint64_t len = USER_STACK_END-USER_STACK_START;
 
 	virtualMap->topStack = (uint64_t*)(USER_STACK_END);
+
+	virtualMap->setEntryPoint((uint64_t*)fileHeader->e_entry);
 
 	virtualMap->mmap(addr, len, prot, flags, nullptr, 0, 0);
 	}
