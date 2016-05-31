@@ -9,6 +9,7 @@
 
 #include <def/def_size.h>
 #include <def/def_null.h>
+#include <def/def_restrict.h>
 
 #ifdef __cplusplus
 extern "C" {
