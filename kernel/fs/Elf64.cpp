@@ -43,43 +43,8 @@ VirtualMapping* Elf64::getVirtualMapping(File* file) {
 
 		programHeaderAddr += fileHeader->e_phentsize;
 	}
-	// Add stack
-	{
-	uint64_t prot = VirtualMapping::PROT::EXEC
-			| VirtualMapping::PROT::WRITE
-			| VirtualMapping::PROT::READ;
-	uint64_t flags = VirtualMapping::FLAGS::PRIVATE
-			| VirtualMapping::FLAGS::ANONYMOUS
-			| VirtualMapping::FLAGS::EXECUTABLE
-			| VirtualMapping::FLAGS::GROWNSDOWN
-			| VirtualMapping::FLAGS::FIXED;
-	uint64_t* addr = (uint64_t*)(USER_STACK_START);
-	uint64_t len = USER_STACK_END-USER_STACK_START;
-
-	virtualMap->topStack = (uint64_t*)(USER_STACK_END);
 
 	virtualMap->setEntryPoint((uint64_t*)fileHeader->e_entry);
-
-	virtualMap->mmap(addr, len, prot, flags, nullptr, 0, 0);
-	}
-
-	// Add heap
-	{
-	uint64_t prot = VirtualMapping::PROT::EXEC
-			| VirtualMapping::PROT::WRITE
-			| VirtualMapping::PROT::READ;
-	uint64_t flags = VirtualMapping::FLAGS::PRIVATE
-			| VirtualMapping::FLAGS::ANONYMOUS
-			| VirtualMapping::FLAGS::EXECUTABLE
-			| VirtualMapping::FLAGS::FIXED;
-	uint64_t* addr = (uint64_t*)(USER_HEAP_START);
-	uint64_t len = (USER_HEAP_END-USER_HEAP_START);
-
-	virtualMap->startBrk = (uint64_t*)(USER_HEAP_START);
-	virtualMap->currBrk = (uint64_t*)(USER_HEAP_START);
-
-	virtualMap->mmap(addr, len, prot, flags, nullptr, 0, 0);
-	}
 
 	virtualMap->reloadPageTable();
 

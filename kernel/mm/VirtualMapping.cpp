@@ -12,8 +12,8 @@
 
 
 VirtualMapping::VirtualMapping(): pageTable(nullptr), entryPoint(nullptr),
-	startCode(nullptr), endCode(nullptr), startData(nullptr), endData(nullptr),
-	topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
+startCode(nullptr), endCode(nullptr), startData(nullptr), endData(nullptr),
+topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
 	// Add syscall stack
 	{
 		uint64_t prot = VirtualMapping::PROT::EXEC
@@ -42,6 +42,42 @@ VirtualMapping::VirtualMapping(): pageTable(nullptr), entryPoint(nullptr),
 				| VirtualMapping::FLAGS::KERNEL;
 		uint64_t* addr = (uint64_t*)(USER_INT_STACK_START);
 		uint64_t len = (USER_INT_STACK_END-USER_INT_STACK_START);
+
+		mmap(addr, len, prot, flags, nullptr, 0, 0);
+	}
+
+	// Add stack
+	{
+		uint64_t prot = VirtualMapping::PROT::EXEC
+				| VirtualMapping::PROT::WRITE
+				| VirtualMapping::PROT::READ;
+		uint64_t flags = VirtualMapping::FLAGS::PRIVATE
+				| VirtualMapping::FLAGS::ANONYMOUS
+				| VirtualMapping::FLAGS::EXECUTABLE
+				| VirtualMapping::FLAGS::GROWNSDOWN
+				| VirtualMapping::FLAGS::FIXED;
+		uint64_t* addr = (uint64_t*)(USER_STACK_START);
+		uint64_t len = USER_STACK_END-USER_STACK_START;
+
+		topStack = (uint64_t*)(USER_STACK_END);
+
+		mmap(addr, len, prot, flags, nullptr, 0, 0);
+	}
+
+	// Add heap
+	{
+		uint64_t prot = VirtualMapping::PROT::EXEC
+				| VirtualMapping::PROT::WRITE
+				| VirtualMapping::PROT::READ;
+		uint64_t flags = VirtualMapping::FLAGS::PRIVATE
+				| VirtualMapping::FLAGS::ANONYMOUS
+				| VirtualMapping::FLAGS::EXECUTABLE
+				| VirtualMapping::FLAGS::FIXED;
+		uint64_t* addr = (uint64_t*)(USER_HEAP_START);
+		uint64_t len = (USER_HEAP_END-USER_HEAP_START);
+
+		startBrk = (uint64_t*)(USER_HEAP_START);
+		currBrk = (uint64_t*)(USER_HEAP_START);
 
 		mmap(addr, len, prot, flags, nullptr, 0, 0);
 	}
