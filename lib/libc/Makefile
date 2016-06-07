@@ -6,7 +6,7 @@
 include ../../build/utils.mk
 
 ### Compilation sources ###
-SRC_DIRS 		:= src src/stdio glue
+SRC_DIRS 		:= src/stdlib src/math src/posix src/stdio src/errno src/ctype src/string glue
 INCLUDE_DIRS 	:= include
 SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), c) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), S)

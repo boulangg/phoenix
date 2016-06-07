@@ -4,9 +4,21 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef _STDDEF_DEF_SIZE_H_
-#define _STDDEF_DEF_SIZE_H_
+#ifndef __TIME_H__
+#define __TIME_H__
 
-typedef unsigned long size_t;
+#include <def/def_size.h>
 
-#endif /* _STDDEF_DEF_SIZE_H_ */
+struct tm {
+	int tm_sec;
+	int tm_min;
+	int tm_hour;
+	int tm_mday;
+	int tm_mon;
+	int tm_year;
+	int tm_wday;
+	int tm_yday;
+	int tm_isdst;
+};
+
+#endif // __TIME_H__
