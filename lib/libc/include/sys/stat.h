@@ -4,9 +4,12 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef _STDDEF_DEF_SIZE_H_
-#define _STDDEF_DEF_SIZE_H_
+#ifndef __SYS_STAT_H__
+#define __SYS_STAT_H__
 
-typedef unsigned long size_t;
+struct stat {
+	dev_t st_dev;
 
-#endif /* _STDDEF_DEF_SIZE_H_ */
+};
+
+#endif // __SYS_STAT_H__

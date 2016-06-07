@@ -8,10 +8,36 @@
 #define _STDIO_H_
 
 #include <stdarg.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define EOF (-1)
+#define _IOFBF 0x1
+#define _IOLBF 0x2
+#define _IONBF 0x4
+
+typedef struct FILE {
+	int64_t flags;
+	char* readBufStart;
+	char* readBufPos;
+	char* readBufEnd;
+	char* writeBufStart;
+	char* writeBufPos;
+	char* writeBufEnd;
+	int64_t fileno;
+	int64_t mode;
+	int64_t offset;
+} FILE;
+
+extern FILE* stdout;
+extern FILE* stdin;
+extern FILE* stderr;
+
+int fputc(int character, FILE* stream);
+int fflush(FILE* stream);
 
 int sprintf(char * s, const char * format, ...);
 

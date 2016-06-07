@@ -11,4 +11,4 @@
 		pop %rbp;			\
 		ret
 
-SYSCALL(60, exit)
+SYSCALL(60, sys_exit)

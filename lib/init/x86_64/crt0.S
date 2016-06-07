@@ -38,7 +38,7 @@ _start:
 	# Terminate the process with the exit code.
 	movl %eax, %edi
 	call _fini
-	call exit
+	call sys_exit
 
 0:
 	loop 0b
