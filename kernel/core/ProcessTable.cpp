@@ -33,7 +33,9 @@ std::priority_queue<Process*,std::vector<Process*>,ProcessLess> ProcessTable::re
 
 void ProcessTable::init(){
 	initIdle();
-	start("test1",512,5,42,nullptr,nullptr);
+	const char* tmp[]= {"42",nullptr};
+	const char* envp[] = {nullptr};
+	start("test1",512,5,tmp,envp);
 }
 
 void ProcessTable::initIdle(){
@@ -48,7 +50,7 @@ void ProcessTable::initIdle(){
 	ProcessTable::processVector.push_back(proc);
 }
 
-int ProcessTable::start(const char *name, unsigned long ssize, int prio, int argc,char** argv,char** envp){
+int ProcessTable::start(const char *name, unsigned long ssize, int prio,const char* argv[],const char* envp[]){
 
 	if (prio <= 0 || prio > MAXPRIO || name == NULL || ssize >= ((unsigned long)32000))
 		return -1;
@@ -70,7 +72,7 @@ int ProcessTable::start(const char *name, unsigned long ssize, int prio, int arg
 	if (pid == -1)
 		return -1;
 
-	Process* proc= new Process(pid,name,*mapping,ssize,prio,argc,argv,envp);
+	Process* proc= new Process(pid,name,mapping,ssize,prio,argv,envp);
 	ready.push(proc);
 	ProcessTable::nbProcess++;
 	ProcessTable::lastAssignedPid=pid;
@@ -117,8 +119,8 @@ void ProcessTable::unconditionalContextSwitch(Process* currProc){
 	ready.pop();
 	nextProc->setState(ProcessState::Running);
 	running = nextProc;
-
-	ctx_sw(currProc->getRegSave(), nextProc->getRegSave());
+	//PageTable::setActivePageTable(running->getMapping()->getPageTable());
+	ctx_sw(currProc->getRegSave(), nextProc->getRegSave(),PageTable::getActivePageTable(running->getMapping()->getPageTable()));
 }
 
 void ProcessTable::do_exit(int retval){

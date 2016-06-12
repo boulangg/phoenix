@@ -12,8 +12,8 @@
 #include <utility>
 
 Process::Process(int pid, int prio, const std::string& name, VirtualMapping* mapping) :
-		pid(pid),name(name),prio(prio),state(ProcessState::Ready),topStack(mapping->topStack),kernelStack(nullptr),wakeUp(0),daddy(0),sonPid(0),
-	retval(0),killed(false) {
+		pid(pid),name(name),prio(prio),state(ProcessState::Ready),topStack(mapping->topStack),wakeUp(0),daddy(0),sonPid(0),
+	retval(0),killed(false),mapping(mapping) {
 	// TODO save mapping, remove topStack variable (and use startStack directly from mapping)
 	// remove kernelStack: fix address mapped to different physical page for different process
 	// don't need to init stack: done by initMainArgs(argv, envp)
@@ -22,20 +22,21 @@ Process::Process(int pid, int prio, const std::string& name, VirtualMapping* map
 }
 
 Process::Process(int pid,code_type code,std::string&& name,unsigned long ssize,int prio):
-	pid(pid),name(std::move(name)),prio(prio),state(ProcessState::Ready),topStack(new size_type[STACK_SIZE]),kernelStack(nullptr),wakeUp(0),daddy(0),sonPid(0),
+	pid(pid),name(std::move(name)),prio(prio),state(ProcessState::Ready),wakeUp(0),daddy(0),sonPid(0),
 	retval(0),killed(false){
-	topStack[-3]=(uint64_t)code;
-	regSave[1]= (uint64_t)&(topStack[-3]);
+	mapping = new VirtualMapping();
+	topStack = mapping->topStack;
+	//topStack[-3]=(uint64_t)code;
+	const char* tmp[] = {nullptr};
+	mapping->initMainArgs(tmp,tmp);
+	regSave[1]= (uint64_t)&(mapping->startCode[0]);
 }
 
-Process::Process(int pid,std::string&& name,const VirtualMapping& mapping,unsigned long ssize,int prio,int argc,char* argv[], char* envp[]):
-		pid(pid),name(std::move(name)),prio(prio),state(ProcessState::Ready),topStack(mapping.topStack),kernelStack(nullptr),wakeUp(0),daddy(0),sonPid(0),
-	retval(0),killed(false){
-	topStack[-4]=(uint64_t)mapping.entryPoint;
-	topStack[-3]=argc; //argc
-	topStack[-2]=(uint64_t)argv; //argv
-	topStack[-1]=(uint64_t)envp; //env
-	regSave[1]= (uint64_t)&(topStack[-4]);
+Process::Process(int pid,std::string&& name,VirtualMapping* mapping,unsigned long ssize,int prio,const char** argv, const char** envp):
+		pid(pid),name(std::move(name)),prio(prio),state(ProcessState::Ready),topStack(mapping->topStack),wakeUp(0),daddy(0),sonPid(0),
+	retval(0),killed(false),mapping(mapping){
+	mapping->initMainArgs(argv,envp);
+	regSave[1]= (uint64_t)&(mapping->startStack[0]);
 }
 
 Process::~Process() {

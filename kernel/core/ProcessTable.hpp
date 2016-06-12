@@ -30,7 +30,7 @@ public:
 	ProcessTable() = delete;
 	~ProcessTable() = delete;
 	static void init();
-	static int start(const char *name, unsigned long ssize, int prio, int argc, char** argv,char** envp);
+	static int start(const char *name, unsigned long ssize, int prio,const char* argv[],const char* envp[]);
 	static void schedule();
 	static void unconditionalContextSwitch(Process* currProc);
 	static void do_exit(int retval);

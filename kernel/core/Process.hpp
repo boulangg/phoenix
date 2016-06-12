@@ -21,7 +21,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern void ctx_sw(uint64_t* curr, uint64_t* next);
+extern void ctx_sw(uint64_t* curr, uint64_t* next,uint64_t pgTable);
 
 #ifdef __cplusplus
 }
@@ -45,7 +45,7 @@ public:
 	typedef size_type* size_type_pointer;
 
 	Process(int pid,code_type code,std::string&& name,unsigned long ssize,int prio);
-	Process(int pid,std::string&& name,const VirtualMapping& mapping,unsigned long ssize,int prio,int argc,char* argv[], char* envp[]);
+	Process(int pid,std::string&& name,VirtualMapping* mapping,unsigned long ssize,int prio, const char* argv[], const char* envp[]);
 	~Process();
 
 	Process(int pid, int prio, const std::string& name, VirtualMapping* mapping);
@@ -53,6 +53,8 @@ public:
 	bool operator<(const Process& p) const;
 
 	void setState(ProcessState s){state=s;}
+
+	 VirtualMapping* getMapping() {return mapping;}
 
 	size_type* getRegSave() {return regSave;}
 private:
@@ -63,12 +65,12 @@ private:
 	ProcessState state;
 	size_type regSave[9]; //	rbx, rsp, rbp, r12, r13, r14, r15, pg_dir,kernel_stack
 	size_type_pointer topStack;
-	size_type_pointer kernelStack;
 	size_type wakeUp;
 	Process* daddy;
 	int sonPid;
 	int retval;
 	bool killed;
+	VirtualMapping* mapping;
 };
 
 #endif /* KERNEL_CORE_PROCESS_HPP_ */

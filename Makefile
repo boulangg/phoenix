@@ -34,7 +34,7 @@ launch: $(DISK)
 
 debug: $(DISK)
 	gnome-terminal -e "$(QEMU) $(QEMU_OPTS_DEBUG)" &
-	sleep 2
+	sleep 1
 	gnome-terminal -e "$(GDB) $(KERNEL)"
 
 clean:

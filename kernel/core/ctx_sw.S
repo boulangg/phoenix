@@ -20,6 +20,7 @@ ctx_sw:
     mov 40(%rax), %r14
     mov 48(%rax), %r15
 
+	mov %rdx, %cr3
     ret
 // registers that need to be saved upon a context switch:
 // rax, rbx, rcx, rdx, rsp, rbp, rsi, rdi, r8-r15, st0-st7

@@ -42,6 +42,10 @@ public:
 		}
 	}
 
+	static uint64_t getActivePageTable(PageTable* pgTable){
+		return ((uint64_t)pgTable->PML4T) & ~(KERNEL_MAPPING_START);
+	}
+
 	static void restorePreviousPageTable() {
 		set_CR3((uint64_t)prevPML4T);
 	}
