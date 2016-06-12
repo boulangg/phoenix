@@ -30,6 +30,7 @@ extern void reserved_handler();
 uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t num);
 
 extern void IT_32_handler();
+extern void IT_33_handler();
 
 #ifdef __cplusplus
 }

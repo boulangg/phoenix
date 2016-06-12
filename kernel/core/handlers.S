@@ -9,3 +9,15 @@ IT_32_handler:
     pop %rdx
     pop %rax
     iretq
+
+
+.globl IT_33_handler
+IT_33_handler:
+    push %rax
+    push %rdx
+    push %rcx
+    call KEYBOARD_handler
+    pop %rcx
+    pop %rdx
+    pop %rax
+    iretq

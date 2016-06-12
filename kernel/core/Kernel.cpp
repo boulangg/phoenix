@@ -118,7 +118,7 @@ void Kernel::Start() {
 	idle(0,nullptr,nullptr);
 	while(1)
 		hlt();
-		return;
+	return;
 
 	PhysicalAllocator::printStats();
 }

@@ -405,9 +405,11 @@ void SetupProcessor::setupAll()
 void SetupProcessor::setupHandlers(){
 	uint8_t idt_flags = FLAG_P | FLAG_DPL0 | FLAG_INT;
 	fill_idt_descriptor_64(32,(uint64_t)IT_32_handler,SEL_KERNEL_CS,idt_flags,1);
+	fill_idt_descriptor_64(33,(uint64_t)IT_33_handler,SEL_KERNEL_CS,idt_flags,1);
 
 	Clock::setFreq();
 
 	IRQ_mask(0,false);
+	IRQ_mask(1,false);
 
 }

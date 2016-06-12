@@ -18,6 +18,9 @@ size_t Console::column = 0;
 uint8_t Console::color = 0;
 uint16_t* Console::screen = (uint16_t*) (0xB8000 | KERNEL_MAPPING_START);
 bool Console::cursor_enabled = true;
+char Console::kbdBuf[KBD_BUF_SIZE] = {};
+std::size_t Console::kbdBufStart = 0;
+std::size_t Console::kbdBufSize = 0;
 
 void Console::initConsole() {
 	setColor(VGA::Color::WHITE, VGA::Color::BLACK);
@@ -70,6 +73,23 @@ void Console::write(std::string&& str) {
 	Console::write(str.c_str());
 }
 
+size_t Console::read(char* buf, size_t count) {
+	size_t curr = 0;
+	while ((kbdBufSize > 0) && (curr < count)) {
+		buf[curr] = kbdBuf[kbdBufStart];
+		kbdBufStart = (kbdBufStart + 1) % KBD_BUF_SIZE;
+		curr++;
+	}
+	return curr;
+}
+
+void Console::keyboardInput(char character) {
+	if (kbdBufSize < 1024) {
+		kbdBuf[(kbdBufStart+kbdBufSize) % KBD_BUF_SIZE] = character;
+		kbdBufSize++;
+	}
+}
+
 void Console::toggleCursor(bool enabled)
 {
 	cursor_enabled = enabled;
@@ -86,13 +106,13 @@ void Console::scrollUp()
 {
 	for (size_t y = 1; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
-			const size_t index_src = y*VGA_HEIGHT + x;
-			const size_t index_dest = (y-1)*VGA_HEIGHT + x;
+			const size_t index_src = y*VGA_WIDTH + x;
+			const size_t index_dest = (y-1)*VGA_WIDTH + x;
 			screen[index_dest] = screen[index_src];
 		}
 	}
 	for (size_t x = 0; x < VGA_WIDTH; x++) {
-		putEntryAt(' ', x, 0);
+		putEntryAt(' ', x, VGA_HEIGHT-1);
 	}
 	if (row != 0) {
 		row --;
