@@ -9,7 +9,7 @@
 #include <fs/KernelFS.hpp>
 #include <fs/File.hpp>
 #include <asm/cpu.h>
-#include "Console.hpp"
+#include <core/Console.hpp>
 #include "stdio.h"
 
 //TODO move this somewhere else

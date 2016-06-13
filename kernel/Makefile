@@ -15,7 +15,7 @@ USER_APPS_GEN_DIR := gen
 USER_APPS_GEN_FILE := $(USER_APPS_GEN_DIR)/user_apps.S
 
 ### Compilation sources ###
-SRC_DIRS 		:= boot core mm fs driver/input
+SRC_DIRS 		:= boot core mm fs driver/input proc
 LIB_INCLUDE_DIRS := $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include
 INCLUDE_DIRS 	:= $(LIB_INCLUDE_DIRS) arch/x64 . 
 LIBRARY_DIRS	:= $(LIBC_DIR) $(LIBSTDCPP_DIR)

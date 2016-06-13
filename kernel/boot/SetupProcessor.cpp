@@ -17,7 +17,7 @@
 
 #include "multiboot2.h"
 #include <core/Clock.hpp>
-#include <core/ProcessTable.hpp>
+#include <proc/ProcessTable.hpp>
 
 // Size Bits
 #define SZ_A		0x1

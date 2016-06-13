@@ -9,7 +9,7 @@
 #include "Console.hpp"
 #include <asm/io.h>
 #include <stdio.h>
-#include "ProcessTable.hpp"
+#include <proc/ProcessTable.hpp>
 
 #define QUARTZ 0x1234DD
 #define CLOCKFREQ 60

@@ -7,7 +7,7 @@
 #include "Process.hpp"
 
 #include "ProcessTable.hpp"
-#include "Console.hpp"
+#include <core/Console.hpp>
 
 #include <utility>
 
