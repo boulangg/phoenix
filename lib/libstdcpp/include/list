@@ -59,6 +59,7 @@ class list {
 public:
 	typedef T value_type;
 	typedef value_type& reference;
+	typedef const reference const_reference;
 	typedef value_type* pointer;
 	typedef _list_iterator<T> iterator;
 	typedef size_t size_type;
@@ -79,12 +80,14 @@ public:
 	reference front();
 	reference back();
 
-	void push_front(value_type&& val);
+	void push_front(const_reference val);
+	//void push_front(value_type&& val);
 	void pop_front();
-	void push_back(value_type&& val);
+	void push_back(const_reference val);
+	//void push_back(value_type&& val);
 	void pop_back();
 
-	iterator insert(iterator pos, const value_type& val);
+	iterator insert(iterator pos, const_reference val);
 	iterator erase(iterator pos);
 	void swap(list& x);
 	void clear();

@@ -147,9 +147,14 @@ typename list<T>::reference list<T>::back() {
 }
 
 template <class T>
-void list<T>::push_front(list<T>::value_type&& val) {
+void list<T>::push_front(list<T>::const_reference val) {
 	insert(_begin, val);
 }
+
+/*template <class T>
+void list<T>::push_front(list<T>::value_type&& val) {
+	insert(_begin, val);
+}*/
 
 template <class T>
 void list<T>::pop_front() {
@@ -158,9 +163,14 @@ void list<T>::pop_front() {
 
 
 template <class T>
-void list<T>::push_back(list<T>::value_type&& val) {
+void list<T>::push_back(list<T>::const_reference val) {
 	insert(_end, val);
 }
+
+/*template <class T>
+void list<T>::push_back(list<T>::value_type&& val) {
+	insert(_end, val);
+}*/
 
 template <class T>
 void list<T>::pop_back() {
@@ -168,7 +178,7 @@ void list<T>::pop_back() {
 }
 
 template <class T>
-typename list<T>::iterator list<T>::insert(iterator pos, const value_type& val) {
+typename list<T>::iterator list<T>::insert(iterator pos, list<T>::const_reference val) {
 	if (pos == _begin) {
 		_node* curr = new _node(val, nullptr, _begin.node);
 		_begin.node->prev = curr;
