@@ -17,7 +17,7 @@
 
 #include "multiboot2.h"
 #include <core/Clock.hpp>
-#include <proc/ProcessTable.hpp>
+#include <proc/ProcessScheduler.hpp>
 
 // Size Bits
 #define SZ_A		0x1
@@ -103,8 +103,12 @@ uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, u
 	case 12:
 		// return do_brk(a);
 		break;
+	case 57:
+		return ProcessScheduler::fork();
+	case 59:
+		return ProcessScheduler::execve((const char*)a, (const char**)b, (const char**)c);
 	case 60:
-		ProcessTable::do_exit(a);
+		ProcessScheduler::exit(a);
 		// should never return
 		break;
 	default:

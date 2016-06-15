@@ -10,7 +10,6 @@
 #include <iterator>
 #include <cstring>
 
-
 VirtualMapping::VirtualMapping(): pageTable(nullptr), entryPoint(nullptr),
 startCode(nullptr), endCode(nullptr), startData(nullptr), endData(nullptr),
 topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
@@ -81,6 +80,10 @@ topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
 
 		mmap(addr, len, prot, flags, nullptr, 0, 0);
 	}
+}
+
+VirtualMapping::~VirtualMapping() {
+
 }
 
 PageTable* VirtualMapping::getPageTable() {
@@ -166,7 +169,6 @@ uint64_t* VirtualMapping::mmap(uint64_t* addr, uint64_t len, uint64_t prot,
 		uint64_t flags, File* file, uint64_t offset, uint64_t fileSize) {
 	// TODO check if argument are correct.
 
-	// TODO evaluate vmaFlags
 	// WRITE + PRIVATE -> copy on write (MAY_WRITE)
 	uint64_t vmaFlags = 0;
 	if (prot & PROT::READ) {

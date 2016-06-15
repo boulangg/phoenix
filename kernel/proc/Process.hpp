@@ -10,6 +10,7 @@
 #include <string>
 #include "stdint.h"
 #include <mm/VirtualMapping.hpp>
+#include <fs/File.hpp>
 
 /***************************************
  *               Defines               *
@@ -18,14 +19,10 @@
 #define MAXPRIO 256
 #define MAX_NB_PROCESS 32
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern void ctx_sw(uint64_t* curr, uint64_t* next,uint64_t pgTable);
+extern int idle();
 
-#ifdef __cplusplus
-}
-#endif
+extern "C" void ctx_sw(uint64_t* curr, uint64_t* next,uint64_t pgTable);
+
 enum class ProcessState{
 	Running,
 	Ready,
@@ -40,15 +37,17 @@ enum class ProcessState{
 
 class Process {
 public:
-	typedef int (*code_type) (int,char**,char**);
+	typedef int (*code_type) ();
 	typedef uint64_t size_type;
 	typedef size_type* size_type_pointer;
 
-	Process(int pid,code_type code,std::string&& name,unsigned long ssize,int prio);
-	Process(int pid,std::string&& name,VirtualMapping* mapping,unsigned long ssize,int prio, const char* argv[], const char* envp[]);
+	//Process(int pid,code_type code,std::string&& name,unsigned long ssize,int prio);
+	//Process(int pid,std::string&& name,VirtualMapping* mapping,unsigned long ssize,int prio, const char* argv[], const char* envp[]);
+
+	Process(Process* parent, int pid, int flags = 0);
 	~Process();
 
-	Process(int pid, int prio, const std::string& name, VirtualMapping* mapping);
+	int execve(File* f, const char* argv[], const char* envp[]);
 
 	bool operator<(const Process& p) const;
 
@@ -57,19 +56,43 @@ public:
 	 VirtualMapping* getMapping() {return mapping;}
 
 	size_type* getRegSave() {return regSave;}
+
+	void setName(const std::string& name) {
+		this->name = name;
+	}
+
+	int getPid() {return pid;}
+	int setpgid(int pgid) { this->pgid = pgid; return 0;}
+
+	static Process* getIdleProc() {
+		if (scheduler == nullptr) {
+			scheduler = new Process(0, idle);
+		}
+		return scheduler;
+	}
+
 private:
+	// init idle
+	Process(int prio, code_type code);
+
+	static Process* scheduler;
+
 	static const std::string getState(ProcessState state);
+
 	int pid;
+	int ppid;
+	int pgid;
+	int sid;
 	std::string name;
 	int prio;
 	ProcessState state;
-	size_type regSave[9]; //	rbx, rsp, rbp, r12, r13, r14, r15, pg_dir,kernel_stack
-	size_type_pointer topStack;
+	size_type regSave[9]; //	rbx, rsp, rbp, r12, r13, r14, r15, pg_dir
+	//size_type_pointer topStack;
 	size_type wakeUp;
-	Process* daddy;
-	int sonPid;
+	//Process* daddy;
+	//int sonPid;
 	int retval;
-	bool killed;
+	//bool killed;
 	VirtualMapping* mapping;
 };
 

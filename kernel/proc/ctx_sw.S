@@ -23,7 +23,7 @@ ctx_sw:
 	mov %rdx, %cr3
     ret
 // registers that need to be saved upon a context switch:
-// rax, rbx, rcx, rdx, rsp, rbp, rsi, rdi, r8-r15, st0-st7
+// rbx, rsp, rbp, r12, r13, r14, r15
 
 // the xmm0-xxm15, mmx0-mmx7, x87 SW, x87 CW are saved by the
 // floating point interrupt handler: since some user program don't use

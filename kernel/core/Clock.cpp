@@ -9,7 +9,7 @@
 #include "Console.hpp"
 #include <asm/io.h>
 #include <stdio.h>
-#include <proc/ProcessTable.hpp>
+#include <proc/ProcessScheduler.hpp>
 
 #define QUARTZ 0x1234DD
 #define CLOCKFREQ 60
@@ -41,7 +41,7 @@ void Clock::tic(){
 		m = 0;
 		h++;
 	}
-	ProcessTable::schedule();
+	ProcessScheduler::schedule();
 }
 
 Clock::Clock() {

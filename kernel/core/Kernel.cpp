@@ -6,13 +6,13 @@
 
 #include "Kernel.hpp"
 
-#include <proc/ProcessTable.hpp>
+#include <proc/ProcessScheduler.hpp>
 #include <asm/cpu.h>
 
 void Kernel::Start() {
 
-	ProcessTable::init();
-	idle(0,nullptr,nullptr);
+	ProcessScheduler::init();
+	idle();
 	while(1)
 		hlt();
 	return;

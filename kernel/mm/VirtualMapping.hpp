@@ -19,7 +19,7 @@ class VirtualMapping {
 public:
 
 	VirtualMapping();
-	//VirtualMapping(const VirtualMapping& );
+	VirtualMapping(const VirtualMapping& );
 
 	~VirtualMapping();
 
