@@ -33,3 +33,10 @@ int sys_read(int fd, void* buf, size_t count) {
 int sys_fork() {
 	return -1;
 }
+
+int sys_execve(const char *file, char *const argv[], char *const envp[]) {
+	(void)file;
+	(void)argv;
+	(void)envp;
+	return -1;
+}
