@@ -26,6 +26,18 @@ VirtualArea::VirtualArea(uint64_t* addrStart, uint64_t* addrEnd, uint64_t flags,
 	}
 }
 
+VirtualArea::VirtualArea(const VirtualArea& virtArea) {
+	addrStart = virtArea.addrStart;
+	addrEnd = virtArea.addrEnd;
+	flags = virtArea.flags;
+	file = virtArea.file;
+	offset = virtArea.offset;
+	fileSize = virtArea.fileSize;
+	if (virtArea.physicalPages != nullptr) {
+		physicalPages = new PhysicalMapping(*(virtArea.physicalPages));
+	}
+}
+
 VirtualArea::~VirtualArea() {
 	delete this->physicalPages;
 }

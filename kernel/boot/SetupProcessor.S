@@ -96,6 +96,7 @@ reserved_handler:
 .global syscall64_handler
 syscall64_handler:
 	//wrgsbase %rsp					// Save user %rsp in gsbase
+	push %r11
 	mov %rsp, %r11
 	mov $USER_SYSCALL_STACK_END, %rsp
 	push %r11
@@ -112,7 +113,8 @@ syscall64_handler:
 	//pop %r11
 	//rdgsbase %rsp					// Restore user %rsp
 	pop %rsp
-	sysret
+	pop %r11
+	sysretq
 
 
 .section .data

@@ -10,6 +10,8 @@
 #include <iterator>
 #include <cstring>
 
+extern "C" void switch_to_user_mode();
+
 VirtualMapping::VirtualMapping(): pageTable(nullptr), entryPoint(nullptr),
 startCode(nullptr), endCode(nullptr), startData(nullptr), endData(nullptr),
 topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
@@ -82,6 +84,24 @@ topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
 	}
 }
 
+VirtualMapping::VirtualMapping(const VirtualMapping& mapping) : virtualAreas() {
+	pageTable = nullptr;
+	entryPoint = mapping.entryPoint;
+	startCode = mapping.startCode;
+	endCode = mapping.endCode;
+	startData = mapping.startData;
+	endData = mapping.endData;
+	topStack = mapping.topStack;
+	startStack = mapping.startStack;
+	startBrk = mapping.startBrk;
+	currBrk = mapping.currBrk;
+	VirtualMapping* mapp = (VirtualMapping*)&mapping;
+	for (auto it = mapp->virtualAreas.begin(); it != mapp->virtualAreas.end(); ++it) {
+		VirtualArea* virtArea = new VirtualArea(**it);
+		addVirtualArea(virtArea);
+	}
+}
+
 VirtualMapping::~VirtualMapping() {
 
 }
@@ -112,7 +132,7 @@ PageTable* VirtualMapping::reloadPageTable() {
 	} a_un;
 } auxv_t;*/
 
-void VirtualMapping::initMainArgs(const char*argv[], const char*envp[]) {
+void VirtualMapping::initMainArgs(const char*argv[], const char*envp[], bool switchToUserMode) {
 	size_t argc = 0;
 	size_t argSize = 0;
 	while (argv[argc] != nullptr) {
@@ -148,6 +168,11 @@ void VirtualMapping::initMainArgs(const char*argv[], const char*envp[]) {
 	}
 	startStack[3+argc+envc] = 0; // Null pointer to end envp
 	startStack[4+argc+envc] = 0;	// Null auxiliary vector
+
+	if (switchToUserMode) {
+		startStack --;
+		startStack[0] = (uint64_t)switch_to_user_mode;
+	}
 
 	PageTable::restorePreviousPageTable();
 }

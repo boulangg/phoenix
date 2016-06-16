@@ -56,10 +56,10 @@
 #define SEL_KERNEL_CS	0x10
 #define SEL_KERNEL_DS	0x18
 #define SEL_TSS			0x20
-#define SEL_USER_CS		0x43
-#define SEL_USER_DS		0x4A
-#define SEL_USER_CS_32	0x53
-#define SEL_USER_DS_32	0x5A
+#define SEL_USER_CS		0x53
+#define SEL_USER_DS		0x5A
+#define SEL_USER_CS_32	0x43
+#define SEL_USER_DS_32	0x4A
 
 // TSS Infos
 #define TSS_INDEX		(SEL_TSS >> 3)
@@ -215,7 +215,7 @@ void SetupProcessor::setupGDT()
 void SetupProcessor::setupIDT()
 {
 	uint8_t idt_flags = FLAG_P | FLAG_DPL0 | FLAG_INT;
-	fill_idt_descriptor_64(49, (uint64_t)default_handler, SEL_KERNEL_CS, idt_flags, 1);
+	fill_idt_descriptor_64(1, (uint64_t)default_handler, SEL_KERNEL_CS, idt_flags, 1);
 	set_IDT(sizeof(idt)-1, idt);
 }
 
@@ -389,7 +389,7 @@ void SetupProcessor::setupMemoryMapping() {
 
 void SetupProcessor::setupSyscall() {
 	enable_syscall();
-	uint64_t STAR = ((((uint64_t)SEL_USER_CS) << 48) | (((uint64_t)SEL_KERNEL_CS) << 32) | 0);
+	uint64_t STAR = ((((uint64_t)SEL_USER_CS_32) << 48) | (((uint64_t)SEL_KERNEL_CS) << 32) | 0);
 	load_syscall(STAR, (uint64_t)syscall64_handler, 0, 0);
 }
 

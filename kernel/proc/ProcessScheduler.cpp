@@ -48,6 +48,8 @@ int ProcessScheduler::init(){
 	proc = new Process(processVector[0], pid);
 	proc->execve(f, init_argv, init_envp);
 	proc->setName(name);
+	proc->getRegSave()[7] = RFLAGS_INIT;
+
 	ready.push(proc);
 	nbProcess++;
 	lastAssignedPid=pid;
@@ -80,14 +82,26 @@ pid_t ProcessScheduler::fork() {
 	int64_t pid = findPid();
 	if (pid == -1)
 		return -1;
-	Process* proc = new Process(running, pid);
-	ready.push(proc);
-	nbProcess++;
-	lastAssignedPid=pid;
-	processVector.push_back(proc);
-	// TODO switch to child process
-	// return pid if parent, 0 if child !!
-	return pid;
+	Process* newProc = new Process(running, pid);
+	if (running->getPid() == pid) {
+		// Child
+		return 0;
+	} else {
+		nbProcess++;
+		lastAssignedPid=pid;
+		processVector.push_back(newProc);
+
+		Process *currProc= running;
+		running->setState(ProcessState::Ready);
+
+		ready.push(currProc);
+
+		newProc->setState(ProcessState::Running);
+		running = newProc;
+		uint64_t pg_dir = newProc->getMapping()->getPageTable()->getPageTablePtr();
+		ctx_sw(currProc->getRegSave(), newProc->getRegSave(), pg_dir);
+		return pid;
+	}
 }
 
 int ProcessScheduler::execve(const char* filename, const char* argv[], const char* envp[]) {
@@ -98,6 +112,7 @@ int ProcessScheduler::execve(const char* filename, const char* argv[], const cha
 
 	running->setName(std::string(filename));
 	running->execve(f, argv, envp);
+
 	// load new execution context
 	// this function should not return if everything goes well
 	return -1;
@@ -107,7 +122,7 @@ pid_t ProcessScheduler::getpid() {
 	return running->getPid();
 }
 
-void ProcessScheduler::unconditionalContextSwitch(Process* currProc){
+void ProcessScheduler::unconditionalContextSwitch(Process* currProc) {
 	Process *nextProc = ready.top();
 	ready.pop();
 	nextProc->setState(ProcessState::Running);

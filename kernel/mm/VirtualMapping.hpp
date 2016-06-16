@@ -19,7 +19,7 @@ class VirtualMapping {
 public:
 
 	VirtualMapping();
-	VirtualMapping(const VirtualMapping& );
+	VirtualMapping(const VirtualMapping&);
 
 	~VirtualMapping();
 
@@ -61,7 +61,7 @@ public:
 	PageTable* reloadPageTable();
 	PageTable* getPageTable();
 
-	void initMainArgs(const char*argv[], const char*envp[]);
+	void initMainArgs(const char*argv[], const char*envp[], bool switchToUserMode=false);
 	void setEntryPoint(uint64_t* entryPoint);
 
 private:

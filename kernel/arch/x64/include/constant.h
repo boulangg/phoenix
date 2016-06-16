@@ -27,6 +27,8 @@
 #define PTE_INDEX_OFFSET        12
 #define PTE_INDEX_MASK          0x1FF;
 
+#define RFLAGS_INIT (1 << 9)
+
 // User malloc space
 #define USER_HEAP_START         0x0000000002000000
 #define USER_HEAP_END           0x0000000002010000

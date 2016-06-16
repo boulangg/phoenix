@@ -12,3 +12,4 @@
 		ret
 
 SYSCALL(60, sys_exit)
+SYSCALL(57, sys_fork)

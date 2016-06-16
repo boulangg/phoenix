@@ -19,6 +19,7 @@ int main() {
 
 	}
 	static int bss[8000];
+	(void)bss;
 	a = 0;
 	return a;
 }

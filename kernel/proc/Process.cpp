@@ -15,15 +15,28 @@ Process* Process::scheduler = nullptr;
 
 Process::Process(Process* parent, int pid, int flags) :
 		pid(pid), prio(0), state(ProcessState::Ready), wakeUp(0), retval(0) {
+	(void)flags;
 	ppid = parent->pid;
 	pgid = parent->pgid;
 	sid = parent->sid;
 	name = parent->name;
-	for (int i = 0; i < 8; i++) {
-		regSave[i] = parent->regSave[i];
-	}
-	mapping = parent->mapping;
+	mapping = new VirtualMapping(*(parent->mapping));
+	//asm volatile("" ::: "memory");
+	regSave[7] = parent->regSave[7];
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
+	save_regs(regSave);
+	/*__asm__("    mov %0, %%rax;"
+			"    mov %%rbx, (%%rax);"
+			"    mov %%rsp, 8(%%rax);"
+			"    mov %%rbp, 16(%%rax);"
+			"    mov %%r12, 24(%%rax);"
+			"    mov %%r13, 32(%%rax);"
+			"    mov %%r14, 40(%%rax);"
+			"    mov %%r15, 48(%%rax);"
+			:
+			: "r" (regSave)
+			: "rax"
+			);*/
 }
 
 Process::Process(int prio, code_type code) :
@@ -38,6 +51,7 @@ Process::Process(int prio, code_type code) :
 	const char* tmp[] = {nullptr};
 	mapping->initMainArgs(tmp,tmp);
 	regSave[1]= (uint64_t)&(mapping->startStack[0]);
+	regSave[7] = 0;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 }
 
@@ -48,9 +62,10 @@ int Process::execve(File* f, const char* argv[], const char* envp[]) {
 	mapping = Elf64::getVirtualMapping(f);
 	if(mapping==nullptr)
 		return -1;
-	mapping->initMainArgs(argv,envp);
+	mapping->initMainArgs(argv,envp, true);
 	regSave[1]= (uint64_t)&(mapping->startStack[0]);
-	regSave[8] = mapping->getPageTable()->getPageTablePtr();
+	regSave[8] = RFLAGS_INIT;
+	//regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	return 0;
 }
 
@@ -71,8 +86,6 @@ int Process::execve(File* f, const char* argv[], const char* envp[]) {
 	mapping->initMainArgs(argv,envp);
 	regSave[1]= (uint64_t)&(mapping->startStack[0]);
 }*/
-
-
 
 Process::~Process() {
 	//FIXME memory leak (but just for idle)

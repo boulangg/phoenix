@@ -15,9 +15,10 @@
 class PhysicalMapping {
 public:
 	PhysicalMapping(uint64_t nb);
+	PhysicalMapping(const PhysicalMapping&);
 	~PhysicalMapping();
 
-	uint64_t size();
+	uint64_t size() const;
 
 	void setPage(uint64_t index, Page* physAddr);
 	Page* getPage(uint64_t index);
@@ -27,6 +28,7 @@ public:
 	//int getUsageCount();
 
 	PhysicalMapping* pushBack(PhysicalMapping*);
+
 
 private:
 	std::vector<Page*> array;

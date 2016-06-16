@@ -17,7 +17,7 @@ class VirtualArea {
 public:
 	VirtualArea(uint64_t* addrStart, uint64_t* addrEnd, uint64_t flags,
 			File* file, uint64_t offset, uint64_t fileSize);
-	//VirtualArea(const VirtualArea&);
+	VirtualArea(const VirtualArea&);
 	~VirtualArea();
 
 	uint64_t getNbPage();

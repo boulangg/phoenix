@@ -21,7 +21,8 @@
 
 extern int idle();
 
-extern "C" void ctx_sw(uint64_t* curr, uint64_t* next,uint64_t pgTable);
+extern "C" void ctx_sw(uint64_t* curr, uint64_t* next, uint64_t pgTable);
+extern "C" void save_regs(uint64_t* curr);
 
 enum class ProcessState{
 	Running,
@@ -71,6 +72,8 @@ public:
 		return scheduler;
 	}
 
+	void switch_to_user_mode();
+
 private:
 	// init idle
 	Process(int prio, code_type code);
@@ -86,13 +89,9 @@ private:
 	std::string name;
 	int prio;
 	ProcessState state;
-	size_type regSave[9]; //	rbx, rsp, rbp, r12, r13, r14, r15, pg_dir
-	//size_type_pointer topStack;
+	size_type regSave[9]; //	rbx, rsp, rbp, r12, r13, r14, r15, rflags, pg_dir
 	size_type wakeUp;
-	//Process* daddy;
-	//int sonPid;
 	int retval;
-	//bool killed;
 	VirtualMapping* mapping;
 };
 

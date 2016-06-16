@@ -5,6 +5,7 @@
  */
 
 #include <mm/PhysicalMapping.hpp>
+#include <mm/PhysicalAllocator.hpp>
 
 PhysicalMapping::PhysicalMapping(uint64_t nb) {
 	Page* nullPage = nullptr;
@@ -13,11 +14,22 @@ PhysicalMapping::PhysicalMapping(uint64_t nb) {
 	}
 }
 
+PhysicalMapping::PhysicalMapping(const PhysicalMapping& mapping) {
+	for (uint64_t i = 0; i < mapping.size(); ++i) {
+		if (mapping.array[i] != nullptr) {
+			Page* newPage = PhysicalAllocator::allocPage();
+			Page::copyPage(mapping.array[i], newPage);
+			array.push_back(newPage);
+		}
+	}
+}
+
+
 PhysicalMapping::~PhysicalMapping() {
 
 }
 
-uint64_t PhysicalMapping::size() {
+uint64_t PhysicalMapping::size() const {
 	return array.size();
 }
 
@@ -35,3 +47,4 @@ PhysicalMapping* PhysicalMapping::pushBack(PhysicalMapping* map) {
 	}
 	return this;
 }
+
