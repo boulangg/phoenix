@@ -14,5 +14,6 @@ void sys_exit(int status) __attribute__((weak));
 
 int sys_write(int fd, void* buf, size_t count) __attribute__((weak));
 int sys_read(int fd, void* buf, size_t count) __attribute__((weak));
+int sys_fork() __attribute__((weak));
 
 #endif // __WEAK_CALL_H__
