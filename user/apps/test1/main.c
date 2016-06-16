@@ -1,8 +1,7 @@
-#include "ctype.h"
-
-int a = 1;
+#include <unistd.h>
 
 int main(int argc,char* argv[]) {
+	(void)argc;
 	(void)argv;
-	return argc;
+	return getpid();
 }
