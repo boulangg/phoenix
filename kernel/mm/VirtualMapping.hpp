@@ -83,6 +83,8 @@ private:
 
 	uint64_t* findFreeVirtualArea(uint64_t* addr, uint64_t len);
 
+	VirtualArea* findArea(uint64_t* addr);
+
 	std::list<VirtualArea*> virtualAreas;
 	PageTable* pageTable;
 

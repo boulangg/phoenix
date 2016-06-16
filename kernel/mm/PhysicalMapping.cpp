@@ -24,9 +24,30 @@ PhysicalMapping::PhysicalMapping(const PhysicalMapping& mapping) {
 	}
 }
 
-
 PhysicalMapping::~PhysicalMapping() {
 
+}
+
+void PhysicalMapping::write(const char* src, int offset, int size) {
+	int start = offset;
+	int end = offset + size;
+	while (start < end) {
+		int numPage = start / PAGE_SIZE;
+		int startPage  = start % PAGE_SIZE;
+		int endPage = PAGE_SIZE;
+		if (numPage == end / PAGE_SIZE) {
+			endPage = end % PAGE_SIZE;
+		}
+		int size = endPage - startPage;
+		writeOnPage(getPage(numPage), src+start-offset, startPage, size);
+		start += size;
+	}
+}
+
+void PhysicalMapping::read(const char* src, int offset, int size) {
+	(void)src;
+	(void)offset;
+	(void)size;
 }
 
 uint64_t PhysicalMapping::size() const {
@@ -38,6 +59,10 @@ void PhysicalMapping::setPage(uint64_t index, Page* physAddr) {
 }
 
 Page* PhysicalMapping::getPage(uint64_t index) {
+	if (array[index] == nullptr) {
+		Page* newPage = PhysicalAllocator::allocPage();
+		array[index] = newPage;
+	}
 	return array[index];
 }
 

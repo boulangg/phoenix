@@ -35,17 +35,6 @@ public:
 		return PageTable(PageTable::kernelPML4T);
 	}
 
-	static void setActivePageTable(PageTable* pgTable) {
-		prevPML4T = (uint64_t*)get_CR3();
-		if (pgTable->PML4T != nullptr) {
-			set_CR3(((uint64_t)pgTable->PML4T) & ~(KERNEL_MAPPING_START));
-		}
-	}
-
-	static void restorePreviousPageTable() {
-		set_CR3((uint64_t)prevPML4T);
-	}
-
 	uint64_t getPageTablePtr() {
 		return (uint64_t)PML4T & ~(KERNEL_MAPPING_START);
 	}

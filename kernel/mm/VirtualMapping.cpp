@@ -9,6 +9,7 @@
 #include <include/constant.h>
 #include <iterator>
 #include <cstring>
+#include <stdlib.h>
 
 extern "C" void switch_to_user_mode();
 
@@ -139,6 +140,7 @@ void VirtualMapping::initMainArgs(const char*argv[], const char*envp[], bool swi
 		argSize += strlen(argv[argc]) + 1;
 		++argc;
 	}
+
 	size_t envc = 0;
 	size_t envSize = 0;
 	while(envp[envc]) {
@@ -148,33 +150,41 @@ void VirtualMapping::initMainArgs(const char*argv[], const char*envp[], bool swi
 
 	size_t totalSize = (1 + argc + 1 + envc + 1 + 1)*sizeof(uint64_t) + argSize + envSize;
 	totalSize  = (totalSize+sizeof(uint64_t)-1) / sizeof(uint64_t);
+	totalSize += 2;
 
-	PageTable::setActivePageTable(getPageTable());
+	uint64_t* tmp = (uint64_t*)malloc(sizeof(uint64_t)*totalSize);
 
-	startStack = topStack - totalSize - 1;
+	startStack = topStack - totalSize;
 
-	startStack[0] = (uint64_t)entryPoint;
-	startStack[1] = argc;
+	tmp[0] = (uint64_t)switch_to_user_mode;
+	tmp[1] = (uint64_t)entryPoint;
+	tmp[2] = argc;
 
-	char* infoStart = (char*)(startStack + 4 + argc + envc + 1);
+	char* infoStart = (char*)(tmp + 4 + argc + envc + 2);
+	char* stackInfoStart = (char*)(startStack + 4 + argc + envc + 2);
 	for (size_t i = 0; i < argc; ++i) {
-		startStack[2+i] = (uint64_t)strcpy(infoStart, argv[i]);
+		tmp[3+i] = (uint64_t)stackInfoStart;
+		strcpy(infoStart, argv[i]);
+		stackInfoStart += strlen(argv[i]);
 		infoStart += strlen(argv[i]);
 	}
-	startStack[2+argc] = 0;      // Null pointer to end argv
+	tmp[3+argc] = 0;        // Null pointer to end argv
 	for (size_t i = 0; i < envc; ++i) {
-		startStack[3+argc+i] = (uint64_t)strcpy(infoStart, envp[i]);
+		tmp[4+argc+i] = (uint64_t)stackInfoStart;
+		strcpy(infoStart, envp[i]);
+		stackInfoStart += strlen(argv[i]);
 		infoStart += strlen(argv[i]);
 	}
-	startStack[3+argc+envc] = 0; // Null pointer to end envp
-	startStack[4+argc+envc] = 0;	// Null auxiliary vector
+	tmp[4+argc+envc] = 0;    // Null pointer to end envp
+	tmp[5+argc+envc] = 0;    // Null auxiliary vector
 
-	if (switchToUserMode) {
-		startStack --;
-		startStack[0] = (uint64_t)switch_to_user_mode;
+	VirtualArea* stackArea = findArea(startStack);
+	uint64_t offset = (uint64_t)startStack - (uint64_t)stackArea->addrStart;
+	stackArea->physicalPages->write((char*)tmp, offset, totalSize*sizeof(uint64_t));
+
+	if (!switchToUserMode) {
+		startStack ++;
 	}
-
-	PageTable::restorePreviousPageTable();
 }
 
 void VirtualMapping::setEntryPoint(uint64_t* entryPoint) {
@@ -262,6 +272,15 @@ VirtualArea* VirtualMapping::addVirtualArea(VirtualArea* area) {
 	it = virtualAreas.insert(it, area);
 	it = mergeSurroundingAreas(it);
 	return *it;
+}
+
+VirtualArea* VirtualMapping::findArea(uint64_t* addr) {
+	for (auto it = virtualAreas.begin(); it != virtualAreas.end(); ++it) {
+		if ((*it)->addrEnd > addr) {
+			return *it;
+		}
+	}
+	return nullptr;
 }
 
 std::list<VirtualArea*>::iterator VirtualMapping::mergeSurroundingAreas(
