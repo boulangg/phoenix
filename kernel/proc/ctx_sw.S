@@ -53,3 +53,22 @@ switch_to_user_mode:
 	pushfq
 	pop %r11	// rflags
 	sysretq
+
+	.globl load_new_task
+load_new_task:
+	mov %rdi, %rax
+    mov (%rax), %rbx
+    mov 8(%rax), %rsp
+    mov 16(%rax), %rbp
+    mov 24(%rax), %r12
+    mov 32(%rax), %r13
+    mov 40(%rax), %r14
+    mov 48(%rax), %r15
+    mov 56(%rax), %rcx
+
+	mov %rsi, %cr3
+	push %rcx
+	popfq
+    ret
+
+

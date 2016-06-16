@@ -21,22 +21,9 @@ Process::Process(Process* parent, int pid, int flags) :
 	sid = parent->sid;
 	name = parent->name;
 	mapping = new VirtualMapping(*(parent->mapping));
-	//asm volatile("" ::: "memory");
 	regSave[7] = parent->regSave[7];
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	save_regs(regSave);
-	/*__asm__("    mov %0, %%rax;"
-			"    mov %%rbx, (%%rax);"
-			"    mov %%rsp, 8(%%rax);"
-			"    mov %%rbp, 16(%%rax);"
-			"    mov %%r12, 24(%%rax);"
-			"    mov %%r13, 32(%%rax);"
-			"    mov %%r14, 40(%%rax);"
-			"    mov %%r15, 48(%%rax);"
-			:
-			: "r" (regSave)
-			: "rax"
-			);*/
 }
 
 Process::Process(int prio, code_type code) :
@@ -58,37 +45,20 @@ Process::Process(int prio, code_type code) :
 int Process::execve(File* f, const char* argv[], const char* envp[]) {
 	if(f==nullptr)
 		return -1;
-	delete mapping;
+	// TODO schedule delayed deletion to keep the kernelStack usable until next
+	// context switch (or reuse the old one while keeping the kernel stacks)
+	//delete mapping;
 	mapping = Elf64::getVirtualMapping(f);
 	if(mapping==nullptr)
 		return -1;
-	mapping->initMainArgs(argv,envp, true);
+	mapping->initMainArgs(argv, envp);
 	regSave[1]= (uint64_t)&(mapping->startStack[0]);
-	regSave[8] = RFLAGS_INIT;
-	//regSave[8] = mapping->getPageTable()->getPageTablePtr();
+	regSave[7] = RFLAGS_INIT;
 	return 0;
 }
 
-/*Process::Process(int pid,code_type code,std::string&& name,unsigned long ssize,int prio):
-	pid(pid),name(std::move(name)),prio(prio),state(ProcessState::Ready),wakeUp(0),daddy(0),sonPid(0),
-	retval(0),killed(false){
-	mapping = new VirtualMapping();
-	topStack = mapping->topStack;
-	//topStack[-3]=(uint64_t)code;
-	const char* tmp[] = {nullptr};
-	mapping->initMainArgs(tmp,tmp);
-	regSave[1]= (uint64_t)&(mapping->startCode[0]);
-}*/
-
-/*Process::Process(int pid,std::string&& name,VirtualMapping* mapping,unsigned long ssize,int prio,const char** argv, const char** envp):
-		pid(pid),name(std::move(name)),prio(prio),state(ProcessState::Ready),topStack(mapping->topStack),wakeUp(0),daddy(0),sonPid(0),
-	retval(0),killed(false),mapping(mapping){
-	mapping->initMainArgs(argv,envp);
-	regSave[1]= (uint64_t)&(mapping->startStack[0]);
-}*/
-
 Process::~Process() {
-	//FIXME memory leak (but just for idle)
+	// FIXME memory leak
 }
 
 bool Process::operator<(const Process& p) const{

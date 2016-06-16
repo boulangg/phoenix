@@ -133,7 +133,7 @@ PageTable* VirtualMapping::reloadPageTable() {
 	} a_un;
 } auxv_t;*/
 
-void VirtualMapping::initMainArgs(const char*argv[], const char*envp[], bool switchToUserMode) {
+void VirtualMapping::initMainArgs(const char*argv[], const char*envp[]) {
 	size_t argc = 0;
 	size_t argSize = 0;
 	while (argv[argc] != nullptr) {
@@ -181,10 +181,6 @@ void VirtualMapping::initMainArgs(const char*argv[], const char*envp[], bool swi
 	VirtualArea* stackArea = findArea(startStack);
 	uint64_t offset = (uint64_t)startStack - (uint64_t)stackArea->addrStart;
 	stackArea->physicalPages->write((char*)tmp, offset, totalSize*sizeof(uint64_t));
-
-	if (!switchToUserMode) {
-		startStack ++;
-	}
 }
 
 void VirtualMapping::setEntryPoint(uint64_t* entryPoint) {

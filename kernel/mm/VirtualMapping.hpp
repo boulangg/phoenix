@@ -61,7 +61,7 @@ public:
 	PageTable* reloadPageTable();
 	PageTable* getPageTable();
 
-	void initMainArgs(const char*argv[], const char*envp[], bool switchToUserMode=false);
+	void initMainArgs(const char*argv[], const char*envp[]);
 	void setEntryPoint(uint64_t* entryPoint);
 
 private:

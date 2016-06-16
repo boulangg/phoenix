@@ -113,9 +113,9 @@ int ProcessScheduler::execve(const char* filename, const char* argv[], const cha
 	running->setName(std::string(filename));
 	running->execve(f, argv, envp);
 
-	// load new execution context
-	// this function should not return if everything goes well
-	return -1;
+	load_new_task(running->getRegSave(), running->getMapping()->getPageTable()->getPageTablePtr());
+
+	return 0;
 }
 
 pid_t ProcessScheduler::getpid() {
