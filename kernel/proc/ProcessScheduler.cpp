@@ -48,7 +48,6 @@ int ProcessScheduler::init(){
 	proc = new Process(processVector[0], pid);
 	proc->execve(f, init_argv, init_envp);
 	proc->setName(name);
-	proc->getRegSave()[7] = RFLAGS_INIT;
 
 	ready.push(proc);
 	nbProcess++;
@@ -98,8 +97,7 @@ pid_t ProcessScheduler::fork() {
 
 		newProc->setState(ProcessState::Running);
 		running = newProc;
-		uint64_t pg_dir = newProc->getMapping()->getPageTable()->getPageTablePtr();
-		ctx_sw(currProc->getRegSave(), newProc->getRegSave(), pg_dir);
+		ctx_sw(currProc->getRegSave(), newProc->getRegSave());
 		return pid;
 	}
 }
@@ -113,9 +111,9 @@ int ProcessScheduler::execve(const char* filename, const char* argv[], const cha
 	running->setName(std::string(filename));
 	running->execve(f, argv, envp);
 
-	load_new_task(running->getRegSave(), running->getMapping()->getPageTable()->getPageTablePtr());
+	load_new_task(running->getRegSave());
 
-	return 0;
+	return -1;
 }
 
 pid_t ProcessScheduler::getpid() {
@@ -127,9 +125,7 @@ void ProcessScheduler::unconditionalContextSwitch(Process* currProc) {
 	ready.pop();
 	nextProc->setState(ProcessState::Running);
 	running = nextProc;
-	//PageTable::setActivePageTable(running->getMapping()->getPageTable());
-	uint64_t pg_dir = nextProc->getMapping()->getPageTable()->getPageTablePtr();
-	ctx_sw(currProc->getRegSave(), nextProc->getRegSave(),pg_dir);
+	ctx_sw(currProc->getRegSave(), nextProc->getRegSave());
 }
 
 int64_t ProcessScheduler::findPid() {

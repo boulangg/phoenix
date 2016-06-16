@@ -4,6 +4,9 @@
 #include <proc/Process.hpp>
 #include <queue>
 
+extern "C" void ctx_sw(uint64_t* curr, uint64_t* next);
+extern "C" void load_new_task(uint64_t* curr);
+
 class ProcessLess {
 public:
 	bool operator()( const Process* lhs, const Process* rhs ) const {

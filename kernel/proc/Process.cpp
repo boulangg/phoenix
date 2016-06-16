@@ -54,6 +54,7 @@ int Process::execve(File* f, const char* argv[], const char* envp[]) {
 	mapping->initMainArgs(argv, envp);
 	regSave[1]= (uint64_t)&(mapping->startStack[0]);
 	regSave[7] = RFLAGS_INIT;
+	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	return 0;
 }
 

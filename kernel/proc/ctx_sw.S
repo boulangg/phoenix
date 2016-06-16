@@ -22,6 +22,7 @@ ctx_sw:
     mov 40(%rax), %r14
     mov 48(%rax), %r15
     mov 56(%rax), %rcx
+	mov 64(%rax), %rdx
 
 	mov %rdx, %cr3
 	push %rcx
@@ -65,8 +66,9 @@ load_new_task:
     mov 40(%rax), %r14
     mov 48(%rax), %r15
     mov 56(%rax), %rcx
+    mov 64(%rax), %rdx
 
-	mov %rsi, %cr3
+	mov %rdx, %cr3
 	push %rcx
 	popfq
     ret

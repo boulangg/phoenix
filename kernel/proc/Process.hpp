@@ -21,9 +21,7 @@
 
 extern int idle();
 
-extern "C" void ctx_sw(uint64_t* curr, uint64_t* next, uint64_t pgTable);
 extern "C" void save_regs(uint64_t* curr);
-extern "C" void load_new_task(uint64_t* curr, uint64_t pgTable);
 
 enum class ProcessState{
 	Running,
