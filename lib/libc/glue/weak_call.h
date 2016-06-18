@@ -9,13 +9,19 @@
 
 #include "stddef.h"
 
-void *sbrk(ptrdiff_t increment) __attribute__((weak));
-void sys_exit(int status) __attribute__((weak));
+typedef int mode_t;
+typedef int ssize_t;
 
-int sys_write(int fd, void* buf, size_t count) __attribute__((weak));
-int sys_read(int fd, void* buf, size_t count) __attribute__((weak));
+int sys_open(const char *pathname, int flags, mode_t mode) __attribute__((weak));
+int sys_close(int fd) __attribute__((weak));
+ssize_t sys_read(int fd, void *buf, size_t count) __attribute__((weak));
+ssize_t sys_write(int fd, const void *buf, size_t count) __attribute__((weak));
+
 int sys_fork() __attribute__((weak));
 int sys_execve(const char *file, char *const argv[], char *const envp[]) __attribute__((weak));
 int sys_getpid() __attribute__((weak));
+void sys_exit(int status) __attribute__((weak));
+
+int sys_brk(void* addr) __attribute__((weak));
 
 #endif // __WEAK_CALL_H__

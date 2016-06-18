@@ -6,28 +6,30 @@
 
 #include "weak_call.h"
 
-void *sbrk(ptrdiff_t increment) {
-	(void)increment;
+int sys_open(const char *pathname, int flags, mode_t mode) {
+	(void)pathname;
+	(void)flags;
+	(void)mode;
+	return -1;
+}
+
+ssize_t sys_write(int fd, const void *buf, size_t count) {
+	(void)fd;
+	(void)buf;
+	(void)count;
+	return -1;
+}
+
+ssize_t sys_read(int fd, void *buf, size_t count) {
+	(void)fd;
+	(void)buf;
+	(void)count;
+	return -1;
+}
+
+int sys_close(int fd) {
+	(void)fd;
 	return 0;
-}
-
-void sys_exit(int status) {
-	(void)status;
-	__builtin_unreachable();
-}
-
-int sys_write(int fd, void* buf, size_t count) {
-	(void)fd;
-	(void)buf;
-	(void)count;
-	return -1;
-}
-
-int sys_read(int fd, void* buf, size_t count) {
-	(void)fd;
-	(void)buf;
-	(void)count;
-	return -1;
 }
 
 int sys_fork() {
@@ -39,4 +41,18 @@ int sys_execve(const char *file, char *const argv[], char *const envp[]) {
 	(void)argv;
 	(void)envp;
 	return -1;
+}
+
+int sys_getpid() {
+	return 1;
+}
+
+void sys_exit(int status) {
+	(void)status;
+	__builtin_unreachable();
+}
+
+int sys_brk(void* addr) {
+	(void)addr;
+	return 0;
 }
