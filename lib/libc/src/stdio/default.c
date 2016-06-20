@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <errno.h>
 #include <def/def_null.h>
-#include <../glue/weak_call.h>
 
 #include <unistd.h>
 

@@ -7,7 +7,7 @@
 #include <new>
 #include <cstdlib>
 
-void *operator new(size_t size)
+void *operator new(std::size_t size)
 {
 	if (size==0) {
 		size = 1;
@@ -15,7 +15,7 @@ void *operator new(size_t size)
     return malloc(size);
 }
 
-void *operator new[](size_t size)
+void *operator new[](std::size_t size)
 {
 	if (size==0) {
 		size = 1;

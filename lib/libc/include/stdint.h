@@ -8,20 +8,11 @@
 #define _KERNEL_STDINT_H_
 
 // 7.18 Integer types <stdint.h>
-//#include "limits.h"
-#include "bits/wordsize.h"
 
 // 7.18.1 Integer types
 // 7.18.1.1 Exact-width integer types
-typedef signed char			int8_t;
-typedef signed short		int16_t;
-typedef signed int			int32_t;
-typedef signed long long	int64_t;
-
-typedef unsigned char		uint8_t;
-typedef unsigned short		uint16_t;
-typedef unsigned int		uint32_t;
-typedef unsigned long long	uint64_t;
+// 7.18.1.4 Integer types capable of holding object pointers
+#include <inttypes.h>
 
 // 7.18.1.2 Minimun-width integer types
 typedef int8_t		int_least8_t;
@@ -44,15 +35,6 @@ typedef uint8_t		uint_fast8_t;
 typedef uint16_t	uint_fast16_t;
 typedef uint32_t	uint_fast32_t;
 typedef uint64_t	uint_fast64_t;
-
-// 7.18.1.4 Integer types capable of holding object pointers
-#if __WORDSIZE == 64
-	typedef int64_t		intptr_t ;
-	typedef uint64_t	uintptr_t;
-#else
-	typedef int32_t		intptr_t ;
-	typedef uint32_t	uintptr_t;
-#endif
 
 // 7.18.1.5 Greatest-width integer types
 typedef int64_t		intmax_t;
