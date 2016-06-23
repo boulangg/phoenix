@@ -111,7 +111,7 @@ $(OUTPUT)/build/linker.ld.d: $(LINKER) | $(OUTPUT)
 	$(DEP) $(INCLUDES) -x c -MM $< -MT $@ > $@
 
 ### Generate kernel ###
-$(BIN): $(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o | static_libc static_libstdcpp user_apps 
+$(BIN): $(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o static_libc static_libstdcpp user_apps 
 	$(LD) $(LDFLAGS) -T$(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o  $(LIBFLAGS) -o $@
 
 ### Generic rules ###

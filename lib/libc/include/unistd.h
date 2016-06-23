@@ -16,8 +16,6 @@
 extern "C" {
 #endif
 
-#include <syscall/syscall.h>
-
 // POSIX functions
 int open(const char *pathname, int flags, mode_t mode);
 int close(int fd);
@@ -29,7 +27,7 @@ int execve(const char *file, char *const argv[], char *const envp[]);
 int getpid();
 
 int brk(void* addr);
-void* sbrk(intptr_t increment) __attribute__((weak));
+void* sbrk(intptr_t increment); // __attribute__((weak));
 
 
 #ifdef __cplusplus

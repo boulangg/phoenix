@@ -1,5 +1,7 @@
 #include <unistd.h>
 
+#include <syscall/syscall.h>
+
 int open(const char *pathname, int flags, mode_t mode) {
 	return sys_open(pathname, flags, mode);
 }
@@ -29,20 +31,22 @@ int getpid() {
 }
 
 int brk(void* addr) {
-    int oldBrk = sys_brk(0);
-	if (sys_brk((void*)(addr)) != oldBrk) {
+    void* oldBrk = sys_brk((void*)0);
+	if (sys_brk(addr) != oldBrk) {
 		return 0;
 	} else {
 		//errno = ENOMEM;
 		return -1;
 	}
-	return sys_brk(addr);
 }
 
 void* sbrk(intptr_t increment) {
-	int oldBrk = sys_brk(0);
-	if (sys_brk((void*)(oldBrk + increment)) != oldBrk) {
-		return (void*)(intptr_t)oldBrk;
+	if (increment == 0) {
+		return sys_brk(0);
+	}
+	char* oldBrk = sys_brk(0);
+	if ((char*)sys_brk((void*)(oldBrk + increment)) != oldBrk) {
+		return (void*)oldBrk;
 	} else {
 		//errno = ENOMEM;
 		return (void*)-1;

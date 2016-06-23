@@ -52,7 +52,7 @@ void sys_exit(int status) {
 	__builtin_unreachable();
 }
 
-int sys_brk(void* addr) {
+void* sys_brk(void* addr) {
 	(void)addr;
 	return 0;
 }

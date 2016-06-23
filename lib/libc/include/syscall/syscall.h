@@ -16,7 +16,7 @@ int sys_fork();
 int sys_execve(const char *file, char *const argv[], char *const envp[]);
 int sys_getpid();
 
-int sys_brk(void* addr);
+void* sys_brk(void* addr);
 
 #ifdef __cplusplus
 }

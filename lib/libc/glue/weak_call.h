@@ -22,6 +22,6 @@ int sys_execve(const char *file, char *const argv[], char *const envp[]) __attri
 int sys_getpid() __attribute__((weak));
 void sys_exit(int status) __attribute__((weak));
 
-int sys_brk(void* addr) __attribute__((weak));
+void* sys_brk(void* addr) __attribute__((weak));
 
 #endif // __WEAK_CALL_H__
