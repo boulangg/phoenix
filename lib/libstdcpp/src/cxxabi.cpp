@@ -23,7 +23,12 @@ void __cxa_guard_abort (__guard *);
 int __cxa_atexit(void (*f)(void *), void *objptr, void *dso);
 void __cxa_finalize(void *f);
 int atexit(void (*f)(void));
+void __cxa_pure_virtual();
 
+void __cxa_pure_virtual()
+{
+    // Do nothing or print an error message.
+}
 
 void *__dso_handle = 0;
 

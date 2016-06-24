@@ -11,30 +11,23 @@
 #include <cstdint>
 #include <include/constant.h>
 #include <mm/PhysicalAllocator.hpp>
+#include <unistd.h>
 
 class File {
+protected:
+	File();
+	virtual ~File();
+
 public:
-	File(uint64_t* addr, uint64_t size): kernelStartAddr(addr), size(size) {}
-
-	int64_t llseef(int64_t, int);
-	size_t read(char *, size_t, int64_t);
-	size_t write(char*, size_t, int64_t);
-	int flush();
-
-	char* getKernelStartAddr() {
-		return (char*)kernelStartAddr;
-	}
-
-	Page* getPage(uint64_t index) {
-		uint64_t pageAddr = (uint64_t)kernelStartAddr+index*PAGE_SIZE;
-		pageAddr &= ~(KERNEL_HIGH_VMA);
-		return PhysicalAllocator::getPageFromAddr((uint64_t*)pageAddr);
-	}
+	// User space functionalities
+	virtual int64_t lseek(int64_t, uint32_t);
+	virtual size_t read(void* ptr, size_t size, size_t count);
+	virtual size_t write(void* ptr, size_t size, size_t count);
+	virtual int flush();
 
 
-private:
-	uint64_t* kernelStartAddr;
-	uint64_t size;
+	// Kernel functionalities
+	virtual Page* getPage(uint64_t index) = 0;
 };
 
 

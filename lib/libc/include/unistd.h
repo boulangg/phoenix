@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #ifndef __UNISTD__
 #define __UNISTD__
 
@@ -11,6 +17,10 @@
 #include <stdint.h>
 #include <def/def_size.h>
 #include <sys/types.h>
+
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
 
 #ifdef __cplusplus
 extern "C" {

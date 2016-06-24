@@ -1,8 +1,16 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #ifndef __PROC_PROCESSMANAGER_HPP__
 #define __PROC_PROCESSMANAGER_HPP__
 
+#include <unistd.h>
 #include <proc/Process.hpp>
 #include <queue>
+
 
 extern "C" void ctx_sw(uint64_t* curr, uint64_t* next);
 extern "C" void load_new_task(uint64_t* curr);
@@ -13,8 +21,6 @@ public:
 		return *lhs < *rhs;
 	}
 };
-
-typedef int pid_t;
 
 class ProcessScheduler {
 	ProcessScheduler() = delete;

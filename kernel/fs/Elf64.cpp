@@ -8,43 +8,44 @@
 
 VirtualMapping* Elf64::getVirtualMapping(File* file) {
 	VirtualMapping* virtualMap = new VirtualMapping();
-	char* startAddr = file->getKernelStartAddr();
-	Elf64_Ehdr *fileHeader = (Elf64_Ehdr*)startAddr;
+	Elf64_Ehdr fileHeader;
+	file->lseek(0, SEEK_SET);
+	file->read(&fileHeader, sizeof(Elf64_Ehdr), 1);
 	// TODO check if supported elf file
-	//virtualMap->entryPoint = (uint64_t*)fileHeader->e_entry;
-	char* programHeaderAddr = startAddr + fileHeader->e_phoff;
-	for (uint32_t i = 0; i < fileHeader->e_phnum; ++i) {
-		Elf64_Phdr *programHeader = (Elf64_Phdr*)programHeaderAddr;
-		if (programHeader->p_type == programType::PT_LOAD) {
+	Elf64_Phdr programHeader;
+	for (uint32_t i = 0; i < fileHeader.e_phnum; ++i) {
+		file->lseek(fileHeader.e_phoff + i*fileHeader.e_phentsize, SEEK_SET);
+		file->read(&programHeader, sizeof(Elf64_Phdr), 1);
+		if (programHeader.p_type == programType::PT_LOAD) {
 			uint64_t prot = VirtualMapping::PROT::NONE;
 			uint64_t flags = VirtualMapping::FLAGS::PRIVATE |
 					VirtualMapping::FLAGS::FIXED;
-			if (programHeader->p_flags & programFlag::PF_R) {
+
+			if (programHeader.p_flags & programFlag::PF_R) {
 				prot |= VirtualMapping::PROT::READ;
 			}
-			if (programHeader->p_flags & programFlag::PF_W) {
+
+			if (programHeader.p_flags & programFlag::PF_W) {
 				prot |= VirtualMapping::PROT::WRITE;
-				virtualMap->startData = (uint64_t*)(programHeader->p_vaddr);
-				virtualMap->endData = (uint64_t*)(programHeader->p_vaddr+programHeader->p_memsz);
+				virtualMap->startData = (uint64_t*)(programHeader.p_vaddr);
+				virtualMap->endData = (uint64_t*)(programHeader.p_vaddr+programHeader.p_memsz);
 			}
-			if (programHeader->p_flags & programFlag::PF_X) {
+
+			if (programHeader.p_flags & programFlag::PF_X) {
 				prot |= VirtualMapping::PROT::EXEC;
 				flags |= VirtualMapping::FLAGS::EXECUTABLE;
-				virtualMap->startCode = (uint64_t*)(programHeader->p_vaddr);
-				virtualMap->endCode = (uint64_t*)(programHeader->p_vaddr+programHeader->p_filesz);
-
+				virtualMap->startCode = (uint64_t*)(programHeader.p_vaddr);
+				virtualMap->endCode = (uint64_t*)(programHeader.p_vaddr+programHeader.p_filesz);
 			}
 
-			uint64_t* addr = (uint64_t*)(programHeader->p_vaddr);
-			uint64_t len = programHeader->p_memsz;
-			uint64_t offset = programHeader->p_offset;
-			virtualMap->mmap(addr, len, prot, flags, file, offset, programHeader->p_filesz);
+			uint64_t* addr = (uint64_t*)(programHeader.p_vaddr);
+			uint64_t len = programHeader.p_memsz;
+			uint64_t offset = programHeader.p_offset;
+			virtualMap->mmap(addr, len, prot, flags, file, offset, programHeader.p_filesz);
 		}
-
-		programHeaderAddr += fileHeader->e_phentsize;
 	}
 
-	virtualMap->setEntryPoint((uint64_t*)fileHeader->e_entry);
+	virtualMap->setEntryPoint((uint64_t*)fileHeader.e_entry);
 
 	virtualMap->reloadPageTable();
 

@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,10 +22,6 @@ extern "C" {
 #define _IONBF 0x4
 
 #define BUFSIZ 4096
-
-#define SEEK_CUR 0x1
-#define SEEK_END 0x2
-#define SEEK_SET 0x4
 
 typedef struct FILE {
 	int64_t flags;
