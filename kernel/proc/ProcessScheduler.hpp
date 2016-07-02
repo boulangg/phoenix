@@ -15,11 +15,37 @@
 extern "C" void ctx_sw(uint64_t* curr, uint64_t* next);
 extern "C" void load_new_task(uint64_t* curr);
 
+#define IDLE_PRIO 0
+#define DEFAULT_PRIO 20
+
 class ProcessLess {
 public:
 	bool operator()( const Process* lhs, const Process* rhs ) const {
 		return *lhs < *rhs;
 	}
+};
+
+class Event {
+public:
+	enum EventType {
+		ErrorEvent,
+		FileEvent,
+		IOEvent,
+		TimerEvent,
+	};
+
+	Event() : _evType(EventType::ErrorEvent), _id(0) {}
+	Event(EventType evType, uint64_t id) : _evType(evType), _id(id) {}
+
+	bool operator==(const Event& ev) {
+		return (_evType == ev._evType && _id == ev._id);
+	}
+
+	uint64_t getId() {return _id;}
+
+private:
+	EventType _evType;
+	uint64_t _id;
 };
 
 class ProcessScheduler {
@@ -39,7 +65,7 @@ public:
 	// Syscalls
 	static void exit(int status);
 	static pid_t fork();
-	static void waitpid(pid_t pid, int* stat_adddr, int options);
+	//static void waitpid(pid_t pid, int* stat_adddr, int options);
 	static int execve(const char* filename,
 			const char* argv[], const char* envp[]);
 	static pid_t getpid();
@@ -56,16 +82,23 @@ public:
 	static pid_t getuid();
 	static pid_t getgid();
 
-private:
-	//static void initIdle();
-	static int64_t findPid();
+
+	// TODO solve race condition in wakeUp/wait/sleep
+	static void wait(Event ev);
+	static void wakeUp(Event ev);
+	static void sleep();
+
 	static void unconditionalContextSwitch(Process* currProc);
+
+private:
+	static int64_t findPid();
 
 	static std::vector<Process*> processVector;
 	static Process* running;
 	static uint64_t nbProcess;
 	static uint64_t lastAssignedPid;
 	static std::priority_queue<Process*,std::vector<Process*>,ProcessLess> ready;
+	static std::list<std::pair<Event, Process*>> events;
 };
 
 

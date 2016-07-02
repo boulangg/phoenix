@@ -26,12 +26,14 @@ uint64_t ProcessScheduler::nbProcess(0);
 uint64_t ProcessScheduler::lastAssignedPid(-1);
 Process* ProcessScheduler::running = nullptr;
 std::vector<Process*> ProcessScheduler::processVector;
+std::list<std::pair<Event, Process*>> ProcessScheduler::events;
 
 std::priority_queue<Process*,std::vector<Process*>,ProcessLess> ProcessScheduler::ready;
 
 int ProcessScheduler::init(){
 	Process* proc;
 	proc = Process::getIdleProc();
+	proc->setpriority(IDLE_PRIO);
 	nbProcess = 1;
 	lastAssignedPid=0;
 	running=proc;
@@ -54,10 +56,12 @@ int ProcessScheduler::init(){
 	proc = new Process(processVector[0], pid);
 	proc->execve(f, init_argv, init_envp);
 	proc->setName(name);
+	proc->setpriority(DEFAULT_PRIO);
 
 	ready.push(proc);
 	nbProcess++;
 	lastAssignedPid=pid;
+	// TODO might lead to inconsistency with pid
 	processVector.push_back(proc);
 	return pid;
 }
@@ -65,7 +69,7 @@ int ProcessScheduler::init(){
 void ProcessScheduler::schedule(){
 	// TODO delete dying
 
-	Process *currProc= running;
+	Process *currProc=running;
 	running->setState(ProcessState::Ready);
 
 	ready.push(currProc);
@@ -134,6 +138,34 @@ void ProcessScheduler::unconditionalContextSwitch(Process* currProc) {
 	ctx_sw(currProc->getRegSave(), nextProc->getRegSave());
 }
 
+void ProcessScheduler::wakeUp(Event ev) {
+	// wake up all process waiting on the event
+	// TODO remove pair(event, process) when a process wait on
+	// multiple events
+	for (auto it = events.begin(); it != events.end();) {
+		auto item = *it;
+		if ((item.first == ev) &&
+		    (item.second->getState()==ProcessState::EventBlocked)) {
+			it = events.erase(it);
+			item.second->setState(ProcessState::Ready);
+			ready.push(item.second);
+		} else {
+			++it;
+		}
+	}
+}
+
+void ProcessScheduler::wait(Event ev) {
+	// Set current process waiting on an event
+	running->setState(ProcessState::EventBlocked);
+	auto item = std::pair<Event, Process*>(ev, running);
+	events.push_back(item);
+}
+
+void ProcessScheduler::sleep() {
+	unconditionalContextSwitch(running);
+}
+
 int64_t ProcessScheduler::findPid() {
 
 	if (nbProcess == MAX_NB_PROCESS)
@@ -141,7 +173,6 @@ int64_t ProcessScheduler::findPid() {
 
 	unsigned int pid = (lastAssignedPid+1) % MAX_NB_PROCESS;
 	do{
-
 		if (processVector[pid] == nullptr)
 			return pid;
 

@@ -103,6 +103,8 @@ uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, u
 	case 12:
 		// return do_brk(a);
 		break;
+	case 35:
+		return Clock::nanosleep((const timespec*)a, (timespec*)b);
 	case 39:
 		return ProcessScheduler::getpid();
 	case 57:
@@ -395,6 +397,15 @@ void SetupProcessor::setupSyscall() {
 	load_syscall(STAR, (uint64_t)syscall64_handler, 0, 0);
 }
 
+typedef void (*func_ptr)(void);
+extern func_ptr _init_array_start[0], _init_array_end[0];
+
+void SetupProcessor::setupGlobalConstructors() {
+	for (auto fn = _init_array_start; fn != _init_array_end; fn++) {
+		(*fn)();
+	}
+}
+
 void SetupProcessor::setupAll()
 {
 	(apps_symbol_table)user_apps_symbol_table;
@@ -406,6 +417,7 @@ void SetupProcessor::setupAll()
 	setupMemoryMapping();
 	setupSyscall();
 	setupHandlers();
+	setupGlobalConstructors();
 }
 
 void SetupProcessor::setupHandlers(){

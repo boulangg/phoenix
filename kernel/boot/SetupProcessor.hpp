@@ -49,6 +49,7 @@ private:
 	static void setupMemoryMapping();
 	static void setupSyscall();
 	static void setupHandlers();
+	static void setupGlobalConstructors();
 };
 
 #endif // ASM_FILE

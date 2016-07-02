@@ -56,3 +56,10 @@ void* sys_brk(void* addr) {
 	(void)addr;
 	return 0;
 }
+
+int sys_nanosleep(const struct timespec *req, struct timespec *rem) {
+	(void)req;
+	(void)rem;
+	return -1;
+}
+

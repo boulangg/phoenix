@@ -7,10 +7,8 @@
 #ifndef __WEAK_CALL_H__
 #define __WEAK_CALL_H__
 
-#include "stddef.h"
-
-typedef int mode_t;
-typedef int ssize_t;
+#include <stddef.h>
+#include <time.h>
 
 int sys_open(const char *pathname, int flags, mode_t mode) __attribute__((weak));
 int sys_close(int fd) __attribute__((weak));
@@ -23,5 +21,7 @@ int sys_getpid() __attribute__((weak));
 void sys_exit(int status) __attribute__((weak));
 
 void* sys_brk(void* addr) __attribute__((weak));
+
+int sys_nanosleep(const struct timespec *req, struct timespec *rem) __attribute__((weak));
 
 #endif // __WEAK_CALL_H__

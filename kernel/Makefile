@@ -17,7 +17,7 @@ USER_APPS_GEN_FILE := $(USER_APPS_GEN_DIR)/user_apps.S
 ### Compilation sources ###
 SRC_DIRS 		:= boot core mm fs driver/input proc
 LIB_INCLUDE_DIRS := $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include
-INCLUDE_DIRS 	:= $(LIB_INCLUDE_DIRS) arch/x64 . 
+INCLUDE_DIRS 	:= $(LIB_INCLUDE_DIRS) arch/x64 .
 LIBRARY_DIRS	:= $(LIBC_DIR) $(LIBSTDCPP_DIR)
 SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), c) \
@@ -42,7 +42,8 @@ CXXFLAGS	:= -Wall -Wextra \
 		  	   -fno-exceptions -fno-rtti \
 		  	   -mcmodel=kernel \
 		  	   -Wno-packed-bitfield-compat \
-		  	   -fno-stack-protector -nostdinc -nostdinc++
+		  	   -fno-stack-protector -nostdinc -nostdinc++ \
+		  	   -fno-use-cxa-atexit
 LDFLAGS 	:= -nostdlib -g \
 		  	   -mcmodel=kernel
 LIBFLAGS	:= $(LIBRARIES) -lstdcpp -lc 

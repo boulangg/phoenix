@@ -1,4 +1,6 @@
 
+#include <unistd.h>
+
 class A {
 public:
 	A(int i) : i(i) {}

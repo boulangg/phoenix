@@ -18,6 +18,8 @@ int sys_getpid();
 
 void* sys_brk(void* addr);
 
+int sys_nanosleep(const struct timespec *req, struct timespec *rem);
+
 #ifdef __cplusplus
 }
 #endif

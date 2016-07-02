@@ -37,8 +37,9 @@ int execve(const char *file, char *const argv[], char *const envp[]);
 int getpid();
 
 int brk(void* addr);
-void* sbrk(intptr_t increment); // __attribute__((weak));
+void* sbrk(intptr_t increment);
 
+unsigned int sleep(unsigned int seconds);
 
 #ifdef __cplusplus
 }

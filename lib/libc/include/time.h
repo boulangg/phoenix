@@ -8,6 +8,10 @@
 #define __TIME_H__
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct tm {
 	int tm_sec;     // seconds [0,61]
 	int tm_min;     // minutes [0,59]
@@ -24,6 +28,8 @@ struct tm {
 //#define CLK_TCK
 #define CLOCKS_PER_SEC 1000000
 
+#include <sys/types.h>
+
 struct timespec {
 	time_t tv_sec;
 	long tv_nsec;
@@ -36,12 +42,6 @@ struct itimerspec {
 
 //#define CLOCK_REALTIME
 //#define TIMER_ABSTIME
-
-#include <sys/types.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 extern int getdate_err;
 
@@ -64,7 +64,7 @@ int        nanosleep(const struct timespec *, struct timespec *);
 size_t     strftime(char *, size_t, const char *, const struct tm *);
 char      *strptime(const char *, const char *, struct tm *);
 time_t     time(time_t *);
-int        timer_create(clockid_t, struct sigevent *, timer_t *);
+//int        timer_create(clockid_t, struct sigevent *, timer_t *);
 int        timer_delete(timer_t);
 int        timer_gettime(timer_t, struct itimerspec *);
 int        timer_getoverrun(timer_t);

@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <time.h>
 
 #include <syscall/syscall.h>
 
@@ -38,6 +39,14 @@ int brk(void* addr) {
 		//errno = ENOMEM;
 		return -1;
 	}
+}
+
+unsigned int sleep(unsigned int seconds) {
+	struct timespec spec;
+	spec.tv_nsec = 0;
+	spec.tv_sec = seconds;
+	unsigned int ret = nanosleep(&spec, NULL);
+	return ret;
 }
 
 void* sbrk(intptr_t increment) {

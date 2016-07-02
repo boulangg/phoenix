@@ -52,6 +52,7 @@ public:
 	bool operator<(const Process& p) const;
 
 	void setState(ProcessState s){state=s;}
+	ProcessState getState() {return state;}
 
 	 VirtualMapping* getMapping() {return mapping;}
 
@@ -63,6 +64,9 @@ public:
 
 	int getPid() {return pid;}
 	int setpgid(int pgid) { this->pgid = pgid; return 0;}
+
+	int getpriority() {return prio;}
+	int setpriority(int prio) {this->prio = prio; return 0;}
 
 	static Process* getIdleProc() {
 		if (scheduler == nullptr) {

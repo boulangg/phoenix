@@ -8,6 +8,9 @@
 #define KERNEL_CORE_CLOCK_HPP_
 
 #include <cstdint>
+#include <time.h>
+#include <list>
+#include <proc/ProcessScheduler.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,12 +32,17 @@ public:
 	static uint64_t hour(){return h;}
 	static uint64_t current_clock_kernel(){return totalIntern;}
 	static void tic();
+	static int nanosleep(const struct timespec *req, struct timespec *rem);
+
 private:
+	static void checkTimers();
+
 	static uint64_t s;
 	static uint64_t m;
 	static uint64_t h;
 	static uint64_t intern;
 	static uint64_t totalIntern;
+	static std::list<Event> timers;
 };
 
 #endif /* KERNEL_CORE_CLOCK_HPP_ */

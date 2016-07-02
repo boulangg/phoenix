@@ -1,21 +1,19 @@
-#include <cstdint>
-
-namespace __cxxabiv1
-{
-
-__extension__ typedef int __guard __attribute__((mode(__DI__)));
+#include <stdint.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+__extension__ typedef int __guard __attribute__((mode(__DI__)));
+
 #define ATEXIT_MAX_FUNCS	128
 
-struct atexit_func_entry_t {
+typedef struct atexit_func_entry_t {
 	void (*destructor_func)(void *);
 	void *obj_ptr;
 	void *dso_handle;
-};
+} atexit_func_entry_t;
 
 int __cxa_guard_acquire (__guard *);
 void __cxa_guard_release (__guard *);
@@ -30,7 +28,7 @@ void __cxa_pure_virtual()
     // Do nothing or print an error message.
 }
 
-void *__dso_handle = 0;
+//void *__dso_handle = 0;
 
 atexit_func_entry_t __atexit_funcs[ATEXIT_MAX_FUNCS];
 int64_t __atexit_func_count = 0;
@@ -43,8 +41,8 @@ void __cxa_guard_release (__guard *g) {
 	*(char *)g = 1;
 }
 
-void __cxa_guard_abort (__guard *) {
-
+void __cxa_guard_abort (__guard *g) {
+	(void)g;
 }
 
 int __cxa_atexit(void (*f)(void *), void *objptr, void *dso) {
@@ -79,12 +77,9 @@ void __cxa_finalize(void *f) {
 
 int atexit(void (*f)(void)) {
 	typedef void (*fn_ptr)(void*);
-	return __cxa_atexit((fn_ptr)f, nullptr, nullptr);
+	return __cxa_atexit((fn_ptr)f, NULL, NULL);
 }
-
 
 #ifdef __cplusplus
 };
 #endif
-
-}
