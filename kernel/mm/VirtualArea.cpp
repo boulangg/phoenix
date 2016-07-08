@@ -16,10 +16,10 @@ VirtualArea::VirtualArea(uint64_t* addrStart, uint64_t* addrEnd, uint64_t flags,
 	this->file = file;
 	this->offset = offset;
 	this->fileSize = fileSize;
+	uint64_t nbPages = (((uint64_t)addrEnd)+PAGE_SIZE-1)/PAGE_SIZE
+			- ((uint64_t)addrStart)/PAGE_SIZE;
 	if ((flags & FLAGS::VM_WRITE)
 			&& !(flags & FLAGS::VM_SHARED) ) {
-		uint64_t nbPages = (((uint64_t)addrEnd)+PAGE_SIZE-1)/PAGE_SIZE
-				- ((uint64_t)addrStart)/PAGE_SIZE;
 		physicalPages = new PhysicalMapping(nbPages);
 	} else {
 		physicalPages = nullptr;
@@ -40,6 +40,11 @@ VirtualArea::VirtualArea(const VirtualArea& virtArea) {
 
 VirtualArea::~VirtualArea() {
 	delete this->physicalPages;
+}
+
+size_t VirtualArea::getNbPages() {
+	return (((uint64_t)addrEnd)+PAGE_SIZE-1)/PAGE_SIZE
+			- ((uint64_t)addrStart)/PAGE_SIZE;
 }
 
 Page* VirtualArea::getPage(uint64_t index) {
@@ -63,12 +68,6 @@ Page* VirtualArea::getPage(uint64_t index) {
 				for (int64_t i = startCpy; i < endCpy; ++i) {
 					((char*)(page->kernelMappAddr))[i] = ((char*)(filePage->kernelMappAddr))[i];
 				}
-
-				/*int fileIndex = offset/PAGE_SIZE + index;
-				Page* filePage = file->getPage(fileIndex);
-				for (uint64_t i = 0; i < PAGE_SIZE/sizeof(uint64_t); ++i) {
-					page->kernelMappAddr[i] = filePage->kernelMappAddr[i];
-				}*/
 			}
 		}
 		return page;

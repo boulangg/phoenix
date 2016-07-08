@@ -47,7 +47,7 @@ VirtualMapping* Elf64::getVirtualMapping(File* file) {
 
 	virtualMap->setEntryPoint((uint64_t*)fileHeader.e_entry);
 
-	virtualMap->reloadPageTable();
+	//virtualMap->reloadPageTable();
 
 	return virtualMap;
 

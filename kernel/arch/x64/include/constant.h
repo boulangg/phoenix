@@ -29,6 +29,9 @@
 
 #define RFLAGS_INIT (1 << 9)
 
+#define USER_START		0x0000000000000000
+#define USER_END		0x0000800000000000
+
 // User malloc space
 #define USER_HEAP_START         0x0000000002000000
 #define USER_HEAP_END           0x0000000002010000
@@ -48,6 +51,14 @@
 // User syscall stack space
 #define USER_SYSCALL_STACK_START 0x00007fffffff0000
 #define USER_SYSCALL_STACK_END   0x00007fffffff2000
+
+// Kernel space
+#define KERNEL_START			0xFFFF800000000000
+#define KERNEL_END				0xFFFFFFFFFFFFFFFF
+
+// Mapping phhysical space up to 1 To of RAM
+#define KERNEL_MAPPING_START	0xFFFF800000000000
+#define KERNEL_MAPPING_END		0xFFFF810000000000
 
 // Kernel malloc space up to 1 Go
 #define KERNEL_HEAP_START       0xFFFF820000000000
@@ -73,20 +84,10 @@ extern "C" uint64_t _kernel_code_end[];
 extern "C" uint64_t _kernel_data_start[];
 extern "C" uint64_t _kernel_data_end[];
 
-#define USER_START		((uint64_t)0x0000000000000000)
-#define USER_END		((uint64_t)0x0000800000000000)
-
-#define KERNEL_START			((uint64_t)0xFFFF800000000000)
-#define KERNEL_END				((uint64_t)0xFFFFFFFFFFFFFFFF)
-
-// Mapping space up to 1 To of RAM
-#define KERNEL_MAPPING_START	((uint64_t)0xFFFF800000000000)
-//#define KERNEL_MAPPING_END		((uint64_t)0xFFFF810000000000)
-
-#define KERNEL_CODE_START		((uint64_t)_kernel_code_start)
-#define KERNEL_CODE_END			((uint64_t)_kernel_code_end)
-#define KERNEL_DATA_START		((uint64_t)_kernel_data_start)
-#define KERNEL_DATA_END			((uint64_t)_kernel_data_end)
+#define KERNEL_CODE_START		_kernel_code_start
+#define KERNEL_CODE_END			_kernel_code_end
+#define KERNEL_DATA_START		_kernel_data_start
+#define KERNEL_DATA_END			_kernel_data_end
 
 #endif
 

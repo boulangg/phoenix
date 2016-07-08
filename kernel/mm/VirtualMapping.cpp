@@ -16,6 +16,7 @@ extern "C" void switch_to_user_mode();
 VirtualMapping::VirtualMapping(): pageTable(nullptr), entryPoint(nullptr),
 startCode(nullptr), endCode(nullptr), startData(nullptr), endData(nullptr),
 topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
+
 	// Add syscall stack
 	{
 		uint64_t prot = VirtualMapping::PROT::EXEC
@@ -25,6 +26,7 @@ topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
 				| VirtualMapping::FLAGS::ANONYMOUS
 				| VirtualMapping::FLAGS::EXECUTABLE
 				| VirtualMapping::FLAGS::FIXED
+				| VirtualMapping::FLAGS::POPULATE
 				| VirtualMapping::FLAGS::KERNEL;
 		uint64_t* addr = (uint64_t*)(USER_SYSCALL_STACK_START);
 		uint64_t len = (USER_SYSCALL_STACK_END-USER_SYSCALL_STACK_START);
@@ -32,7 +34,7 @@ topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
 		mmap(addr, len, prot, flags, nullptr, 0, 0);
 	}
 
-	// Add interrupt stack
+	// Add interrupt stacks
 	{
 		uint64_t prot = VirtualMapping::PROT::EXEC
 				| VirtualMapping::PROT::WRITE
@@ -41,12 +43,15 @@ topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
 				| VirtualMapping::FLAGS::ANONYMOUS
 				| VirtualMapping::FLAGS::EXECUTABLE
 				| VirtualMapping::FLAGS::FIXED
+				| VirtualMapping::FLAGS::POPULATE
 				| VirtualMapping::FLAGS::KERNEL;
 		uint64_t* addr = (uint64_t*)(USER_INT_STACK_START);
 		uint64_t len = (USER_INT_STACK_END-USER_INT_STACK_START);
 
 		mmap(addr, len, prot, flags, nullptr, 0, 0);
 	}
+
+	reloadPageTable();
 
 	// Add stack
 	{
@@ -83,6 +88,7 @@ topStack(nullptr), startStack(nullptr), startBrk(nullptr), currBrk(nullptr) {
 
 		mmap(addr, len, prot, flags, nullptr, 0, 0);
 	}
+
 }
 
 VirtualMapping::VirtualMapping(const VirtualMapping& mapping) : virtualAreas() {
@@ -187,7 +193,6 @@ void VirtualMapping::setEntryPoint(uint64_t* entryPoint) {
 	if (startStack == nullptr) {
 		startStack = topStack-1;
 	}
-	//startStack[0] = (uint64_t)entryPoint;
 	this->entryPoint = entryPoint;
 }
 
@@ -227,6 +232,9 @@ uint64_t* VirtualMapping::mmap(uint64_t* addr, uint64_t len, uint64_t prot,
 	if (flags & FLAGS::KERNEL) {
 		vmaFlags |= VirtualArea::FLAGS::VM_KERNEL;
 	}
+	if (flags & FLAGS::POPULATE) {
+		vmaFlags |= VirtualArea::FLAGS::VM_POPULATE;
+	}
 
 	uint64_t* addrEnd = (uint64_t*)((uint64_t)addr+len);
 
@@ -238,6 +246,57 @@ uint64_t* VirtualMapping::mmap(uint64_t* addr, uint64_t len, uint64_t prot,
 	}
 
 	return 0;
+}
+
+void* VirtualMapping::userBrk(void* addr) {
+	if (addr == 0) {
+		return (void*)currBrk;
+	} else {
+		char* old_brk = (char*)currBrk;
+		char* new_brk = (char*)addr;
+		if ((new_brk < (char*)USER_HEAP_START)|| (new_brk > (char*)USER_HEAP_END)) {
+			return (void*)old_brk;
+		}
+		currBrk = (uint64_t*)new_brk;
+		return (void*)currBrk;
+	}
+}
+
+int VirtualMapping::pageFault(int errorCode, void* addr) {
+	// errorCode:
+	// bit 0: Present
+	// bit 1: Write
+	// bit 2: User
+	// bit 3: Reserved write
+	// bit 4: Instruction fetch
+	if (addr > (void*)USER_END) {
+		// Kernel code, not handled here
+		return -1;
+	}
+	if (errorCode & 0x1) {
+		// page-protection fault
+		// TODO check for copy-on-write, all other case are abort
+		return -1;
+	} else {
+		// non-present page
+		VirtualArea* area = findArea((uint64_t*)addr);
+		if (area == nullptr) {
+			return -1;
+		}
+		if (area->addrStart > addr) {
+			return -1;
+		}
+
+		// TODO check flags and error code
+		uint64_t pageStart = (uint64_t)addr & PAGE_ADDR_MASK;
+		uint64_t pgNum = pageStart - (uint64_t)area->addrStart;
+		pgNum /= PAGE_SIZE;
+		Page* page = area->getPage(pgNum);
+		pageTable->mapPage(page->physAddr, (uint64_t*)pageStart, PAGE_UWP_MASK, PAGE_UWP_MASK);
+		return 0;
+	}
+
+	return -1; // Abort process (segmentation fault)
 }
 
 uint64_t* VirtualMapping::findFreeVirtualArea(uint64_t* addr, uint64_t len) {
@@ -281,7 +340,7 @@ VirtualArea* VirtualMapping::findArea(uint64_t* addr) {
 
 std::list<VirtualArea*>::iterator VirtualMapping::mergeSurroundingAreas(
 		std::list<VirtualArea*>::iterator curr) {
-	// Merge with previous one
+	// Merge with previous area if possible
 	if (curr != virtualAreas.begin()) {
 		auto prev = std::prev(curr);
 		if ((*prev)->tryMergeArea(*curr)) {
@@ -293,7 +352,7 @@ std::list<VirtualArea*>::iterator VirtualMapping::mergeSurroundingAreas(
 	}
 
 	auto next = std::next(curr);
-	// Merge with next one
+	// Merge with next area if possible
 	if (next != virtualAreas.end()) {
 		if ((*curr)->tryMergeArea(*next)) {
 			VirtualArea* old = *next;

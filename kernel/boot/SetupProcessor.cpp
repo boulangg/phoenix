@@ -56,10 +56,10 @@
 #define SEL_KERNEL_CS	0x10
 #define SEL_KERNEL_DS	0x18
 #define SEL_TSS			0x20
-#define SEL_USER_CS		0x53
-#define SEL_USER_DS		0x5A
 #define SEL_USER_CS_32	0x43
 #define SEL_USER_DS_32	0x4A
+#define SEL_USER_CS		0x53
+#define SEL_USER_DS		0x5A
 
 // TSS Infos
 #define TSS_INDEX		(SEL_TSS >> 3)
@@ -72,7 +72,7 @@
 #define USER_CS_INDEX	(SEL_USER_CS >> 3)
 #define USER_CS_BASE	0x00				// ignored
 #define USER_CS_LIMIT	0x00				// ignored
-#define USER_CS_FLAGS	FLAG_DPL3
+#define USER_CS_FLAGS	(FLAG_DPL3 | FLAG_CODE)
 #define USER_CS_SIZEB	SZ_L
 
 // USER_DS Infos
@@ -101,8 +101,7 @@ uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, u
 	(void)a; (void)b; (void)c; (void)d; (void)e; (void)f;
 	switch(num) {
 	case 12:
-		// return do_brk(a);
-		break;
+		return (uint64_t)ProcessScheduler::userBrk((void*)a);
 	case 35:
 		return Clock::nanosleep((const timespec*)a, (timespec*)b);
 	case 39:
@@ -134,7 +133,7 @@ static void fill_segment_descriptor_64(uint8_t index, uint64_t base, uint32_t li
 
 	p0 = (limit & 0xFFFF) + ((base & 0xFFFF) << 16);
 	p1 = (base >> 16) & 0xFF;
-	p1 |= ((flags | FLAG_P) & 0xEF) << 8;
+	p1 |= ((flags | FLAG_P) & 0xFF) << 8;
 	p1 |= limit & 0xF0000;
 	p1 |= (sizebits & 0xF) << 20;
 	p1 |= base & 0xFF000000;
@@ -219,14 +218,16 @@ void SetupProcessor::setupGDT()
 void SetupProcessor::setupIDT()
 {
 	uint8_t idt_flags = FLAG_P | FLAG_DPL0 | FLAG_INT;
-	fill_idt_descriptor_64(1, (uint64_t)default_handler, SEL_KERNEL_CS, idt_flags, 1);
+	//fill_idt_descriptor_64(1, (uint64_t)default_handler, SEL_KERNEL_CS, idt_flags, 1);
+	//fill_idt_descriptor_64(14, (uint64_t)EXC_14_handler, SEL_KERNEL_CS, idt_flags, 1);
+	//fill_idt_descriptor_64(13, (uint64_t)default_handler_error_code, SEL_KERNEL_CS, idt_flags, 1);
 	set_IDT(sizeof(idt)-1, idt);
 }
 
 void SetupProcessor::setupTSS()
 {
 	tss.rsp0 = (uint64_t*)KERNEL_STACK_TOP;
-	tss.ist1 = (uint64_t*)KERNEL_IST1_TOP;
+	tss.ist1 = (uint64_t*)USER_INT_STACK_END;
 	fill_segment_descriptor_64(TSS_INDEX, TSS_BASE,
 			TSS_LIMIT, TSS_FLAGS, TSS_SIZEB);
 	set_TSS(SEL_TSS);
@@ -421,9 +422,11 @@ void SetupProcessor::setupAll()
 }
 
 void SetupProcessor::setupHandlers(){
-	uint8_t idt_flags = FLAG_P | FLAG_DPL0 | FLAG_INT;
+	uint8_t idt_flags = FLAG_P | FLAG_DPL3 | FLAG_INT;
 	fill_idt_descriptor_64(32,(uint64_t)IT_32_handler,SEL_KERNEL_CS,idt_flags,1);
 	fill_idt_descriptor_64(33,(uint64_t)IT_33_handler,SEL_KERNEL_CS,idt_flags,1);
+	fill_idt_descriptor_64(14, (uint64_t)EXC_14_handler, SEL_KERNEL_CS, idt_flags, 1);
+
 
 	Clock::setFreq();
 

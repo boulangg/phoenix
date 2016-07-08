@@ -43,7 +43,7 @@ public:
 		EXECUTABLE = 0x40,
 		//LOCKED = 0x80,
 		//NORESERVE = 0x100, // no swap space reserved
-		//POPULATE = 0x200,
+		POPULATE = 0x200,
 		//NONBLOCK = 0x400
 		KERNEL = 0x800,
 	};
@@ -57,6 +57,8 @@ public:
 
 	int munmap(uint64_t* vAddr, size_t length);
 
+	void* userBrk(void* addr);
+	int pageFault(int errorCode, void* addr);
 
 	PageTable* reloadPageTable();
 	PageTable* getPageTable();

@@ -20,7 +20,7 @@ public:
 	VirtualArea(const VirtualArea&);
 	~VirtualArea();
 
-	uint64_t getNbPage();
+	size_t getNbPages();
 	Page* getPage(uint64_t index);
 
 	bool tryMergeArea(VirtualArea* area);
@@ -40,6 +40,7 @@ public:
 		VM_DENYWRITE = 0x400,
 		VM_EXECUTABLE = 0x1000,
 		VM_KERNEL = 0x2000,
+		VM_POPULATE = 0x4000,
 	};
 
 	uint64_t* addrStart;

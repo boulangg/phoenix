@@ -12,6 +12,10 @@
 #include <core/Console.hpp>
 #include <stdio.h>
 
+extern "C" void PF_handler(int errorCode, void* addr) {
+	ProcessScheduler::pageFault(errorCode, addr);
+}
+
 int idle()
 {
 	sti();
@@ -38,6 +42,8 @@ int ProcessScheduler::init(){
 	lastAssignedPid=0;
 	running=proc;
 	processVector.push_back(proc);
+	ready.push(proc);
+	unconditionalContextSwitch(proc); // Set page table to idle pagetable
 
 	// Create init process
 	std::string name = "init";
@@ -128,6 +134,18 @@ int ProcessScheduler::execve(const char* filename, const char* argv[], const cha
 
 pid_t ProcessScheduler::getpid() {
 	return running->getPid();
+}
+
+void* ProcessScheduler::userBrk(void* addr) {
+	VirtualMapping* mapping = running->getMapping();
+
+	return mapping->userBrk(addr);
+}
+
+int ProcessScheduler::pageFault(int errorCode, void* addr) {
+	VirtualMapping* mapping = running->getMapping();
+
+	return mapping->pageFault(errorCode, addr);
 }
 
 void ProcessScheduler::unconditionalContextSwitch(Process* currProc) {

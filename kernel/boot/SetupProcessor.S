@@ -89,6 +89,11 @@ enable_syscall:
 default_handler:
 	iretq
 
+.global default_handler_error_code
+default_handler_error_code:
+	add $8, %rsp
+	iretq
+
 .global reserved_handler
 reserved_handler:
 	iretq

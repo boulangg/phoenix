@@ -20,6 +20,8 @@ PhysicalMapping::PhysicalMapping(const PhysicalMapping& mapping) {
 			Page* newPage = PhysicalAllocator::allocPage();
 			Page::copyPage(mapping.array[i], newPage);
 			array.push_back(newPage);
+		} else {
+			array.push_back(nullptr);
 		}
 	}
 }

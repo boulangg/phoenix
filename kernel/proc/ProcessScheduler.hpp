@@ -88,6 +88,9 @@ public:
 	static void wakeUp(Event ev);
 	static void sleep();
 
+	static void* userBrk(void* addr);
+	static int pageFault(int errorCode, void* addr);
+
 	static void unconditionalContextSwitch(Process* currProc);
 
 private:

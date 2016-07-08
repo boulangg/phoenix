@@ -51,6 +51,7 @@ save_regs:
 	.globl switch_to_user_mode
 switch_to_user_mode:
 	pop %rcx	// entry point
+	//mov (%rcx), %rax
 	pushfq
 	pop %r11	// rflags
 	sysretq

@@ -25,7 +25,9 @@ extern void load_syscall(uint64_t STAR,  uint64_t LSTAR, uint64_t CSTAR, uint32_
 extern void syscall64_handler();
 
 extern void default_handler();
+extern void default_handler_error_code();
 extern void reserved_handler();
+extern void EXC_14_handler();
 
 uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t num);
 
