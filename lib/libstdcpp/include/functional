@@ -26,6 +26,21 @@ public:
 	}
 };
 
+template<class Key>
+struct hash;
+
+#include "internal/hash.tpp"
+
+template <class T>
+struct equal_to {
+	typedef T first_argument_type;
+	typedef T second_argument_type;
+	typedef bool result_type;
+	bool operator()(const T& x, const T& y) const {
+		return x==y;
+	}
+};
+
 }
 
 #endif // _STDCPP_FUNCTIONAL_

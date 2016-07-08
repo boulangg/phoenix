@@ -15,6 +15,7 @@
 
 
 uint64_t* PageTable::kernelPML4T(kernel_pml4t);
+uint64_t* PageTable::prevPML4T(kernel_pml4t);
 
 PageTable::PageTable(uint64_t* pml4t) {
 	this->PML4T = (uint64_t*)((uint64_t)pml4t & PAGE_ADDR_MASK);
@@ -33,10 +34,14 @@ void PageTable::mapUserVirtualArea(VirtualArea* area) {
 		return;
 	}
 	int index = 0;
+	uint16_t flags = PAGE_UWP_MASK;
+	if (area->flags & VirtualArea::FLAGS::VM_KERNEL) {
+		flags = PAGE_KWP_MASK;
+	}
 	for (uint64_t addr = (uint64_t)(area->addrStart) & PAGE_ADDR_MASK; addr < (uint64_t)area->addrEnd; addr+=PAGE_SIZE) {
 		uint64_t* virtAddr = (uint64_t*)addr;
 		Page* physPage = area->getPage(index);
-		mapPage(physPage->physAddr, virtAddr, PAGE_UROP_MASK);
+		mapPage(physPage->physAddr, virtAddr, flags);
 		index++;
 	}
 }

@@ -1,4 +1,6 @@
 
+#include <unistd.h>
+
 class A {
 public:
 	A(int i) : i(i) {}
@@ -19,6 +21,7 @@ int main() {
 
 	}
 	static int bss[8000];
+	(void)bss;
 	a = 0;
 	return a;
 }

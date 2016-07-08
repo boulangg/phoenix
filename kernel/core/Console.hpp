@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <string>
 
+#define KBD_BUF_SIZE 1024
+
 namespace VGA {
 enum class Color {
 	BLACK = 0,
@@ -43,6 +45,8 @@ public:
 	static void write(std::string&& str);
 	static void write(const std::string& str);
 	static void toggleCursor(bool enabled);
+	static std::size_t read(char* buf, std::size_t count);
+	static void keyboardInput(char character);
 
 private:
 	Console();
@@ -50,6 +54,10 @@ private:
 
 	static const std::size_t VGA_WIDTH;
 	static const std::size_t VGA_HEIGHT;
+
+	static char kbdBuf[KBD_BUF_SIZE];
+	static std::size_t kbdBufStart;
+	static std::size_t kbdBufSize;
 
 	static std::size_t row;
 	static std::size_t column;

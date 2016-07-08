@@ -9,6 +9,8 @@
 
 #include <stdarg.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <unistd.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,17 +21,23 @@ extern "C" {
 #define _IOLBF 0x2
 #define _IONBF 0x4
 
+#define BUFSIZ 4096
+
 typedef struct FILE {
 	int64_t flags;
 	char* readBufStart;
 	char* readBufPos;
 	char* readBufEnd;
+	int readBufSize;
 	char* writeBufStart;
 	char* writeBufPos;
 	char* writeBufEnd;
+	int writeBufSize;
 	int64_t fileno;
 	int64_t mode;
 	int64_t offset;
+	bool eof;
+	int error;
 } FILE;
 
 extern FILE* stdout;

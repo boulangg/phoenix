@@ -7,42 +7,53 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
-#include <def/def_size.h>
-
-typedef unsigned long long blkcnt_t;
-typedef unsigned long long blksize_t;
+// Time types
 typedef unsigned long long clock_t;
-typedef unsigned long long clockid_t;
+typedef unsigned int       clockid_t;
+typedef signed long long   time_t;
+typedef unsigned long long timer_t;
+typedef signed int         suseconds_t;
+typedef unsigned int       useconds_t;
+
+// Device types
 typedef unsigned long long dev_t;
+
+// Filesystem and filesystem types
+typedef signed long long   blkcnt_t;
+typedef signed int         blksize_t;
 typedef unsigned long long fsblkcnt_t;
 typedef unsigned long long fsfilcnt_t;
-typedef unsigned long long id_t;
-typedef id_t gid_t;
 typedef unsigned long long ino_t;
-typedef unsigned long long key_t;
-typedef unsigned long long mode_t;
+typedef unsigned int       mode_t;
 typedef unsigned long long nlink_t;
-typedef unsigned long long off_t;
-typedef id_t pid_t;
-typedef unsigned long long pthread_attr_t;
-typedef unsigned long long pthread_barrier_t;
-typedef unsigned long long pthread_barrierattr_t;
-typedef unsigned long long pthread_cond_t;
-typedef unsigned long long pthread_condattr_t;
-typedef unsigned long long pthread_key_t;
-typedef unsigned long long pthread_mutex_t;
-typedef unsigned long long pthread_mutexattr_t;
-typedef unsigned long long pthread_once_t;
-typedef unsigned long long pthread_rwlock_t;
-typedef unsigned long long pthread_rwlockattr_t;
-typedef unsigned long long pthread_spinlock_t;
-typedef unsigned long long pthread_t;
-typedef unsigned long long ssize_t;
-typedef unsigned long long suseconds_t;
-typedef unsigned long long time_t;
-typedef unsigned long long timer_t;
-typedef unsigned long long trace_attr_t;
-typedef unsigned long long trace_event_id_t;
-typedef
+typedef signed long long   off_t;
+
+// IPC types
+typedef unsigned long long key_t;
+
+// Size types
+#include <def/def_size.h>
+typedef signed long long ssize_t;
+
+// Id types
+typedef unsigned long long id_t;
+typedef id_t               gid_t;
+typedef id_t               pid_t;
+typedef id_t               uid_t;
+
+// pthread types
+//typedef unsigned long long pthread_attr_t;
+//typedef unsigned long long pthread_barrier_t;
+//typedef unsigned long long pthread_barrierattr_t;
+//typedef unsigned long long pthread_cond_t;
+//typedef unsigned long long pthread_condattr_t;
+//typedef unsigned long long pthread_key_t;
+//typedef unsigned long long pthread_mutex_t;
+//typedef unsigned long long pthread_mutexattr_t;
+//typedef unsigned long long pthread_once_t;
+//typedef unsigned long long pthread_rwlock_t;
+//typedef unsigned long long pthread_rwlockattr_t;
+//typedef unsigned long long pthread_spinlock_t;
+//typedef unsigned long long pthread_t;
 
 #endif // __TYPES_H__

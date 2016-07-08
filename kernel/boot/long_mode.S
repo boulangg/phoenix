@@ -295,6 +295,11 @@ _start64:
 	movq $(KERNEL_STACK_TOP), %rsp
 	mov $0, %ebp
 
+	#set rflags to 0
+	mov $0, %rax
+	push %rax
+	popfq
+
 	#set segments
 	mov $0x18, %eax
 	mov %ax, %ds

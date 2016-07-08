@@ -12,6 +12,7 @@
 #define PAGE_USER_MASK      0x4
 #define PAGE_UWP_MASK       (PAGE_USER_MASK | PAGE_WRITE_MASK | PAGE_PRESENT_MASK)
 #define PAGE_UROP_MASK      (PAGE_USER_MASK | PAGE_PRESENT_MASK)
+#define PAGE_KWP_MASK		(PAGE_WRITE_MASK | PAGE_PRESENT_MASK)
 
 #include <cstdint>
 #include <list>
@@ -34,10 +35,8 @@ public:
 		return PageTable(PageTable::kernelPML4T);
 	}
 
-	static void setActivePageTable(PageTable* pgTable) {
-		if (pgTable->PML4T != nullptr) {
-			set_CR3(((uint64_t)pgTable->PML4T) & ~(KERNEL_MAPPING_START));
-		}
+	uint64_t getPageTablePtr() {
+		return (uint64_t)PML4T & ~(KERNEL_MAPPING_START);
 	}
 
 private:
@@ -54,6 +53,7 @@ private:
 	}*/
 
 	static uint64_t* kernelPML4T;
+	static uint64_t* prevPML4T;
 
 	uint64_t* PML4T;
 };

@@ -36,6 +36,11 @@ set_CR3:
 	mov %rdi, %cr3
 	ret
 
+.global get_CR3
+get_CR3:
+	mov %cr3, %rax
+	ret
+
 .global load_syscall
 load_syscall:
 	push %rcx
@@ -84,6 +89,11 @@ enable_syscall:
 default_handler:
 	iretq
 
+.global default_handler_error_code
+default_handler_error_code:
+	add $8, %rsp
+	iretq
+
 .global reserved_handler
 reserved_handler:
 	iretq
@@ -91,8 +101,10 @@ reserved_handler:
 .global syscall64_handler
 syscall64_handler:
 	//wrgsbase %rsp					// Save user %rsp in gsbase
+	cli
+	push %r11
 	mov %rsp, %r11
-	mov $KERNEL_SYSCALL_TOP, %rsp
+	mov $USER_SYSCALL_STACK_END, %rsp
 	push %r11
 	//rdgsbase %r11
 	//push %r11
@@ -107,7 +119,11 @@ syscall64_handler:
 	//pop %r11
 	//rdgsbase %rsp					// Restore user %rsp
 	pop %rsp
-	sysret
+	pop %r11
+	sti
+	sysretq
+
+
 
 
 .section .data

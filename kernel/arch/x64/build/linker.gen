@@ -91,6 +91,20 @@ SECTIONS
 		*(.rawdata)
 		_apps_end = .;
 	}
+	
+	.init_array : AT(ADDR(.init_array) - LINKER_KERNEL_HIGH_VMA)
+	{
+		_init_array_start = .;
+		*(.init_array)
+		_init_array_end = .;	
+	}
+	
+	.fini_array : AT(ADDR(.fini_array) - LINKER_KERNEL_HIGH_VMA)
+	{
+		_fini_array_start = .;
+		*(.fini_array)
+		_fini_array_end = .;	
+	}
 
 	/* Read-write data (uninitialized) section */
 	.bss ALIGN(4K) : AT(ADDR(.bss) - LINKER_KERNEL_HIGH_VMA)

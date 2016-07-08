@@ -1,5 +1,5 @@
 
-#define LACKS_UNISTD_H
+//#define LACKS_UNISTD_H
 #define LACKS_FCNTL_H
 #define LACKS_SYS_PARAM_H
 #define LACKS_SYS_MMAN_H

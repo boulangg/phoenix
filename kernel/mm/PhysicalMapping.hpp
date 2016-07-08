@@ -11,24 +11,35 @@
 #include "Page.hpp"
 
 #include <vector>
+#include <include/constant.h>
 
 class PhysicalMapping {
 public:
 	PhysicalMapping(uint64_t nb);
+	PhysicalMapping(const PhysicalMapping&);
 	~PhysicalMapping();
 
-	uint64_t size();
+	uint64_t size() const;
 
 	void setPage(uint64_t index, Page* physAddr);
 	Page* getPage(uint64_t index);
 
-	//void incrUsageCount();
-	//void decrUsageCount();
-	//int getUsageCount();
-
 	PhysicalMapping* pushBack(PhysicalMapping*);
 
+	void write(const char* src, int offset, int size);
+
+	void read(const char* src, int offset, int size);
+
+
 private:
+	void writeOnPage(Page* pg, const char* src, int offset, int size) {
+		// TODO check validity of arguments
+		char* dst = (char*)(pg->kernelMappAddr) + offset;
+		for (int i = 0 ; i < size; ++i) {
+			dst[i] = src[i];
+		}
+	}
+
 	std::vector<Page*> array;
 };
 

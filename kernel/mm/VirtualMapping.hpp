@@ -19,7 +19,7 @@ class VirtualMapping {
 public:
 
 	VirtualMapping();
-	//VirtualMapping(const VirtualMapping& );
+	VirtualMapping(const VirtualMapping&);
 
 	~VirtualMapping();
 
@@ -43,8 +43,9 @@ public:
 		EXECUTABLE = 0x40,
 		//LOCKED = 0x80,
 		//NORESERVE = 0x100, // no swap space reserved
-		//POPULATE = 0x200,
+		POPULATE = 0x200,
 		//NONBLOCK = 0x400
+		KERNEL = 0x800,
 	};
 
 	void updatePageTable(VirtualArea*);
@@ -56,9 +57,14 @@ public:
 
 	int munmap(uint64_t* vAddr, size_t length);
 
+	void* userBrk(void* addr);
+	int pageFault(int errorCode, void* addr);
 
 	PageTable* reloadPageTable();
 	PageTable* getPageTable();
+
+	void initMainArgs(const char*argv[], const char*envp[]);
+	void setEntryPoint(uint64_t* entryPoint);
 
 private:
 	// Find first virtualMemoryArea whose end is greater then addr
@@ -79,6 +85,8 @@ private:
 
 	uint64_t* findFreeVirtualArea(uint64_t* addr, uint64_t len);
 
+	VirtualArea* findArea(uint64_t* addr);
+
 	std::list<VirtualArea*> virtualAreas;
 	PageTable* pageTable;
 
@@ -90,6 +98,7 @@ public:
 	uint64_t* startData;
 	uint64_t* endData;
 	uint64_t* topStack;
+	uint64_t* startStack;
 	uint64_t* startBrk;
 	uint64_t* currBrk;
 
