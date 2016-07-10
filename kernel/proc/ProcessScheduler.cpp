@@ -145,7 +145,10 @@ void* ProcessScheduler::userBrk(void* addr) {
 int ProcessScheduler::pageFault(int errorCode, void* addr) {
 	VirtualMapping* mapping = running->getMapping();
 
-	return mapping->pageFault(errorCode, addr);
+	if (mapping->pageFault(errorCode, addr) != 0) {
+		exit(-1);
+	}
+	return 0;
 }
 
 void ProcessScheduler::unconditionalContextSwitch(Process* currProc) {
