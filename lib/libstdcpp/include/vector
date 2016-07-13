@@ -60,10 +60,8 @@ private:
 	pointer _data;
 };
 
-#include "internal/vector.tpp"
-
 }
 
-
+#include "internal/vector.tpp"
 
 #endif //PHOENIX_VECTOR_H

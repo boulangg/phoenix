@@ -7,6 +7,7 @@
 #ifndef _VECTOR_TPP_
 #define _VECTOR_TPP_
 
+namespace std {
 
 template <class T>
 vector<T>::vector(): _capacity(DEFAULT_CAPACITY), _size(0),_data(new T[_capacity]) {
@@ -115,6 +116,8 @@ void vector<T>::resize() {
 	delete[] _data;
 	_data = tmp;
 	_capacity*=2;
+}
+
 }
 
 #endif // _VECTOR_TPP_

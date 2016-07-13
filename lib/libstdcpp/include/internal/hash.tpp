@@ -3,6 +3,9 @@
 
 #include <def/def_size.h>
 
+namespace std
+{
+
 template<class K, class Arg>
 struct __hash_base {
 	typedef K   result_type;
@@ -39,5 +42,7 @@ _default_integral_hash(long long)
 _default_integral_hash(unsigned long long)
 
 #undef _default_integral_hash
+
+}
 
 #endif // __HASH_TPP__
