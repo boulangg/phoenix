@@ -40,18 +40,15 @@ int64_t KernelFile::lseek(int64_t offset, uint32_t origin) {
 	return 0;
 }
 
-size_t KernelFile::read(void* ptr, size_t size, size_t count) {
+size_t KernelFile::read(void* ptr, size_t count) {
 	char* out = (char*)ptr;
-	int i = 0;
-	for (size_t x = 0; x < count; ++x) {
-		if (_offset + size > _size) {
+	size_t x = 0;
+	for (; x < count; ++x) {
+		if (_offset >= (int64_t)_size) {
 			break;
 		}
-		for (size_t j = 0; j < size; ++j) {
-			out[i] = _kernelStartAddr[_offset + j];
-			++i;
-		}
-		_offset += size;
+		out[x] = _kernelStartAddr[_offset];
+		++_offset;
 	}
-	return i;
+	return x;
 }

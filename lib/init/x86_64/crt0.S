@@ -18,11 +18,12 @@ _start:
 	# pushq %rsi
 	# pushq %rdi
 
-	# Prepare signals, memory allocation, stdio and such.
-	# call initialize_standard_library
-
 	# Run the global constructors.
 	call _init
+
+	# Prepare signals, memory allocation, stdio and such.
+	# call initialize_standard_library
+	call init_default_std
 
 	# get argc and argv
 	mov 16(%rbp), %rdi

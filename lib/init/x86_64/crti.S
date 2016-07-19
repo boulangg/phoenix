@@ -17,3 +17,14 @@ _fini:
    push %rbp
    movq %rsp, %rbp
    /* gcc will nicely put the contents of crtbegin.o's .fini section here. */
+
+ .section .init_array
+ .align 8
+ .global init_array_start
+ init_array_start:
+
+
+ .section .fini_array
+ .align 8
+ .global fini_array_start
+ fini_array_start:

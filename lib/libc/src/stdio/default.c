@@ -6,8 +6,29 @@
 
 #include <unistd.h>
 
+FILE* stdout;
+
+typedef void (*func_ptr)(void);
+extern func_ptr init_array_start[0], init_array_end[0];
+
+static void setupGlobalConstructors() {
+	for (func_ptr* fn = init_array_start; fn != init_array_end; fn++) {
+		(*fn)();
+	}
+}
+
 void init_default_std() {
-	//stdout = malloc(sizeof(FILE));
+	setupGlobalConstructors();
+	/*stdin = malloc(sizeof(FILE));
+	stdout->fileno = 0;*/
+	stdout = malloc(sizeof(FILE));
+	stdout->fileno = 1;
+	stdout->mode = _IONBF;		// TODO Change to line buffer (or full buffer)
+	// TODO use setvbuf
+	stdout->eof = false;
+	stdout->error = 0;
+	/*stderr = malloc(sizeof(FILE));
+	stdout->fileno = 2;*/
 }
 
 FILE * fopen(const char* filename, const char* mode) {
@@ -49,8 +70,9 @@ FILE * fopen(const char* filename, const char* mode) {
 	FILE* f = malloc(sizeof(FILE));
 	f->fileno = fd;
 	f->flags = flags;
-	f->mode = _IONBF;
+	f->mode = _IONBF;		// TODO change to full buffer or line buffer
 	f->offset = 0;
+	// TODO use setvbuf
 	f->readBufStart = malloc(BUFSIZ);
 	f->readBufPos = f->readBufStart;
 	f->readBufEnd = f->readBufStart;

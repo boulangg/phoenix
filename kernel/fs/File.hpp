@@ -21,13 +21,13 @@ protected:
 public:
 	// User space functionalities
 	virtual int64_t lseek(int64_t, uint32_t);
-	virtual size_t read(void* ptr, size_t size, size_t count);
-	virtual size_t write(void* ptr, size_t size, size_t count);
+	virtual size_t read(void* ptr, size_t count);
+	virtual size_t write(void* ptr, size_t count);
 	virtual int flush();
 
 
 	// Kernel functionalities
-	virtual Page* getPage(uint64_t index) = 0;
+	virtual Page* getPage(uint64_t index);
 };
 
 

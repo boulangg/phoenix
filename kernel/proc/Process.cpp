@@ -8,6 +8,7 @@
 
 #include <core/Console.hpp>
 #include <fs/Elf64.hpp>
+#include <fs/TTYFile.hpp>
 
 #include <utility>
 
@@ -24,6 +25,7 @@ Process::Process(Process* parent, int pid, int flags) :
 	regSave[7] = parent->regSave[7];
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	save_regs(regSave);
+	tty = new TTYFile();
 }
 
 Process::Process(int prio, code_type code) :
@@ -40,6 +42,7 @@ Process::Process(int prio, code_type code) :
 	regSave[1]= (uint64_t)&(mapping->startStack[0]);
 	regSave[7] = 0;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
+	tty = new TTYFile();
 }
 
 int Process::execve(File* f, const char* argv[], const char* envp[]) {

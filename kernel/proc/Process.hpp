@@ -77,6 +77,14 @@ public:
 
 	void switch_to_user_mode();
 
+	File* getFile(unsigned int fd) {
+		if (fd >= 1 && fd <= 3) {
+			return tty;
+		} else {
+			return nullptr;
+		}
+	}
+
 private:
 	// init idle
 	Process(int prio, code_type code);
@@ -96,6 +104,7 @@ private:
 	size_type wakeUp;
 	int retval;
 	VirtualMapping* mapping;
+	File* tty;
 };
 
 #endif /* KERNEL_CORE_PROCESS_HPP_ */

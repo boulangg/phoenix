@@ -181,10 +181,15 @@ void ProcessScheduler::wait(Event ev) {
 	running->setState(ProcessState::EventBlocked);
 	auto item = std::pair<Event, Process*>(ev, running);
 	events.push_back(item);
+	unconditionalContextSwitch(running);
 }
 
-void ProcessScheduler::sleep() {
+/*void ProcessScheduler::sleep() {
 	unconditionalContextSwitch(running);
+}*/
+
+File* ProcessScheduler::getFile(unsigned int fd) {
+	return running->getFile(fd);
 }
 
 int64_t ProcessScheduler::findPid() {

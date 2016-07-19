@@ -70,6 +70,9 @@ public:
 			const char* argv[], const char* envp[]);
 	static pid_t getpid();
 	static int pause();
+
+	static File* getFile(unsigned int fd);
+
 	static int kill(pid_t pid, int sig);
 	static int setpgid(pid_t pid, pid_t pgid);
 	static pid_t getpgrid();
@@ -86,7 +89,7 @@ public:
 	// TODO solve race condition in wakeUp/wait/sleep
 	static void wait(Event ev);
 	static void wakeUp(Event ev);
-	static void sleep();
+	//static void sleep();
 
 	static void* userBrk(void* addr);
 	static int pageFault(int errorCode, void* addr);

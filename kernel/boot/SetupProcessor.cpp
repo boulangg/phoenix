@@ -99,7 +99,20 @@
 
 uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t num) {
 	(void)a; (void)b; (void)c; (void)d; (void)e; (void)f;
+	File* file;
 	switch(num) {
+	case 0:
+		file = ProcessScheduler::getFile((unsigned int )a);
+		if (file == nullptr) {
+			return -1;
+		}
+		return file->read((void*)b, (size_t)c);
+	case 1:
+		file = ProcessScheduler::getFile((unsigned int )a);
+		if (file == nullptr) {
+			return -1;
+		}
+		return file->write((void*)b, (size_t)c);
 	case 12:
 		return (uint64_t)ProcessScheduler::userBrk((void*)a);
 	case 35:

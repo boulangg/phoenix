@@ -6,12 +6,22 @@
 
 .section .init
    /* gcc will nicely put the contents of crtend.o's .init section here. */
-   popq %rbp
-   ret
-//.size _init, . - _init
+   leaveq
+   retq
 
 .section .fini
    /* gcc will nicely put the contents of crtend.o's .fini section here. */
-   popq %rbp
-   ret
-//.size _fini, . - _fini
+   leaveq
+   retq
+
+ .section .init_array
+ .align 8
+ .global init_array_end
+ init_array_end:
+
+
+ .section .fini_array
+ .align 8
+ .global fini_array_end
+ fini_array_end:
+

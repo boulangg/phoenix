@@ -14,16 +14,21 @@ int64_t File::lseek(int64_t, uint32_t) {
 	return 0;
 }
 
-size_t File::read(void*, size_t, size_t) {
+size_t File::read(void*, size_t) {
 	return 0;
 }
 
-size_t File::write(void*, size_t, size_t) {
+size_t File::write(void*, size_t) {
 	return 0;
 }
 
 int File::flush() {
 	return 0;
+}
+
+
+Page* File::getPage(uint64_t) {
+	return nullptr;
 }
 
 

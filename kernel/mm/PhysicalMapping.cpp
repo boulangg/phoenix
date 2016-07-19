@@ -41,7 +41,12 @@ void PhysicalMapping::write(const char* src, int offset, int size) {
 			endPage = end % PAGE_SIZE;
 		}
 		int size = endPage - startPage;
-		writeOnPage(getPage(numPage), src+start-offset, startPage, size);
+		Page* pg = getPage(numPage);
+		if (pg == nullptr) {
+			pg = PhysicalAllocator::allocZeroedPage();
+			setPage(numPage, pg);
+		}
+		writeOnPage(pg, src+start-offset, startPage, size);
 		start += size;
 	}
 }
@@ -61,10 +66,6 @@ void PhysicalMapping::setPage(uint64_t index, Page* physAddr) {
 }
 
 Page* PhysicalMapping::getPage(uint64_t index) {
-	if (array[index] == nullptr) {
-		Page* newPage = PhysicalAllocator::allocPage();
-		array[index] = newPage;
-	}
 	return array[index];
 }
 

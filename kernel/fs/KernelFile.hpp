@@ -15,7 +15,7 @@ public:
 	virtual ~KernelFile();
 
 	virtual int64_t lseek(int64_t offset, uint32_t origin);
-	virtual size_t read(void* ptr, size_t size, size_t count);
+	virtual size_t read(void* ptr, size_t count);
 
 	// Kernel functionalities
 	virtual Page* getPage(uint64_t index) {

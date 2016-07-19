@@ -73,7 +73,7 @@ int Clock::nanosleep(const struct timespec *req, struct timespec *) {
 	Event ev(Event::EventType::TimerEvent, s+req->tv_sec);
 	timers.push_back(ev);
 	ProcessScheduler::wait(ev);
-	ProcessScheduler::sleep();
+	//ProcessScheduler::sleep();
 	return 0;
 }
 

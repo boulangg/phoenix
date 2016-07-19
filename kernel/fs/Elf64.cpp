@@ -9,13 +9,17 @@
 VirtualMapping* Elf64::getVirtualMapping(File* file) {
 	VirtualMapping* virtualMap = new VirtualMapping();
 	Elf64_Ehdr fileHeader;
+	// TODO check succesful lseek
 	file->lseek(0, SEEK_SET);
-	file->read(&fileHeader, sizeof(Elf64_Ehdr), 1);
+	// TODO check succesful read
+	file->read(&fileHeader, sizeof(Elf64_Ehdr));
 	// TODO check if supported elf file
 	Elf64_Phdr programHeader;
 	for (uint32_t i = 0; i < fileHeader.e_phnum; ++i) {
+		// TODO check succesful lseek
 		file->lseek(fileHeader.e_phoff + i*fileHeader.e_phentsize, SEEK_SET);
-		file->read(&programHeader, sizeof(Elf64_Phdr), 1);
+		// TODO check succesful read
+		file->read(&programHeader, sizeof(Elf64_Phdr));
 		if (programHeader.p_type == programType::PT_LOAD) {
 			uint64_t prot = VirtualMapping::PROT::NONE;
 			uint64_t flags = VirtualMapping::FLAGS::PRIVATE |
