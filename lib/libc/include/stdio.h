@@ -23,7 +23,7 @@ extern "C" {
 
 #define BUFSIZ 4096
 
-typedef struct FILE {
+/*typedef struct FILE {
 	int64_t flags;
 	char* readBufStart;
 	char* readBufPos;
@@ -38,14 +38,20 @@ typedef struct FILE {
 	int64_t offset;
 	bool eof;
 	int error;
-} FILE;
+} FILE;*/
+
+typedef struct FILE FILE;
 
 extern FILE* stdout;
 extern FILE* stdin;
 extern FILE* stderr;
 
+int fgetc(FILE* stream);
 int fputc(int character, FILE* stream);
 int fflush(FILE* stream);
+
+int setbuf(FILE * str, char* buffer);
+int setvbuf(FILE* str, char* buffer, int mode, size_t size);
 
 int sprintf(char * s, const char * format, ...);
 

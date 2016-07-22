@@ -289,7 +289,7 @@ int VirtualMapping::pageFault(int errorCode, void* addr) {
 
 		// TODO check flags and error code
 		uint64_t virtPageStart = (uint64_t)addr & PAGE_ADDR_MASK;
-		uint64_t pageStart = ((uint64_t)addr - (uint64_t)area->addrStart) & PAGE_ADDR_MASK;
+		uint64_t pageStart = (uint64_t)virtPageStart - ((uint64_t)area->addrStart & PAGE_ADDR_MASK);
 		uint64_t pgNum = pageStart / PAGE_SIZE;
 		Page* page = area->getPage(pgNum);
 		pageTable->mapPage(page->physAddr, (uint64_t*)virtPageStart, PAGE_UWP_MASK, PAGE_UWP_MASK);

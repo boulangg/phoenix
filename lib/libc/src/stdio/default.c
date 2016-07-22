@@ -1,8 +1,7 @@
-#include <stdio.h>
+#include "io.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <errno.h>
-#include <def/def_null.h>
 
 #include <unistd.h>
 
@@ -17,21 +16,14 @@ static void setupGlobalConstructors() {
 	}
 }
 
+
+
 void init_default_std() {
 	setupGlobalConstructors();
-	/*stdin = malloc(sizeof(FILE));
-	stdout->fileno = 0;*/
-	stdout = malloc(sizeof(FILE));
-	stdout->fileno = 1;
-	stdout->mode = _IONBF;		// TODO Change to line buffer (or full buffer)
-	// TODO use setvbuf
-	stdout->eof = false;
-	stdout->error = 0;
-	/*stderr = malloc(sizeof(FILE));
-	stdout->fileno = 2;*/
+	init_io();
 }
 
-FILE * fopen(const char* filename, const char* mode) {
+/*FILE * fopen(const char* filename, const char* mode) {
 	int flags = 0;
 	switch(mode[0]) {
 	case 'r':
@@ -73,6 +65,7 @@ FILE * fopen(const char* filename, const char* mode) {
 	f->mode = _IONBF;		// TODO change to full buffer or line buffer
 	f->offset = 0;
 	// TODO use setvbuf
+	//setvbuf(f, NULL, _IONBF, BUFSIZ);
 	f->readBufStart = malloc(BUFSIZ);
 	f->readBufPos = f->readBufStart;
 	f->readBufEnd = f->readBufStart;
@@ -190,21 +183,5 @@ int fputs(const char* str, FILE* stream) {
 		i++;
 	}
 	return i;
-}
-
-void setvbuf(FILE* stream, char* buffer, int mode, size_t size) {
-	(void)stream;
-	(void)buffer;
-	(void)mode;
-	(void)size;
-	// TODO
-}
-
-void setbuf(FILE * stream, char* buffer) {
-	if (buffer == NULL) {
-		setvbuf(stream, buffer, _IONBF, BUFSIZ);
-	} else {
-		setvbuf(stream, buffer, _IOFBF, BUFSIZ);
-	}
-}
+}*/
 
