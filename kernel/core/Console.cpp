@@ -84,10 +84,14 @@ size_t Console::read(char* buf, size_t count) {
 }
 
 void Console::keyboardInput(char character) {
-	if (kbdBufSize < 1024) {
+	if ((character == '\b') && (kbdBufSize > 0)) {
+		kbdBufSize--;
+	}
+	if ((character != '\b') && (kbdBufSize < 1024)) {
 		kbdBuf[(kbdBufStart+kbdBufSize) % KBD_BUF_SIZE] = character;
 		kbdBufSize++;
 	}
+	Console::write(character);
 }
 
 void Console::toggleCursor(bool enabled)
@@ -142,6 +146,7 @@ void Console::processChar(char c)
 	if (c == '\b') {
 		if (column > 0) {
 			column --;
+			putEntryAt(' ', column, row);
 		}
 	} else if (c == '\t') {
 		column  = (column & 0xF8) + 0x8;

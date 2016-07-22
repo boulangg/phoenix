@@ -20,6 +20,7 @@ public:
 
 	enum KEYBOARD_MODE {
 		RAW,
+		ASCII,
 		UNICODE,
 	};
 
@@ -32,11 +33,17 @@ public:
 	static void initKeyboard();
 
 	static void processScancode(uint8_t scancode);
+	static void processSpecialKeys(uint8_t scancode);
+	static void processKeycode(uint8_t keycode);
 
 	static void sendCommand(struct keyboardCommand cmd);
+
+	static bool isShift();
 private:
 	static KEYBOARD_MODE mode;
+	static uint8_t specialKeys;
 	static bool keystate[256];
+	static bool extended;
 };
 
 #endif // __KEYBOARD_H__

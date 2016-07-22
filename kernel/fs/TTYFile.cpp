@@ -12,8 +12,7 @@ TTYFile::TTYFile() {}
 TTYFile::~TTYFile() {}
 
 size_t TTYFile::read(void* ptr, size_t count) {
-	(void)ptr; (void)count;
-	return 0;
+	return Console::read((char*)ptr, count);
 }
 
 size_t TTYFile::write(void* ptr, size_t count) {
