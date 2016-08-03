@@ -8,6 +8,7 @@
 
 #include <asm/io.h>
 #include <include/constant.h>
+#include <proc/ProcessScheduler.hpp>
 
 
 using namespace std;
@@ -75,6 +76,10 @@ void Console::write(std::string&& str) {
 
 size_t Console::read(char* buf, size_t count) {
 	size_t curr = 0;
+	if (kbdBufSize == 0) {
+		Event ev(Event::EventType::FileEvent, 0);
+		ProcessScheduler::wait(ev);
+	}
 	while ((kbdBufSize > 0) && (curr < count)) {
 		buf[curr] = kbdBuf[kbdBufStart];
 		kbdBufStart = (kbdBufStart + 1) % KBD_BUF_SIZE;

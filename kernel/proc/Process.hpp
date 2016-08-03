@@ -11,6 +11,7 @@
 #include "stdint.h"
 #include <mm/VirtualMapping.hpp>
 #include <fs/File.hpp>
+#include <fs/TTY.hpp>
 
 /***************************************
  *               Defines               *
@@ -104,7 +105,7 @@ private:
 	size_type wakeUp;
 	int retval;
 	VirtualMapping* mapping;
-	File* tty;
+	TTY* tty;
 };
 
 #endif /* KERNEL_CORE_PROCESS_HPP_ */

@@ -15,5 +15,12 @@ int main(int argc,char* argv[]) {
 	sleep(5);
 	fputc('b', stdout);
 	fputc('\n', stdout);
+
+	char buf;
+	while (1) {
+		read(1, &buf, 1);
+		fputc(buf, stdout);
+	}
+
 	return getpid();
 }

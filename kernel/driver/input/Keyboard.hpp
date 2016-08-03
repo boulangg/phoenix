@@ -4,6 +4,7 @@
 extern "C" void KEYBOARD_handler();
 
 #include <cstdint>
+#include <fs/TTY.hpp>
 
 class Keyboard {
 public:
@@ -39,11 +40,15 @@ public:
 	static void sendCommand(struct keyboardCommand cmd);
 
 	static bool isShift();
+	static void setTTY(TTY* tty) {
+		Keyboard::tty = tty;
+	}
 private:
 	static KEYBOARD_MODE mode;
 	static uint8_t specialKeys;
 	static bool keystate[256];
 	static bool extended;
+	static TTY* tty;
 };
 
 #endif // __KEYBOARD_H__

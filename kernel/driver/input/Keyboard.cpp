@@ -40,6 +40,7 @@ Keyboard::KEYBOARD_MODE Keyboard::mode = Keyboard::KEYBOARD_MODE::ASCII;
 bool Keyboard::keystate[256];
 bool Keyboard::extended = false;
 uint8_t Keyboard::specialKeys = 0;
+TTY* Keyboard::tty = nullptr;
 
 void Keyboard::processScancode(uint8_t scancode) {
 	if (mode == RAW) {
@@ -94,8 +95,8 @@ void Keyboard::processSpecialKeys(uint8_t scancode) {
 
 void Keyboard::processKeycode(uint8_t keycode) {
 	if(isShift()) {
-		Console::keyboardInput(shift_keybind.map[keycode]);
+		Keyboard::tty->addInput(shift_keybind.map[keycode]);
 	} else {
-		Console::keyboardInput(normal_keybind.map[keycode]);
+		Keyboard::tty->addInput(normal_keybind.map[keycode]);
 	}
 }
