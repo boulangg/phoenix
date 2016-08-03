@@ -8,7 +8,6 @@
 
 #include <core/Console.hpp>
 #include <fs/Elf64.hpp>
-#include <fs/TTYFile.hpp>
 #include <driver/input/Keyboard.hpp>
 
 #include <utility>
