@@ -28,18 +28,18 @@ static struct keybind extend_keybind;*/
 
 static struct keybind normal_keybind {
 	'\0',
-	0x1b,  '&',  'e',  '"',  '\'',  '(',  '-',  'e',  '_',  'c',  'a',  ')',  '=', '\b',
+	0x1b,  '&',  'e',  '"', '\'',  '(',  '-',  'e',  '_',  'c',  'a',  ')',  '=', '\b',
 	0x09,  'a',  'z',  'e',  'r',  't',  'y',  'u',  'i',  'o',  'p',  '^',  '$', '\n', 0x00,
-	 'q',  's',  'd',  'f',  'g',  'h',  'j',  'k',  'l',  'm', 'u', 0x60, 0x00, '\\',
-	 'w',  'x',  'c',  'v',  'b',  'n',  ',',  ';',  ':',  '!', 0x00,  '*', 0x00, 0x00,
+	 'q',  's',  'd',  'f',  'g',  'h',  'j',  'k',  'l',  'm',  'u', 0x60, 0x00, '\\',
+	 'w',  'x',  'c',  'v',  'b',  'n',  ',',  ';',  ':',  '!', 0x00,  '*', 0x00,  ' ',
 };
 
 static struct keybind shift_keybind {
 	'\0',
-	0x1b,  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  '0',  'o',  '+', '\b',
-	0x09,  'A',  'Z',  'E',  'R',  'T',  'Y',  'U',  'I',  'O',  'P',  '"',  0x00, 0x0d, 0x00,
-	 'Q',  'S',  'D',  'F',  'G',  'H',  'J',  'K',  'L',  'M', '%', 0x60, 0x00, '\\',
-	 'W',  'X',  'C',  'V',  'B',  'N',  '?',  '.',  '/',  0x00, 0x00,  0x00, 0x00, 0x00,
+	0x1b,  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  '0',  'o',  '+',  '\b',
+	0x09,  'A',  'Z',  'E',  'R',  'T',  'Y',  'U',  'I',  'O',  'P',  '"', 0x00, 0x0d, 0x00,
+	 'Q',  'S',  'D',  'F',  'G',  'H',  'J',  'K',  'L',  'M',  '%', 0x60, 0x00, '\\',
+	 'W',  'X',  'C',  'V',  'B',  'N',  '?',  '.',  '/', 0x00, 0x00,  'u', 0x00,  ' ',
 };
 
 Keyboard::KEYBOARD_MODE Keyboard::mode = Keyboard::KEYBOARD_MODE::ASCII;
@@ -100,9 +100,13 @@ void Keyboard::processSpecialKeys(uint8_t scancode) {
 }
 
 void Keyboard::processKeycode(uint8_t keycode) {
+	char input;
 	if(isShift()) {
-		Keyboard::tty->addInput(shift_keybind.map[keycode]);
+		input = shift_keybind.map[keycode];
 	} else {
-		Keyboard::tty->addInput(normal_keybind.map[keycode]);
+		input = normal_keybind.map[keycode];
+	}
+	if (input != 0x00) {
+		Keyboard::tty->addInput(input);
 	}
 }

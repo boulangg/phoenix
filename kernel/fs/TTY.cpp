@@ -9,17 +9,35 @@
 #include <proc/ProcessScheduler.hpp>
 #include <core/Console.hpp>
 
+#define NEW_LINE '\n'
+
 size_t TTY::read(void* ptr, size_t count) {
 		char* buf = (char*)ptr;
 		size_t curr = 0;
-		while (buffer.size() == 0) {
-			Event ev(Event::EventType::FileEvent, 0);
-			ProcessScheduler::wait(ev);
-		}
-		while ((buffer.size() > 0) && (curr < count)) {
-			buf[curr] = buffer.front();
-			buffer.pop_front();
-			curr++;
+		if (tios.c_lflag & ICANON) {
+			while (nbDelim == 0) {
+				Event ev(Event::EventType::FileEvent, 0);
+				ProcessScheduler::wait(ev);
+			}
+			while ((buffer.size() > 0) && (curr < count)) {
+				buf[curr] = buffer.front();
+				buffer.pop_front();
+				curr++;
+				if (buf[curr-1] == NEW_LINE) {
+					nbDelim--;
+					break;
+				}
+			}
+		} else {
+			while ((buffer.size() < tios.c_cc[VMIN]) && (buffer.size() < count)) {
+				Event ev(Event::EventType::FileEvent, 0);
+				ProcessScheduler::wait(ev);
+			}
+			while ((buffer.size() > 0) && (curr < count)) {
+				buf[curr] = buffer.front();
+				buffer.pop_front();
+				curr++;
+			}
 		}
 		return curr;
 	}
@@ -34,9 +52,27 @@ size_t TTY::write(void* ptr, size_t count) {
 }
 
 int TTY::addInput(const char val) {
-	buffer.push_back(val);
-	Event ev(Event::EventType::FileEvent, 0);
-	ProcessScheduler::wakeUp(ev);
-	Console::write(val);
+	//buffer.push_back(val);
+	if (tios.c_lflag & ECHO) {
+		Console::write(val);
+	}
+	if (tios.c_lflag & ICANON) {
+		if (val == tios.c_cc[VERASE]) {
+			if (buffer.back() != NEW_LINE) {
+				buffer.pop_back();
+			}
+		} else {
+			buffer.push_back(val);
+		}
+		if (val == NEW_LINE) {
+			nbDelim++;
+			Event ev(Event::EventType::FileEvent, 0);
+			ProcessScheduler::wakeUp(ev);
+		}
+	} else {
+		buffer.push_back(val);
+		Event ev(Event::EventType::FileEvent, 0);
+		ProcessScheduler::wakeUp(ev);
+	}
 	return 0;
 }

@@ -16,10 +16,12 @@ int main(int argc,char* argv[]) {
 	fputc('b', stdout);
 	fputc('\n', stdout);
 
-	char buf;
+	char buf[5];
 	while (1) {
-		read(1, &buf, 1);
-		fputc(buf, stdout);
+		ssize_t ret = read(1, buf, 5);
+		for (int i = 0; i < ret; i++) {
+			fputc(buf[i], stdout);
+		}
 	}
 
 	return getpid();

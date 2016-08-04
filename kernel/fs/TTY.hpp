@@ -32,6 +32,16 @@ public:
 		return buffer[start];
 	}
 
+	reference back() {
+		size_t last = (end + BUFFER_SIZE - 1) % BUFFER_SIZE;
+		return buffer[last];
+	}
+
+	void pop_back() {
+		end = (end + BUFFER_SIZE - 1) % BUFFER_SIZE;
+		_size--;
+	}
+
 	void pop_front() {
 		start = (start + 1) % BUFFER_SIZE;
 		_size--;
@@ -48,7 +58,7 @@ private:
 
 class TTY : public File {
 public:
-	TTY() {
+	TTY() : buffer(), nbDelim(0){
 		initTermios();
 	}
 	~TTY() {}
@@ -66,28 +76,29 @@ private:
 	int setTermios(struct termios*);
 
 	void initTermios() {
-		tios.c_cc[VEOF] = '\0';
-		tios.c_cc[VEOL] = '\0';
+		tios.c_cc[VEOF] = 0;
+		tios.c_cc[VEOL] = 0;
 		tios.c_cc[VERASE] = '\b';
-		tios.c_cc[VINTR] = '\0';
-		tios.c_cc[VKILL] = '\0';
-		tios.c_cc[VMIN] = '\0';
-		tios.c_cc[VQUIT] = '\0';
-		tios.c_cc[VSTART] = '\0';
-		tios.c_cc[VSTOP] = '\0';
-		tios.c_cc[VSUSP] = '\0';
-		tios.c_cc[VTIME] = '\0';
+		tios.c_cc[VINTR] = 0;
+		tios.c_cc[VKILL] = 0;
+		tios.c_cc[VMIN] = 5;
+		tios.c_cc[VQUIT] = 0;
+		tios.c_cc[VSTART] = 0;
+		tios.c_cc[VSTOP] = 0;
+		tios.c_cc[VSUSP] = 0;
+		tios.c_cc[VTIME] = 0;
 
 		tios.c_iflag = 0;
 		tios.c_oflag = 0;
 		tios.c_cflag = 0;
-		tios.c_lflag = ECHO;
+		tios.c_lflag = ECHO | ICANON;
 		tios.c_ispeed = 0;
 		tios.c_ospeed = 0;
 	}
 
 	struct termios tios;
 	InputBuffer buffer;
+	size_t nbDelim;
 
 };
 
