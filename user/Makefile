@@ -34,7 +34,7 @@ CXXFLAGS	:= -Wall -Wextra -nostdinc -nostdinc++ \
 		  	   -g -std=c++11 \
 		  	   -fno-exceptions -fno-rtti \
 		  	   -Wno-packed-bitfield-compat \
-		  	   -fno-stack-protector
+		  	   -fno-stack-protector -fno-builtin-fprintf -fno-builtin-printf
 LDFLAGS 	:= -nodefaultlibs -g -specs=init/x86_64/specs
 LIBFLAGS	:= $(LIBRARIES) -lstdcpp -lc
 

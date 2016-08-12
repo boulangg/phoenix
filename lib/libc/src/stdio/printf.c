@@ -6,10 +6,10 @@
 
 #include <stdio.h>
 
-int fprintf(FILE* str, const char* format, ...) {
+int printf(const char* format, ...) {
 	va_list v;
 	va_start(v, format);
-	int res = vfprintf(str, format, v);
+	int res = vfprintf(stdout, format, v);
 	va_end(v);
 	return res;
 }

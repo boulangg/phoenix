@@ -4,10 +4,10 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include <stdio.h>
 #include "io.h"
 
 int vfscanf(FILE* str, const char* format, va_list arg) {
+	CHECK_FILE(str);
 	// TODO
 	(void)str;
 	(void)format;

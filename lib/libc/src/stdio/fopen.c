@@ -6,6 +6,7 @@
 
 #include "io.h"
 
+#include <stdlib.h>
 #include <errno.h>
 
 FILE * fopen(const char* filename, const char* mode) {

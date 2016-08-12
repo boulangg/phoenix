@@ -23,22 +23,32 @@ extern "C" {
 
 #define BUFSIZ 4096
 
-/*typedef struct FILE {
-	int64_t flags;
-	char* readBufStart;
-	char* readBufPos;
-	char* readBufEnd;
-	int readBufSize;
-	char* writeBufStart;
-	char* writeBufPos;
-	char* writeBufEnd;
-	int writeBufSize;
+struct File;
+typedef struct FILE FILE;
+
+typedef int (*fgetc_fn)(FILE* str);
+typedef int (*fputc_fn)(int c, FILE* str);
+//typedef int (*fflush_fn)(FILE* str);
+
+typedef struct stream_ops {
+	fgetc_fn fgetc;
+	fputc_fn fputc;
+	//fflush_fn fflush;
+} stream_ops;
+
+struct FILE {
+	uint64_t flags;
+	char* bufStart;
+	char* bufPos;
+	char* bufEnd;
+	size_t bufSize;
 	int64_t fileno;
 	int64_t mode;
 	int64_t offset;
 	bool eof;
 	int error;
-} FILE;*/
+	stream_ops* fn;
+};
 
 typedef struct FILE FILE;
 

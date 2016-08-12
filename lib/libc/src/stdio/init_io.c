@@ -6,6 +6,9 @@
 
 #include "io.h"
 
+#include <stdlib.h>
+#include <stddef.h>
+
 FILE* stdout;
 FILE* stdin;
 FILE* stderr;
@@ -25,7 +28,12 @@ void bufToFile(FILE* str, char* s, size_t n) {
 	str->flags = MAGIC_VALUE;
 	str->bufStart = s;
 	str->bufPos = s;
-	str->bufEnd = s+n;
+	str->bufEnd = s;
+	str->bufSize = n;
+	// Check overflow
+	if (str->bufStart + str->bufSize < str->bufStart) {
+		str->bufSize = (size_t)((char*)-1 - str->bufStart);
+	}
 	str->eof = false;
 	str->fn = &str_fn;
 }

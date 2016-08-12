@@ -9,8 +9,7 @@
 
 int sprintf(char* s, const char* format, ...)
 {
-	/*
-	 * va_list v;
+	va_list v;
 	va_start(v, format);
 	FILE str;
 	bufToFile(&str, s, (size_t)-1);
@@ -18,13 +17,6 @@ int sprintf(char* s, const char* format, ...)
 	if (res >= 0) {
 		s[res] = '\0';
 	}
-	va_end(v);
-	return res;
-	*/
-
-	va_list v;
-	va_start(v, format);
-	int res = vsprintf(s, format, v);
 	va_end(v);
 	return res;
 }

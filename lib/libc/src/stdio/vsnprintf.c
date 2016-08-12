@@ -14,5 +14,8 @@ int vsnprintf(char* s, size_t n, const char* format, va_list arg) {
 	FILE str;
 	bufToFile(&str, s, n-1);
 	int res = vfprintf(&str, format, arg);
+	if (res > 0) {
+		s[res] = '\0';
+	}
 	return res;
 }
