@@ -49,3 +49,5 @@ struct FILE {
                          if (str->fn == NULL) return EOF;}
 
 void init_io();
+
+void bufToFile(FILE* str, char* s, size_t n);

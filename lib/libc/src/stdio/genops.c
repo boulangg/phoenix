@@ -17,7 +17,7 @@ int fflush(FILE* str) {
 		size_t wr_size = str->bufPos-str->bufStart;
 		if (wr_size > 0) {
 
-			if (write(str->fileno, str->bufStart, wr_size) != wr_size) {
+			if ((size_t)write(str->fileno, str->bufStart, wr_size) != wr_size) {
 				return EOF;
 			}
 			str->bufPos -= wr_size;

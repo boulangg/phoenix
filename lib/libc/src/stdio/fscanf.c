@@ -5,26 +5,11 @@
  */
 
 #include <stdio.h>
-#include "io.h"
 
-int sprintf(char* s, const char* format, ...)
-{
-	/*
-	 * va_list v;
-	va_start(v, format);
-	FILE str;
-	bufToFile(&str, s, (size_t)-1);
-	int res = vfprintf(&str, format, v);
-	if (res >= 0) {
-		s[res] = '\0';
-	}
-	va_end(v);
-	return res;
-	*/
-
+int fscanf(FILE* str, const char* format, ...) {
 	va_list v;
 	va_start(v, format);
-	int res = vsprintf(s, format, v);
+	int res = vfscanf(str, format, v);
 	va_end(v);
 	return res;
 }

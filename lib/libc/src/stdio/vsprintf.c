@@ -492,8 +492,18 @@ void get_arg_spec(const char** format, struct arg_info* arg_info)
 	++(*format);
 }
 
-int vsprintf(char* str, const char* format, va_list arg)
+int vsprintf(char* s, const char* format, va_list arg)
 {
+	/*
+	FILE str;
+	strToFile(&str, s, (size_t)-1);
+	int res = vfsprintf(str, format, arg);
+	if (res > 0) {
+		str[res] = '\0';
+	}
+	return res;
+	 */
+
 	const char* format_start = format;
 	struct arg_info arg_info;
 	while (*format != '\0') {
@@ -504,13 +514,13 @@ int vsprintf(char* str, const char* format, va_list arg)
 			get_arg_precision(&format, &arg_info, arg);
 			get_arg_length(&format, &arg_info);
 			get_arg_spec(&format, &arg_info);
-			sprint_arg_table[arg_info.specifier](&str, &arg_info, arg, format_start);
+			sprint_arg_table[arg_info.specifier](&s, &arg_info, arg, format_start);
 		} else {
-			*str = *format;
-			str++;
+			*s = *format;
+			s++;
 			format++;
 		}
 	}
-	*str = '\0';
+	*s = '\0';
 	return 0;
 }

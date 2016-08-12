@@ -46,16 +46,27 @@ extern FILE* stdout;
 extern FILE* stdin;
 extern FILE* stderr;
 
-int fgetc(FILE* stream);
-int fputc(int character, FILE* stream);
-int fflush(FILE* stream);
+int fgetc(FILE* str);
+int fputc(int character, FILE* str);
+int fflush(FILE* str);
 
-int setbuf(FILE * str, char* buffer);
+int setbuf(FILE* str, char* buffer);
 int setvbuf(FILE* str, char* buffer, int mode, size_t size);
 
-int sprintf(char * s, const char * format, ...);
-
-int vsprintf(char *s, const char *format, va_list arg);
+int fprintf(FILE* str, const char* format, ...);
+int fscanf(FILE* str, const char* format, ...);
+int printf(const char* format, ...);
+int scanf(const char* format, ...);
+int snprintf(char* s, size_t n, const char* format, ...);
+int sprintf(char* s, const char* format, ...);
+int sscanf(const char* s, const char* format, ...);
+int vfprintf(FILE* str, const char* format, va_list arg);
+int vfscanf(FILE* str, const char* format, va_list arg);
+int vprintf(const char* format, va_list arg);
+int vscanf(const char* format, va_list arg);
+int vsnprintf(char* s, size_t n, const char* format, va_list arg);
+int vsprintf(char* s, const char* format, va_list arg);
+int vsscanf(const char* s, const char* format, va_list arg);
 
 #ifdef __cplusplus
 }
