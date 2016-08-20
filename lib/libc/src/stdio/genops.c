@@ -13,9 +13,105 @@ int fgetc(FILE* str) {
 	return str->fn->fgetc(str);
 }
 
+char* fgets(char* s, int num, FILE* str) {
+	int i = 0;
+	while (i < num-1) {
+		int c = fgetc(str);
+		if (c == EOF) {
+			if (feof(str) && i == 0) {
+				return NULL;
+			}
+			if (ferror(str)) {
+				return NULL;
+			}
+		}
+		s[i] = (char)c;
+		i++;
+		if (c == '\n') {
+			break;
+		}
+	}
+	s[i] = '\0';
+	return s;
+}
+
 int fputc(int c, FILE* str) {
 	CHECK_FILE(str);
 	return str->fn->fputc(c, str);
+}
+
+int fputs(const char* s, FILE* str) {
+	CHECK_FILE(str);
+	int i = 0;
+	while (s[i] != '\0') {
+		if (fputc(s[i], str) == EOF) {
+			return EOF;
+		}
+	}
+	return 0;
+}
+
+int getc(FILE* str) {
+	return fgetc(str);
+}
+
+int getchar() {
+	return fgetc(stdin);
+}
+
+char* gets(char* s) {
+	int i = 0;
+	int c = fgetc(stdin);
+	while (c != '\n') {
+		if (c == EOF) {
+			if (feof(stdin) && i == 0) {
+				return NULL;
+			}
+			if (ferror(stdin)) {
+				return NULL;
+			}
+		}
+		s[i] = (char)c;
+		i++;
+	}
+	s[i] = '\0';
+	return s;
+}
+
+int putc(int c, FILE* str) {
+	return fputc(c, str);
+}
+
+int putchar(int c) {
+	return fputc(c, stdout);
+}
+
+int puts(const char* s) {
+	if (fputs(s, stdout) == EOF) {
+		return EOF;
+	}
+	return fputc('\n', stdout);
+}
+
+static int _IO_putback_fail(int c, FILE* str) {
+	// TODO add a buffer for ungetc
+	(void)c;
+	(void)str;
+	return EOF;
+}
+
+int ungetc(int c, FILE* str) {
+	CHECK_FILE(str);
+	if (str->flags & BUFWRITE) {
+		return EOF;
+	}
+	if (str->bufPos > str->bufStart) {
+		str->bufPos--;
+		*(str->bufPos) = (char)c;
+		return c;
+	} else {
+		return _IO_putback_fail(c, str);
+	}
 }
 
 int fflush(FILE* str) {
@@ -23,7 +119,7 @@ int fflush(FILE* str) {
 	if (str->flags & BUFWRITE) {
 		size_t wr_size = str->bufPos-str->bufStart;
 		if (wr_size > 0) {
-
+			//lseek(str->fileno, 0, SEEK_END);
 			if ((size_t)write(str->fileno, str->bufStart, wr_size) != wr_size) {
 				return EOF;
 			}

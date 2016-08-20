@@ -8,10 +8,13 @@
 #include <stddef.h>
 
 // Flags
-#define BUFWRITE 0x1
-#define USERBUF  0x2
 #define MAGIC_MASK   0xFFFF0000
 #define MAGIC_VALUE  0xABCD0000
+
+#define FREAD        0x00000001
+#define FWRITE       0x00000002
+#define BUFWRITE     0x00000010
+#define USERBUF      0x00000020
 
 struct stream_ops str_fn;
 struct stream_ops file_fn;

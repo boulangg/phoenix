@@ -8,37 +8,58 @@
 
 #include <stdlib.h>
 #include <errno.h>
+#include <stdbool.h>
 
-FILE * fopen(const char* filename, const char* mode) {
+#define MODE_UPDATE 0x1
+#define MODE_BIN    0x2
+#define MODE_EXCL   0x4
+
+FILE* fopen(const char* filename, const char* mode) {
 	int flags = 0;
-	//int file_flags = 0;
+	int i = 0;
+	int modeFlags = 0;
+	int fileFlags = 0;
+	do {
+		i++;
+		switch(mode[i]) {
+		case '+':
+			modeFlags |= MODE_UPDATE;
+			break;
+		case 'b':
+			modeFlags |= MODE_BIN;
+			break;
+		case 'x':
+			modeFlags |= MODE_EXCL;
+			break;
+		default:
+			i = 0;
+			break;
+		}
+	} while (i != 0);
+
 	switch(mode[0]) {
 	case 'r':
-		if (mode[1] == '+') {
-			flags |= O_RDWR;
-		} else {
-			flags |= O_RDONLY;
-		}
+		flags = O_RDWR;
 		break;
 	case 'w':
-		flags |= O_TRUNC | O_CREAT;
-		if (mode[1] == '+') {
-			flags |= O_RDWR;
-		} else {
-			flags |= O_WRONLY;
+		flags = O_TRUNC | O_CREAT | O_WRONLY;
+		if (modeFlags & MODE_EXCL) {
+			flags |= O_EXCL;
 		}
 		break;
 	case 'a':
-		flags |= O_CREAT;
-		if (mode[1] == '+') {
-			flags |= O_RDWR;
-		} else {
-			flags |= O_WRONLY;
-		}
+		flags = O_CREAT | O_WRONLY;
 		break;
 	default:
 		return NULL;
 	}
+
+	if (modeFlags & MODE_UPDATE) {
+		flags &= !(O_ACCMODE);
+		flags |= O_RDWR;
+	}
+
+	// TODO Check default fileMode
 	int fileMode = 0x0777;
 
 	int fd = open(filename, flags, fileMode);
@@ -49,10 +70,12 @@ FILE * fopen(const char* filename, const char* mode) {
 	FILE* f = malloc(sizeof(FILE));
 	f->fileno = fd;
 	f->flags = MAGIC_VALUE;
-	f->mode = _IONBF;		// TODO change to full buffer or line buffer
 	f->offset = 0;
-	setvbuf(f, NULL, _IONBF, BUFSIZ);
+	setvbuf(f, NULL, _IOFBF, BUFSIZ); // TODO change to full buffer or line buffer
 	f->eof = false;
 	f->error = 0;
 	return f;
+
+
 }
+
