@@ -18,7 +18,6 @@ FILE* fopen(const char* filename, const char* mode) {
 	int flags = 0;
 	int i = 0;
 	int modeFlags = 0;
-	int fileFlags = 0;
 	do {
 		i++;
 		switch(mode[i]) {

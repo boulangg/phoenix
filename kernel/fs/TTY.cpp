@@ -29,7 +29,7 @@ size_t TTY::read(void* ptr, size_t count) {
 				}
 			}
 		} else {
-			while ((buffer.size() < tios.c_cc[VMIN]) && (buffer.size() < count)) {
+			while ((buffer.size() < (size_t)tios.c_cc[VMIN]) && (buffer.size() < count)) {
 				Event ev(Event::EventType::FileEvent, 0);
 				ProcessScheduler::wait(ev);
 			}

@@ -54,10 +54,6 @@ int _IO_file_fputc(int c, FILE* str) {
 	return c;
 }
 
-int _IO_check_fflush(FILE* str) {
-	return 0;
-}
-
 struct stream_ops file_fn = {
 		_IO_file_fgetc,
 		_IO_file_fputc

@@ -230,10 +230,6 @@ void SetupProcessor::setupGDT()
 
 void SetupProcessor::setupIDT()
 {
-	uint8_t idt_flags = FLAG_P | FLAG_DPL0 | FLAG_INT;
-	//fill_idt_descriptor_64(1, (uint64_t)default_handler, SEL_KERNEL_CS, idt_flags, 1);
-	//fill_idt_descriptor_64(14, (uint64_t)EXC_14_handler, SEL_KERNEL_CS, idt_flags, 1);
-	//fill_idt_descriptor_64(13, (uint64_t)default_handler_error_code, SEL_KERNEL_CS, idt_flags, 1);
 	set_IDT(sizeof(idt)-1, idt);
 }
 
@@ -439,7 +435,6 @@ void SetupProcessor::setupHandlers(){
 	fill_idt_descriptor_64(32,(uint64_t)IT_32_handler,SEL_KERNEL_CS,idt_flags,1);
 	fill_idt_descriptor_64(33,(uint64_t)IT_33_handler,SEL_KERNEL_CS,idt_flags,1);
 	fill_idt_descriptor_64(14, (uint64_t)EXC_14_handler, SEL_KERNEL_CS, idt_flags, 1);
-
 
 	Clock::setFreq();
 
