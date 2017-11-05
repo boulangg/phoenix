@@ -49,7 +49,7 @@ LDFLAGS 	:= -nostdlib -g \
 			-mcmodel=kernel -no-pie
 LIBFLAGS	:= $(LIBRARIES) -lstdcpp -lc 
 
-### Inmport tools ###
+### Import tools ###
 include ../build/tools.mk
 
 ### Define quiet tools ###
@@ -59,7 +59,7 @@ endif
 
 .PHONY:all static_libc static_libstdcpp user_apps
 all: phoenix.bin
-	@echo "\033[0;32m  Kernel succesfully built\033[0m"
+	@echo -e "\033[0;32m  Kernel succesfully built\033[0m"
 
 ### Output files ###
 DEPS		:= $(addprefix $(OUTPUT)/, $(call get-deps, $(SRC)))
@@ -68,17 +68,17 @@ OUTPUT_DIRS	:= $(addprefix $(OUTPUT)/, $(SRC_DIRS))
 
 ### Generate C librairy ###
 static_libc:
-	@echo "\033[0;33m  Build libc.a\033[0m"
+	@echo -e "\033[0;33m  Build libc.a\033[0m"
 	@$(MAKE) static_lib --no-print-directory -C $(LIBC_DIR) VERBOSE=$(VERBOSE)
 
 ### Generate CPP librairy ###
 static_libstdcpp:
-	@echo "\033[0;33m  Build libstdcpp.a\033[0m"
+	@echo -e "\033[0;33m  Build libstdcpp.a\033[0m"
 	@$(MAKE) static_lib --no-print-directory -C $(LIBSTDCPP_DIR) VERBOSE=$(VERBOSE)
 	
 ### Generate user applications ###
 user_apps: static_libc static_libstdcpp
-	@echo "\033[0;33m  Build user applications\033[0m"
+	@echo -e "\033[0;33m  Build user applications\033[0m"
 	@$(MAKE) user_apps --no-print-directory -C $(USER_APPS_DIR) VERBOSE=$(VERBOSE)
 
 

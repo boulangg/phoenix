@@ -19,10 +19,10 @@ QEMU_OPTS_DEBUG := $(QEMU_OPTS) -s -S
 ### Basic rules ###
 .PHONY: all launch debug clean clean_disk clean-user clean-all kernel_target
 kernel_target: all
-	@echo "\033[0;32m  Kernel succesfully built\033[0m"
+	@echo -e "\033[0;32m  Kernel succesfully built\033[0m"
 
 all:
-	@echo "\033[0;33m  Build kernel\033[0m"
+	@echo -e "\033[0;33m  Build kernel\033[0m"
 	@$(MAKE) $(BIN) --no-print-directory -C $(KERNEL_DIR)/ VERBOSE=$(VERBOSE)
 
 $(DISK): kernel_target

@@ -57,16 +57,16 @@ OUTPUT_DIRS	:= $(addprefix $(OUTPUT)/, $(SRC_DIRS))  $(addprefix $(OUTPUT)/, $(C
 
 .PHONY:all user_apps static_libc static_libstdcpp
 user_apps: all static_libc static_libstdcpp
-	@echo "\033[0;32m  User apps succesfully built\033[0m"
+	@echo -e "\033[0;32m  User apps succesfully built\033[0m"
 
 ### Generate C librairy ###
 static_libc:
-	@echo "\033[0;33m  Build libc.a\033[0m"
+	@echo -e "\033[0;33m  Build libc.a\033[0m"
 	@$(MAKE) static_lib --no-print-directory -C $(LIBC_DIR) VERBOSE=$(VERBOSE)
 
 ### Generate CPP librairy ###
 static_libstdcpp:
-	@echo "\033[0;33m  Build libstdcpp.a\033[0m"
+	@echo -e "\033[0;33m  Build libstdcpp.a\033[0m"
 	@$(MAKE) static_lib --no-print-directory -C $(LIBSTDCPP_DIR) VERBOSE=$(VERBOSE)
 
 ### Import targets for apps ###
