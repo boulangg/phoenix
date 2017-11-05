@@ -27,14 +27,14 @@ done
 echo >> $2
 echo .globl user_apps_symbol_table >> $2
 echo user_apps_symbol_table: >> $2
-echo \\t.quad $nb_apps >> $2
+echo -e \\t.quad $nb_apps >> $2
 for entry in "$1"/*.out
 do
   	filename=$(basename "$entry")
 	filename="${filename%.*}"
-	echo """\t.quad _user_apps_name_$filename""" >> $2
-	echo """\t.quad _user_apps_start_$filename""" >> $2
-	echo """\t.quad _user_apps_end_$filename""" >> $2
+	echo -e """\t.quad _user_apps_name_$filename""" >> $2
+	echo -e """\t.quad _user_apps_start_$filename""" >> $2
+	echo -e """\t.quad _user_apps_end_$filename""" >> $2
 done
 
 # Generate string table
@@ -45,5 +45,5 @@ do
   	filename=$(basename "$entry")
 	filename="${filename%.*}"
 	echo _user_apps_name_$filename: >> $2
-	echo \\t.ascii \"$filename\\\\0\" >> $2
+	echo -e \\t.ascii \"$filename\\\\0\" >> $2
 done

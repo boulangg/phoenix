@@ -41,11 +41,12 @@ CXXFLAGS	:= -Wall -Wextra \
 		  	   -g -std=c++11 \
 		  	   -fno-exceptions -fno-rtti \
 		  	   -mcmodel=kernel \
+			   -fno-pie \
 		  	   -Wno-packed-bitfield-compat \
 		  	   -fno-stack-protector -nostdinc -nostdinc++ \
 		  	   -fno-use-cxa-atexit
 LDFLAGS 	:= -nostdlib -g \
-		  	   -mcmodel=kernel
+			-mcmodel=kernel -no-pie
 LIBFLAGS	:= $(LIBRARIES) -lstdcpp -lc 
 
 ### Inmport tools ###

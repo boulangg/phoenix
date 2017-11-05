@@ -17,11 +17,12 @@ OUTPUT=out
 STATIC_LIB=libstdcpp.a
 
 ### Tool flags ###
-CXXFLAGS	:= -Wall -Wextra -g -std=c++11 -m64 \
-		  	   -fno-exceptions -fno-rtti \
-		  	   -mcmodel=kernel \
-		  	   -Wno-packed-bitfield-compat \
-		  	   -fno-stack-protector
+CXXFLAGS    := -Wall -Wextra -g -std=c++11 -m64 \
+               -fno-exceptions -fno-rtti \
+               -mcmodel=kernel \
+               -fno-pie \
+               -Wno-packed-bitfield-compat \
+               -fno-stack-protector
 ARFLAGS		:= rcs
 
 ### Inmport tools ###

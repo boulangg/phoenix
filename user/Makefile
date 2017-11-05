@@ -30,12 +30,13 @@ CRT_SRC		:= init/x86_64/crt0.S init/x86_64/crti.S init/x86_64/crtn.S
 OUTPUT=out
 
 ### Tool flags ###
-CXXFLAGS	:= -Wall -Wextra -nostdinc -nostdinc++ \
-		  	   -g -std=c++11 \
-		  	   -fno-exceptions -fno-rtti \
-		  	   -Wno-packed-bitfield-compat \
-		  	   -fno-stack-protector -fno-builtin-fprintf -fno-builtin-printf
-LDFLAGS 	:= -nodefaultlibs -g -specs=init/x86_64/specs
+CXXFLAGS    := -Wall -Wextra -nostdinc -nostdinc++ \
+                -g -std=c++11 \
+                -fno-exceptions -fno-rtti \
+                -Wno-packed-bitfield-compat \
+                -fno-stack-protector -fno-builtin-fprintf -fno-builtin-printf \
+                -fno-pie
+LDFLAGS 	:= -nodefaultlibs -g -specs=init/x86_64/specs -no-pie
 LIBFLAGS	:= $(LIBRARIES) -lstdcpp -lc
 
 ### Inmport tools ###
