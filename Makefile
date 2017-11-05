@@ -30,12 +30,12 @@ $(DISK): kernel_target
 	grub-mkrescue -o $(DISK) $(DISK_DIR)
 
 launch: $(DISK)
-	gnome-terminal -e "$(QEMU) $(QEMU_OPTS)" &
+	scripts/terminal.sh -e "$(QEMU) $(QEMU_OPTS)" &
 
 debug: $(DISK)
-	gnome-terminal -e "$(QEMU) $(QEMU_OPTS_DEBUG)" &
+	scripts/terminal.sh -e "$(QEMU) $(QEMU_OPTS_DEBUG)" &
 	sleep 1
-	gnome-terminal -e "$(GDB) $(KERNEL)"
+	scripts/terminal.sh -e "$(GDB) $(KERNEL)" &
 
 clean:
 	@$(MAKE) --no-print-directory clean -C kernel/
