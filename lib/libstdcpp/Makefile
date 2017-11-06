@@ -35,7 +35,7 @@ endif
 
 .PHONY:all static_lib
 static_lib: all
-	@echo -e "\033[0;32m  libstdcpp.a succesfully built\033[0m"
+	@$(ECHO) "\033[0;32m  libstdcpp.a succesfully built\033[0m\n"
 	
 all: $(STATIC_LIB)
 

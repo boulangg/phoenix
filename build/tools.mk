@@ -4,7 +4,7 @@
 
 ### TOOLS ###
 CC      := gcc
-CXX		:= g++
+CXX     := g++
 AS      := gcc
 LD      := g++
 AR      := ar
@@ -13,6 +13,6 @@ NM      := nm
 DEP     := $(CC)
 MKDIR   := mkdir
 CP      := cp
-ECHO    := echo
+ECHO    := printf
 RM		:= rm
 
