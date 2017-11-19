@@ -71,6 +71,7 @@ public:
 	static pid_t getpid();
 	static int pause();
 
+	static Process* getCurrentProcess();
 	static File* getFile(unsigned int fd);
 
 	static int kill(pid_t pid, int sig);
@@ -96,6 +97,15 @@ public:
 
 	static void unconditionalContextSwitch(Process* currProc);
 
+	static void incrementGlobalFileRefCount(int64_t gfd) {
+		globalFileTable[gfd].refCount++;
+	}
+
+	static void decrementGlobalFileRefCount(int64_t gfd) {
+		globalFileTable[gfd].refCount--;
+		// TODO free descriptor
+	}
+
 private:
 	static int64_t findPid();
 
@@ -105,6 +115,8 @@ private:
 	static uint64_t lastAssignedPid;
 	static std::priority_queue<Process*,std::vector<Process*>,ProcessLess> ready;
 	static std::list<std::pair<Event, Process*>> events;
+
+	static std::vector<GlobalOpenFile> globalFileTable;
 };
 
 

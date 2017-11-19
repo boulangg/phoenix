@@ -9,33 +9,33 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <include/constant.h>
-#include <mm/PhysicalAllocator.hpp>
 #include <unistd.h>
-
-#include <fs/vfs/Inode.hpp>
 
 class File {
 protected:
 	File();
-	virtual ~File();
+	File(Inode); // open
+	virtual ~File(); // release
 
 public:
-	// User space functionalities
-	virtual int64_t lseek(int64_t, uint32_t);
-	virtual size_t read(void* ptr, size_t count);
-	virtual size_t write(void* ptr, size_t count);
-	virtual int flush();
+	/*
+	opendir: (user side) open
+	closedir: (user side) close
+	rewinddir: (user side) seekdir to beginning
+	scandir: (user side) getdents
+	seekdir: (user side) lseek
+	*/
 
 
 	// Kernel functionalities
 	virtual Page* getPage(uint64_t index);
 
-
-	Inode* _inode;
-	int8_t _mode;
-	uint64_t _offset;
-	uint64_t _refCount;
+private:
+	/*virtual loff_t do_llseek(loff_t, int32_t);
+	virtual ssize_t do_read(char*, size_t, loff_t*);
+	virtual ssize_t do_write(const char*, size_t, loff_t*);
+	virtual uint32_t do_poll(uint32_t, uint64_t);
+	virtual int32_t do_flush();*/
 };
 
 

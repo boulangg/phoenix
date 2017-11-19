@@ -12,10 +12,12 @@
 
 #include <utility>
 
+#include <proc/ProcessScheduler.hpp>
+
 Process* Process::scheduler = nullptr;
 
 Process::Process(Process* parent, int pid, int flags) :
-		pid(pid), prio(0), state(ProcessState::Ready), wakeUp(0), retval(0) {
+		pid(pid), prio(0), state(ProcessState::Ready), wakeUp(0), retval(0), localOpenFileTable() {
 	(void)flags;
 	ppid = parent->pid;
 	pgid = parent->pgid;
@@ -27,10 +29,11 @@ Process::Process(Process* parent, int pid, int flags) :
 	save_regs(regSave);
 	//tty = new TTYFile();
 	tty = parent->tty;
+	copyLocalOpenFileTable(parent);
 }
 
 Process::Process(int prio, code_type code) :
-		prio(prio), state(ProcessState::Ready), wakeUp(0), retval(0) {
+		prio(prio), state(ProcessState::Ready), wakeUp(0), retval(0), localOpenFileTable() {
 	pid = 0;
 	name = "idle";
 	ppid = pid;
@@ -45,6 +48,13 @@ Process::Process(int prio, code_type code) :
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	tty = new TTY();
 	Keyboard::setTTY(tty);
+}
+
+void Process::copyLocalOpenFileTable(Process* parent) {
+	for (LocalOpenFile fd : parent->localOpenFileTable) {
+		localOpenFileTable.push_back(fd);
+		ProcessScheduler::incrementGlobalFileRefCount(fd.openFileTableIndex);
+	}
 }
 
 int Process::execve(File* f, const char* argv[], const char* envp[]) {
@@ -65,6 +75,9 @@ int Process::execve(File* f, const char* argv[], const char* envp[]) {
 
 Process::~Process() {
 	// FIXME memory leak
+	for (LocalOpenFile fd : localOpenFileTable) {
+		ProcessScheduler::decrementGlobalFileRefCount(fd.openFileTableIndex);
+	}
 }
 
 bool Process::operator<(const Process& p) const{

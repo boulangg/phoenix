@@ -16,6 +16,8 @@ extern "C" void PF_handler(int errorCode, void* addr) {
 	ProcessScheduler::pageFault(errorCode, addr);
 }
 
+
+
 int idle()
 {
 	sti();
@@ -33,6 +35,8 @@ std::vector<Process*> ProcessScheduler::processVector;
 std::list<std::pair<Event, Process*>> ProcessScheduler::events;
 
 std::priority_queue<Process*,std::vector<Process*>,ProcessLess> ProcessScheduler::ready;
+
+std::vector<GlobalOpenFile> ProcessScheduler::globalFileTable;
 
 int ProcessScheduler::init(){
 	Process* proc;

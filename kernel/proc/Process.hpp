@@ -12,6 +12,8 @@
 #include <mm/VirtualMapping.hpp>
 #include <fs/File.hpp>
 #include <fs/TTY.hpp>
+#include <vector>
+#include <fs/vfs/VirtualFileSystem.hpp>
 
 /***************************************
  *               Defines               *
@@ -94,6 +96,8 @@ private:
 
 	static const std::string getState(ProcessState state);
 
+	void copyLocalOpenFileTable(Process* parent);
+
 	int pid;
 	int ppid;
 	int pgid;
@@ -106,6 +110,8 @@ private:
 	int retval;
 	VirtualMapping* mapping;
 	TTY* tty;
+
+	std::vector<LocalOpenFile> localOpenFileTable;
 };
 
 #endif /* KERNEL_CORE_PROCESS_HPP_ */
