@@ -90,10 +90,21 @@ void _list_iterator<T>::swap(_list_iterator<T>& b) {
 }
 
 template <class T>
-_list_const_iterator<T>::_list_const_iterator() : node() {}
+_list_const_iterator<T>::_list_const_iterator(const iterator& b) : _list_iterator<T>(b) {}
 
 template <class T>
-_list_const_iterator<T>::_list_const_iterator(const iterator& b) : node(b.node) {}
+typename _list_const_iterator<T>::value_type& _list_const_iterator<T>::operator*() {
+	return iterator::operator *();
+}
+
+
+template <class T>
+typename _list_const_iterator<T>::value_type& _list_const_iterator<T>::operator->() {
+	return iterator::operator->();
+}
+
+/*template <class T>
+_list_const_iterator<T>::_list_const_iterator() : node() {}
 
 template <class T>
 _list_const_iterator<T>::_list_const_iterator(const _list_const_iterator& b) : node(b.node) {}
@@ -156,7 +167,7 @@ _list_const_iterator<T> _list_const_iterator<T>::operator--(int) {
 template <class T>
 void _list_const_iterator<T>::swap(_list_const_iterator<T>& b) {
 	swap(node, b.node);
-}
+}*/
 
 template <class T>
 list<T>::list() : _begin(), _end(), _size(0) {
@@ -168,6 +179,13 @@ list<T>::list() : _begin(), _end(), _size(0) {
 template <class T>
 list<T>::~list() {
 	clear();
+}
+
+template <class T>
+list<T>::list(const list& x) : list<T>() {
+	for (auto item : x) {
+		push_back(item);
+	}
 }
 
 template <class T>

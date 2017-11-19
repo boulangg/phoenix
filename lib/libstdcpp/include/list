@@ -33,7 +33,7 @@ public:
 	_list_iterator();
 	_list_iterator(const _list_iterator& b);
 	_list_iterator(_node* node);
-	~_list_iterator();
+	virtual ~_list_iterator();
 
 	_list_iterator& operator=(const _list_iterator&b);
 
@@ -54,35 +54,35 @@ public:
 };
 
 template <class T>
-class _list_const_iterator {
+class _list_const_iterator : public _list_iterator<T>{
 public:
-	typedef T value_type;
+	typedef const T value_type;
 	typedef value_type& reference;
 	typedef value_type* pointer;
 	typedef const _list_node<T> _node;
 	typedef _list_iterator<T> iterator;
 
-	_list_const_iterator();
+	//_list_const_iterator();
 	_list_const_iterator(const iterator& b);
-	_list_const_iterator(const _list_const_iterator& b);
-	~_list_const_iterator();
+	//_list_const_iterator(const _list_const_iterator& b);
+	//~_list_const_iterator();
 
-	_list_const_iterator& operator=(const _list_const_iterator&b);
+	//_list_const_iterator& operator=(const _list_const_iterator&b);
 
-	bool operator==(const _list_const_iterator& b);
-	bool operator!=(const _list_const_iterator& b);
+	//bool operator==(const _list_const_iterator& b);
+	//bool operator!=(const _list_const_iterator& b);
 
-	value_type& operator*();
-	value_type& operator->();
+	reference operator*();
+	reference operator->();
 
-	_list_const_iterator& operator++();
-	_list_const_iterator& operator--();
-	_list_const_iterator operator++(int);
-	_list_const_iterator operator--(int);
+	//_list_const_iterator& operator++();
+	//_list_const_iterator& operator--();
+	//_list_const_iterator operator++(int);
+	//_list_const_iterator operator--(int);
 
-	void swap(_list_const_iterator& b);
+	//void swap(_list_const_iterator& b);
 
-	_node* node;
+	//_node* node;
 };
 
 
@@ -99,6 +99,7 @@ public:
 	typedef typename iterator::_node _node;
 
 	list();
+	list(const list& x);
 	~list();
 
 	list& operator= (const list& x);
