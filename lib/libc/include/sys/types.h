@@ -27,6 +27,7 @@ typedef unsigned long long ino_t;
 typedef unsigned int       mode_t;
 typedef unsigned long long nlink_t;
 typedef signed long long   off_t;
+typedef signed long long   loff_t;
 
 // IPC types
 typedef unsigned long long key_t;
