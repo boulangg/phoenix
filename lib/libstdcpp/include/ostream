@@ -1,0 +1,85 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
+#ifndef _OSTREAM_
+#define _OSTREAM_
+
+#include <iosfwd>
+
+namespace std {
+template <class charT, class traits = char_traits<charT> >
+class basic_ostream : public basic_ios<charT, traits> {
+
+public:
+	// Member types
+	typedef charT char_type;
+	typedef traits traits_type;
+	typedef traits_type::int_type int_type;
+	typedef traits_type::pos_type pos_type;
+	typedef traits_type::off_type off_type;
+
+	class sentry {
+	public:
+	  explicit sentry (basic_istream& is, bool noskipws = false);
+	  ~sentry();
+	  explicit operator bool() const;
+	  sentry (const sentry&) = delete;
+	  sentry& operator= (const sentry&) = delete;
+	};
+
+	// Constructors
+	explicit basic_ostream (basic_streambuf<char_type,traits_type>* sb);
+	basic_ostream(const basic_ostream&) = delete;
+protected:
+	basic_ostream(basic_ostream&& x);
+
+public:
+	virtual ~basic_ostream();
+
+	// Formatted output
+	basic_ostream& operator<<(bool val);
+	basic_ostream& operator<<(short val);
+	basic_ostream& operator<<(unsigned short val);
+	basic_ostream& operator<<(int val);
+	basic_ostream& operator<<(unsigned int val);
+	basic_ostream& operator<<(long val);
+	basic_ostream& operator<<(unsigned long val);
+	basic_ostream& operator<<(long long val);
+	basic_ostream& operator<<(unsigned long long val);
+	basic_ostream& operator<<(float val);
+	basic_ostream& operator<<(double val);
+	basic_ostream& operator<<(long double val);
+	basic_ostream& operator<<(void* val);
+	basic_ostream& operator<<(basic_streambuf<char_type,traits_type>* sb );
+	basic_ostream& operator<<(basic_ostream& (*pf)(basic_ostream&));
+	basic_ostream& operator<<(
+			basic_ios<char_type,traits_type>& (*pf)(basic_ios<char_type,traits_type>&));
+	basic_ostream& operator<<(ios_base& (*pf)(ios_base&));
+
+	// Unformatted output
+	basic_ostream& put(char_type c);
+	basic_ostream& write(const char_type* s, streamsize n);
+
+
+	// Positioning
+	pos_type tellp();
+	basic_ostream& seekp(pos_type pos);
+	basic_ostream& seekp(off_type off, ios_base::seekdir way);
+
+
+	// Synchronization
+	basic_ostream& flush();
+
+protected:
+	basic_ostream& operator=(const basic_ostream&) = delete;
+	basic_ostream& operator=(basic_ostream&& rhs);
+	void swap(basic_ostream& x);
+
+};
+
+}
+
+#endif // _OSTREAM_

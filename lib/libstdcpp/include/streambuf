@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
+#ifndef _STREAMBUF_
+#define _STREAMBUF_
+
+#include <iosfwd>
+
+namespace std {
+
+template <class charT, class traits = char_traits<charT> >
+class basic_streambuf {
+public:
+	// Member types
+	typedef charT char_type;
+	typedef traits traits_type;
+	typedef traits_type::int_type int_type;
+	typedef traits_type::pos_type pos_type;
+	typedef traits_type::off_type off_type;
+
+
+private:
+
+
+};
+
+}
+
+#endif // _STREAMBUF_
