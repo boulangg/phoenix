@@ -35,6 +35,8 @@ VirtualArea::VirtualArea(const VirtualArea& virtArea) {
 	fileSize = virtArea.fileSize;
 	if (virtArea.physicalPages != nullptr) {
 		physicalPages = new PhysicalMapping(*(virtArea.physicalPages));
+	} else {
+		physicalPages = nullptr;
 	}
 }
 
