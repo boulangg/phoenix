@@ -132,6 +132,7 @@ static int print_int(FILE* str, struct arg_info* arg_info, va_list arg, int* cou
 		}
 	} else {
 		sign = '-';
+		num = -num;
 	}
 
 	while (n != 0) {
