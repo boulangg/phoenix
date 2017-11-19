@@ -146,6 +146,7 @@ int ProcessScheduler::pageFault(int errorCode, void* addr) {
 	VirtualMapping* mapping = running->getMapping();
 
 	if (mapping->pageFault(errorCode, addr) != 0) {
+		Console::write("Page Fault!!\n");
 		exit(-1);
 	}
 	return 0;

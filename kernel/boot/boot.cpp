@@ -14,16 +14,12 @@
 #include "SetupProcessor.hpp"
 
 
-void idle() {
-	hlt();
-}
-
 void boot() {
 	Console::initConsole();
 	SetupProcessor::setupAll();
 	Kernel::Start();
 	while(1) {
-		idle();
+		hlt();
 	}
 }
 
