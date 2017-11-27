@@ -8,6 +8,8 @@
 
 #include "PCIDriver.hpp"
 
+#include "../Disk.hpp"
+
 
 PCIDevice::PCIDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 	this->bus = bus;
@@ -21,8 +23,6 @@ PCIDevice::PCIDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 std::list<PCIDevice*> PCIManager::_devices;
 std::list<PCIDevice*> PCIManager::_unkonwDevices;
 std::list<PCIDriver*> PCIManager::_drivers;
-
-std::list<BlockStorageDevice*> PCIManager::_blockStorageDevices;
 
 void PCIManager::initPCI() {
 	uint8_t bus;
@@ -87,15 +87,6 @@ void PCIManager::printDeviceInfo(PCIDevice* dev) {
 		break;
 	}
 	Console::write(tmp);
-}
-
-
-void PCIManager::registerBlockStorageDevice(BlockStorageDevice* dev) {
-	_blockStorageDevices.push_back(dev);
-}
-
-std::list<BlockStorageDevice*> PCIManager::getAllStorageDevices() {
-	return _blockStorageDevices;
 }
 
 uint32_t PCIManager::readPCIConfigLine(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off) {

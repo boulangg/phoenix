@@ -1,10 +1,10 @@
 #include "IDEChannel.hpp"
 
-#include "../PCIManager.hpp"
+#include <driver/DeviceManager.hpp>
 
-IDEChannel::IDEChannel(IDEDevice* device, IDEChannelRegisters regs) :
+IDEChannel::IDEChannel(IDEDevice* device, IDEChannelRegisters regs, int channelNo) :
 		device(device), base(regs.base), ctrl(regs.ctrl), bmIDE(regs.bmIDE),
-			nIEN(regs.nIEN)
+		nIEN(regs.nIEN), channelNo(channelNo)
 {
 	initDrives();
 }
@@ -69,7 +69,7 @@ void IDEChannel::initDrives() {
 
 		IDEDrive* drive = nullptr;
 		if (type == IDE_ATA) {
-			drive = new IDEDrive(this, i, type);
+			drive = new IDEDrive(this, i, type, channelNo);
 			drive->identifyData = getIdentificationSpace();
 
 			if (drive->identifyData.commandSetSupportedEnabled[1] & (1 << 10)) {
@@ -95,7 +95,7 @@ void IDEChannel::initDrives() {
 
 		disks[i] = drive;
 		if (drive != nullptr) {
-			PCIManager::registerBlockStorageDevice(drive);
+			DeviceManager::registerIDEDevice(drive);
 		}
 	}
 

@@ -4,8 +4,6 @@
 #include <cstdint>
 #include <list>
 
-#include "BlockStorageDevice.hpp"
-
 class PCIDriver;
 
 #define PCI_ANY_ID (uint32_t)(~(uint32_t)0)
@@ -200,10 +198,6 @@ public:
 	static void readPCIConfigSpace(uint8_t bus, uint8_t slot, uint8_t func, PCIConfigSpace& configSpace);
 
 	static uint32_t readPCIConfigLine(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off);
-
-	static void registerBlockStorageDevice(BlockStorageDevice* dev);
-
-	static std::list<BlockStorageDevice*> getAllStorageDevices();
 private:
 
 	static void checkDevice(uint8_t bus, uint8_t slot);
@@ -215,7 +209,5 @@ private:
 	static std::list<PCIDevice*> _devices;
 	static std::list<PCIDevice*> _unkonwDevices;
 	static std::list<PCIDriver*> _drivers;
-
-	static std::list<BlockStorageDevice*> _blockStorageDevices;
 };
 

@@ -8,7 +8,7 @@
 
 #include "IDEDrive.hpp"
 
-#include "../BlockIO.hpp"
+#include <driver/BlockIO.hpp>
 
 
 
@@ -19,7 +19,7 @@ class IDEChannel {
 	static const std::uint8_t DISK_NUM = 2;
 
 public:
-	IDEChannel(IDEDevice* device, IDEChannelRegisters regs);
+	IDEChannel(IDEDevice* device, IDEChannelRegisters regs, int channelNo);
 
 	virtual ~IDEChannel();
 
@@ -46,6 +46,8 @@ public:
 	std::uint8_t nIEN;    // Interrupt
 
 	IDEDrive* disks[2];   // master and slave disk
+
+	int channelNo;
 
 private:
 	void initDrives();

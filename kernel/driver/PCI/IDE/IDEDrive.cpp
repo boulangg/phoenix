@@ -1,12 +1,13 @@
 #include "IDEDrive.hpp"
 
 #include "IDEChannel.hpp"
+#include "IDEDriver.hpp"
 
-IDEDrive::IDEDrive(IDEChannel* channel, bool slave, IDEDiskType type) :
+IDEDrive::IDEDrive(IDEChannel* channel, bool slave, IDEDiskType type, int channelNo) :
 		channel(channel), slave(slave), type(type),
 		identifyData(), nbSectors(0), sectorSize(DEFAULT_SECTOR_SIZE)
 {
-
+	setName(IDEDriver::getNameForDrive(channelNo, slave));
 }
 
 IDEDrive::~IDEDrive() {}
