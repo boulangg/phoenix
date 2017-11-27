@@ -35,6 +35,7 @@ public:
 	string();
 	string(const char* s);
 	string(const string& s);
+	string(size_t n, char c);
 
 	string(string&& s);
 	~string();
