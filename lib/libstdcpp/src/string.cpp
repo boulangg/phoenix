@@ -31,12 +31,16 @@ char_traits<char>::char_type* char_traits<char>::copy(char_type* dest, const cha
 }
 
 string::string(): _size(0), _capacity(DEFAULT_CAPACITY), _data(new char[_capacity]) {
-
+	_data[0] = '\0';
 }
 
 string::string(const char *s): _size(char_traits<char>::length(s)),_capacity(nearest_power_2(_size+1)),_data(new char[_capacity]) {
 	char_traits<char>::copy(_data, s, _size);
 	_data[_size]='\0';
+}
+
+string::string(const char *s, size_t n): _size(n),_capacity(nearest_power_2(_size+1)),_data(new char[_capacity]) {
+	char_traits<char>::copy(_data, s, _size+1);
 }
 
 string::string(const string& s): _size(s._size),_capacity(s._capacity),_data(new char[_capacity]) {
@@ -140,6 +144,11 @@ int string::compare(const char* s) const {
 const char* string::c_str() const {
 	return _data;
 }
+
+string string::substr(size_t pos, size_t len) const {
+	return string(this->c_str() + pos, len);
+}
+
 
 string::~string(){
 	delete[] _data;
