@@ -10,6 +10,10 @@
 
 class IDEDevice {
 public:
+	IDEDevice(PCIDevice* device, int deviceID) : deviceID(deviceID), device(device) {
+		initDrives(device);
+	}
+
 	void initDrives(PCIDevice* device) {
 		// Primary Channel
 		IDEChannelRegisters regs;
@@ -23,7 +27,7 @@ public:
 		}
 		regs.bmIDE = device->getBAR(4);
 
-		primary = new IDEChannel(this, regs);
+		primary = new IDEChannel(this, regs, deviceID*2);
 
 		// Secondary Channel
 		regs.base = device->getBAR(2);
@@ -36,7 +40,7 @@ public:
 		}
 		regs.bmIDE = device->getBAR(4) + 8;
 
-		secondary = new IDEChannel(this, regs);
+		secondary = new IDEChannel(this, regs, deviceID*2+1);
 	}
 
 	IDEChannel* primary;
@@ -45,6 +49,6 @@ private:
 
 	std::uint8_t readReg(std::uint8_t reg);
 	std::uint8_t writeReg(std::uint8_t reg, std::uint8_t data);
-
-
+	int deviceID;
+	PCIDevice* device;
 };

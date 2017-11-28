@@ -36,6 +36,7 @@ public:
 	string(const char* s);
 	string(const char* s, size_t n);
 	string(const string& s);
+	string(size_t n, char c);
 
 	string(string&& s);
 	~string();

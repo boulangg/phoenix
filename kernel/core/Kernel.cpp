@@ -52,7 +52,7 @@ void Kernel::Start() {
 	ProcessScheduler::init();
 	PCIManager::initPCI();
 
-	BlockIO bio;
+	/*BlockIO bio;
 	BlockIOSegment bioSeg1;
 	bioSeg1.page = PhysicalAllocator::allocPage();
 	bioSeg1.offset = 0;
@@ -76,7 +76,7 @@ void Kernel::Start() {
 		}
 		BlockIO bio;
 		drive->loadBlockIO(bio);
-	}
+	}*/
 
 	idle();
 	while(1)

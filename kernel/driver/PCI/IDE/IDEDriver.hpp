@@ -17,9 +17,20 @@ public:
 
 	virtual void remove(PCIDevice* device);
 
-
 	IDEDrive* getDrive() {
 		return _IDEDevices.front()->primary->disks[0];
+	}
+
+	static std::string getNameForDrive(int channelNo, bool slave) {
+		std::string name = "hd";
+		int id = 2 * channelNo + (int)slave;
+		if (id < 26) {
+			name += std::string(1, 'a' + (char)id);
+		} else {
+			name += std::string(1, 'A' + (char)(id / 26));
+			name += std::string(1, 'a' + (char)(id % 26));
+		}
+		return name;
 	}
 
 private:

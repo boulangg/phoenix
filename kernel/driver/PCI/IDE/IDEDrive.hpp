@@ -8,8 +8,8 @@
 #include <asm/io.h>
 #include <driver/PCI/IDE/IDEStruct.hpp>
 
-#include "../BlockIO.hpp"
-#include "../BlockStorageDevice.hpp"
+#include <driver/BlockIO.hpp>
+#include <driver/BlockStorageDevice.hpp>
 
 
 struct IDEChannelRegisters {
@@ -102,6 +102,9 @@ class IDEDrive : public BlockStorageDevice {
 public:
 	virtual std::uint64_t getStorageSize() override ;
 	virtual std::uint32_t getSectorSize();
+	virtual std::uint64_t getSectorNumber() {
+		return nbSectors;
+	}
 
 
 	void getDriveModel(char* buffer, size_t size) {
@@ -116,7 +119,7 @@ public:
 private:
 	static const uint32_t DEFAULT_SECTOR_SIZE = 512;
 
-	IDEDrive(IDEChannel* channel, bool slave, IDEDiskType type);
+	IDEDrive(IDEChannel* channel, bool slave, IDEDiskType type, int channelNo);
 
 	virtual ~IDEDrive();
 

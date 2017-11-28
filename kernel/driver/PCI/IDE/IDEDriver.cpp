@@ -1,5 +1,7 @@
 #include <driver/PCI/IDE/IDEDriver.hpp>
 
+
+
 std::vector<PCIDeviceID> IDEDriver::_deviceIds;
 
 IDEDriver::IDEDriver() {
@@ -18,8 +20,8 @@ int IDEDriver::probe(PCIDevice* device) {
 	sprintf(tmp, "IDE device found\n");
 	Console::write(tmp);
 
-	IDEDevice* IDEdevice = new IDEDevice();
-	IDEdevice->initDrives(device);
+	IDEDevice* IDEdevice = new IDEDevice(device, _IDEDevices.size());
+	//IDEdevice->initDrives(device);
 	_IDEDevices.push_back(IDEdevice);
 
 	return 0;

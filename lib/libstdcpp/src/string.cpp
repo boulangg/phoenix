@@ -53,6 +53,14 @@ string::string(string&& s): _size(s._size), _capacity(s._capacity),_data(s._data
 	s._capacity=0;
 }
 
+string::string(size_t n, char c): string() {
+	char* tmp = new char[n];
+	for (size_t i = 0; i < n; i++) {
+		tmp[i] = c;
+	}
+	append(tmp, n);
+}
+
 string& string::operator+=(const string& str) {
 	return append(str._data, str._size);
 }
