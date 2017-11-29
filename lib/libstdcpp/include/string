@@ -64,7 +64,7 @@ public:
 
 	string substr (size_t pos = 0, size_t len = string::npos) const;
 
-	static size_t npos = -1;
+	static const size_t npos = -1;
 private:
 	size_t _size;
 	size_t _capacity;
