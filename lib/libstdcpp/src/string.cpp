@@ -162,5 +162,11 @@ string::~string(){
 	delete[] _data;
 }
 
+string operator+( const string& lhs, const string& rhs ) {
+	string ret(lhs);
+	return ret + rhs;
+}
+
+
 }
 

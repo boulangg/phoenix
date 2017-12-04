@@ -71,6 +71,8 @@ private:
 	char* _data;
 };
 
+string operator+( const string& lhs, const string& rhs );
+
 }
 
 
