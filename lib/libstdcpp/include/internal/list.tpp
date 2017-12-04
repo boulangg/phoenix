@@ -348,6 +348,17 @@ void list<T>::clear() {
 		pop_front();
 	}
 }
+
+template <class T>
+void list<T>::remove(const value_type& val) {
+	for (auto it = begin(); it != end(); it++) {
+		if (*it == val) {
+			it = erase(it);
+		}
+	}
+}
+
+
 }
 
 #endif // _LIST_TPP

@@ -130,6 +130,8 @@ public:
 	void swap(list& x);
 	void clear();
 
+	void remove(const value_type& val);
+
 private:
 	iterator _begin;
 	iterator _end;
