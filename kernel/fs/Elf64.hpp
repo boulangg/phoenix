@@ -224,7 +224,7 @@ class Elf64 {
 	// TODO Hash table
 
 public:
-	static VirtualMapping* getVirtualMapping(File* file);
+	static VirtualMapping* getVirtualMapping(int fd);
 };
 
 #endif //__ELF64_HPP__

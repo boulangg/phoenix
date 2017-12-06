@@ -17,7 +17,7 @@
 Process* Process::scheduler = nullptr;
 
 Process::Process(Process* parent, int pid, int flags) :
-		pid(pid), prio(0), state(ProcessState::Ready), wakeUp(0), retval(0), localOpenFileTable() {
+		pid(pid), prio(0), state(ProcessState::Ready), wakeUp(0), retval(0)/*, localOpenFileTable()*/ {
 	(void)flags;
 	ppid = parent->pid;
 	pgid = parent->pgid;
@@ -29,11 +29,11 @@ Process::Process(Process* parent, int pid, int flags) :
 	save_regs(regSave);
 	//tty = new TTYFile();
 	tty = parent->tty;
-	copyLocalOpenFileTable(parent);
+	//copyLocalOpenFileTable(parent);
 }
 
 Process::Process(int prio, code_type code) :
-		prio(prio), state(ProcessState::Ready), wakeUp(0), retval(0), localOpenFileTable() {
+		prio(prio), state(ProcessState::Ready), wakeUp(0), retval(0)/*, localOpenFileTable()*/ {
 	pid = 0;
 	name = "idle";
 	ppid = pid;
@@ -50,14 +50,14 @@ Process::Process(int prio, code_type code) :
 	Keyboard::setTTY(tty);
 }
 
-void Process::copyLocalOpenFileTable(Process* parent) {
+/*void Process::copyLocalOpenFileTable(Process* parent) {
 	for (LocalOpenFile fd : parent->localOpenFileTable) {
 		localOpenFileTable.push_back(fd);
 		ProcessScheduler::incrementGlobalFileRefCount(fd.openFileTableIndex);
 	}
-}
+}*/
 
-int Process::execve(File* f, const char* argv[], const char* envp[]) {
+/*int Process::execve(File* f, const char* argv[], const char* envp[]) {
 	if(f==nullptr)
 		return -1;
 	// TODO schedule delayed deletion to keep the kernelStack usable until next
@@ -71,13 +71,29 @@ int Process::execve(File* f, const char* argv[], const char* envp[]) {
 	regSave[7] = RFLAGS_INIT;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	return 0;
+}*/
+
+int Process::execve(int fd, const char* argv[], const char* envp[]) {
+	if(fd < 0)
+		return -1;
+	// TODO schedule delayed deletion to keep the kernelStack usable until next
+	// context switch (or reuse the old one while keeping the kernel stacks)
+	//delete mapping;
+	mapping = Elf64::getVirtualMapping(fd);
+	if(mapping==nullptr)
+		return -1;
+	mapping->initMainArgs(argv, envp);
+	regSave[1]= (uint64_t)&(mapping->startStack[0]);
+	regSave[7] = RFLAGS_INIT;
+	regSave[8] = mapping->getPageTable()->getPageTablePtr();
+	return 0;
 }
 
 Process::~Process() {
 	// FIXME memory leak
-	for (LocalOpenFile fd : localOpenFileTable) {
+	/*for (LocalOpenFile fd : localOpenFileTable) {
 		ProcessScheduler::decrementGlobalFileRefCount(fd.openFileTableIndex);
-	}
+	}*/
 }
 
 bool Process::operator<(const Process& p) const{

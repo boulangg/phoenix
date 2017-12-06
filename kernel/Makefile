@@ -14,8 +14,11 @@ USER_APPS_MV_DIR := user
 USER_APPS_GEN_DIR := gen
 USER_APPS_GEN_FILE := $(USER_APPS_GEN_DIR)/user_apps.S
 
+### Output directory ###
+OUTPUT=out
+	
 ### Compilation sources ###
-SRC_DIRS 		:= boot core mm fs driver/input proc driver driver/PCI driver/PCI/IDE
+SRC_DIRS 		:= boot core mm fs fs/vfs fs/kernelfs driver/input proc driver driver/PCI driver/PCI/IDE
 LIB_INCLUDE_DIRS := $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include
 INCLUDE_DIRS 	:= $(LIB_INCLUDE_DIRS) arch/x64 .
 LIBRARY_DIRS	:= $(LIBC_DIR) $(LIBSTDCPP_DIR)
@@ -32,8 +35,7 @@ LIBSTDCPP 	:= $(LIBSTDCPP_DIR)/libstdcpp.a
 USER_APPS := $(call get-all-files-with-ext, $(USER_APPS_OUT_DIR), out)
 USER_APPS_MV := $(addprefix $(USER_APPS_MV_DIR)/, $(notdir  $(USER_APPS)))
 
-### Output directory ###
-OUTPUT=out
+### Kernel file ###
 BIN=phoenix.bin
 
 ### Tool flags ###
@@ -57,9 +59,28 @@ ifneq "$(VERBOSE)" "1"
     include ../build/quiet.mk
 endif
 
-.PHONY:all static_libc static_libstdcpp user_apps
-all: phoenix.bin
-	@echo -e "\033[0;32m  Kernel succesfully built\033[0m"
+.PHONY:all static_libc static_libstdcpp user_apps initrd_fs initrd_fs_build
+all:
+	@$(ECHO) "\033[0;33m  Build kernel\033[0m\n"
+	@$(MAKE) $(BIN) --no-print-directory VERBOSE=$(VERBOSE)
+	@$(ECHO) "\033[0;32m  Kernel succesfully built\033[0m\n"
+
+
+### INITRD ###
+INITRD_DISK := $(OUTPUT)/initrd/initrd.iso
+
+$(OUTPUT)/initrd/initrd.iso: ./script/initrd.sh |  $(OUTPUT) $(OUTPUT)/initrd
+	@./script/initrd.sh $(INITRD_DISK)
+	
+out/initrd/initrd.S.o: $(OUTPUT)/initrd/initrd.iso
+
+$(call create-dir-files, $(OUTPUT)/initrd/initrd.S.o)
+$(call create-dir-files, $(OUTPUT)/initrd/initrd.S.d)
+$(call create-dir-targets, $(OUTPUT)/initrd)
+
+
+###out/initrd/mkird.S.o: | $(INITRD_DISK)
+	
 
 ### Output files ###
 DEPS		:= $(addprefix $(OUTPUT)/, $(call get-deps, $(SRC)))
@@ -80,15 +101,25 @@ static_libstdcpp:
 user_apps: static_libc static_libstdcpp
 	@$(ECHO) "\033[0;33m  Build user applications\033[0m\n"
 	@$(MAKE) user_apps --no-print-directory -C $(USER_APPS_DIR) VERBOSE=$(VERBOSE)
+	
+### Generate initrd filesystem ###
+initrd_fs:
+	@$(ECHO) "\033[0;33m  Build initrd filesystem\033[0m\n"
+	@$(MAKE) initrd_fs_build --no-print-directory VERBOSE=$(VERBOSE)
+	@$(ECHO) "\033[0;32m  initrd succesfully built\033[0m\n"
 
+initrd_fs_build: out/initrd/initrd.S.o
+	@:
 
 ### User application sub-target and generation of user_apps.S
 $(USER_APPS_MV_DIR):
 	$(MKDIR) -p $@	
 
+USER_APP_FILES := $(call get-all-files-with-ext, $(USER_APPS_OUT_DIR), cpp)
+
 $(USER_APPS_MV_DIR)/%.out: $(USER_APPS_OUT_DIR)/%.out | $(USER_APPS_MV_DIR)
 	$(CP) $< $@
-	
+
 update_gen_file: user_apps
 	@$(ECHO) "  UPDATE  $(USER_APPS_GEN_FILE)\n"; $(MAKE) -s $(USER_APPS_GEN_FILE)
 
@@ -98,8 +129,8 @@ $(USER_APPS_GEN_FILE): $(USER_APPS_MV) script/user_apps.sh | $(USER_APPS_GEN_DIR
 $(USER_APPS_GEN_DIR):
 	$(MKDIR) -p $@
 
-out/gen/user_apps.S.o: | out/gen update_gen_file
-out/gen/user_apps.S.d: | out/gen update_gen_file
+out/gen/user_apps.S.o: $(USER_APP_FILES) | out/gen 
+out/gen/user_apps.S.d: $(USER_APP_FILES) | out/gen 
 
 out/gen:
 	$(MKDIR) -p $@
@@ -113,8 +144,8 @@ $(OUTPUT)/build/linker.ld.d: $(LINKER) | $(OUTPUT)
 	$(DEP) $(INCLUDES) -x c -MM $< -MT $@ > $@
 
 ### Generate kernel ###
-$(BIN): $(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o static_libc static_libstdcpp user_apps 
-	$(LD) $(LDFLAGS) -T$(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o  $(LIBFLAGS) -o $@
+$(BIN): $(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o static_libc static_libstdcpp user_apps initrd_fs
+	$(LD) $(LDFLAGS) -T$(OUTPUT)/build/linker.ld $(OBJS) out/gen/user_apps.S.o out/initrd/initrd.S.o $(LIBFLAGS) -o $@
 
 ### Generic rules ###
 $(OUTPUT)/%.S.d: %.S | $(OUTPUT)

@@ -8,7 +8,7 @@
 #define _TTY_HPP_
 
 #include <termios.h>
-#include <fs/File.hpp>
+#include <fs/vfs/File.hpp>
 
 #define BUFFER_SIZE 1024
 
@@ -63,13 +63,15 @@ public:
 	}
 	~TTY() {}
 
-	size_t read(void* ptr, size_t count);
-
-	size_t write(void* ptr, size_t count);
+	//size_t write(void* ptr, size_t count);
 
 	int ioctl(size_t request, void* argp);
 
 	int addInput(const char val);
+
+private:
+	virtual ssize_t doRead(char* ptr, size_t count, loff_t offset) override;
+	virtual ssize_t doWrite(char* ptr, size_t count, loff_t offset) override;
 
 private:
 	int getTermios(struct termios*);

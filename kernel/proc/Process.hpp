@@ -10,9 +10,11 @@
 #include <string>
 #include "stdint.h"
 #include <mm/VirtualMapping.hpp>
-#include <fs/File.hpp>
+//#include <fs/File.hpp>
 #include <fs/TTY.hpp>
 #include <vector>
+//#include <fs/vfs/VirtualFileSystem.hpp>
+
 #include <fs/vfs/VirtualFileSystem.hpp>
 
 /***************************************
@@ -51,6 +53,7 @@ public:
 	~Process();
 
 	int execve(File* f, const char* argv[], const char* envp[]);
+	int execve(int fd, const char* argv[], const char* envp[]);
 
 	bool operator<(const Process& p) const;
 
@@ -83,6 +86,9 @@ public:
 	File* getFile(unsigned int fd) {
 		if (fd >= 1 && fd <= 3) {
 			return tty;
+		} else if (fd == 4) {
+			File* f = VirtualFileSystem::filestable[0];
+			return f;
 		} else {
 			return nullptr;
 		}
@@ -111,7 +117,7 @@ private:
 	VirtualMapping* mapping;
 	TTY* tty;
 
-	std::vector<LocalOpenFile> localOpenFileTable;
+	//std::vector<LocalOpenFile> localOpenFileTable;
 };
 
 #endif /* KERNEL_CORE_PROCESS_HPP_ */

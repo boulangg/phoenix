@@ -8,6 +8,8 @@
 #include <include/constant.h>
 #include <algorithm>
 
+#include <mm/PhysicalAllocator.hpp>
+
 VirtualArea::VirtualArea(uint64_t* addrStart, uint64_t* addrEnd, uint64_t flags,
 		File* file, uint64_t offset, uint64_t fileSize) {
 	this->addrStart = addrStart;

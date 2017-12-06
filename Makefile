@@ -34,7 +34,7 @@ all:
 	@$(MAKE) $(BIN) --no-print-directory -C $(KERNEL_DIR)/ VERBOSE=$(VERBOSE)
 
 $(DISK): kernel_target
-	$(CP) $(KERNEL) $(DISK_DIR)/boot/
+	cp $(KERNEL) $(DISK_DIR)/boot/
 	grub-mkrescue -o $(DISK) $(DISK_DIR)
 
 launch: $(DISK)
@@ -47,7 +47,7 @@ debug: $(DISK)
 
 clean:
 	@$(MAKE) --no-print-directory clean -C kernel/
-	rm -rf $(DISK) $(DISK_DIR)/boot/$(BIN)
+	rm -rf $(DISK) $(DISK_DIR)/boot/$(BIN) $(INITRD_DISK)
 	
 clean-libs:
 	@$(MAKE) --no-print-directory clean -C lib/libc/

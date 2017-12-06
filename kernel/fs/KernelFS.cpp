@@ -4,7 +4,7 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include <fs/KernelFS.hpp>
+/*#include <fs/KernelFS.hpp>
 #include <fs/KernelFile.hpp>
 
 File* KernelFS::getUserApp(std::string name) {
@@ -16,3 +16,4 @@ File* KernelFS::getUserApp(std::string name) {
 	}
 	return nullptr;
 }
+*/

@@ -10,7 +10,7 @@
 #include <cstddef>
 
 #include "PhysicalMapping.hpp"
-#include <fs/File.hpp>
+#include <fs/vfs/File.hpp>
 #include <mm/Page.hpp>
 
 class VirtualArea {

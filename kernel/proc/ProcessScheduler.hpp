@@ -97,14 +97,14 @@ public:
 
 	static void unconditionalContextSwitch(Process* currProc);
 
-	static void incrementGlobalFileRefCount(int64_t gfd) {
+	/*static void incrementGlobalFileRefCount(int64_t gfd) {
 		globalFileTable[gfd].refCount++;
 	}
 
 	static void decrementGlobalFileRefCount(int64_t gfd) {
 		globalFileTable[gfd].refCount--;
 		// TODO free descriptor
-	}
+	}*/
 
 private:
 	static int64_t findPid();
@@ -116,7 +116,7 @@ private:
 	static std::priority_queue<Process*,std::vector<Process*>,ProcessLess> ready;
 	static std::list<std::pair<Event, Process*>> events;
 
-	static std::vector<GlobalOpenFile> globalFileTable;
+	//static std::vector<GlobalOpenFile> globalFileTable;
 };
 
 

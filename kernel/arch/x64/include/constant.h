@@ -89,6 +89,12 @@ extern "C" uint64_t _kernel_data_end[];
 #define KERNEL_DATA_START		_kernel_data_start
 #define KERNEL_DATA_END			_kernel_data_end
 
+extern "C" uint64_t _initrd_start[];
+extern "C" uint64_t _initrd_end[];
+
+#define INITRD_START		_initrd_start
+#define INITRD_END			_initrd_end
+
 #endif
 
 #endif // __ARCH_CONSTANT_H__

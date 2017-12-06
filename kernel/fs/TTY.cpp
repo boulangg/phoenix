@@ -11,7 +11,7 @@
 
 #define NEW_LINE '\n'
 
-size_t TTY::read(void* ptr, size_t count) {
+ssize_t TTY::doRead(char* ptr, size_t count, loff_t) {
 		char* buf = (char*)ptr;
 		size_t curr = 0;
 		if (tios.c_lflag & ICANON) {
@@ -42,7 +42,7 @@ size_t TTY::read(void* ptr, size_t count) {
 		return curr;
 	}
 
-size_t TTY::write(void* ptr, size_t count) {
+ssize_t TTY::doWrite(char* ptr, size_t count, loff_t) {
 	char* str = (char*)ptr;
 	size_t i = 0;
 	for (; i < count; i++) {

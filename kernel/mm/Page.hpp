@@ -9,6 +9,8 @@
 
 #include <cstdint>
 
+#include <include/constant.h>
+
 enum PageType {
 	UNUSABLE,
 	FREE,
@@ -22,9 +24,10 @@ public:
 	uint64_t* physAddr;
 	uint64_t* kernelMappAddr;
 	PageType type;
+	uint64_t offset;
 
 	static void copyPage(Page* src, Page* dst) {
-		for (uint64_t i = 0; i < 4096/sizeof(uint64_t); ++i) {
+		for (uint64_t i = 0; i < PAGE_SIZE/sizeof(uint64_t); ++i) {
 			dst->kernelMappAddr[i] = src->kernelMappAddr[i];
 		}
 	}

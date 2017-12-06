@@ -8,10 +8,13 @@
 
 #include <proc/ProcessScheduler.hpp>
 #include <asm/cpu.h>
-#include <driver/PCI/PCIManager.hpp>
 
 #include <driver/PCI/IDE/IDEDriver.hpp>
 #include <driver/PCI/PCIManager.hpp>
+
+#include <driver/ramdisk/RamDiskManager.hpp>
+
+#include <fs/vfs/VirtualFileSystem.hpp>
 
 struct MBR {
 	char bootstrap[436];
@@ -45,38 +48,17 @@ struct Partition {
 static_assert(sizeof(Partition) == 16, "Size is not correct");
 
 void Kernel::Start() {
+	VirtualFileSystem::initVFS();
 
 	IDEDriver* ide = new IDEDriver();
 	PCIManager::registerDriver(ide);
 
-	ProcessScheduler::init();
 	PCIManager::initPCI();
+	RamDiskManager::initRamDisk();
 
-	/*BlockIO bio;
-	BlockIOSegment bioSeg1;
-	bioSeg1.page = PhysicalAllocator::allocPage();
-	bioSeg1.offset = 0;
-	bioSeg1.len = 512;
-	bio.segments.push_back(bioSeg1);
-	bio.nb_sectors = 1;
-	bio.start_sector = 0;
-	bio.write = 0;
-	for (auto drive: PCIManager::getAllStorageDevices()) {
-		drive->loadBlockIO(bio);
-		MBR* mbr = (MBR*)(bioSeg1.page->kernelMappAddr);
-		for (int partNum = 0; partNum < 4; partNum++) {
-			Partition part;
-			for (int i = 0; i < 16; i++) {
-				part.partEntry[i] = mbr->MBRPartitionTable[partNum*16+i];
-			}
-			char tmp[1024];
-			sprintf(tmp, "Partition %i size: %i sectors, start: %i\n", partNum,
-					part.partitionSize, part.partitionStartLBA);
-			Console::write(tmp);
-		}
-		BlockIO bio;
-		drive->loadBlockIO(bio);
-	}*/
+	//VirtualFileSystem::mount("initrd", "/", "kernel", 0, nullptr);
+
+	ProcessScheduler::init();
 
 	idle();
 	while(1)

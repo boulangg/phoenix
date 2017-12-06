@@ -1,14 +1,82 @@
-/*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
- * The file is distributed under the MIT license
- * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
- */
+#pragma once
 
-#ifndef __VIRTUALFILESYSTEM_HPP__
-#define __VIRTUALFILESYSTEM_HPP__
+#include <cstring>
+#include <cstdint>
+#include <string>
+#include <vector>
+#include <list>
 
-#include <fs/vfs/Inode.hpp>
-#include <fs/vfs/Superblock.hpp>
+#include "Dentry.hpp"
+#include "File.hpp"
+#include "Inode.hpp"
+
+#define EACCES -1
+
+class FileSystemType {
+public:
+	virtual ~FileSystemType() {
+
+	}
+
+	// 3 versions
+	//struct super_block *(*read_super) (struct super_block *, void *, int);
+	//struct super_block *(*get_sb)(struct file_system_type *,
+	//                int, char *, void *, struct vfsmount *);
+	//virtual Dentry* mount(int, const char *, void *);
+	virtual SuperBlock* readSuperBlock(Dentry* source, const void* data) = 0;
+
+
+protected:
+	FileSystemType(std::string name) : name(name),
+			fs_flags(), supers() {
+
+	}
+
+public:
+	std::string name;
+	int fs_flags;
+	std::list<SuperBlock*> supers;
+};
+
+class VirtualFileSystem {
+public:
+	static void initVFS();
+
+	static std::vector<std::string> parsePathname(const char* path);
+
+	static int open(const char *pathname);
+	static int open(std::string pathname);
+
+	static int read(int fd, char *buf, size_t count);
+
+	static int close(int fd);
+
+	static int mount(const char* source, const char* target,
+			const char* fileSystemType, std::uint64_t mountFlags,
+			const void* data);
+
+	static FileSystemType* findFS(const char* filesystemtype) {
+		for (auto fst : fileSystemType) {
+			if (fst->name.compare(filesystemtype) == 0) {
+				return fst;
+			}
+		}
+		return nullptr;
+	}
+
+	static void registerFS(FileSystemType* fs) {
+		fileSystemType.push_back(fs);
+	}
+
+	static Dentry* root;
+	static std::vector<File*> filestable;
+	static std::list<FileSystemType*> fileSystemType;
+};
+
+
+
+/*#include <fs/vfs/Inode.hpp>
+#include <fs/vfs/SuperBlock.hpp>
 
 struct GlobalOpenFile {
 	uint32_t refCount;
@@ -66,6 +134,5 @@ private:
 	static Dentry* root;
 
 	static std::list<FileSystem*> _fileSystems;
-};
+};*/
 
-#endif // __VIRTUALFILESYSTEM_HPP__

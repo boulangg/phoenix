@@ -5,21 +5,23 @@
  */
 
 #include "Elf64.hpp"
+#include <fs/vfs/VirtualFileSystem.hpp>
 
-VirtualMapping* Elf64::getVirtualMapping(File* file) {
+VirtualMapping* Elf64::getVirtualMapping(int fd) {
+	File* file = VirtualFileSystem::filestable[fd];
 	VirtualMapping* virtualMap = new VirtualMapping();
 	Elf64_Ehdr fileHeader;
 	// TODO check succesful lseek
 	file->lseek(0, SEEK_SET);
 	// TODO check succesful read
-	file->read(&fileHeader, sizeof(Elf64_Ehdr));
+	file->read((char*)&fileHeader, sizeof(Elf64_Ehdr));
 	// TODO check if supported elf file
 	Elf64_Phdr programHeader;
 	for (uint32_t i = 0; i < fileHeader.e_phnum; ++i) {
 		// TODO check succesful lseek
 		file->lseek(fileHeader.e_phoff + i*fileHeader.e_phentsize, SEEK_SET);
 		// TODO check succesful read
-		file->read(&programHeader, sizeof(Elf64_Phdr));
+		file->read((char*)&programHeader, sizeof(Elf64_Phdr));
 		if (programHeader.p_type == programType::PT_LOAD) {
 			uint64_t prot = VirtualMapping::PROT::NONE;
 			uint64_t flags = VirtualMapping::FLAGS::PRIVATE |

@@ -36,7 +36,7 @@ std::list<std::pair<Event, Process*>> ProcessScheduler::events;
 
 std::priority_queue<Process*,std::vector<Process*>,ProcessLess> ProcessScheduler::ready;
 
-std::vector<GlobalOpenFile> ProcessScheduler::globalFileTable;
+//std::vector<GlobalOpenFile> ProcessScheduler::globalFileTable;
 
 int ProcessScheduler::init(){
 	Process* proc;
@@ -50,22 +50,26 @@ int ProcessScheduler::init(){
 	unconditionalContextSwitch(proc); // Set page table to idle pagetable
 
 	// Create init process
-	std::string name = "init";
-	File* f;
-	f = KernelFS::getUserApp(name);
-	if(f==nullptr)
+	std::string filename = "/init";
+	//File* f;
+	int fd = VirtualFileSystem::open(filename);
+	//f = KernelFS::getUserApp(filename);
+	//if(f==nullptr)
+	//	return -1;
+	if (fd < 0) {
 		return -1;
+	}
 
 	int64_t pid = findPid();
 	if (pid == -1)
 		return -1;
 
-	const char* init_argv[] = {"init", nullptr};
+	const char* init_argv[] = {"/bin/init", nullptr};
 	const char* init_envp[] = {nullptr};
 
 	proc = new Process(processVector[0], pid);
-	proc->execve(f, init_argv, init_envp);
-	proc->setName(name);
+	proc->execve(fd, init_argv, init_envp);
+	proc->setName(filename);
 	proc->setpriority(DEFAULT_PRIO);
 
 	ready.push(proc);
@@ -123,13 +127,14 @@ pid_t ProcessScheduler::fork() {
 }
 
 int ProcessScheduler::execve(const char* filename, const char* argv[], const char* envp[]) {
-	File* f;
-	f = KernelFS::getUserApp(filename);
-	if(f==nullptr)
+	//File* f;
+	int fd = VirtualFileSystem::open(filename);
+	//f = KernelFS::getUserApp(filename);
+	if(fd < 0)
 		return -1;
 
 	running->setName(std::string(filename));
-	running->execve(f, argv, envp);
+	running->execve(fd, argv, envp);
 
 	load_new_task(running->getRegSave());
 
