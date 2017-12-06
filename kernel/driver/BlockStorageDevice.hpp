@@ -20,10 +20,11 @@ public:
 		return name;
 	}
 
-protected:
 	void setName(std::string name) {
 		this->name = name;
 	}
+
+protected:
 
 private:
 	virtual void processBlockIO(BlockIO) = 0;

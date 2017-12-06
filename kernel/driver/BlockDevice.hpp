@@ -3,9 +3,13 @@
 #include <cstdint>
 #include <string>
 
+#include "BlockCache.hpp"
+
 class BlockDevice {
 public:
-	virtual ~BlockDevice();
+	virtual ~BlockDevice() {
+
+	}
 
 	virtual std::uint64_t getStorageSize() = 0;
 	virtual std::uint64_t getSectorNumber() = 0;

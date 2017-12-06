@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <list>
+#include <vector>
 #include <include/constant.h>
 
 #include <mm/PhysicalAllocator.hpp>

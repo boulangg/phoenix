@@ -9,6 +9,8 @@
 
 #include "BlockCache.hpp"
 #include "BlockStorageDevice.hpp"
+#include "Partition.hpp"
+#include "DeviceManager.hpp"
 
 struct PartitionInfo {
 	std::uint64_t startSector;
@@ -91,34 +93,45 @@ public:
 
 private:
 
-	bool readMBR() {
+	void readMBR() {
+		BlockDevice* dev = nullptr;
+
 		char tmp[1024];
 		sprintf(tmp, "Informations about '%s'\n", storage->getName().c_str());
 		Console::write(tmp);
 
+		PartitionInfo partFull = {0, storage->getSectorNumber(), 0};
+		parts.push_back(partFull);
+		dev = new Partition(this, 0, storage->getName());
+		DeviceManager::registerBlockDevice(dev);
+		sprintf(tmp, "Partition * size: %i sectors, start: %i\n",
+				partFull.nbSectors, partFull.startSector);
+		Console::write(tmp);
+
+
 		Block* block = getBlock(0);
 		MBR* mbr = (MBR*)(block->page->kernelMappAddr + block->offset);
 		if ((mbr->signature[0] == (char)0x55) && (mbr->signature[1] == (char)0xAA)) {
-			PartitionInfo partFull = {0, storage->getSectorNumber(), 0};
-			parts.push_back(partFull);
 			for (int partNum = 0; partNum < 4; partNum++) {
 				MBRPartition part;
 				for (int i = 0; i < 16; i++) {
 					part.partEntry[i] = mbr->MBRPartitionTable[partNum*16+i];
 				}
-				sprintf(tmp, "Partition %i size: %i sectors, start: %i\n", partNum,
-						part.partitionSize, part.partitionStartLBA);
-				Console::write(tmp);
 
-				PartitionInfo newPart = {part.partitionStartLBA, part.partitionSize, partNum};
+				PartitionInfo newPart = {part.partitionStartLBA, part.partitionSize, partNum+1};
 				parts.push_back(newPart);
+				char name[1024];
+				sprintf(name, "%s%i", storage->getName(), partNum);
+				dev = new Partition(this, partNum, name);
+				DeviceManager::registerBlockDevice(dev);
 
+				sprintf(tmp, "Partition %i size: %i sectors, start: %i\n", newPart.partno,
+						newPart.nbSectors, newPart.startSector);
+				Console::write(tmp);
 			}
-			return true;
 		} else {
-			return false;
+			Console::write("No MBR found\n");
 		}
-
 	}
 
 	BlockStorageDevice* storage;
