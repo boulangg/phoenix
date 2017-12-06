@@ -34,13 +34,13 @@ string::string(): _size(0), _capacity(DEFAULT_CAPACITY), _data(new char[_capacit
 	_data[0] = '\0';
 }
 
-string::string(const char *s): _size(char_traits<char>::length(s)),_capacity(nearest_power_2(_size+1)),_data(new char[_capacity]) {
-	char_traits<char>::copy(_data, s, _size);
-	_data[_size]='\0';
+string::string(const char *s): string(s, char_traits<char>::length(s)) {
+
 }
 
 string::string(const char *s, size_t n): _size(n),_capacity(nearest_power_2(_size+1)),_data(new char[_capacity]) {
-	char_traits<char>::copy(_data, s, _size+1);
+	char_traits<char>::copy(_data, s, _size);
+	_data[_size] = '\0';
 }
 
 string::string(const string& s): _size(s._size),_capacity(s._capacity),_data(new char[_capacity]) {
@@ -154,7 +154,9 @@ const char* string::c_str() const {
 }
 
 string string::substr(size_t pos, size_t len) const {
-	return string(this->c_str() + pos, len);
+	string res(this->c_str() + pos, len);
+	res._data[len] = '\0';
+	return res;
 }
 
 
