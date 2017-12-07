@@ -6,22 +6,27 @@
 #include "Inode.hpp"
 #include "Dentry.hpp"
 #include "SuperBlock.hpp"
+#include "AddressSpace.hpp"
 
-template <class Dentry, class File, class Inode, class SuperBlock>
+template <class SuperBlock, class Inode, class Dentry, class File, class AddressSpace>
 class BaseFSInfo {
 public:
+	typedef SuperBlock superblock_t;
+	typedef Inode inode_t;
 	typedef Dentry dentry_t;
 	typedef File file_t;
-	typedef Inode inode_t;
-	typedef SuperBlock superblock_t;
+	typedef AddressSpace address_space_t;
 };
 
 
 template <class FSInfo>
 class BaseFile : public File {
 public:
-	typedef typename FSInfo::dentry_t dentry_t;
+	typedef typename FSInfo::superblock_t superblock_t;
 	typedef typename FSInfo::inode_t inode_t;
+	typedef typename FSInfo::dentry_t dentry_t;
+	typedef typename FSInfo::file_t file_t;
+	typedef typename FSInfo::address_space_t address_space_t;
 
 
 	virtual Dentry* getDentry() override {
@@ -67,6 +72,10 @@ public:
 		return i-offset;
 	}
 
+	/*virtual int doMmap(struct VirtualArea *area) override {
+
+	}*/
+
 //protected:
 	dentry_t* _dentry;
 	inode_t* _inode;
@@ -76,9 +85,11 @@ public:
 template <class FSInfo>
 class BaseDentry : public Dentry {
 public:
+	typedef typename FSInfo::superblock_t superblock_t;
+	typedef typename FSInfo::inode_t inode_t;
 	typedef typename FSInfo::dentry_t dentry_t;
 	typedef typename FSInfo::file_t file_t;
-	typedef typename FSInfo::inode_t inode_t;
+	typedef typename FSInfo::address_space_t address_space_t;
 
 	BaseDentry(inode_t* inode) : Dentry(inode){
 		//dentry_t* d = this;
@@ -118,10 +129,11 @@ protected:
 template <class FSInfo>
 class BaseInode : public Inode {
 public:
+	typedef typename FSInfo::superblock_t superblock_t;
+	typedef typename FSInfo::inode_t inode_t;
 	typedef typename FSInfo::dentry_t dentry_t;
 	typedef typename FSInfo::file_t file_t;
-	typedef typename FSInfo::inode_t inode_t;
-	typedef typename FSInfo::superblock_t superblock_t;
+	typedef typename FSInfo::address_space_t address_space_t;
 
 	BaseInode(superblock_t* sb, std::uint64_t ino) : Inode(sb, ino) {
 
@@ -135,11 +147,25 @@ public:
 template <class FSInfo>
 class BaseSuperBlock : public SuperBlock {
 public:
+	typedef typename FSInfo::superblock_t superblock_t;
+	typedef typename FSInfo::inode_t inode_t;
 	typedef typename FSInfo::dentry_t dentry_t;
 	typedef typename FSInfo::file_t file_t;
-	typedef typename FSInfo::inode_t inode_t;
+	typedef typename FSInfo::address_space_t address_space_t;
+
+
+};
+
+template <class FSInfo>
+class BaseAddressSpace : public AddressSpace {
+public:
 	typedef typename FSInfo::superblock_t superblock_t;
+	typedef typename FSInfo::inode_t inode_t;
+	typedef typename FSInfo::dentry_t dentry_t;
+	typedef typename FSInfo::file_t file_t;
+	typedef typename FSInfo::address_space_t address_space_t;
 
+	BaseAddressSpace(inode_t* inode) : AddressSpace(inode), _host(inode) {}
 
-
+	inode_t* _host;
 };

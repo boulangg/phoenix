@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include <mm/PhysicalAllocator.hpp>
+#include <fs/vfs/PageCache.hpp>
 
 VirtualArea::VirtualArea(uint64_t* addrStart, uint64_t* addrEnd, uint64_t flags,
 		File* file, uint64_t offset, uint64_t fileSize) {
@@ -66,18 +67,23 @@ Page* VirtualArea::getPage(uint64_t index) {
 				int64_t endOffsetLimit = startOffsetLimit + fileSize;
 				int64_t endCpy = std::min((int64_t)PAGE_SIZE, endOffsetLimit);
 
-
+				AddressSpace* mapping = file->getInode()->mapping;
 				int fileIndex = offset/PAGE_SIZE + index;
-				Page* filePage = file->getPage(fileIndex);
+				Page* filePage = PageCache::getPage(mapping, fileIndex);
+				mapping->readPage(filePage);
 				for (int64_t i = startCpy; i < endCpy; ++i) {
 					((char*)(page->kernelMappAddr))[i] = ((char*)(filePage->kernelMappAddr))[i];
 				}
+
 			}
 		}
 		return page;
 	} else {
+		AddressSpace* mapping = file->getInode()->mapping;
 		int fileIndex = offset/PAGE_SIZE + index;
-		return file->getPage(fileIndex);
+		Page* page = PageCache::getPage(mapping, fileIndex);
+		mapping->readPage(page);
+		return page;
 	}
 }
 

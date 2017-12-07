@@ -14,10 +14,16 @@ public:
 	Page* getPage(size_t pageNo);
 	virtual ~AddressSpace();
 
+	int readPage(Page *p) {
+		return doReadPage(p);
+	}
+
+	virtual int doReadPage(Page* p) = 0;
+
 	// adress_space_operation
 	//int (*writepage)(struct page *page, struct writeback_control *wbc);
 private:
-	virtual int readPage(Page *p);
+	//int set_page_dirty(Page *page);
 
 	/*int (*writepages)(struct address_space *, struct writeback_control *);
 	int (*set_page_dirty)(struct page *page);
@@ -54,5 +60,4 @@ private:
 
 protected:
 	Inode* host;
-	std::vector<Page*> pages;
 };

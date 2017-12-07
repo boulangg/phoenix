@@ -2,13 +2,16 @@
 
 #include "KernelSuperBlock.hpp"
 #include "KernelFile.hpp"
+#include "KernelAddressSpace.hpp"
 
 KernelInode::KernelInode(KernelSuperBlock* sb, std::uint64_t ino) : BaseInode(sb, ino),
 		type(TYPE_FILE), sb(sb), app() {
+	mapping = new KernelAddressSpace(this);
 }
 
 KernelInode::KernelInode(KernelSuperBlock* sb, std::uint64_t ino, struct apps_desc app) :
 	BaseInode(sb, ino), type(TYPE_FILE), sb(sb), app(app) {
+	mapping = new KernelAddressSpace(this);
 }
 
 

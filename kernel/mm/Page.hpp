@@ -10,6 +10,7 @@
 #include <cstdint>
 
 #include <include/constant.h>
+class AddressSpace;
 
 enum PageType {
 	UNUSABLE,
@@ -25,6 +26,7 @@ public:
 	uint64_t* kernelMappAddr;
 	PageType type;
 	uint64_t offset;
+	AddressSpace* mapping;
 
 	static void copyPage(Page* src, Page* dst) {
 		for (uint64_t i = 0; i < PAGE_SIZE/sizeof(uint64_t); ++i) {

@@ -9,36 +9,6 @@
 #include "KernelInode.hpp"
 #include "KernelDentry.hpp"
 
-/*class KernelFile: public File {
-public:
-	KernelFile(uint64_t* addr, uint64_t size);
-	KernelFile(Inode* inode) : File(inode) {
-		KernelInode* kinode = (KernelInode*) inode;
-		_kernelStartAddr = (char*)kinode->app.apps_start;
-		_size = kinode->app.apps_end - kinode->app.apps_start;
-		_offset = 0;
-	}
-	virtual ~KernelFile();
-
-	virtual int64_t lseek(int64_t offset, uint32_t origin);
-	//virtual size_t read(void* ptr, size_t count);
-
-	// Kernel functionalities
-	virtual Page* getPage(uint64_t index) {
-		uint64_t pageAddr = (uint64_t)_kernelStartAddr+index*PAGE_SIZE;
-		pageAddr &= ~(KERNEL_HIGH_VMA);
-		return PhysicalAllocator::getPageFromAddr((uint64_t*)pageAddr);
-	}
-
-protected:
-	virtual ssize_t doRead(char* buffer, size_t size, loff_t offset);
-
-private:
-	char* _kernelStartAddr;
-	size_t _size;
-	int64_t _offset;
-};*/
-
 class KernelFile : public BaseFile<KernelFSInfo> {
 public:
 	KernelFile(KernelInode* inode) : BaseFile() {
@@ -52,7 +22,14 @@ public:
 		_dentry = dentry;
 	}
 
-	virtual ssize_t doRead(char* ptr, size_t count, loff_t offset) override{
+	virtual ssize_t doRead(char* ptr, size_t count, loff_t offset) override {
+		/* TODO use PageCache and AddressSpace instead of _kernelStartAddr
+		AddressSpace* mapping = _inode->mapping;
+		int fileIndex = offset/PAGE_SIZE;
+		Page* filePage = PageCache::getPage(mapping, fileIndex);
+		mapping->readPage(filePage);
+		*/
+
 		char* out = (char*)ptr;
 		size_t x = 0;
 		for (; x < count; ++x) {
@@ -63,12 +40,6 @@ public:
 			++offset;
 		}
 		return x;
-	}
-
-	virtual Page* getPage(uint64_t index) {
-		uint64_t pageAddr = (uint64_t)_kernelStartAddr+index*PAGE_SIZE;
-		pageAddr &= ~(KERNEL_HIGH_VMA);
-		return PhysicalAllocator::getPageFromAddr((uint64_t*)pageAddr);
 	}
 
 private:

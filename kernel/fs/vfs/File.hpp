@@ -14,7 +14,7 @@ class Page;
 class File {
 public:
 	File() {}
-	File(Inode* inode) : inode(inode) {} // for TTY
+	File(Inode* inode) : ttyinode(inode) {} // for TTY
 	virtual ~File();
 
 	// file_operation
@@ -36,17 +36,16 @@ public:
 		return doLseek(offset, origin);
 	}
 
-	// Kernel functionalities
-	virtual Page* getPage(uint64_t index) {
-		(void)index;
-		return nullptr;
-	}
+	/*int mmap(struct VirtualArea *area) {
+		return doMmap(area);
+	}*/
+
 	virtual Dentry* getDentry() {
 		return nullptr;
 	}
 
 	virtual Inode* getInode() {
-		return inode;
+		return ttyinode;
 	}
 
 	virtual loff_t getPos() {
@@ -58,6 +57,10 @@ public:
 		return 0;
 	}
 
+	/*virtual int doMmap(struct VirtualArea *area) {
+		return 0;
+	}*/
+
 private:
 	virtual ssize_t doRead(char* buffer, size_t size, loff_t offset) = 0;
 	virtual ssize_t doWrite(char* buffer, size_t size, loff_t offset);
@@ -68,7 +71,6 @@ private:
 	//virtual uint32_t poll(struct poll_table_struct *);
 	//long ioctl(unsigned int, unsigned long);
 	//long (*compat_ioctl) (struct NewFile *, unsigned int, unsigned long);
-	//virtual int mmap(struct vm_area_struct *);
 	//virtual int mremap(struct NewFile *, struct vm_area_struct *);
 	//virtual int flush(void* id);
 	//int fsync(loff_t, loff_t, int datasync);
@@ -93,7 +95,7 @@ private:
 //private:
 public:
 	//Dentry* dentry;
-	Inode* inode;
+	Inode* ttyinode;
 	loff_t _pos;
 	//mode_t mode;
 	//loff_t pos;

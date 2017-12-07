@@ -7,7 +7,6 @@
 #include "ProcessScheduler.hpp"
 
 #include <asm/cpu.h>
-#include <fs/KernelFS.hpp>
 
 #include <core/Console.hpp>
 #include <stdio.h>
