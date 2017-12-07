@@ -96,7 +96,7 @@ int VirtualFileSystem::close(int fd) {
 }
 
 int VirtualFileSystem::mount(const char* source, const char* target,
-		const char* fileSystemType, uint64_t mountFlags,
+		const char* fileSystemType, uint64_t ,
 		const void* data) {
 	std::vector<std::string> pathnameVector = parsePathname(source);
 	Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);

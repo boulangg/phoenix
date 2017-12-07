@@ -12,7 +12,7 @@ Dentry::Dentry(Dentry* parent, Inode* inode, std::string name) :
 Dentry::Dentry(Inode* inode) :
 		inode(inode), parent(this), name("/"), mount(nullptr)
 {
-	Dentry* d = this;
+	//Dentry* d = this;
 	//parent->children.push_back(d);
 }
 
