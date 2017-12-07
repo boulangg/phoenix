@@ -129,8 +129,8 @@ $(USER_APPS_GEN_FILE): $(USER_APPS_MV) script/user_apps.sh | $(USER_APPS_GEN_DIR
 $(USER_APPS_GEN_DIR):
 	$(MKDIR) -p $@
 
-out/gen/user_apps.S.o: $(USER_APP_FILES) | out/gen 
-out/gen/user_apps.S.d: $(USER_APP_FILES) | out/gen 
+out/gen/user_apps.S.o: $(USER_APP_FILES) | out/gen update_gen_file
+out/gen/user_apps.S.d: $(USER_APP_FILES) | out/gen update_gen_file
 
 out/gen:
 	$(MKDIR) -p $@
