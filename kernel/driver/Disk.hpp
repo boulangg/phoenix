@@ -104,7 +104,7 @@ private:
 		parts.push_back(partFull);
 		dev = new Partition(this, 0, storage->getName());
 		DeviceManager::registerBlockDevice(dev);
-		sprintf(tmp, "Partition * size: %i sectors, start: %i\n",
+		sprintf(tmp, "Partition * size: %llu sectors, start: %llu\n",
 				partFull.nbSectors, partFull.startSector);
 		Console::write(tmp);
 
@@ -121,11 +121,11 @@ private:
 				PartitionInfo newPart = {part.partitionStartLBA, part.partitionSize, partNum+1};
 				parts.push_back(newPart);
 				char name[1024];
-				sprintf(name, "%s%i", storage->getName(), partNum);
+				sprintf(name, "%s%i", storage->getName().c_str(), partNum);
 				dev = new Partition(this, partNum, name);
 				DeviceManager::registerBlockDevice(dev);
 
-				sprintf(tmp, "Partition %i size: %i sectors, start: %i\n", newPart.partno,
+				sprintf(tmp, "Partition %i size: %llu sectors, start: %llu\n", newPart.partno,
 						newPart.nbSectors, newPart.startSector);
 				Console::write(tmp);
 			}
