@@ -12,6 +12,8 @@
 #include <list>
 #include <proc/ProcessScheduler.hpp>
 
+#include <core/interrupt/InterruptManager.hpp>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -26,12 +28,18 @@ class Clock {
 public:
 	Clock();
 	~Clock();
+	static void init() {
+		setFreq();
+		InterruptHandler* handler = new InterruptHandlerFunction<Clock::tic>("Clock", {true, false}, nullptr);
+		InterruptManager::requestIRQ(0, handler);
+	}
+
 	static void setFreq();
 	static uint64_t sec(){return s;}
 	static uint64_t min(){return m;}
 	static uint64_t hour(){return h;}
 	static uint64_t current_clock_kernel(){return totalIntern;}
-	static void tic();
+	static int tic();
 	static int nanosleep(const struct timespec *req, struct timespec *rem);
 
 private:

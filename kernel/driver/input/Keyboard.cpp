@@ -9,6 +9,8 @@
 #include <core/Console.hpp>
 #include <stdio.h>
 
+#include <core/interrupt/InterruptManager.hpp>
+
 void KEYBOARD_handler() {
 	outb(0x20, 0x20);
     int scancode = inb(0x60);
@@ -47,6 +49,19 @@ bool Keyboard::keystate[256];
 bool Keyboard::extended = false;
 uint8_t Keyboard::specialKeys = 0;
 TTY* Keyboard::tty = nullptr;
+
+void Keyboard::initKeyboard() {
+	InterruptHandler* handler = new InterruptHandlerFunction<Keyboard::handleInterrupt>("Keyboard", {true, false}, nullptr);
+	InterruptManager::requestIRQ(1, handler);
+
+}
+
+int Keyboard::handleInterrupt() {
+	int scancode = inb(0x60);
+	processScancode(scancode);
+	return 0;
+}
+
 
 void Keyboard::processScancode(uint8_t scancode) {
 	if (mode == RAW) {

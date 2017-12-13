@@ -39,6 +39,8 @@ public:
 
 	static void initKeyboard();
 
+	static int handleInterrupt();
+
 	static void processScancode(uint8_t scancode);
 	static void processSpecialKeys(uint8_t scancode);
 	static void processKeycode(uint8_t keycode);

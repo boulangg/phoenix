@@ -95,6 +95,87 @@ extern "C" uint64_t _initrd_end[];
 #define INITRD_START		_initrd_start
 #define INITRD_END			_initrd_end
 
+/* IDT and GDT constant */
+// Size Bits
+#define SZ_A		0x1
+#define SZ_L		0x2
+#define SZ_D		0x4
+#define SZ_G		0x8
+
+// Common flags
+#define FLAG_P 		0x80
+#define FLAG_DPL0	0x00
+#define FLAG_DPL1	0x20
+#define FLAG_DPL2	0x40
+#define FLAG_DPL3	0x60
+
+// Code flags
+#define FLAG_A		0x01
+#define FLAG_R		0x02
+#define FLAG_C		0x04
+#define FLAG_CODE	0x18
+
+// Data flags
+#define FLAG_W		0x02
+#define FLAG_E		0x04
+#define FLAG_DATA	0x10
+
+// System Descriptor Type Flags
+#define FLAG_LDT		0x02
+#define FLAG_TSS_AVL	0x09
+#define FLAG_TSS_BSY	0x0B
+#define FLAG_CALL		0x0C
+#define FLAG_INT		0x0E
+#define FLAG_TRAP		0x0F
+
+// Selector index
+#define SEL_NULL		0x00
+#define SEL_KERNEL_CS	0x10
+#define SEL_KERNEL_DS	0x18
+#define SEL_TSS			0x20
+#define SEL_USER_CS_32	0x43
+#define SEL_USER_DS_32	0x4A
+#define SEL_USER_CS		0x53
+#define SEL_USER_DS		0x5A
+
+// TSS Infos
+#define TSS_INDEX		(SEL_TSS >> 3)
+#define TSS_BASE		((uint64_t)&tss)
+#define TSS_LIMIT		sizeof(tss)
+#define TSS_FLAGS		(FLAG_DPL0 | FLAG_TSS_AVL)
+#define TSS_SIZEB		0
+
+// USER_CS Infos
+#define USER_CS_INDEX	(SEL_USER_CS >> 3)
+#define USER_CS_BASE	0x00				// ignored
+#define USER_CS_LIMIT	0x00				// ignored
+#define USER_CS_FLAGS	(FLAG_DPL3 | FLAG_CODE)
+#define USER_CS_SIZEB	SZ_L
+
+// USER_DS Infos
+#define USER_DS_INDEX	(SEL_USER_DS >> 3)
+#define USER_DS_BASE	0x00				// ignored
+#define USER_DS_LIMIT	0x00				// ignored
+#define USER_DS_FLAGS	(FLAG_DPL3 | FLAG_DATA | FLAG_W)
+#define USER_DS_SIZEB	0x00				// ignored
+
+// USER_CS_32 Infos
+#define USER_CS_32_INDEX	(SEL_USER_CS_32 >> 3)
+#define USER_CS_32_BASE		0x00
+#define USER_CS_32_LIMIT	(uint32_t)(-1)
+#define USER_CS_32_FLAGS	(FLAG_DPL3 | FLAG_CODE)
+#define USER_CS_32_SIZEB	SZ_D
+
+// USER_DS_32 Infos
+#define USER_DS_32_INDEX	(SEL_USER_DS_32 >> 3)
+#define USER_DS_32_BASE		0x00
+#define USER_DS_32_LIMIT	(uint32_t)(-1)
+#define USER_DS_32_FLAGS	(FLAG_DPL3 | FLAG_DATA | FLAG_W)
+#define USER_DS_32_SIZEB	SZ_D
+
+
+
+
 #endif
 
 #endif // __ARCH_CONSTANT_H__

@@ -22,11 +22,10 @@ uint64_t Clock::totalIntern=0;
 std::list<Event> Clock::timers;
 
 void PIT_handler(){
-	outb(0x20, 0x20);
 	Clock::tic();
 }
 
-void Clock::tic(){
+int Clock::tic(){
 	totalIntern++;
 	intern++;
 	if (intern >= CLOCKFREQ) {
@@ -43,6 +42,7 @@ void Clock::tic(){
 	}
 	checkTimers();
 	ProcessScheduler::schedule();
+	return 0;
 }
 
 Clock::Clock() {

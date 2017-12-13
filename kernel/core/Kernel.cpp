@@ -16,6 +16,9 @@
 
 #include <fs/vfs/VirtualFileSystem.hpp>
 
+#include <core/Clock.hpp>
+#include <driver/input/Keyboard.hpp>
+
 struct MBR {
 	char bootstrap[436];
 	char diskID[10];
@@ -48,6 +51,9 @@ struct Partition {
 static_assert(sizeof(Partition) == 16, "Size is not correct");
 
 void Kernel::Start() {
+	Clock::init();
+	Keyboard::initKeyboard();
+
 	VirtualFileSystem::initVFS();
 
 	IDEDriver* ide = new IDEDriver();
