@@ -7,10 +7,24 @@
 #ifndef LIB_LIBSTDCPP_INCLUDE_TYPE_TRAITS_
 #define LIB_LIBSTDCPP_INCLUDE_TYPE_TRAITS_
 
-namespace std{
+namespace std
+{
+
 template< class T > struct remove_reference      {typedef T type;};
 template< class T > struct remove_reference<T&>  {typedef T type;};
 template< class T > struct remove_reference<T&&> {typedef T type;};
+
+template <class T, T v>
+struct integral_constant {
+	static constexpr T value = v;
+	typedef T value_type;
+	typedef integral_constant<T,v> type;
+	constexpr operator T() { return v; }
+};
+
+typedef integral_constant<bool,true> true_type;
+typedef integral_constant<bool,false> false_type;
+
 }
 
 
