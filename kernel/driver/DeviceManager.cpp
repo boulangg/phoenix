@@ -7,12 +7,12 @@ std::list<BlockDevice*> DeviceManager::_blockDevices;
 
 void DeviceManager::registerIDEDevice(BlockStorageDevice* dev) {
 	_blockStorageDevices.push_back(dev);
-	Disk disk(dev);
+	Disk* disk = new Disk(dev);
 }
 
 void DeviceManager::registerRamDisk(BlockStorageDevice* dev) {
 	_blockStorageDevices.push_back(dev);
-	Disk disk(dev);
+	Disk* disk = new Disk(dev);
 }
 
 void DeviceManager::registerBlockDevice(BlockDevice* dev) {

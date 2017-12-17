@@ -4,6 +4,7 @@
 #include "SuperBlock.hpp"
 
 #include "fs/kernelfs/KernelFileSystemType.hpp"
+#include "fs/ext2fs/Ext2FileSystemType.hpp"
 
 Dentry* VirtualFileSystem::root;
 std::vector<File*> VirtualFileSystem::filestable;
@@ -14,10 +15,11 @@ void VirtualFileSystem::initVFS() {
 	Inode* inode = new Inode(nullptr, 0);
 	root = new Dentry(inode);
 	//filestable.push_back(root->open());
-	FileSystemType* fs = new KernelFileSystemType();
+	FileSystemType* fs;
+	fs = new KernelFileSystemType();
 	registerFS(fs);
-	mount("initrd", "/", "kernel", 0, nullptr);
-	// Mount test file system
+	fs = new Ext2FileSystemType();
+	registerFS(fs);
 }
 
 std::vector<std::string> VirtualFileSystem::parsePathname(const char* path) {
@@ -103,6 +105,9 @@ int VirtualFileSystem::mount(const char* source, const char* target,
 
 	std::vector<std::string> mountVector = parsePathname(target);
 	Dentry* mount = DentryCache::findDentry(VirtualFileSystem::root, mountVector, 0);
+	if (mount == nullptr) {
+		return 1;
+	}
 
 	FileSystemType* type = VirtualFileSystem::findFS(fileSystemType);
 

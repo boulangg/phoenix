@@ -20,12 +20,16 @@ GDB := gdb
 DISK := disk.iso
 DISK_DIR := iso
 
+DRIVE := drive.img
+DRIVE_DIR := drive
+DRIVE_SIZE := 16M
+
 QEMU := qemu-system-x86_64
-QEMU_OPTS := -m 256 -hda $(DISK) -d int,cpu_reset
+QEMU_OPTS := -boot d -m 256 -cdrom $(DISK) -hda $(DRIVE) -d int,cpu_reset 
 QEMU_OPTS_DEBUG := $(QEMU_OPTS) -s -S
 
 ### Basic rules ###
-.PHONY: all launch debug clean clean_disk clean-user clean-all kernel_target
+.PHONY: all launch debug drive clean clean_disk clean-user clean-all kernel_target
 kernel_target: all
 	@$(ECHO) "\033[0;32m  Kernel succesfully built\033[0m\n"
 
@@ -34,16 +38,21 @@ all:
 	@$(MAKE) $(BIN) --no-print-directory -C $(KERNEL_DIR)/ VERBOSE=$(VERBOSE)
 
 $(DISK): kernel_target
-	cp $(KERNEL) $(DISK_DIR)/boot/
-	grub-mkrescue -o $(DISK) $(DISK_DIR)
+	@$(ECHO) "  CP      $(KERNEL) -> $(DISK_DIR)\n"; cp $(KERNEL) $(DISK_DIR)/boot/
+	@$(ECHO) "  GRUBMK\n"; grub-mkrescue -o $(DISK) $(DISK_DIR) 2> /dev/null
 
-launch: $(DISK)
-	scripts/terminal.sh -e "$(QEMU) $(QEMU_OPTS)" &
+drive:
+	@$(ECHO) "\033[0;33m  Create ext2 drive\033[0m\n"
+	@test -s $(DRIVE) || ./scripts/disk.sh CREATE $(DRIVE) $(DRIVE_SIZE)
+	@$(ECHO) "\033[0;32m  Ext2 drive created\033[0m\n"
 
-debug: $(DISK)
-	scripts/terminal.sh -e "$(QEMU) $(QEMU_OPTS_DEBUG)" &
-	sleep 1
-	scripts/terminal.sh -e "$(GDB) $(KERNEL)" &
+launch: $(DISK) drive
+	@$(ECHO) "  SH      $(QEMU)\n"; scripts/terminal.sh -e "$(QEMU) $(QEMU_OPTS)" &
+
+debug: $(DISK) drive
+	@$(ECHO) "  SH      $(QEMU)\n"; scripts/terminal.sh -e "$(QEMU) $(QEMU_OPTS_DEBUG)" &
+	@$(ECHO) "  SLEEP   1\n"; sleep 1
+	@$(ECHO) "  SH      $(GDB)\n"; scripts/terminal.sh -e "$(GDB) $(KERNEL)" &
 
 clean:
 	@$(MAKE) --no-print-directory clean -C kernel/

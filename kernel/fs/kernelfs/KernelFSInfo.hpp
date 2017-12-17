@@ -12,5 +12,3 @@ typedef BaseFSInfo<KernelSuperBlock, KernelInode, KernelDentry, KernelFile, Kern
 
 #define TYPE_DIR 0x1
 #define TYPE_FILE 0x2
-
-

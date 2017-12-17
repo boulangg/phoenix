@@ -29,8 +29,25 @@ public:
 	typedef typename FSInfo::address_space_t address_space_t;
 
 
+	BaseFile() {
+
+	}
+
+	BaseFile(inode_t*inode) : File() {
+		_inode = inode;
+	}
+
+	BaseFile(dentry_t* dentry, inode_t* inode, size_t size) : File(),
+		_dentry(dentry), _inode(inode), _size(0) {
+
+	}
+
+	virtual ~BaseFile() {
+
+	}
+
 	virtual Dentry* getDentry() override {
-		return _dentry;
+		return (Dentry*)_dentry;
 	}
 
 	virtual Inode* getInode() override {
@@ -91,7 +108,7 @@ public:
 	typedef typename FSInfo::file_t file_t;
 	typedef typename FSInfo::address_space_t address_space_t;
 
-	BaseDentry(inode_t* inode) : Dentry(inode){
+	BaseDentry(inode_t* inode) : Dentry((Inode*)inode) {
 		//dentry_t* d = this;
 		//_inode = inode;
 		//_parent = this;
@@ -103,6 +120,10 @@ public:
 	BaseDentry(Dentry* parent, inode_t* inode, std::string name) : Dentry(parent, inode, name),
 			_inode(inode)
 	{
+
+	}
+
+	virtual ~BaseDentry() {
 
 	}
 
@@ -135,13 +156,21 @@ public:
 	typedef typename FSInfo::file_t file_t;
 	typedef typename FSInfo::address_space_t address_space_t;
 
-	BaseInode(superblock_t* sb, std::uint64_t ino) : Inode(sb, ino) {
+	BaseInode(superblock_t* sb, std::uint64_t ino) : Inode((SuperBlock*)sb, ino),
+			sb(sb)
+	{
+
+	}
+
+	virtual ~BaseInode() {
 
 	}
 
 	/*virtual Dentry* doCreate(Dentry* parent, std::string name) {}*/
 
 	virtual file_t* doOpen() = 0;
+
+	superblock_t* sb;
 };
 
 template <class FSInfo>
@@ -153,6 +182,9 @@ public:
 	typedef typename FSInfo::file_t file_t;
 	typedef typename FSInfo::address_space_t address_space_t;
 
+	virtual ~BaseSuperBlock() {
+
+	}
 
 };
 
@@ -166,6 +198,10 @@ public:
 	typedef typename FSInfo::address_space_t address_space_t;
 
 	BaseAddressSpace(inode_t* inode) : AddressSpace(inode), _host(inode) {}
+
+	virtual ~BaseAddressSpace() {
+
+	}
 
 	inode_t* _host;
 };

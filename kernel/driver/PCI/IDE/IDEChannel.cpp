@@ -19,8 +19,11 @@ IDEChannel::~IDEChannel() {
 void IDEChannel::processBlockIO(BlockIO bio, bool slave) {
 	std::uint64_t start_sector = bio.start_sector;
 	for (auto segment: bio.segments) {
-		ATAAccess(slave, bio.write, start_sector, (char*)segment.page->kernelMappAddr, 1);
-		start_sector += 1;
+		char* startAddr = ((char*)segment.page->kernelMappAddr) + segment.offset;
+		for (std::size_t i = 0; i < bio.nb_sectors ;++i) {
+			ATAAccess(slave, bio.write, start_sector, startAddr + i*disks[slave]->getSectorSize(), 1);
+			start_sector += 1;
+		}
 	}
 }
 

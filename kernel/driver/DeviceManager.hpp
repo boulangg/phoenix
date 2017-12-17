@@ -13,6 +13,15 @@ public:
 	static void registerRamDisk(BlockStorageDevice* dev);
 	static void registerBlockDevice(BlockDevice* dev);
 
+	static BlockDevice* getBlockDevice(std::string name) {
+		for (auto blk : _blockDevices) {
+			if (blk->getName().compare(name) == 0) {
+				return blk;
+			}
+		}
+		return nullptr;
+	}
+
 	static std::list<BlockStorageDevice*> getAllStorageDevices();
 	static std::list<BlockDevice*> getAllBlockDevices();
 

@@ -24,11 +24,13 @@ public:
 
 	void processBlockIO(BlockIO bio) override {
 		std::uint64_t start_sector = bio.start_sector;
-
 		for (auto segment: bio.segments) {
-			accessRAM(bio.write, start_sector, (char*)segment.page->kernelMappAddr, 1);
-			start_sector +=1;
-		}
+				char* startAddr = ((char*)segment.page->kernelMappAddr) + segment.offset;
+				for (std::size_t i = 0; i < bio.nb_sectors ;++i) {
+					accessRAM(bio.write, start_sector, startAddr + i*sectorSize, 1);
+					start_sector += 1;
+				}
+			}
 	}
 
 	void accessRAM(bool write, std::uint64_t lba, char* buffer, std::uint32_t numSec) {

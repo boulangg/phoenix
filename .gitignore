@@ -23,8 +23,8 @@ kernel/phoenix.bin
 .project
 
 # Image disk #
-disk.iso
-iso/boot/phoenix.bin
+*.iso
+*.img
 
 # gcc cross compile #
 cross/

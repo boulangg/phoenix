@@ -62,6 +62,8 @@ void Kernel::Start() {
 	PCIManager::initPCI();
 	RamDiskManager::initRamDisk();
 
+	VirtualFileSystem::mount("initrd", "/", "ext2", 0, nullptr);
+	VirtualFileSystem::mount("apps", "/bin", "kernel", 0, nullptr);
 	//VirtualFileSystem::mount("initrd", "/", "kernel", 0, nullptr);
 
 	ProcessScheduler::init();

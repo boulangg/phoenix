@@ -49,7 +49,7 @@ int ProcessScheduler::init(){
 	unconditionalContextSwitch(proc); // Set page table to idle pagetable
 
 	// Create init process
-	std::string filename = "/init";
+	std::string filename = "/bin/init";
 	//File* f;
 	int fd = VirtualFileSystem::open(filename);
 	//f = KernelFS::getUserApp(filename);
