@@ -4,12 +4,16 @@
 
 #include "KernelInode.hpp"
 #include "KernelDentry.hpp"
+#include <fs/vfs/VirtualFileSystem.hpp>
 
 class KernelSuperBlock : public SuperBlock {
 
 public:
-	KernelSuperBlock(FileSystemType* type, Dentry* src) : SuperBlock(type) {
+	KernelSuperBlock(FileSystemType* type, const std::string& source) : SuperBlock(type) {
+		std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(source);
+		Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);
 		(void)src;
+
 		//char* apps = apps;
 		inoderoot = new KernelInode(this, 0);
 		inoderoot->type = TYPE_DIR;

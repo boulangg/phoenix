@@ -22,8 +22,8 @@ void VirtualFileSystem::initVFS() {
 	registerFS(fs);
 }
 
-std::vector<std::string> VirtualFileSystem::parsePathname(const char* path) {
-	std::string pathname(path);
+std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pathname) {
+	//std::string pathname(path);
 	// TODO correct error (doesn't handle correctly last '/' even for files)
 	std::vector<std::string> res;
 	size_t i = 0;
@@ -48,7 +48,7 @@ std::vector<std::string> VirtualFileSystem::parsePathname(const char* path) {
 
 int VirtualFileSystem::open(const char *pathname) {
 	// TODO handle flags and check access right
-	std::vector<std::string> pathnameVector = parsePathname(pathname);
+	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
 	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
 
 	// File not found
@@ -100,8 +100,8 @@ int VirtualFileSystem::close(int fd) {
 int VirtualFileSystem::mount(const char* source, const char* target,
 		const char* fileSystemType, uint64_t ,
 		const void* data) {
-	std::vector<std::string> pathnameVector = parsePathname(source);
-	Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);
+	/*std::vector<std::string> pathnameVector = parsePathname(source);
+	Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);*/
 
 	std::vector<std::string> mountVector = parsePathname(target);
 	Dentry* mount = DentryCache::findDentry(VirtualFileSystem::root, mountVector, 0);
@@ -111,7 +111,7 @@ int VirtualFileSystem::mount(const char* source, const char* target,
 
 	FileSystemType* type = VirtualFileSystem::findFS(fileSystemType);
 
-	SuperBlock* sb = type->readSuperBlock(src, data);
+	SuperBlock* sb = type->readSuperBlock(source, data);
 	if (sb) {
 		mount->mount = sb->root;
 		return 0;

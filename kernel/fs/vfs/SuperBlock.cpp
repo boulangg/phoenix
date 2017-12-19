@@ -13,4 +13,3 @@ SuperBlock::SuperBlock(FileSystemType* type) :
 SuperBlock::~SuperBlock() {
 
 }
-

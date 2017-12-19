@@ -175,6 +175,7 @@ public:
 protected:
 	SuperBlock();
 
+
 public:
 	BlockDevice* dev;
 	std::uint64_t blockSize; // For the filesystem, not the eventual device

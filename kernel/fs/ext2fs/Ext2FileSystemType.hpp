@@ -10,7 +10,7 @@ public:
 
 	}
 
-	SuperBlock* readSuperBlock(Dentry* source, const void* data) override {
+	SuperBlock* readSuperBlock(const std::string& source, const void* data) override {
 		Ext2SuperBlock* sb = new Ext2SuperBlock(this, source);
 		if (sb->_valid) {
 			SuperBlock* simplesb = sb;

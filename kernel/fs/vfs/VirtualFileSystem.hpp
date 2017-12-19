@@ -25,7 +25,8 @@ public:
 	//struct super_block *(*get_sb)(struct file_system_type *,
 	//                int, char *, void *, struct vfsmount *);
 	//virtual Dentry* mount(int, const char *, void *);
-	virtual SuperBlock* readSuperBlock(Dentry* source, const void* data) = 0;
+	//virtual SuperBlock* readSuperBlock(Dentry* source, const void* data) = 0;
+	virtual SuperBlock* readSuperBlock(const std::string& source, const void* data) = 0;
 
 
 protected:
@@ -44,7 +45,7 @@ class VirtualFileSystem {
 public:
 	static void initVFS();
 
-	static std::vector<std::string> parsePathname(const char* path);
+	static std::vector<std::string> parsePathname(const std::string& path);
 
 	static int open(const char *pathname);
 	static int open(std::string pathname);
@@ -81,20 +82,7 @@ public:
 
 
 
-/*#include <fs/vfs/Inode.hpp>
-#include <fs/vfs/SuperBlock.hpp>
-
-struct GlobalOpenFile {
-	uint32_t refCount;
-	uint8_t openMode;
-	Inode* inode;
-};
-
-struct LocalOpenFile {
-	int64_t openFileTableIndex;
-	uint64_t offset;
-};
-
+/*
 class VirtualFileSystem {
 public:
 	VirtualFileSystem();
@@ -103,11 +91,6 @@ public:
 	// FileDesc functions
 	static FileDesc open(const char* filename, int flags, int mode);
 	static void close(FileDesc fd);
-	static loff_t lseek(FileDesc fd, loff_t offset, int32_t origin);
-	static ssize_t read(FileDesc fd, char* buf, ssize_t count);
-	static ssize_t write(FileDesc fd, const char* buf, ssize_t count);
-
-	static FileDesc dup(FileDesc);
 
 	// link, unlink, chown, chmod, stat, lstat
 	// readlink, symlink
@@ -122,23 +105,5 @@ public:
 
 	// Register file system
 	static int registerFileSystem(FileSystem* fs);
-
-private:
-	//static Inode* getInode(uint64_t inodeNumber);
-
-	static Dentry* findDentry(const char* filename, Dentry* workDir) {
-		Dentry* start = workDir;
-		if (filename[0] = '/') {
-			start = root;
-		}
-		std::list<char*> path;
-		while ()
-	}
-
-	static std::vector<File*> _openFileTable;
-	static std::list<Inode*> _inodeTable;
-	static Dentry* root;
-
-	static std::list<FileSystem*> _fileSystems;
 };*/
 

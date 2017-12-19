@@ -17,9 +17,11 @@
 
 class Ext2SuperBlock : public SuperBlock {
 public:
-	Ext2SuperBlock(FileSystemType* type, Dentry* src) :
+	Ext2SuperBlock(FileSystemType* type, const std::string& source) :
 		SuperBlock(type), _logBlockSize(10)
 	{
+		std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(source);
+		Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);
 		(void)src;
 		_dev = DeviceManager::getBlockDevice("hda1");
 		Block* blk = _dev->getBlock(1024/_dev->getSectorSize());
