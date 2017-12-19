@@ -7,6 +7,7 @@
 #ifndef __SYS_STAT_H__
 #define __SYS_STAT_H__
 
+#include <stdint.h>
 #include <sys/types.h>
 
 struct stat {
@@ -48,8 +49,6 @@ struct stat {
 #define S_ISREG(m)  ((m & S_IFMT) == S_IFREG)
 #define S_ISLNK(m)  ((m & S_IFMT) == S_IFLNK)
 #define S_ISSOCK(m) ((m & S_IFMT) == S_IFSOCK)
-#define S_ISREG(m)  ((m & S_IFMT) == S_IFLNK)
-#define S_ISREG(m)  ((m & S_IFMT) == S_IFREG)
 
 /* File mode bits */
 #define S_IRWXU 00000007
