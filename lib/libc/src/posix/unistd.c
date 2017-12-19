@@ -3,10 +3,6 @@
 
 #include <syscall/syscall.h>
 
-int open(const char *pathname, int flags, mode_t mode) {
-	return sys_open(pathname, flags, mode);
-}
-
 int close(int fd) {
 	return sys_close(fd);
 }

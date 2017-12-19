@@ -21,4 +21,5 @@ SYSCALL(39, sys_getpid)
 SYSCALL(57, sys_fork)
 SYSCALL(59, sys_execve)
 SYSCALL(60, sys_exit)
+SYSCALL(217, sys_getdents64)
 

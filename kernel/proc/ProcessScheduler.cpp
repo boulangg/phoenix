@@ -58,6 +58,10 @@ int ProcessScheduler::init(){
 	if (fd < 0) {
 		return -1;
 	}
+	File* file = VirtualFileSystem::filestable[fd];
+	if (file == nullptr) {
+		return -1;
+	}
 
 	int64_t pid = findPid();
 	if (pid == -1)
@@ -67,7 +71,7 @@ int ProcessScheduler::init(){
 	const char* init_envp[] = {nullptr};
 
 	proc = new Process(processVector[0], pid);
-	proc->execve(fd, init_argv, init_envp);
+	proc->execve(file, init_argv, init_envp);
 	proc->setName(filename);
 	proc->setpriority(DEFAULT_PRIO);
 
@@ -131,9 +135,10 @@ int ProcessScheduler::execve(const char* filename, const char* argv[], const cha
 	//f = KernelFS::getUserApp(filename);
 	if(fd < 0)
 		return -1;
+	File* file = VirtualFileSystem::filestable[fd];
 
 	running->setName(std::string(filename));
-	running->execve(fd, argv, envp);
+	running->execve(file, argv, envp);
 
 	load_new_task(running->getRegSave());
 
@@ -158,6 +163,10 @@ int ProcessScheduler::pageFault(int errorCode, void* addr) {
 		exit(-1);
 	}
 	return 0;
+}
+
+int ProcessScheduler::open(const char* pathname, int flags, mode_t mode) {
+	return running->open(pathname, flags, mode);
 }
 
 void ProcessScheduler::unconditionalContextSwitch(Process* currProc) {

@@ -70,8 +70,8 @@ public:
 	int addInput(const char val);
 
 private:
-	virtual ssize_t doRead(char* ptr, size_t count, loff_t offset) override;
-	virtual ssize_t doWrite(char* ptr, size_t count, loff_t offset) override;
+	virtual ssize_t read_internal(char* ptr, size_t count, loff_t offset) override;
+	virtual ssize_t write_internal(char* ptr, size_t count, loff_t offset) override;
 
 private:
 	int getTermios(struct termios*);

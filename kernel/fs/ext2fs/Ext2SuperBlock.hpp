@@ -21,7 +21,7 @@ public:
 		SuperBlock(type), _logBlockSize(10)
 	{
 		(void)src;
-		_dev = DeviceManager::getBlockDevice("initrd");
+		_dev = DeviceManager::getBlockDevice("hda1");
 		Block* blk = _dev->getBlock(1024/_dev->getSectorSize());
 		ext2_superblock_t* sb = new ext2_superblock_t();
 		memcpy((void*)sb, (void*)(((char*)(blk->page->kernelMappAddr)) + blk->offset), 512);

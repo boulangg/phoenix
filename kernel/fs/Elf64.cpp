@@ -7,8 +7,8 @@
 #include "Elf64.hpp"
 #include <fs/vfs/VirtualFileSystem.hpp>
 
-VirtualMapping* Elf64::getVirtualMapping(int fd) {
-	File* file = VirtualFileSystem::filestable[fd];
+VirtualMapping* Elf64::getVirtualMapping(File* file) {
+	//File* file = VirtualFileSystem::filestable[fd];
 	VirtualMapping* virtualMap = new VirtualMapping();
 	Elf64_Ehdr fileHeader;
 	// TODO check succesful lseek

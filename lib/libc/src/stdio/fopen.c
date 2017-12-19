@@ -73,6 +73,7 @@ FILE* fopen(const char* filename, const char* mode) {
 	setvbuf(f, NULL, _IOFBF, BUFSIZ); // TODO change to full buffer or line buffer
 	f->eof = false;
 	f->error = 0;
+	f->bufVirtPos = BUF_VIRT_SIZE;
 	return f;
 
 

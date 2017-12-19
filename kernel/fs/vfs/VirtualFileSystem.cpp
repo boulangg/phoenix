@@ -67,13 +67,13 @@ int VirtualFileSystem::open(const char *pathname) {
 	// Check for available file descriptor
 	for (size_t i = 0; i < filestable.size(); i++) {
 		if (filestable[i] == nullptr) {
-			filestable[i] = dentry->open();
+			filestable[i] = dentry->getInode()->open();
 			return i;
 		}
 	}
 
 	// Create new file descriptor
-	filestable.push_back(dentry->open());
+	filestable.push_back(dentry->getInode()->open());
 	return filestable.size() - 1;
 }
 
@@ -83,10 +83,10 @@ int VirtualFileSystem::open(std::string pathname) {
 }
 
 
-int VirtualFileSystem::read(int fd, char *buf, size_t count) {
+/*int VirtualFileSystem::read(int fd, char *buf, size_t count) {
 	// TODO check correct fd
 	return filestable[fd]->read(buf, count);
-}
+}*/
 
 int VirtualFileSystem::close(int fd) {
 	filestable[fd]->count--;
@@ -119,14 +119,4 @@ int VirtualFileSystem::mount(const char* source, const char* target,
 	return 1;
 }
 
-/*loff_t VirtualFileSystem::lseek(FileDesc fd, loff_t offset, int32_t origin) {
-	File* f = _openFileTable[fd._fileIndex];
-	return f->lseek(offset, origin);
-}
-
-ssize_t VirtualFileSystem::read(FileDesc fd, char* buf, ssize_t count) {
-	File* f = _openFileTable[fd._fileIndex];
-	return f->read(buf, count);
-}
-*/
 

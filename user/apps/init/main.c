@@ -1,6 +1,13 @@
 
 #include <unistd.h>
 
+#include <stdio.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <syscall/syscall.h>
+#include <string.h>
+#include <fcntl.h>
+
 int main(int argc,char* argv[]) {
 	(void)argc;
 	(void)argv;
@@ -10,6 +17,11 @@ int main(int argc,char* argv[]) {
 		execve("/bin/test1",argv, envp);
 		return 10;
 	} else {
+		DIR* dir = opendir(".");
+		struct dirent* dirp;
+		while ((dirp = readdir(dir)) != NULL) {
+			printf("%i: %s\n", dirp->d_ino, (char*)dirp->d_name);;
+		}
 		return getpid();
 	}
 }

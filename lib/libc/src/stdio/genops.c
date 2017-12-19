@@ -10,6 +10,12 @@
 
 int fgetc(FILE* str) {
 	CHECK_FILE(str);
+	// read ungetc buffer
+	if (str->bufVirtPos < BUF_VIRT_SIZE) {
+		int c = str->bufVirtStart[str->bufVirtPos];
+		str->bufVirtPos++;
+		return c;
+	}
 	return str->fn->fgetc(str);
 }
 
@@ -93,25 +99,31 @@ int puts(const char* s) {
 	return fputc('\n', stdout);
 }
 
-static int _IO_putback_fail(int c, FILE* str) {
+/*static int _IO_putback_fail(int c, FILE* str) {
 	// TODO add a buffer for ungetc
 	(void)c;
 	(void)str;
 	return EOF;
-}
+}*/
 
 int ungetc(int c, FILE* str) {
 	CHECK_FILE(str);
 	if (str->flags & BUFWRITE) {
 		return EOF;
 	}
-	if (str->bufPos > str->bufStart) {
+	if (str->bufVirtPos > 0) {
+		str->bufVirtPos--;
+		str->bufVirtStart[str->bufVirtPos] = (char)c;
+		return c;
+	}
+	return EOF;
+	/*if (str->bufPos > str->bufStart) {
 		str->bufPos--;
 		*(str->bufPos) = (char)c;
 		return c;
 	} else {
 		return _IO_putback_fail(c, str);
-	}
+	}*/
 }
 
 int fflush(FILE* str) {

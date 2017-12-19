@@ -35,7 +35,7 @@ Dentry * KernelInode::lookup(Dentry* parent, std::string name) {
 }
 
 // file_operation
-KernelInode::file_t* KernelInode::doOpen() {
+File* KernelInode::open_internal() {
 	if (type == TYPE_DIR) {
 		return nullptr;
 	} else {

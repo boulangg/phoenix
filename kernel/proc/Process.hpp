@@ -40,6 +40,10 @@ enum class ProcessState{
 	Zombie
 };
 
+struct FileDescriptor {
+	int globalFileDescriptor;
+};
+
 class Process {
 public:
 	typedef int (*code_type) ();
@@ -53,7 +57,6 @@ public:
 	~Process();
 
 	int execve(File* f, const char* argv[], const char* envp[]);
-	int execve(int fd, const char* argv[], const char* envp[]);
 
 	bool operator<(const Process& p) const;
 
@@ -90,8 +93,30 @@ public:
 			File* f = VirtualFileSystem::filestable[0];
 			return f;
 		} else {
-			return nullptr;
+			int gfd = fileDescriptorTable[fd].globalFileDescriptor;
+			if (gfd < 0) {
+				return nullptr;
+			} else {
+				return VirtualFileSystem::filestable[gfd];
+			}
 		}
+	}
+
+	int open(const char* pathname, int flags, mode_t mode) {
+		(void)flags; (void)mode;
+		int gfd = VirtualFileSystem::open(pathname);
+		if (gfd < 0) {
+			return gfd;
+		}
+		for (size_t fd = 0; fd < fileDescriptorTable.size(); fd++) {
+			if (fileDescriptorTable[fd].globalFileDescriptor < 0) {
+				fileDescriptorTable[fd].globalFileDescriptor = gfd;
+				return fd;
+			}
+		}
+		FileDescriptor fdt_entry = {gfd};
+		fileDescriptorTable.push_back(fdt_entry);
+		return fileDescriptorTable.size() - 1;
 	}
 
 private:
@@ -101,8 +126,6 @@ private:
 	static Process* scheduler;
 
 	static const std::string getState(ProcessState state);
-
-	void copyLocalOpenFileTable(Process* parent);
 
 	int pid;
 	int ppid;
@@ -117,7 +140,7 @@ private:
 	VirtualMapping* mapping;
 	TTY* tty;
 
-	//std::vector<LocalOpenFile> localOpenFileTable;
+	std::vector<FileDescriptor> fileDescriptorTable;
 };
 
 #endif /* KERNEL_CORE_PROCESS_HPP_ */

@@ -20,7 +20,7 @@ STATIC_LIB=libc.a
 
 ### Tool flags ###
 CFLAGS	:= -Wall -Wextra -g -std=c11 -mcmodel=kernel -m64 \
-           -fno-stack-protector -fno-pie
+           -fno-stack-protector -fno-pie -nostdinc
 ARFLAGS	:= rcs
 
 ### Inmport tools ###

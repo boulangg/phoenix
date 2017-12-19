@@ -4,8 +4,10 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stddef.h>
+
 
 // Flags
 #define MAGIC_MASK   0xFFFF0000
@@ -15,6 +17,27 @@
 #define FWRITE       0x00000002
 #define BUFWRITE     0x00000010
 #define USERBUF      0x00000020
+
+#define BUF_VIRT_SIZE 8
+
+typedef struct FILE {
+	uint64_t flags;
+	// Buffer for regular read/write
+	char* bufStart;
+	char* bufPos;
+	char* bufEnd;
+	size_t bufSize;
+	// Buffer for unget characters
+	char bufVirtStart[BUF_VIRT_SIZE];
+	size_t bufVirtPos;
+	// File info
+	int64_t fileno;
+	int64_t mode;
+	int64_t offset;
+	bool eof;
+	int error;
+	stream_ops* fn;
+} FILE;
 
 struct stream_ops str_fn;
 struct stream_ops file_fn;

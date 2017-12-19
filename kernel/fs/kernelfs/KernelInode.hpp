@@ -16,13 +16,14 @@ public:
 	virtual Dentry * lookup(Dentry* parent, std::string name);
 
 	// file_operation
-	//virtual File* open() override;
-	virtual file_t* doOpen() override;
 
 
 	KernelInode(KernelSuperBlock* sb, std::uint64_t ino);
 
 	KernelInode(KernelSuperBlock* sb, std::uint64_t ino, struct apps_desc app);
+
+private:
+	virtual File* open_internal() override;
 
 //protected:
 public:

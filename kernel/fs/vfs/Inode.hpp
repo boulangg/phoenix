@@ -42,9 +42,11 @@ public:
 	//int (*tmpfile) (struct inode *, struct dentry *, umode_t);
 
 	// file_operation
-	virtual File* open();
+	File* open();
 
 	Inode(SuperBlock* sb, std::uint64_t ino);
+private:
+	virtual File* open_internal() {return nullptr;}
 
 //protected:
 public:

@@ -11,18 +11,14 @@
 
 class KernelFile : public BaseFile<KernelFSInfo> {
 public:
-	KernelFile(KernelInode* inode) : BaseFile() {
-		_inode = inode;
+	KernelFile(KernelInode* inode) : BaseFile(inode) {
+		//_inode = inode;
 		_kernelStartAddr = (char*)inode->app.apps_start;
 		_size = inode->app.apps_end - inode->app.apps_start;
 		_pos = 0;
 	}
 
-	void setDentry(KernelDentry* dentry) {
-		_dentry = dentry;
-	}
-
-	virtual ssize_t doRead(char* ptr, size_t count, loff_t offset) override {
+	virtual ssize_t read_internal(char* ptr, size_t count, loff_t offset) override {
 		/* TODO use PageCache and AddressSpace instead of _kernelStartAddr
 		AddressSpace* mapping = _inode->mapping;
 		int fileIndex = offset/PAGE_SIZE;

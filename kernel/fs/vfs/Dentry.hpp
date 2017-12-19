@@ -54,9 +54,9 @@ public:
 	// Only for root nodes
 	Dentry(Inode* inode);
 
-	virtual File* open() {
+	/*virtual File* open() {
 		return nullptr;
-	}
+	}*/
 	//virtual File* doOpen();
 
 //private:

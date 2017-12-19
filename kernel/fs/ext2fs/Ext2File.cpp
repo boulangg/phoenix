@@ -5,15 +5,15 @@
 #include "algorithm"
 #include "cstring"
 
-Ext2File::Ext2File(Ext2Dentry* dentry, Ext2Inode* inode) : BaseFile(dentry, inode, inode->_data->file_size_low) {
+/*Ext2File::Ext2File(Ext2Dentry* dentry, Ext2Inode* inode) : BaseFile(dentry, inode, inode->_data->file_size_low) {
+
+}*/
+
+Ext2File::Ext2File(Ext2Inode* inode) : BaseFile(inode, inode->_data->file_size_low) {
 
 }
 
-Ext2File::Ext2File(Ext2Inode* inode) : BaseFile(inode) {
-
-}
-
-ssize_t Ext2File::doRead(char* buffer, size_t size, loff_t offset) {
+ssize_t Ext2File::read_internal(char* buffer, size_t size, loff_t offset) {
 	std::uint64_t i;
 	for (i = offset; i < offset + size && i < _inode->size; ) {
 		size_t pageNo = i / PAGE_SIZE;
@@ -32,4 +32,29 @@ ssize_t Ext2File::doRead(char* buffer, size_t size, loff_t offset) {
 		//i--;
 	}
 	return i-offset;
+}
+
+int Ext2File::getdents64_internal(struct linux_dirent64 *dirp, size_t size) {
+	int i = 0;
+	while (true) {
+		char buffer[4096];
+		// Read directory entry header:
+		ext2_directory_entry_header_t header;
+		if (read((char*)&header, sizeof(ext2_directory_entry_header_t)) == 0) {
+			return i;
+		}
+		if (i + header.name_length + sizeof(struct linux_dirent64) > size) {
+			lseek(i, SEEK_SET);
+			return i;
+		}
+		// Read file name:
+		read(buffer, header.entry_size - sizeof(ext2_directory_entry_header_t));
+		struct linux_dirent64* newdirp = (struct linux_dirent64*)(((char*)dirp) + i);
+		newdirp->d_ino = header.inode;
+		newdirp->d_reclen = header.name_length + sizeof(struct linux_dirent64);
+		i += newdirp->d_reclen;
+		newdirp->d_off = i;
+		memcpy((char*)newdirp->d_name, buffer, header.name_length + 1);
+		newdirp->d_name[header.name_length + 1] = 0;
+	}
 }

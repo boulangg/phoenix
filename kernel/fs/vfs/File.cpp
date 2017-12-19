@@ -16,6 +16,6 @@ File::~File() {
 
 
 
-ssize_t File::doWrite(char*, size_t, loff_t) {
+ssize_t File::write_internal(char*, size_t, loff_t) {
 	return 0;
 }

@@ -16,7 +16,7 @@ Dentry * Ext2Inode::lookup(Dentry* parent, std::string name) {
 		//char buffer[4096];
 		Page* p = PhysicalAllocator::allocPage();
 		char* buffer = (char*)p->kernelMappAddr;
-		Ext2File* file = doOpen();
+		Ext2File* file = open_internal();
 		while (true) {
 			// Read directory entry header:
 			ext2_directory_entry_header_t header;
@@ -35,4 +35,9 @@ Dentry * Ext2Inode::lookup(Dentry* parent, std::string name) {
 		}
 	}
 	return nullptr;
+}
+
+std::uint32_t Ext2Inode::getBlockNum(std::uint64_t offset) {
+	// TODO Return correct block_addr
+	return _data->direct_block_addr[0];
 }

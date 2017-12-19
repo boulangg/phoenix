@@ -4,41 +4,37 @@
 #include "Inode.hpp"
 
 #include <unistd.h>
+#include <linux_syscall.h>
 
 #include <sys/types.h>
 #include <cstdint>
-typedef int64_t ssize_t;
 
 class Page;
 
 class File {
 public:
-	File() {}
-	File(Inode* inode) : ttyinode(inode) {} // for TTY
+	File() : _pos(0) {}
+	File(Inode* inode) : _pos(0), ttyinode(inode) {} // for TTY
 	virtual ~File();
 
 	// file_operation
 	//virtual loff_t lseek(loff_t, int32_t);
 	ssize_t read(char* buffer, size_t size) {
-		ssize_t bytes = doRead(buffer, size, _pos);
+		ssize_t bytes = read_internal(buffer, size, _pos);
 		_pos += bytes;
 		return bytes;
 	}
 
 
 	ssize_t write(char* buffer, size_t size) {
-		ssize_t bytes = doWrite(buffer, size, _pos);
+		ssize_t bytes = write_internal(buffer, size, _pos);
 		_pos += bytes;
 		return bytes;
 	}
 
-	int64_t lseek(int64_t offset, uint32_t origin) {
-		return doLseek(offset, origin);
+	loff_t lseek(loff_t offset, uint32_t origin) {
+		return lseek_internal(offset, origin);
 	}
-
-	/*int mmap(struct VirtualArea *area) {
-		return doMmap(area);
-	}*/
 
 	virtual Dentry* getDentry() {
 		return nullptr;
@@ -52,9 +48,13 @@ public:
 		return 0;
 	}
 
-	virtual int64_t doLseek(int64_t offset, uint32_t origin) {
+	virtual int64_t lseek_internal(int64_t offset, uint32_t origin) {
 		(void)offset; (void)origin;
 		return 0;
+	}
+
+	virtual int getdents64(struct linux_dirent64 *dirp, size_t size) {
+		return getdents64_internal(dirp, size);
 	}
 
 	/*virtual int doMmap(struct VirtualArea *area) {
@@ -62,11 +62,17 @@ public:
 	}*/
 
 private:
-	virtual ssize_t doRead(char* buffer, size_t size, loff_t offset) = 0;
-	virtual ssize_t doWrite(char* buffer, size_t size, loff_t offset);
-	//virtual ssize_t write(const char*, size_t, loff_t);
+	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) = 0;
+	virtual ssize_t write_internal(char* buffer, size_t size, loff_t offset);
+	virtual int getdents64_internal(struct linux_dirent64 *dirp, size_t size) {
+		(void)dirp; (void)size;
+		return 0;
+	}
+
 	//ssize_t (*read_iter) (struct kiocb *, struct iov_iter *);
 	//ssize_t (*write_iter) (struct kiocb *, struct iov_iter *);
+
+	// int mmap(struct VirtualArea *area) {return doMmap(area);}
 	//virtual int iterate(struct dir_context *); //readdir
 	//virtual uint32_t poll(struct poll_table_struct *);
 	//long ioctl(unsigned int, unsigned long);
@@ -87,21 +93,22 @@ private:
 	//virtual void show_fdinfo(struct seq_file *m);
 	//virtual unsigned mmap_capabilities();
 
-
+public:
+	std::uint64_t count;
+protected:
+	loff_t _pos;
 
 //protected:
 	File(Dentry* d);
 
 //private:
-public:
+//public:
 	//Dentry* dentry;
 	Inode* ttyinode;
-	loff_t _pos;
-	//mode_t mode;
+	mode_t mode;
 	//loff_t pos;
 	//std::uint32_t uid;
 	//std::uint32_t gid;
-	std::uint64_t count;
 
 };
 

@@ -22,7 +22,8 @@ CXXFLAGS    := -Wall -Wextra -g -std=c++11 -m64 \
                -mcmodel=kernel \
                -fno-pie \
                -Wno-packed-bitfield-compat \
-               -fno-stack-protector
+               -fno-stack-protector \
+               -nostdinc -nostdinc++
 ARFLAGS		:= rcs
 
 ### Inmport tools ###

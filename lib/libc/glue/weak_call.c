@@ -32,6 +32,13 @@ int sys_close(int fd) {
 	return 0;
 }
 
+off_t sys_llseek(unsigned int fd, off_t offset, unsigned int whence) {
+	(void)fd;
+	(void)offset;
+	(void)whence;
+	return -1;
+}
+
 int sys_fork() {
 	return -1;
 }
@@ -61,5 +68,12 @@ int sys_nanosleep(const struct timespec *req, struct timespec *rem) {
 	(void)req;
 	(void)rem;
 	return -1;
+}
+
+int sys_getdents64(unsigned int fd, struct linux_dirent64 *dirp, unsigned int count) {
+	(void)fd;
+	(void)dirp;
+	(void)count;
+	return 0;
 }
 

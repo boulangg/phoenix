@@ -13,9 +13,7 @@ public:
 
 	}
 
-	std::uint32_t getBlockNum(std::uint64_t offset) {
-		return _data->direct_block_addr[0];
-	}
+	std::uint32_t getBlockNum(std::uint64_t offset);
 
 	//virtual Dentry* create(Dentry*, std::string);
 
@@ -23,7 +21,7 @@ public:
 
 	File* getFile();
 
-	virtual file_t* doOpen() override {
+	virtual file_t* open_internal() override {
 		return new Ext2File(this);
 	}
 

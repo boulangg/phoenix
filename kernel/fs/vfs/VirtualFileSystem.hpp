@@ -6,6 +6,8 @@
 #include <vector>
 #include <list>
 
+#include <dirent.h>
+
 #include "Dentry.hpp"
 #include "File.hpp"
 #include "Inode.hpp"
@@ -47,7 +49,7 @@ public:
 	static int open(const char *pathname);
 	static int open(std::string pathname);
 
-	static int read(int fd, char *buf, size_t count);
+	//static int read(int fd, char *buf, size_t count);
 
 	static int close(int fd);
 
@@ -62,6 +64,10 @@ public:
 			}
 		}
 		return nullptr;
+	}
+
+	static int getdents64(unsigned int fd, struct linux_dirent64 *dirp, size_t count) {
+		return filestable[fd]->getdents64(dirp, count);
 	}
 
 	static void registerFS(FileSystemType* fs) {

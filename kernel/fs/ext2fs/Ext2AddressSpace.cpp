@@ -4,7 +4,6 @@ int Ext2AddressSpace::doReadPage(Page* p) {
 	Ext2SuperBlock* sb = _host->sb;
 	std::uint64_t nbBlock = PAGE_SIZE / sb->getBlockSize();
 	std::uint64_t offset = 0;
-	std::uint64_t maxSize = PAGE_SIZE;
 	for (std::uint32_t i = _host->getBlockNum(p->offset); i < _host->getBlockNum(p->offset) + nbBlock; i++) {
 		std::uint64_t sectorNo;
 		std::uint32_t sectorCount;

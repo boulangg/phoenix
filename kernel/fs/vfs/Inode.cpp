@@ -26,5 +26,5 @@ Dentry* Inode::lookup(Dentry* parent, std::string name) {
 }
 
 File* Inode::open() {
-	return nullptr;
+	return open_internal();
 }

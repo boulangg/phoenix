@@ -86,6 +86,7 @@ public:
 	static pid_t getuid();
 	static pid_t getgid();
 
+	static int open(const char* pathname, int flags, mode_t mode);
 
 	// TODO solve race condition in wakeUp/wait/sleep
 	static void wait(Event ev);
@@ -97,15 +98,6 @@ public:
 
 	static void unconditionalContextSwitch(Process* currProc);
 
-	/*static void incrementGlobalFileRefCount(int64_t gfd) {
-		globalFileTable[gfd].refCount++;
-	}
-
-	static void decrementGlobalFileRefCount(int64_t gfd) {
-		globalFileTable[gfd].refCount--;
-		// TODO free descriptor
-	}*/
-
 private:
 	static int64_t findPid();
 
@@ -116,7 +108,6 @@ private:
 	static std::priority_queue<Process*,std::vector<Process*>,ProcessLess> ready;
 	static std::list<std::pair<Event, Process*>> events;
 
-	//static std::vector<GlobalOpenFile> globalFileTable;
 };
 
 

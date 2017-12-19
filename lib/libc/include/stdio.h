@@ -37,19 +37,7 @@ typedef struct stream_ops {
 	//fflush_fn fflush;
 } stream_ops;
 
-typedef struct FILE {
-	uint64_t flags;
-	char* bufStart;
-	char* bufPos;
-	char* bufEnd;
-	size_t bufSize;
-	int64_t fileno;
-	int64_t mode;
-	int64_t offset;
-	bool eof;
-	int error;
-	stream_ops* fn;
-} FILE;
+typedef struct FILE FILE;
 
 extern FILE* stdout;
 extern FILE* stdin;

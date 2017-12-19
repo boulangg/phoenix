@@ -29,16 +29,15 @@ public:
 	typedef typename FSInfo::address_space_t address_space_t;
 
 
-	BaseFile() {
+	/*BaseFile() {
 
-	}
+	}*/
 
-	BaseFile(inode_t*inode) : File() {
+	BaseFile(inode_t* inode) : File(), _inode(inode), _size(0) {
 		_inode = inode;
 	}
 
-	BaseFile(dentry_t* dentry, inode_t* inode, size_t size) : File(),
-		_dentry(dentry), _inode(inode), _size(0) {
+	BaseFile(inode_t* inode, size_t size) : File(), _inode(inode), _size(size) {
 
 	}
 
@@ -46,15 +45,15 @@ public:
 
 	}
 
-	virtual Dentry* getDentry() override {
-		return (Dentry*)_dentry;
-	}
+	/*virtual Dentry* getDentry() override {
+		return static_cast<Dentry*>(_dentry);
+	}*/
 
 	virtual Inode* getInode() override {
-		return _inode;
+		return static_cast<Inode*>(_inode);
 	}
 
-	virtual int64_t doLseek(int64_t offset, uint32_t origin) override {
+	virtual int64_t lseek_internal(int64_t offset, uint32_t origin) override {
 		// TODO check overflows
 		switch(origin) {
 		case SEEK_SET:
@@ -79,7 +78,7 @@ public:
 		return 0;
 	}
 
-	virtual ssize_t doRead(char* buffer, size_t size, loff_t offset) override {
+	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) override {
 		size_t i;
 		for (i = offset; i < offset + size && i < _inode->size; i++) {
 			size_t pageNo = i / PAGE_SIZE;
@@ -93,8 +92,7 @@ public:
 
 	}*/
 
-//protected:
-	dentry_t* _dentry;
+protected:
 	inode_t* _inode;
 	size_t _size;
 };
@@ -127,16 +125,16 @@ public:
 
 	}
 
-	virtual File* open() override {
-		return doOpen();
-	}
+	/*virtual File* open() override {
+		return open_internal();
+	}*/
 
-	virtual file_t* doOpen() {
-		file_t* f = _inode->doOpen();
-		f->_dentry = (dentry_t*)this;
+	/*virtual file_t* open_internal() {
+		file_t* f = _inode->open_internal();
+		//f->_dentry = (dentry_t*)this;
 		//f->count++;
 		return f;
-	}
+	}*/
 
 protected:
 	inode_t* _inode;
@@ -168,7 +166,7 @@ public:
 
 	/*virtual Dentry* doCreate(Dentry* parent, std::string name) {}*/
 
-	virtual file_t* doOpen() = 0;
+	virtual File* open_internal() override = 0;
 
 	superblock_t* sb;
 };

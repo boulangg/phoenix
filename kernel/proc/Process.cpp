@@ -30,6 +30,12 @@ Process::Process(Process* parent, int pid, int flags) :
 	//tty = new TTYFile();
 	tty = parent->tty;
 	//copyLocalOpenFileTable(parent);
+	FileDescriptor fd = {0};
+	fileDescriptorTable.push_back(fd);
+	fileDescriptorTable.push_back(fd);
+	fileDescriptorTable.push_back(fd);
+	fileDescriptorTable.push_back(fd);
+	fileDescriptorTable.push_back(fd);
 }
 
 Process::Process(int prio, code_type code) :
@@ -50,36 +56,16 @@ Process::Process(int prio, code_type code) :
 	Keyboard::setTTY(tty);
 }
 
-/*void Process::copyLocalOpenFileTable(Process* parent) {
-	for (LocalOpenFile fd : parent->localOpenFileTable) {
-		localOpenFileTable.push_back(fd);
-		ProcessScheduler::incrementGlobalFileRefCount(fd.openFileTableIndex);
+int Process::execve(File* file, const char* argv[], const char* envp[]) {
+	//if(fd < 0)
+	//	return -1;
+	if (file == nullptr) {
+		return -1;
 	}
-}*/
-
-/*int Process::execve(File* f, const char* argv[], const char* envp[]) {
-	if(f==nullptr)
-		return -1;
 	// TODO schedule delayed deletion to keep the kernelStack usable until next
 	// context switch (or reuse the old one while keeping the kernel stacks)
 	//delete mapping;
-	mapping = Elf64::getVirtualMapping(f);
-	if(mapping==nullptr)
-		return -1;
-	mapping->initMainArgs(argv, envp);
-	regSave[1]= (uint64_t)&(mapping->startStack[0]);
-	regSave[7] = RFLAGS_INIT;
-	regSave[8] = mapping->getPageTable()->getPageTablePtr();
-	return 0;
-}*/
-
-int Process::execve(int fd, const char* argv[], const char* envp[]) {
-	if(fd < 0)
-		return -1;
-	// TODO schedule delayed deletion to keep the kernelStack usable until next
-	// context switch (or reuse the old one while keeping the kernel stacks)
-	//delete mapping;
-	mapping = Elf64::getVirtualMapping(fd);
+	mapping = Elf64::getVirtualMapping(file);
 	if(mapping==nullptr)
 		return -1;
 	mapping->initMainArgs(argv, envp);

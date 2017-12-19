@@ -7,6 +7,8 @@
 #ifndef __SYS_STAT_H__
 #define __SYS_STAT_H__
 
+#include <sys/types.h>
+
 struct stat {
 	dev_t st_dev;
 
