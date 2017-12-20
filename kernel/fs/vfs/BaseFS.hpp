@@ -154,7 +154,7 @@ public:
 	typedef typename FSInfo::file_t file_t;
 	typedef typename FSInfo::address_space_t address_space_t;
 
-	BaseInode(superblock_t* sb, std::uint64_t ino) : Inode((SuperBlock*)sb, ino),
+	BaseInode(superblock_t* sb, std::uint64_t ino, size_t size) : Inode((SuperBlock*)sb, ino, size),
 			sb(sb)
 	{
 
@@ -180,9 +180,19 @@ public:
 	typedef typename FSInfo::file_t file_t;
 	typedef typename FSInfo::address_space_t address_space_t;
 
+	BaseSuperBlock(FileSystemType* type) : SuperBlock(type), root(nullptr) {
+
+	}
+
 	virtual ~BaseSuperBlock() {
 
 	}
+
+	virtual Dentry* getRoot() override {
+		return static_cast<Dentry*>(root);
+	}
+
+	dentry_t* root;
 
 };
 

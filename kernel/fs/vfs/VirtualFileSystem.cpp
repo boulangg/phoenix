@@ -12,9 +12,8 @@ std::list<FileSystemType*> VirtualFileSystem::fileSystemType;
 
 void VirtualFileSystem::initVFS() {
 	// Create root inode
-	Inode* inode = new Inode(nullptr, 0);
+	Inode* inode = new Inode(nullptr, 0, 0);
 	root = new Dentry(inode);
-	//filestable.push_back(root->open());
 	FileSystemType* fs;
 	fs = new KernelFileSystemType();
 	registerFS(fs);
@@ -23,7 +22,6 @@ void VirtualFileSystem::initVFS() {
 }
 
 std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pathname) {
-	//std::string pathname(path);
 	// TODO correct error (doesn't handle correctly last '/' even for files)
 	std::vector<std::string> res;
 	size_t i = 0;
@@ -46,7 +44,7 @@ std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pat
 }
 
 
-int VirtualFileSystem::open(const char *pathname) {
+int VirtualFileSystem::open(const std::string& pathname) {
 	// TODO handle flags and check access right
 	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
 	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
@@ -77,17 +75,6 @@ int VirtualFileSystem::open(const char *pathname) {
 	return filestable.size() - 1;
 }
 
-
-int VirtualFileSystem::open(std::string pathname) {
-	return open(pathname.c_str());
-}
-
-
-/*int VirtualFileSystem::read(int fd, char *buf, size_t count) {
-	// TODO check correct fd
-	return filestable[fd]->read(buf, count);
-}*/
-
 int VirtualFileSystem::close(int fd) {
 	filestable[fd]->count--;
 	if (filestable[fd]->count == 0) {
@@ -100,8 +87,6 @@ int VirtualFileSystem::close(int fd) {
 int VirtualFileSystem::mount(const char* source, const char* target,
 		const char* fileSystemType, uint64_t ,
 		const void* data) {
-	/*std::vector<std::string> pathnameVector = parsePathname(source);
-	Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);*/
 
 	std::vector<std::string> mountVector = parsePathname(target);
 	Dentry* mount = DentryCache::findDentry(VirtualFileSystem::root, mountVector, 0);
@@ -113,7 +98,7 @@ int VirtualFileSystem::mount(const char* source, const char* target,
 
 	SuperBlock* sb = type->readSuperBlock(source, data);
 	if (sb) {
-		mount->mount = sb->root;
+		mount->mount = sb->getRoot();
 		return 0;
 	}
 	return 1;

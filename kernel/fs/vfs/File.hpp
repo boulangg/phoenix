@@ -61,6 +61,9 @@ public:
 		return 0;
 	}*/
 
+protected:
+	File(Dentry* d);
+
 private:
 	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) = 0;
 	virtual ssize_t write_internal(char* buffer, size_t size, loff_t offset);
@@ -98,28 +101,16 @@ public:
 protected:
 	loff_t _pos;
 
-//protected:
-	File(Dentry* d);
-
 //private:
 //public:
-	//Dentry* dentry;
 	Inode* ttyinode;
 	mode_t mode;
-	//loff_t pos;
 	//std::uint32_t uid;
 	//std::uint32_t gid;
 
 };
 
-/*#ifndef __FILE_HPP__
-#define __FILE_HPP__
-
-#include <cstddef>
-#include <cstdint>
-#include <unistd.h>
-
-class File {
+/*class File {
 protected:
 	File();
 	//File(Inode); // open
@@ -145,6 +136,4 @@ private:
 	virtual uint32_t do_poll(uint32_t, uint64_t);
 	virtual int32_t do_flush();
 };
-
-
-#endif // __FILE_HPP__ */
+*/

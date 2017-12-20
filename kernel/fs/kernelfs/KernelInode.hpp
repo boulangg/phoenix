@@ -18,7 +18,7 @@ public:
 	// file_operation
 
 
-	KernelInode(KernelSuperBlock* sb, std::uint64_t ino);
+	KernelInode(KernelSuperBlock* sb);
 
 	KernelInode(KernelSuperBlock* sb, std::uint64_t ino, struct apps_desc app);
 

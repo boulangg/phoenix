@@ -2,6 +2,8 @@
 
 #include <fs/vfs/File.hpp>
 #include <cstdint>
+#include <string.h>
+#include <algorithm>
 #include <include/constant.h>
 #include <mm/PhysicalAllocator.hpp>
 
@@ -12,30 +14,25 @@
 class KernelFile : public BaseFile<KernelFSInfo> {
 public:
 	KernelFile(KernelInode* inode) : BaseFile(inode) {
-		//_inode = inode;
 		_kernelStartAddr = (char*)inode->app.apps_start;
 		_size = inode->app.apps_end - inode->app.apps_start;
 		_pos = 0;
 	}
 
-	virtual ssize_t read_internal(char* ptr, size_t count, loff_t offset) override {
-		/* TODO use PageCache and AddressSpace instead of _kernelStartAddr
-		AddressSpace* mapping = _inode->mapping;
-		int fileIndex = offset/PAGE_SIZE;
-		Page* filePage = PageCache::getPage(mapping, fileIndex);
-		mapping->readPage(filePage);
-		*/
-
-		char* out = (char*)ptr;
-		size_t x = 0;
-		for (; x < count; ++x) {
-			if (offset >= (int64_t)_size) {
-				break;
-			}
-			out[x] = _kernelStartAddr[offset];
-			++offset;
+	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) override {
+		std::uint64_t i;
+		for (i = offset; i < offset + size && i < _inode->size; ) {
+			size_t pageNo = i / PAGE_SIZE;
+			Page* p = _inode->mapping->getPage(pageNo);
+			_inode->mapping->readPage(p);
+			void* destination = buffer + i - offset;
+			void* source = ((char*)p->kernelMappAddr) + i % PAGE_SIZE;
+			std::uint64_t length = std::min(_inode->size - i, offset + size -i);
+			length = std::min(length, (pageNo + 1) * PAGE_SIZE - i);
+			memcpy(destination, source, length);
+			i+=length;
 		}
-		return x;
+		return i-offset;
 	}
 
 private:

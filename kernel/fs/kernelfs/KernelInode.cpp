@@ -4,13 +4,13 @@
 #include "KernelFile.hpp"
 #include "KernelAddressSpace.hpp"
 
-KernelInode::KernelInode(KernelSuperBlock* sb, std::uint64_t ino) : BaseInode(sb, ino),
+KernelInode::KernelInode(KernelSuperBlock* sb) : BaseInode(sb, 0, user_apps_symbol_table.nb_user_apps),
 		type(TYPE_FILE), sb(sb), app() {
 	mapping = new KernelAddressSpace(this);
 }
 
 KernelInode::KernelInode(KernelSuperBlock* sb, std::uint64_t ino, struct apps_desc app) :
-	BaseInode(sb, ino), type(TYPE_FILE), sb(sb), app(app) {
+	BaseInode(sb, ino, app.apps_end - app.apps_start), type(TYPE_FILE), sb(sb), app(app) {
 	mapping = new KernelAddressSpace(this);
 }
 

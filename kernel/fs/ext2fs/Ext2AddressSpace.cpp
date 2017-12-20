@@ -1,6 +1,6 @@
 #include "Ext2AddressSpace.hpp"
 
-int Ext2AddressSpace::doReadPage(Page* p) {
+int Ext2AddressSpace::readPage_internal(Page* p) {
 	Ext2SuperBlock* sb = _host->sb;
 	std::uint64_t nbBlock = PAGE_SIZE / sb->getBlockSize();
 	std::uint64_t offset = 0;

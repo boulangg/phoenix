@@ -15,10 +15,10 @@
 #include "Ext2Inode.hpp"
 #include "Ext2Dentry.hpp"
 
-class Ext2SuperBlock : public SuperBlock {
+class Ext2SuperBlock : public BaseSuperBlock<Ext2FSInfo> {
 public:
 	Ext2SuperBlock(FileSystemType* type, const std::string& source) :
-		SuperBlock(type), _logBlockSize(10)
+		BaseSuperBlock(type), _logBlockSize(10)
 	{
 		std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(source);
 		Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);
@@ -54,7 +54,6 @@ public:
 
 		_rootInode = getInode(2);
 		root = new Ext2Dentry(_rootInode);
-		// TODO set root Dentry*
 	}
 
 	void readBlockGroupDescTable() {
@@ -121,17 +120,6 @@ public:
 		*sectorCount = 1 << (_logBlockSize - 9);
 		*sectorNo = blockNo * *sectorCount;
 	}
-
-	/*void readPage(std::uint32_t bno_start, Page* p) {
-		std::uint64_t lba_start = bno_start * getBlockSize() / _dev->getSectorSize();
-		std::uint64_t lba_end = lba_start + PAGE_SIZE / _dev->getSectorSize();
-		for (std::uint64_t i = lba_start; i < lba_end; i++) {
-			Block* blk = _dev->getBlock(i);
-			void* src = (void*)(((char*)blk->page->kernelMappAddr) + blk->offset);
-			void* dest = (void*)(((char*)p->kernelMappAddr) + blk->offset);
-			memcpy(dest, src, _dev->getSectorSize());
-		}
-	}*/
 
 	std::uint64_t getBlockSize() {
 		return 1 << _logBlockSize;

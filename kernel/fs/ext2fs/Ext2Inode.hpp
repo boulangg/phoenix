@@ -15,8 +15,6 @@ public:
 
 	std::uint32_t getBlockNum(std::uint64_t offset);
 
-	//virtual Dentry* create(Dentry*, std::string);
-
 	virtual Dentry * lookup(Dentry* parent, std::string name) override;
 
 	File* getFile();

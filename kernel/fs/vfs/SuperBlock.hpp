@@ -156,11 +156,12 @@ class FileSystemType;
 class SuperBlock {
 public:
 	SuperBlock(FileSystemType* type);
-	SuperBlock(FileSystemType* type, Dentry* root);
+	//SuperBlock(FileSystemType* type, Dentry* root);
 	virtual ~SuperBlock(); // put_super
 
 	// super_operations
 	virtual Inode* allocInode() = 0;
+	virtual Dentry* getRoot() = 0;
 	//virtual void destroyInode(Inode*); delete inode;
 	//virtual int sync(int wait);
 	//virtual int freeze();
@@ -178,9 +179,9 @@ protected:
 
 public:
 	BlockDevice* dev;
-	std::uint64_t blockSize; // For the filesystem, not the eventual device
+	//std::uint64_t blockSize; // For the filesystem, not the eventual device
 	FileSystemType* type;
-	Dentry* root;
+	//Dentry* root;
 	//std::list<File*> openFiles;
 	//std::list<Inode*> dirtyInodes;
 };

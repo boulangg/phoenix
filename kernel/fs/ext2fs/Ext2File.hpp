@@ -12,11 +12,7 @@ public:
 
 	}
 
-	//loff_t doLseek(loff_t offset, int32_t origin) override;
-	//ssize_t doRead(char* buf, ssize_t count) override;
-	//ssize_t doWrite(const char* buf, ssize_t count) override;
 	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) override;
-
 	virtual int getdents64_internal(struct linux_dirent64 *dirp, size_t size) override;
 
 };

@@ -47,10 +47,7 @@ public:
 
 	static std::vector<std::string> parsePathname(const std::string& path);
 
-	static int open(const char *pathname);
-	static int open(std::string pathname);
-
-	//static int read(int fd, char *buf, size_t count);
+	static int open(const std::string& pathname);
 
 	static int close(int fd);
 

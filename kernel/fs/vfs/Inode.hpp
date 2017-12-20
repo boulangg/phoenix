@@ -44,19 +44,18 @@ public:
 	// file_operation
 	File* open();
 
-	Inode(SuperBlock* sb, std::uint64_t ino);
+	Inode(SuperBlock* sb, std::uint64_t ino, size_t size);
 private:
 	virtual File* open_internal() {return nullptr;}
 
-//protected:
 public:
 	SuperBlock* sb;
 	std::uint64_t ino;
+	size_t size;
 
 	//umode_t mode;
 	//uid_t uid;
 	//gid_t gid;
-	size_t size;
 	//struct timespec atime;
 	//struct timespec ctime;
 	//struct timespec mtime;
@@ -68,22 +67,7 @@ public:
 };
 
 
-/*#ifndef __INODE_HPP__
-#define __INODE_HPP__
-
-#include <fs/vfs/File.hpp>
-
-struct FileDesc {
-	int64_t _fileIndex;
-};
-
-class File {
-	Inode* _inode;
-	int8_t _mode;
-	uint64_t _offset;
-	uint64_t _refCount;
-};
-
+/*
 class Inode {
 public:
 	Inode();
@@ -114,22 +98,4 @@ private:
 	Inode* _mountInode;
 };
 
-struct Dentry {
-	Inode* inode;
-	Dentry* parent;
-	char* name;
-	std::list<Dentry*> children;
-
-};
-
-// Process: std::vector<FileDesc> _fileDescTable
-// FileDesc (int64_t fileIndex, ...)
-// FileDesc (static): NullFileDesc
-// VirtualFileSystem (static): std::vector<File*> _openFileTable;
-// File (Inode*, mode, offset, compteur, ...)
-// VirtualFileSystem (static): std::list<Inode*> _inodeTable;
-// Inode (compteur, inodeNum, InodeInfos, device, Dentry*, filesystems?, blocTable)
-// VirtualFileSystem (static): Dentry* _;
-// Dentry (name, parent, children, inode)
-
-#endif // __INODE_HPP__*/
+*/

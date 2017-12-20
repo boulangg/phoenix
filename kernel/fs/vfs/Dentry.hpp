@@ -33,9 +33,6 @@ public:
 	//Dentry* getParent() const;
 	//void setParent(Dentry* parent);
 
-	//Inode* getInode() const;
-	//void setInode(Inode* inode);
-
 	std::string getPathName() {
 		if (parent == this) {
 			return "/";
@@ -53,11 +50,6 @@ public:
 //protected:
 	// Only for root nodes
 	Dentry(Inode* inode);
-
-	/*virtual File* open() {
-		return nullptr;
-	}*/
-	//virtual File* doOpen();
 
 //private:
 public:

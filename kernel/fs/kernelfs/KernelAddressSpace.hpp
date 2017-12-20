@@ -11,5 +11,5 @@ class KernelAddressSpace : public BaseAddressSpace<KernelFSInfo> {
 public:
 	KernelAddressSpace(KernelInode* inode) : BaseAddressSpace(inode) {}
 
-	virtual int doReadPage(Page* p) override;
+	virtual int readPage_internal(Page* p) override;
 };

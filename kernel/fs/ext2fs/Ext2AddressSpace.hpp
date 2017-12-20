@@ -12,5 +12,5 @@ class Ext2AddressSpace : public BaseAddressSpace<Ext2FSInfo> {
 public:
 	Ext2AddressSpace(Ext2Inode* inode) : BaseAddressSpace(inode) {}
 
-	virtual int doReadPage(Page* p) override;
+	virtual int readPage_internal(Page* p) override;
 };

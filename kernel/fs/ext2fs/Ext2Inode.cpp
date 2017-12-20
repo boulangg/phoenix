@@ -6,14 +6,12 @@
 #include <mm/PhysicalAllocator.hpp>
 
 Ext2Inode::Ext2Inode(Ext2SuperBlock* sb, std::uint64_t ino, ext2_inode_data_t* data) :
-		BaseInode(sb, ino), _data(data) {
-		size = _data->file_size_low;
+		BaseInode(sb, ino, data->file_size_low), _data(data) {
 		mapping = new Ext2AddressSpace(this);
 	}
 
 Dentry * Ext2Inode::lookup(Dentry* parent, std::string name) {
 	if (_data->type_n_perm & ext2_type_n_perm_t::DIRECTORY) {
-		//char buffer[4096];
 		Page* p = PhysicalAllocator::allocPage();
 		char* buffer = (char*)p->kernelMappAddr;
 		Ext2File* file = open_internal();
@@ -38,6 +36,6 @@ Dentry * Ext2Inode::lookup(Dentry* parent, std::string name) {
 }
 
 std::uint32_t Ext2Inode::getBlockNum(std::uint64_t offset) {
-	// TODO Return correct block_addr
-	return _data->direct_block_addr[0];
+	// TODO check offset < file size
+	return _data->direct_block_addr[offset/sb->getBlockSize()];
 }
