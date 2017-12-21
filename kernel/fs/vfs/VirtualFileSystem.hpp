@@ -7,12 +7,12 @@
 #include <list>
 
 #include <dirent.h>
+#include <errno.h>
 
 #include "Dentry.hpp"
 #include "File.hpp"
 #include "Inode.hpp"
 
-#define EACCES -1
 
 class FileSystemType {
 public:
@@ -39,6 +39,11 @@ public:
 	std::string name;
 	int fs_flags;
 	std::list<SuperBlock*> supers;
+};
+
+struct ProcDir {
+	Dentry* rootDir;
+	Dentry* workDir;
 };
 
 class VirtualFileSystem {

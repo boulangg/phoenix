@@ -4,6 +4,9 @@
 #include "AddressSpace.hpp"
 #include "File.hpp"
 
+#include <errno.h>
+#include <sys/stat.h>
+
 class SuperBlock;
 
 class Inode {
@@ -41,12 +44,19 @@ public:
 	//		unsigned open_flag, umode_t create_mode, int *opened);
 	//int (*tmpfile) (struct inode *, struct dentry *, umode_t);
 
+	int stat(struct stat* stat) {
+		return stat_internal(stat);
+	}
+
+	int chmod(const char*, mode_t);
+
 	// file_operation
 	File* open();
 
 	Inode(SuperBlock* sb, std::uint64_t ino, size_t size);
 private:
 	virtual File* open_internal() {return nullptr;}
+	virtual int stat_internal(struct stat* stat) {(void)stat;return ENOSYS;}
 
 public:
 	SuperBlock* sb;

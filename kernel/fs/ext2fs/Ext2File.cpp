@@ -25,6 +25,10 @@ ssize_t Ext2File::read_internal(char* buffer, size_t size, loff_t offset) {
 	return i-offset;
 }
 
+#include <core/Debug.hpp>
+
+check_size<sizeof(struct linux_dirent64), 24> testsize;
+
 int Ext2File::getdents64_internal(struct linux_dirent64 *dirp, size_t size) {
 	int i = 0;
 	while (true) {
@@ -45,7 +49,7 @@ int Ext2File::getdents64_internal(struct linux_dirent64 *dirp, size_t size) {
 		newdirp->d_reclen = header.name_length + sizeof(struct linux_dirent64);
 		i += newdirp->d_reclen;
 		newdirp->d_off = i;
-		memcpy((char*)newdirp->d_name, buffer, header.name_length + 1);
-		newdirp->d_name[header.name_length + 1] = 0;
+		memcpy((char*)newdirp->d_name, buffer, header.name_length);
+		newdirp->d_name[header.name_length] = '\0';
 	}
 }

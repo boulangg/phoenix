@@ -22,50 +22,6 @@
 #include <core/interrupt/InterruptManager.hpp>
 
 
-uint64_t syscall64(uint64_t a, uint64_t b, uint64_t c, uint64_t d, uint64_t e, uint64_t f, uint64_t num) {
-	(void)a; (void)b; (void)c; (void)d; (void)e; (void)f;
-	File* file;
-	switch(num) {
-	case 0:
-		file = ProcessScheduler::getFile((unsigned int )a);
-		if (file == nullptr) {
-			return -1;
-		}
-		return file->read((char*)b, (size_t)c);
-	case 1:
-		file = ProcessScheduler::getFile((unsigned int )a);
-		if (file == nullptr) {
-			return -1;
-		}
-		return file->write((char*)b, (size_t)c);
-	case 2:
-		return ProcessScheduler::open((const char*)a, (int)b, (mode_t)b);
-	case 12:
-		return (uint64_t)ProcessScheduler::userBrk((void*)a);
-	case 35:
-		return Clock::nanosleep((const timespec*)a, (timespec*)b);
-	case 39:
-		return ProcessScheduler::getpid();
-	case 57:
-		return ProcessScheduler::fork();
-	case 59:
-		return ProcessScheduler::execve((const char*)a, (const char**)b, (const char**)c);
-	case 60:
-		ProcessScheduler::exit(a);
-		// should never return
-		break;
-	case 217:
-		file = ProcessScheduler::getFile((unsigned int )a);
-		if (file == nullptr) {
-			return -1;
-		}
-		return file->getdents64((struct linux_dirent64 *)b, (unsigned int)c);
-		break;
-	default:
-		break;
-	}
-	return 0;
-}
 
 
 static void fill_segment_descriptor_64(uint8_t index, uint64_t base, uint32_t limit,

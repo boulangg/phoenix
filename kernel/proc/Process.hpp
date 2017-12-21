@@ -119,6 +119,19 @@ public:
 		return fileDescriptorTable.size() - 1;
 	}
 
+	/*char* getcwd(char* buffer, size_t size) {
+		// TODO check buffer validity !
+		Dentry* cwd = procDir.workDir;
+		std::string pathname = cwd->getPathName();
+		std::size_t pathSize = std::min(pathname.size(), size);
+		memcpy(buffer, pathname.c_str(), pathSize);
+		return buffer;
+	}*/
+
+	struct ProcDir* getProcDir() {
+		return procDir;
+	}
+
 private:
 	// init idle
 	Process(int prio, code_type code);
@@ -139,6 +152,7 @@ private:
 	int retval;
 	VirtualMapping* mapping;
 	TTY* tty;
+	struct ProcDir* procDir;
 
 	std::vector<FileDescriptor> fileDescriptorTable;
 };

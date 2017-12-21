@@ -87,6 +87,9 @@ public:
 	static pid_t getgid();
 
 	static int open(const char* pathname, int flags, mode_t mode);
+	static char* getcwd(char* buf, size_t size);
+	static int chdir(const char *path);
+	static int fchdir(int fd);
 
 	// TODO solve race condition in wakeUp/wait/sleep
 	static void wait(Event ev);

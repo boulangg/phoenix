@@ -23,7 +23,7 @@ public:
 		std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(source);
 		Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);
 		(void)src;
-		_dev = DeviceManager::getBlockDevice("hda1");
+		_dev = DeviceManager::getBlockDevice("initrd");
 		Block* blk = _dev->getBlock(1024/_dev->getSectorSize());
 		ext2_superblock_t* sb = new ext2_superblock_t();
 		memcpy((void*)sb, (void*)(((char*)(blk->page->kernelMappAddr)) + blk->offset), 512);

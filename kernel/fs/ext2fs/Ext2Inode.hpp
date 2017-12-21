@@ -23,5 +23,7 @@ public:
 		return new Ext2File(this);
 	}
 
+	virtual int stat_internal(struct stat* stat) override;
+
 	ext2_inode_data_t* _data;
 };

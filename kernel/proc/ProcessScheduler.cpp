@@ -11,6 +11,8 @@
 #include <core/Console.hpp>
 #include <stdio.h>
 
+#include <errno.h>
+
 extern "C" void PF_handler(int errorCode, void* addr) {
 	ProcessScheduler::pageFault(errorCode, addr);
 }
@@ -167,6 +169,41 @@ int ProcessScheduler::pageFault(int errorCode, void* addr) {
 
 int ProcessScheduler::open(const char* pathname, int flags, mode_t mode) {
 	return running->open(pathname, flags, mode);
+}
+
+char* ProcessScheduler::getcwd(char* buffer, size_t size) {
+	struct ProcDir* runningProcDir = running->getProcDir();
+	std::string pathname = runningProcDir->workDir->getPathName();
+	std::size_t pathSize = std::min(pathname.size(), size - 1 );
+	memcpy(buffer, pathname.c_str(), pathSize);
+	buffer[pathSize] = '\0';
+	return buffer;
+}
+
+int ProcessScheduler::chdir(const char *path) {
+	std::string pathname(path);
+	int fd = VirtualFileSystem::open(pathname);
+	//f = KernelFS::getUserApp(filename);
+	if(fd < 0)
+		return -1;
+	File* file = VirtualFileSystem::filestable[fd];
+	Dentry* dentry = file->getDentry();
+	struct ProcDir* runningProcDir = running->getProcDir();
+	runningProcDir->workDir = dentry;
+	// TODO close fd and free old Dentry workDir
+	return 0;
+}
+
+int ProcessScheduler::fchdir(int fd) {
+	File* file = ProcessScheduler::getFile(fd);
+	if (file == nullptr) {
+		return ENOENT;
+	}
+	Dentry* dentry = file->getDentry();
+	struct ProcDir* runningProcDir = running->getProcDir();
+	runningProcDir->workDir = dentry;
+	// TODO free old Dentry workDir
+	return 0;
 }
 
 void ProcessScheduler::unconditionalContextSwitch(Process* currProc) {
