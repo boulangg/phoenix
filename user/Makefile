@@ -37,7 +37,7 @@ CXXFLAGS    := -Wall -Wextra -nostdinc -nostdinc++ \
                 -fno-stack-protector -fno-builtin-fprintf -fno-builtin-printf \
                 -fno-pie
 LDFLAGS 	:= -nodefaultlibs -g -specs=init/x86_64/specs -no-pie
-LIBFLAGS	:= $(LIBRARIES) -lstdcpp -lc
+LIBFLAGS	:= $(LIBRARIES) -lc -lstdcpp
 
 ### Inmport tools ###
 include ../build/tools.mk

@@ -17,11 +17,9 @@ int main(int argc,char* argv[]) {
 		execve("/bin/test1",argv, envp);
 		return 10;
 	} else {
-		DIR* dir = opendir(".");
-		struct dirent* dirp;
-		while ((dirp = readdir(dir)) != NULL) {
-			printf("%i: %s\n", dirp->d_ino, (char*)dirp->d_name);;
-		}
+		char* const argv[3] = {(char*)"ls", 0};
+		char* const envp[1] = {0};
+		execve("/bin/ls",argv, envp);
 		return getpid();
 	}
 }

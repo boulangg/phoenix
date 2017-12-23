@@ -56,6 +56,10 @@ public:
 
 	static int close(int fd);
 
+	static int stat(const char*, struct stat*);
+	static int fstat(File*, struct stat*);
+	static int lstat(const char*, struct stat*);
+
 	static int mount(const char* source, const char* target,
 			const char* fileSystemType, std::uint64_t mountFlags,
 			const void* data);

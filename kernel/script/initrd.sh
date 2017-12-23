@@ -56,7 +56,7 @@ print_INFO "Add executables"
 #cp -a /dev/console $TMPMOUNT/dev
 #cp -a /dev/ramdisk $TMPMOUNT/dev
 #cp -a /dev/ram0 $TMPMOUNT/dev
-#cp -a /dev/null $TMPMOUNT/dev
+sudo cp -a /dev/null $TMPMOUNT/dev
 #cp -a /dev/tty1 $TMPMOUNT/dev
 #cp -a /dev/tty2 $TMPMOUNT/dev
 

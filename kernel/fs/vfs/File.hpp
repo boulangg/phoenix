@@ -13,8 +13,8 @@ class Page;
 
 class File {
 public:
-	File() : _pos(0) {}
-	File(Inode* inode) : _pos(0), ttyinode(inode) {} // for TTY
+	File() : _pos(0), _dentry(nullptr) {}
+	File(Inode* inode) : _pos(0), _dentry(nullptr), ttyinode(inode) {} // for TTY
 	virtual ~File();
 
 	// file_operation
@@ -36,8 +36,12 @@ public:
 		return lseek_internal(offset, origin);
 	}
 
-	virtual Dentry* getDentry() {
-		return nullptr;
+	Dentry* getDentry() {
+		return _dentry;
+	}
+
+	void setDentry(Dentry* d) {
+		_dentry = d;
 	}
 
 	virtual Inode* getInode() {
@@ -62,7 +66,7 @@ public:
 	}*/
 
 protected:
-	File(Dentry* d);
+	//File(Dentry* d);
 
 private:
 	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) = 0;
@@ -103,6 +107,7 @@ protected:
 
 //private:
 //public:
+	Dentry* _dentry;
 	Inode* ttyinode;
 	mode_t mode;
 	//std::uint32_t uid;

@@ -5,7 +5,7 @@
 #include "algorithm"
 #include "cstring"
 
-Ext2File::Ext2File(Ext2Inode* inode) : BaseFile(inode, inode->_data->file_size_low) {
+Ext2File::Ext2File(Ext2Inode* inode) : BaseFile(inode) {
 
 }
 
@@ -51,5 +51,6 @@ int Ext2File::getdents64_internal(struct linux_dirent64 *dirp, size_t size) {
 		newdirp->d_off = i;
 		memcpy((char*)newdirp->d_name, buffer, header.name_length);
 		newdirp->d_name[header.name_length] = '\0';
+		newdirp->d_type = header.type_indicator;
 	}
 }

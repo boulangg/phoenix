@@ -70,10 +70,11 @@ FILE* fopen(const char* filename, const char* mode) {
 	f->fileno = fd;
 	f->flags = MAGIC_VALUE;
 	f->offset = 0;
-	setvbuf(f, NULL, _IOFBF, BUFSIZ); // TODO change to full buffer or line buffer
 	f->eof = false;
 	f->error = 0;
 	f->bufVirtPos = BUF_VIRT_SIZE;
+	f->fn = &file_fn;
+	setvbuf(f, NULL, _IOFBF, BUFSIZ); // TODO change to full buffer or line buffer
 	return f;
 
 

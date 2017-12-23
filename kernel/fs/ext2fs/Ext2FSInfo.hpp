@@ -131,7 +131,10 @@ typedef struct {
     std::uint32_t triply_indirect_block_ptn;
     std::uint32_t generation_num;
     std::uint32_t file_ACL;
-    std::uint32_t file_size_high_or_dir_ACL;
+    union {
+    	std::uint32_t file_size_high;
+    	std::uint32_t dir_ACL;
+    };
     std::uint32_t fragment_block_addr;
     std::uint32_t OS_specific_value_2[3];
 } ext2_inode_data_t;

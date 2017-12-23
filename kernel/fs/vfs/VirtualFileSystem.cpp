@@ -62,16 +62,18 @@ int VirtualFileSystem::open(const std::string& pathname) {
 		}
 	}*/
 
+	File* file = dentry->getInode()->open();
+	file->setDentry(dentry);
 	// Check for available file descriptor
 	for (size_t i = 0; i < filestable.size(); i++) {
 		if (filestable[i] == nullptr) {
-			filestable[i] = dentry->getInode()->open();
+			filestable[i] = file;
 			return i;
 		}
 	}
 
 	// Create new file descriptor
-	filestable.push_back(dentry->getInode()->open());
+	filestable.push_back(file);
 	return filestable.size() - 1;
 }
 
@@ -84,8 +86,26 @@ int VirtualFileSystem::close(int fd) {
 	return 0;
 }
 
+
+int VirtualFileSystem::stat(const char* pathname, struct stat* stat) {
+	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
+	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
+	dentry->inode->stat(stat);
+	return 0;
+}
+
+int VirtualFileSystem::fstat(File* file, struct stat* stat) {
+	return file->getInode()->stat(stat);
+}
+
+int VirtualFileSystem::lstat(const char* pathname, struct stat* stat) {
+	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
+	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
+	return dentry->inode->stat(stat);
+}
+
 int VirtualFileSystem::mount(const char* source, const char* target,
-		const char* fileSystemType, uint64_t ,
+		const char* fileSystemType, uint64_t,
 		const void* data) {
 
 	std::vector<std::string> mountVector = parsePathname(target);

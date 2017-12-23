@@ -33,13 +33,13 @@ public:
 
 	}*/
 
-	BaseFile(inode_t* inode) : File(), _inode(inode), _size(0) {
+	BaseFile(inode_t* inode) : File(), _inode(inode) {
 		_inode = inode;
 	}
 
-	BaseFile(inode_t* inode, size_t size) : File(), _inode(inode), _size(size) {
+	/*BaseFile(inode_t* inode, size_t size) : File(), _inode(inode) {
 
-	}
+	}*/
 
 	virtual ~BaseFile() {
 
@@ -63,14 +63,14 @@ public:
 			_pos += offset;
 			break;
 		case SEEK_END:
-			_pos = _size + offset;
+			_pos = _inode->size + offset;
 			break;
 		default:
 			return -1;
 		}
 
-		if (_pos > (int64_t)_size) {
-			_pos = _size;
+		if (_pos > (int64_t)_inode->size) {
+			_pos = _inode->size;
 		}
 		if (_pos < 0) {
 			_pos = 0;
@@ -94,7 +94,6 @@ public:
 
 protected:
 	inode_t* _inode;
-	size_t _size;
 };
 
 template <class FSInfo>

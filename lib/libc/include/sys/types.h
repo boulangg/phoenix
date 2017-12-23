@@ -16,17 +16,17 @@ typedef signed int         suseconds_t;
 typedef unsigned int       useconds_t;
 
 // Device types
-typedef unsigned long long dev_t;
+typedef unsigned long      dev_t;
 
 // Filesystem and filesystem types
 typedef signed long long   blkcnt_t;
 typedef signed int         blksize_t;
 typedef unsigned long long fsblkcnt_t;
 typedef unsigned long long fsfilcnt_t;
-typedef unsigned long long ino_t;
+typedef unsigned long      ino_t;
 typedef unsigned int       mode_t;
-typedef unsigned long long nlink_t;
-typedef signed long long   off_t;
+typedef unsigned long      nlink_t;
+typedef signed long        off_t;
 typedef signed long long   loff_t;
 
 // IPC types
@@ -34,10 +34,10 @@ typedef unsigned long long key_t;
 
 // Size types
 #include <def/def_size.h>
-typedef signed long long ssize_t;
+typedef signed long long   ssize_t;
 
 // Id types
-typedef unsigned long long id_t;
+typedef unsigned int       id_t;
 typedef id_t               gid_t;
 typedef id_t               pid_t;
 typedef id_t               uid_t;

@@ -8,6 +8,12 @@
 Ext2Inode::Ext2Inode(Ext2SuperBlock* sb, std::uint64_t ino, ext2_inode_data_t* data) :
 		BaseInode(sb, ino, data->file_size_low), _data(data) {
 		mapping = new Ext2AddressSpace(this);
+		if (data->type_n_perm & REGULAR_FILE) {
+			size = data->file_size_low | ((uint64_t)data->file_size_high << 32);
+		} else {
+			size = data->file_size_low;
+		}
+
 	}
 
 Dentry * Ext2Inode::lookup(Dentry* parent, std::string name) {
@@ -41,17 +47,19 @@ std::uint32_t Ext2Inode::getBlockNum(std::uint64_t offset) {
 }
 
 int Ext2Inode::stat_internal(struct stat* stat) {
-		//stat->st_dev; // sb->_dev->getDeviceNumber
+		stat->st_dev = 0; // sb->_dev->getDeviceNumber
 		stat->st_ino = ino;
 		stat->st_mode = _data->type_n_perm;
 		stat->st_nlink = _data->nb_hard_link;
 		stat->st_uid = _data->user_ID;
 		stat->st_gid = _data->group_ID;
-		//stat->st_rdev; // if file is character or block special
+		if ((_data->type_n_perm & CHARACTER_DEVICE) || (_data->type_n_perm & BLOCK_DEVICE)) {
+			stat->st_rdev = _data->direct_block_addr[0];
+		}
 		stat->st_size = size;
-		//stat->st_atime = _data->last_access_time;
-		//stat->st_mtime = _data->last_modif_time;
-		//stat->st_ctime = _data->last_modif_time;
+		stat->st_atime.tv_sec = _data->last_access_time;
+		stat->st_mtime.tv_sec = _data->last_modif_time;
+		stat->st_ctime.tv_sec = _data->last_modif_time;
 		stat->st_blksize = sb->getBlockSize();
 		stat->st_blocks = _data->nb_disk_sectors;
 		return 0;

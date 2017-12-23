@@ -15,7 +15,6 @@ class KernelFile : public BaseFile<KernelFSInfo> {
 public:
 	KernelFile(KernelInode* inode) : BaseFile(inode) {
 		_kernelStartAddr = (char*)inode->app.apps_start;
-		_size = inode->app.apps_end - inode->app.apps_start;
 		_pos = 0;
 	}
 

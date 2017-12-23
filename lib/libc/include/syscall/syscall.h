@@ -17,10 +17,13 @@
 extern "C" {
 #endif
 
-int sys_open(const char *pathname, int flags, mode_t mode);
-int sys_close(unsigned int fd);
 ssize_t sys_read(unsigned int fd, void *buf, size_t count);
 ssize_t sys_write(unsigned int fd, const void *buf, size_t count);
+int sys_open(const char *pathname, int flags, mode_t mode);
+int sys_close(unsigned int fd);
+int sys_stat(const char*, struct stat*);
+int sys_fstat(int, struct stat*);
+int sys_lstat(const char*, struct stat*);
 off_t sys_llseek(unsigned int fd, off_t offset, unsigned int whence);
 
 int sys_fork();

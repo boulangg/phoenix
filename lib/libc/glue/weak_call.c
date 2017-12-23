@@ -32,6 +32,25 @@ int sys_close(int fd) {
 	return 0;
 }
 
+
+int sys_stat(const char* pathname, struct stat* stat) {
+	(void)pathname;
+	(void)stat;
+	return -1;
+}
+
+int sys_fstat(int fd, struct stat* stat) {
+	(void)fd;
+	(void)stat;
+	return -1;
+}
+
+int sys_lstat(const char* pathname, struct stat* stat) {
+	(void)pathname;
+	(void)stat;
+	return -1;
+}
+
 off_t sys_llseek(unsigned int fd, off_t offset, unsigned int whence) {
 	(void)fd;
 	(void)offset;

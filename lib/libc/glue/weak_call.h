@@ -20,21 +20,26 @@ struct linux_dirent {
 	char           d_name[1]; /* Filename (null-terminated) */
 };
 
-int sys_open(const char *pathname, int flags, mode_t mode) __attribute__((weak));
-int sys_close(int fd) __attribute__((weak));
-ssize_t sys_read(int fd, void *buf, size_t count) __attribute__((weak));
-ssize_t sys_write(int fd, const void *buf, size_t count) __attribute__((weak));
-off_t sys_llseek(unsigned int fd, off_t offset, unsigned int whence) __attribute__((weak));
+#define WEAK_SYSCALL __attribute__((weak))
 
-int sys_fork() __attribute__((weak));
-int sys_execve(const char *file, char *const argv[], char *const envp[]) __attribute__((weak));
-int sys_getpid() __attribute__((weak));
-void sys_exit(int status) __attribute__((weak));
+int sys_open(const char *pathname, int flags, mode_t mode) WEAK_SYSCALL;
+int sys_close(int fd) WEAK_SYSCALL;
+ssize_t sys_read(int fd, void *buf, size_t count) WEAK_SYSCALL;
+ssize_t sys_write(int fd, const void *buf, size_t count) WEAK_SYSCALL;
+int sys_stat(const char*, struct stat*) WEAK_SYSCALL;
+int sys_fstat(int, struct stat*) WEAK_SYSCALL;
+int sys_lstat(const char*, struct stat*) WEAK_SYSCALL;
+off_t sys_llseek(unsigned int fd, off_t offset, unsigned int whence) WEAK_SYSCALL;
 
-void* sys_brk(void* addr) __attribute__((weak));
+int sys_fork() WEAK_SYSCALL;
+int sys_execve(const char *file, char *const argv[], char *const envp[]) WEAK_SYSCALL;
+int sys_getpid() WEAK_SYSCALL;
+void sys_exit(int status) WEAK_SYSCALL;
 
-int sys_nanosleep(const struct timespec *req, struct timespec *rem) __attribute__((weak));
+void* sys_brk(void* addr) WEAK_SYSCALL;
 
-int sys_getdents64(unsigned int fd, struct linux_dirent64 *dirp, unsigned int count) __attribute__((weak));
+int sys_nanosleep(const struct timespec *req, struct timespec *rem) WEAK_SYSCALL;
+
+int sys_getdents64(unsigned int fd, struct linux_dirent64 *dirp, unsigned int count) WEAK_SYSCALL;
 
 #endif // __WEAK_CALL_H__

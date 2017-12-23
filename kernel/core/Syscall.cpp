@@ -105,31 +105,25 @@ uint64_t syscall64_fchdir(uint64_t a, uint64_t, uint64_t, uint64_t, uint64_t, ui
 }
 
 uint64_t syscall64_stat(uint64_t a, uint64_t b, uint64_t, uint64_t, uint64_t, uint64_t) {
-	(void)a; (void)b;
-	/*const char *path = (const char*)a;
+	const char *path = (const char*)a;
 	struct stat* buf = (struct stat *)b;
-	//return ProcessScheduler::stat(path, buf);*/
-	return ENOSYS;
+	return VirtualFileSystem::stat(path, buf);
 }
 
 uint64_t syscall64_fstat(uint64_t a, uint64_t b, uint64_t, uint64_t, uint64_t, uint64_t) {
-	(void)a; (void)b;
-	/*unsigned int fd = (unsigned int)a;
+	unsigned int fd = (unsigned int)a;
 	struct stat* buf = (struct stat *)b;
 	File* file = ProcessScheduler::getFile(fd);
 	if (file == nullptr) {
 		return ENOENT;
 	}
-	//return ProcessScheduler::fstat(file, buf);*/
-	return ENOSYS;
+	return VirtualFileSystem::fstat(file, buf);
 }
 
 uint64_t syscall64_lstat(uint64_t a, uint64_t b, uint64_t, uint64_t, uint64_t, uint64_t) {
-	(void)a; (void)b;
-	/*const char *path = (const char*)a;
+	const char *path = (const char*)a;
 	struct stat* buf = (struct stat *)b;
-	//return ProcessScheduler::lstat(path, sub);*/
-	return ENOSYS;
+	return VirtualFileSystem::lstat(path, buf);
 }
 
 
@@ -140,9 +134,9 @@ syscall64_t syscall64_table[256] = {
 		syscall64_write,
 		syscall64_open,
 		syscall64_empty,
-		syscall64_empty,
-		syscall64_empty,
-		syscall64_empty,
+		syscall64_stat,
+		syscall64_fstat,
+		syscall64_lstat,
 		syscall64_empty,
 		syscall64_empty,
 		syscall64_empty,
