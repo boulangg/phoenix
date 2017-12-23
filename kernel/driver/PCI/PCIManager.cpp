@@ -20,6 +20,29 @@ PCIDevice::PCIDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 
 }
 
+uint16_t PCIDevice::readPCIConfigLine(uint8_t offset){
+	return PCIManager::readPCIConfigLine(this->bus, this->slot, this->function, offset);
+}
+
+void PCIDevice::writePCIConfigLine(uint8_t offset, uint32_t data){
+	PCIManager::writePCIConfigLine(this->bus, this->slot, this->function, offset, data);
+}
+
+bool PCIDevice::getMaster(){
+	return this->configSpace.command & 0x4;
+}
+
+void PCIDevice::setMaster(bool enable){
+	uint32_t data;
+	if(enable){
+		data = this->configSpace.command | 0x4;
+	} else {
+		data = this->configSpace.command & (~(0x4));
+	}
+	this->writePCIConfigLine(0x4, data);
+	this->configSpace.PCIConfigSpace1 = this->readPCIConfigLine(0x4);
+}
+
 std::list<PCIDevice*> PCIManager::_devices;
 std::list<PCIDevice*> PCIManager::_unkonwDevices;
 std::list<PCIDriver*> PCIManager::_drivers;
@@ -90,22 +113,36 @@ void PCIManager::printDeviceInfo(PCIDevice* dev) {
 }
 
 uint32_t PCIManager::readPCIConfigLine(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off) {
+	uint32_t address = PCIManager::getAddress(bus, slot, func, off);
+
+	/* write out the address */
+	outl(0xCF8, address);
+	/* read in the data */
+	uint32_t tmp = inl(0xCFC);
+	return tmp;
+}
+
+void PCIManager::writePCIConfigLine(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off, uint32_t data) {
+	uint32_t address = PCIManager::getAddress(bus, slot, func, off);
+
+	/* write out the address */
+	outl(0xCF8, address);
+	/* write the data */
+	outl(0xCFC, data);
+}
+
+uint32_t PCIManager::getAddress(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off) {
 	uint32_t address;
 	uint32_t lbus  = (uint32_t)(bus);
 	uint32_t lslot = (uint32_t)(slot);
 	uint32_t lfunc = (uint32_t)(func);
 	uint32_t loff  = (uint32_t)(off & 0xFC);
-	uint32_t tmp = 0;
 
 	/* create configuration address as per Figure 1 */
 	address = ((uint32_t)0x80000000) | (lbus << 16) |
 			(lslot << 11) | (lfunc << 8) | (loff);
 
-	/* write out the address */
-	outl(0xCF8, address);
-	/* read in the data */
-	tmp = inl(0xCFC);
-	return tmp;
+	return address;
 }
 
 void PCIManager::readPCIConfigSpace(uint8_t bus, uint8_t slot, uint8_t func, PCIConfigSpace& configSpace) {

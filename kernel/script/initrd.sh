@@ -10,7 +10,6 @@ function print_INFO {
 
 function print_ERROR {
     printf "    \033[0;31m$1\033[0m\n"
-    exit 1
 }
 
 if [ "$#" -ne 1 ]; then
@@ -21,13 +20,21 @@ fi
 
 DISK=$1
 TMPMOUNT=tmp
+MODPROBED=false
+
+if [ ! -b /dev/loop0 ]; then
+    print_ERROR "loop device not found!"
+    print_INFO "Trying to add loop module (requires sudo)"
+    sudo modprobe loop
+    MODPROBED=true
+fi
 
 rm -f $DISK
 
 # Ramdisk Constants
 RDSIZE=1024
 BLKSIZE=4096
- 
+
 # Create an empty ramdisk image
 dd if=/dev/zero of=$DISK bs=$BLKSIZE count=$RDSIZE > /dev/null 2> /dev/null && print_OK "Disk image creation successful" || print_ERROR "Impossible to create disk"
  
@@ -36,9 +43,11 @@ dd if=/dev/zero of=$DISK bs=$BLKSIZE count=$RDSIZE > /dev/null 2> /dev/null && p
  
 # Mount it so that we can populate
 mkdir tmp
+print_INFO "Mounting disk (requires sudo)"
 sudo mount $DISK $TMPMOUNT -t ext2 -o loop=/dev/loop0 && print_OK "Mount successful" || print_ERROR "Mount failed"
 
 # Allow users to modify mounted disk
+print_INFO "Changing permissions of mounted disk (requires sudo)"
 sudo chmod a+rwx tmp
  
 # Populate the filesystem (subdirectories)
@@ -62,6 +71,10 @@ sudo cp -a /dev/tty $TMPMOUNT/dev
 #cp -a /dev/tty2 $TMPMOUNT/dev
 
 # Finish up...
+print_INFO "Unmounting disk (requires sudo)"
 sudo umount $TMPMOUNT && print_OK "Unmount successful" || print_ERROR "Unmount failed"
 rmdir tmp
-
+if $MODPROBED; then
+    print_INFO "Removing loop module (requires sudo)"
+    sudo modprobe -r loop
+fi

@@ -1,6 +1,9 @@
 #include "IDEChannel.hpp"
+#include "IDEDevice.hpp"
 
 #include <driver/DeviceManager.hpp>
+#include <core/Console.hpp>
+#include <core/interrupt/InterruptManager.hpp>
 
 IDEChannel::IDEChannel(IDEDevice* device, IDEChannelRegisters regs, int channelNo) :
 		device(device), base(regs.base), ctrl(regs.ctrl), bmIDE(regs.bmIDE),
@@ -21,7 +24,15 @@ void IDEChannel::processBlockIO(BlockIO bio, bool slave) {
 	for (auto segment: bio.segments) {
 		char* startAddr = ((char*)segment.page->kernelMappAddr) + segment.offset;
 		for (std::size_t i = 0; i < bio.nb_sectors ;++i) {
-			ATAAccess(slave, bio.write, start_sector, startAddr + i*disks[slave]->getSectorSize(), 1);
+			if(DMA_ENABLED && this->supportsDMA()){
+				Console::write("DMA Access\n");
+				InterruptHandler* handler = new InterruptHandlerFunction<IDEChannel::handler>("IDE", {true, false}, nullptr);
+				InterruptManager::requestIRQ(14,handler);
+				ATAAccessDMA(slave, bio.write, start_sector, (uint64_t)(segment.page->physAddr), 1);
+			}else{
+				Console::write("PIO Access\n");
+				ATAAccessPIO(slave, bio.write, start_sector, startAddr + i*disks[slave]->getSectorSize(), 1);
+			}
 			start_sector += 1;
 		}
 	}
@@ -144,17 +155,95 @@ void IDEChannel::writeReg(std::uint8_t reg, std::uint8_t data) {
 		outb(bmIDE + reg - 0x10, data);
 }
 
-std::uint8_t IDEChannel::ATAAccess(bool slave, bool write, std::uint64_t lba, char* buffer, std::uint32_t numSec) {
-	//char tmp[1024];
-	//sprintf(tmp, "Access sector %i, R/W %i, numSec %i, sectorSize %i, diskSize %i bytes\n", lba, write, numSec, disks[slave]->sectorSize, disks[slave]->getSize());
-	//Console::write(tmp);
-	unsigned char lba_mode, dma, cmd;
-	unsigned char lba_io[6];
-	unsigned short cyl, i;
-	unsigned char head, sect, err;
+int IDEChannel::handler(){
+	Console::write("IDE interrupt received !!!!!!!!!\n");
+	return 0;
+}
+
+std::uint8_t IDEChannel::ATAAccessPIO(bool slave, bool write, std::uint64_t lba, char* buffer, std::uint32_t numSec) {
+	uint8_t lba_mode = this->sendCommand(slave, write, lba, numSec, /*isDMA*/ false);
+
 	char cache_cmd[] = {ATA_CMD_CACHE_FLUSH,
 			ATA_CMD_CACHE_FLUSH,
 			ATA_CMD_CACHE_FLUSH_EXT};
+	if (write == 0) {
+		// PIO Read.
+		//Console::write("PIO read\n");
+		for (uint32_t i = 0; i < numSec; i++) {
+			poll();
+			uint8_t err = checkErrors();
+			if (err) {
+				//Console::write("Error\n");
+				return err; // Polling, set error and exit if there is.
+			}
+			insw(base, buffer, disks[slave]->sectorSize/2);
+			buffer += disks[slave]->sectorSize;
+		}
+	} else {
+		// PIO Write.
+		//Console::write("PIO write\n");
+		for (uint32_t i = 0; i < numSec; i++) {
+			poll(); // Polling.
+			outsw(base, buffer, disks[slave]->sectorSize/2);
+			buffer += disks[slave]->sectorSize;
+		}
+		writeReg(ATA_REG_COMMAND, cache_cmd[lba_mode]); // Cache flush
+		poll(); // Polling.
+	}
+	//Console::write("ATAAccess successful\n");
+	return 0;
+}
+
+std::uint8_t IDEChannel::ATAAccessDMA(bool slave, bool write, std::uint64_t lba, uint64_t physAddr, std::uint32_t numSec) {
+	// TODO be able to read more or less than 512 bytes
+	uint64_t low = physAddr;
+	uint64_t high = 1<<31 | 512;
+	Page* prdt = PhysicalAllocator::allocPage();
+	prdt->kernelMappAddr[0] =(high<<32)|low;
+
+	// TODO this is only true for PIIX3. Need to make it virtual
+	uint32_t busMasteringBaseAddress = this->bmIDE & 0xFFF0;
+	// set command to 0
+	outb(busMasteringBaseAddress + BUS_MASTER_COMMMAND, 0);
+	// set dma, clear IRQ and error flags
+	outb(busMasteringBaseAddress + BUS_MASTER_STATUS, 0x20|2|4| 0x40);
+	// set PRDT address
+	outl(busMasteringBaseAddress + BUS_MASTER_ADDRESS, (uint64_t)prdt->physAddr);
+
+	// set transfer direction
+	if (write ==0) {
+		outb(busMasteringBaseAddress + BUS_MASTER_COMMMAND, 1<<3);
+	} else {
+		outb(busMasteringBaseAddress + BUS_MASTER_COMMMAND, 0);
+	}
+
+	// send command to drive
+	this->sendCommand(slave, write, lba, numSec, /*isDMA*/ true);
+
+	// start DMA
+	outb(busMasteringBaseAddress + BUS_MASTER_COMMMAND, 1);
+
+	// TODO delete this while loop
+	// While the interruption mechanism isn't set up, we poll.
+	while(true){
+		uint8_t status = inb(busMasteringBaseAddress + BUS_MASTER_STATUS);
+		if(status&0x4){
+			PhysicalAllocator::freePage(prdt);
+			break;
+		}
+	}
+
+	return 0;
+}
+
+std::uint8_t IDEChannel::sendCommand(bool slave, bool write, std::uint64_t lba, std::uint32_t numSec, bool isDMA) {
+	//char tmp[1024];
+	//sprintf(tmp, "Access sector %i, R/W %i, numSec %i, sectorSize %i, diskSize %i bytes\n", lba, write, numSec, disks[slave]->sectorSize, disks[slave]->getSize());
+	//Console::write(tmp);
+	unsigned char lba_mode, cmd;
+	unsigned char lba_io[6];
+	unsigned short cyl;
+	unsigned char head, sect;
 
 	// Disable IRQ ??
 	//writeReg(ATA_REG_CONTROL, _channel.nIEN....)
@@ -194,8 +283,6 @@ std::uint8_t IDEChannel::ATAAccess(bool slave, bool write, std::uint64_t lba, ch
 		head      = (lba + 1  - sect) % (16 * 63) / (63); // Head number is written to HDDEVSEL lower 4-bits.
 	}
 
-	// (II) See if drive supports DMA or not;
-	dma = 0; // We don't support DMA
 
 	// (III) Wait if the drive is busy;
 	while (readReg(ATA_REG_STATUS) & ATA_SR_BSY); // Wait if busy.
@@ -218,55 +305,22 @@ std::uint8_t IDEChannel::ATAAccess(bool slave, bool write, std::uint64_t lba, ch
 	writeReg(ATA_REG_LBA2,   lba_io[2]);
 
 	// (VI) Select the command
-	if (lba_mode == 0 && dma == 0 && write == 0) cmd = ATA_CMD_READ_PIO;
-	if (lba_mode == 1 && dma == 0 && write == 0) cmd = ATA_CMD_READ_PIO;
-	if (lba_mode == 2 && dma == 0 && write == 0) cmd = ATA_CMD_READ_PIO_EXT;
-	if (lba_mode == 0 && dma == 1 && write == 0) cmd = ATA_CMD_READ_DMA;
-	if (lba_mode == 1 && dma == 1 && write == 0) cmd = ATA_CMD_READ_DMA;
-	if (lba_mode == 2 && dma == 1 && write == 0) cmd = ATA_CMD_READ_DMA_EXT;
-	if (lba_mode == 0 && dma == 0 && write == 1) cmd = ATA_CMD_WRITE_PIO;
-	if (lba_mode == 1 && dma == 0 && write == 1) cmd = ATA_CMD_WRITE_PIO;
-	if (lba_mode == 2 && dma == 0 && write == 1) cmd = ATA_CMD_WRITE_PIO_EXT;
-	if (lba_mode == 0 && dma == 1 && write == 1) cmd = ATA_CMD_WRITE_DMA;
-	if (lba_mode == 1 && dma == 1 && write == 1) cmd = ATA_CMD_WRITE_DMA;
-	if (lba_mode == 2 && dma == 1 && write == 1) cmd = ATA_CMD_WRITE_DMA_EXT;
+	if (lba_mode == 0 && isDMA == 0 && write == 0) cmd = ATA_CMD_READ_PIO;
+	if (lba_mode == 1 && isDMA == 0 && write == 0) cmd = ATA_CMD_READ_PIO;
+	if (lba_mode == 2 && isDMA == 0 && write == 0) cmd = ATA_CMD_READ_PIO_EXT;
+	if (lba_mode == 0 && isDMA == 1 && write == 0) cmd = ATA_CMD_READ_DMA;
+	if (lba_mode == 1 && isDMA == 1 && write == 0) cmd = ATA_CMD_READ_DMA;
+	if (lba_mode == 2 && isDMA == 1 && write == 0) cmd = ATA_CMD_READ_DMA_EXT;
+	if (lba_mode == 0 && isDMA == 0 && write == 1) cmd = ATA_CMD_WRITE_PIO;
+	if (lba_mode == 1 && isDMA == 0 && write == 1) cmd = ATA_CMD_WRITE_PIO;
+	if (lba_mode == 2 && isDMA == 0 && write == 1) cmd = ATA_CMD_WRITE_PIO_EXT;
+	if (lba_mode == 0 && isDMA == 1 && write == 1) cmd = ATA_CMD_WRITE_DMA;
+	if (lba_mode == 1 && isDMA == 1 && write == 1) cmd = ATA_CMD_WRITE_DMA;
+	if (lba_mode == 2 && isDMA == 1 && write == 1) cmd = ATA_CMD_WRITE_DMA_EXT;
 	// Send the Command.
 	writeReg(ATA_REG_COMMAND, cmd);
 
-	if (dma) {
-		if (write == 0) {
-			// DMA Read.
-		} else {
-			// DMA Write.
-		}
-	} else {
-		if (write == 0) {
-			// PIO Read.
-			//Console::write("PIO read\n");
-			for (i = 0; i < numSec; i++) {
-				poll();
-				err = checkErrors();
-				if (err) {
-					//Console::write("Error\n");
-					return err; // Polling, set error and exit if there is.
-				}
-				insw(base, buffer, disks[slave]->sectorSize/2);
-				buffer += disks[slave]->sectorSize;
-			}
-		} else {
-			// PIO Write.
-			//Console::write("PIO write\n");
-			for (i = 0; i < numSec; i++) {
-				poll(); // Polling.
-				outsw(base, buffer, disks[slave]->sectorSize/2);
-				buffer += disks[slave]->sectorSize;
-			}
-			writeReg(ATA_REG_COMMAND, cache_cmd[lba_mode]); // Cache flush
-			poll(); // Polling.
-		}
-	}
-	//Console::write("ATAAccess successful\n");
-	return 0;
+	return lba_mode;
 }
 
 void IDEChannel::poll() {
@@ -289,4 +343,8 @@ std::uint8_t IDEChannel::checkErrors() {
 		return 3; // DRQ should be set
 
 	return 0;
+}
+
+bool IDEChannel::supportsDMA() {
+	return this->device->getMaster() && this->bmIDE != 0;
 }
