@@ -25,12 +25,12 @@ void IDEChannel::processBlockIO(BlockIO bio, bool slave) {
 		char* startAddr = ((char*)segment.page->kernelMappAddr) + segment.offset;
 		for (std::size_t i = 0; i < bio.nb_sectors ;++i) {
 			if(DMA_ENABLED && this->supportsDMA()){
-				Console::write("DMA Access\n");
+				cout << "DMA Access\n";
 				InterruptHandler* handler = new InterruptHandlerFunction<IDEChannel::handler>("IDE", {true, false}, nullptr);
 				InterruptManager::requestIRQ(14,handler);
 				ATAAccessDMA(slave, bio.write, start_sector, (uint64_t)(segment.page->physAddr), 1);
 			}else{
-				Console::write("PIO Access\n");
+				cout << "PIO Access\n";
 				ATAAccessPIO(slave, bio.write, start_sector, startAddr + i*disks[slave]->getSectorSize(), 1);
 			}
 			start_sector += 1;
@@ -156,7 +156,7 @@ void IDEChannel::writeReg(std::uint8_t reg, std::uint8_t data) {
 }
 
 int IDEChannel::handler(){
-	Console::write("IDE interrupt received !!!!!!!!!\n");
+	cout << "IDE interrupt received !!!!!!!!!\n";
 	return 0;
 }
 

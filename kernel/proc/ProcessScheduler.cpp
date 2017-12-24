@@ -100,9 +100,7 @@ void ProcessScheduler::schedule(){
 void ProcessScheduler::exit(int status) {
 	Process *currProc= running;
 	running->setState(ProcessState::Dying);
-	char str[512];
-	sprintf(str,"pid: %d, retval: %d\n", running->getPid(), status);
-	Console::write(str);
+	cout << "pid: " << running->getPid() << ", retval: " << status << "\n";
 	// TODO add to dying queue
 	unconditionalContextSwitch(currProc);
 }
