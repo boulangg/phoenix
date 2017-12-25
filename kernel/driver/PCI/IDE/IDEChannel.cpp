@@ -3,6 +3,7 @@
 
 #include <driver/DeviceManager.hpp>
 #include <core/Console.hpp>
+#include <core/Clock.hpp>
 #include <core/interrupt/InterruptManager.hpp>
 
 IDEChannel::IDEChannel(IDEDevice* device, IDEChannelRegisters regs, int channelNo) :
@@ -225,13 +226,19 @@ std::uint8_t IDEChannel::ATAAccessDMA(bool slave, bool write, std::uint64_t lba,
 
 	// TODO delete this while loop
 	// While the interruption mechanism isn't set up, we poll.
-	while(true){
+	/*while(true){
 		uint8_t status = inb(busMasteringBaseAddress + BUS_MASTER_STATUS);
 		if(status&0x4){
 			PhysicalAllocator::freePage(prdt);
 			break;
 		}
-	}
+	}*/
+
+	struct timespec spec;
+	spec.tv_nsec = 0;
+	spec.tv_sec = 5;
+	Clock::nanosleep(&spec, nullptr);
+
 
 	return 0;
 }

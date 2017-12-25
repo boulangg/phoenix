@@ -43,7 +43,7 @@ Process::Process(int prio, code_type code) :
 	mapping->setEntryPoint((uint64_t*)code);
 	const char* tmp[] = {nullptr};
 	mapping->initMainArgs(tmp,tmp);
-	regSave[1]= (uint64_t)&(mapping->startStack[0]);
+	regSave[1]= (uint64_t)&(mapping->startStack[1]);
 	regSave[7] = 0;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	procDir = new ProcDir(VirtualFileSystem::root, VirtualFileSystem::root);
@@ -70,6 +70,18 @@ int Process::execve(File* file, const char* argv[], const char* envp[]) {
 	mapping->initMainArgs(argv, envp);
 	regSave[1]= (uint64_t)&(mapping->startStack[0]);
 	regSave[7] = RFLAGS_INIT;
+	regSave[8] = mapping->getPageTable()->getPageTablePtr();
+	return 0;
+}
+
+int Process::execve(code_type code, const char* argv[], const char* envp[]) {
+	// TODO schedule delayed deletion to keep the kernelStack usable until next
+	// context switch (or reuse the old one while keeping the kernel stacks)
+	//delete mapping;
+	mapping->setEntryPoint((uint64_t*)code);
+	mapping->initMainArgs(argv, envp);
+	regSave[1]= (uint64_t)&(mapping->startStack[1]);
+	regSave[7] = 0;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	return 0;
 }

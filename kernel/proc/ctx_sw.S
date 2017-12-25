@@ -28,6 +28,22 @@ ctx_sw:
 	push %rcx
 	popfq
     ret
+
+    .globl start_idle
+start_idle:
+
+    mov %rdi, %rax
+    mov (%rax), %rbx
+    mov 8(%rax), %rsp
+    mov 16(%rax), %rbp
+    mov 24(%rax), %r12
+    mov 32(%rax), %r13
+    mov 40(%rax), %r14
+    mov 48(%rax), %r15
+	mov 64(%rax), %rdx
+
+	mov %rdx, %cr3
+    ret
 // registers that need to be saved upon a context switch:
 // rbx, rsp, rbp, r12, r13, r14, r15, rflags (on the stack)
 

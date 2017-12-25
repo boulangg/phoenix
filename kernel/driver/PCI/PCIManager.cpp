@@ -10,14 +10,12 @@
 
 #include "../Disk.hpp"
 
-
 PCIDevice::PCIDevice(uint8_t bus, uint8_t slot, uint8_t function) {
 	this->bus = bus;
 	this->slot = slot;
 	this->function = function;
 
 	PCIManager::readPCIConfigSpace(bus, slot, function, this->configSpace);
-
 }
 
 uint16_t PCIDevice::readPCIConfigLine(uint8_t offset){

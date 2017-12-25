@@ -232,3 +232,10 @@ Console& Console::operator<<(uint64_t i) {
 	Console::write(tmp);
 	return *this;
 }
+
+Console& Console::operator<<(uint32_t i) {
+	char tmp[1024];
+	sprintf(tmp, "%lu", i);
+	Console::write(tmp);
+	return *this;
+}

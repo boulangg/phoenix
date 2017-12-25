@@ -52,6 +52,7 @@ public:
 	Console& operator<<(long i);
 	Console& operator<<(int i);
 	Console& operator<<(uint64_t i);
+	Console& operator<<(uint32_t i);
 
 private:
 	Console() = default;

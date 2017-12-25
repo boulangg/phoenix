@@ -57,6 +57,7 @@ public:
 	~Process();
 
 	int execve(File* f, const char* argv[], const char* envp[]);
+	int execve(code_type code, const char* argv[], const char* envp[]);
 
 	bool operator<(const Process& p) const;
 
