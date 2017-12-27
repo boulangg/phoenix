@@ -2,6 +2,7 @@
 
 #include "Inode.hpp"
 #include "File.hpp"
+#include "SuperBlock.hpp"
 
 Dentry::Dentry(Dentry* parent, Inode* inode, std::string name) :
 		inode(inode), parent(parent), name(name), children(), mount(nullptr)
@@ -19,6 +20,10 @@ Dentry::Dentry(Inode* inode) :
 
 Dentry::~Dentry() {
 	//parent->children.remove(this);
+}
+
+bool Dentry::isRoot() {
+	return this == inode->sb->getRoot();
 }
 
 /*File* Dentry::open() {

@@ -33,15 +33,25 @@ public:
 	//Dentry* getParent() const;
 	//void setParent(Dentry* parent);
 
-	std::string getPathName() {
+	std::string getPathName(bool isParent = false) {
 		std::string ret("");
 		if (parent == this) {
 			ret += std::string("/");
 		} else {
-			ret += parent->getPathName() + "/" + name;
+			if (!isRoot()) {
+				ret += parent->getPathName(true);
+				ret += name;
+				if (isParent) {
+					ret += "/";
+				}
+			} else {
+				ret += parent->getPathName(isParent);
+			}
 		}
 		return ret;
 	}
+
+	bool isRoot();
 
 	virtual Inode* getInode() {
 		return inode;
