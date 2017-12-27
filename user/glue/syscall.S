@@ -24,5 +24,8 @@ SYSCALL(39, sys_getpid)
 SYSCALL(57, sys_fork)
 SYSCALL(59, sys_execve)
 SYSCALL(60, sys_exit)
+SYSCALL(79, sys_getcwd)
+SYSCALL(80, sys_chdir)
+SYSCALL(81, sys_fchdir)
 SYSCALL(217, sys_getdents64)
 

@@ -166,7 +166,8 @@ string::~string(){
 
 string operator+( const string& lhs, const string& rhs ) {
 	string ret(lhs);
-	return ret + rhs;
+	ret += rhs;
+	return ret;
 }
 
 

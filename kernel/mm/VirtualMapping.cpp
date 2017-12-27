@@ -171,15 +171,15 @@ void VirtualMapping::initMainArgs(const char*argv[], const char*envp[]) {
 	for (size_t i = 0; i < argc; ++i) {
 		tmp[3+i] = (uint64_t)stackInfoStart;
 		strcpy(infoStart, argv[i]);
-		stackInfoStart += strlen(argv[i]);
-		infoStart += strlen(argv[i]);
+		stackInfoStart += strlen(argv[i]) + 1;
+		infoStart += strlen(argv[i]) + 1;
 	}
 	tmp[3+argc] = 0;        // Null pointer to end argv
 	for (size_t i = 0; i < envc; ++i) {
 		tmp[4+argc+i] = (uint64_t)stackInfoStart;
 		strcpy(infoStart, envp[i]);
-		stackInfoStart += strlen(argv[i]);
-		infoStart += strlen(argv[i]);
+		stackInfoStart += strlen(argv[i]) + 1;
+		infoStart += strlen(argv[i]) + 1;
 	}
 	tmp[4+argc+envc] = 0;    // Null pointer to end envp
 	tmp[5+argc+envc] = 0;    // Null auxiliary vector

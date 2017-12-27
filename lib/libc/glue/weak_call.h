@@ -42,4 +42,8 @@ int sys_nanosleep(const struct timespec *req, struct timespec *rem) WEAK_SYSCALL
 
 int sys_getdents64(unsigned int fd, struct linux_dirent64 *dirp, unsigned int count) WEAK_SYSCALL;
 
+char *sys_getcwd(char *buf, size_t size) WEAK_SYSCALL;
+int sys_chdir(const char *path) WEAK_SYSCALL;
+int sys_fchdir(int fd) WEAK_SYSCALL;
+
 #endif // __WEAK_CALL_H__

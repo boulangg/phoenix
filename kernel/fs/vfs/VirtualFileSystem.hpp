@@ -44,6 +44,8 @@ public:
 struct ProcDir {
 	Dentry* rootDir;
 	Dentry* workDir;
+
+	ProcDir(Dentry* root, Dentry* work) : rootDir(root), workDir(work) {}
 };
 
 class VirtualFileSystem {
@@ -52,7 +54,8 @@ public:
 
 	static std::vector<std::string> parsePathname(const std::string& path);
 
-	static int open(const std::string& pathname);
+	static int open(struct ProcDir* userProcDir, const std::string& pathname);
+	static Dentry* getDentry(struct ProcDir* userProcDir, const std::string& pathname);
 
 	static int close(int fd);
 

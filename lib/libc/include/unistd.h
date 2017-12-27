@@ -35,6 +35,10 @@ void* sbrk(intptr_t increment);
 
 unsigned int sleep(unsigned int seconds);
 
+char *getcwd(char *buf, size_t size);
+int chdir(const char *path);
+int fchdir(int fd);
+
 #ifdef __cplusplus
 }
 #endif

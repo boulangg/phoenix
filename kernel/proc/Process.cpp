@@ -26,6 +26,7 @@ Process::Process(Process* parent, int pid, int flags) :
 	mapping = new VirtualMapping(*(parent->mapping));
 	regSave[7] = parent->regSave[7];
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
+	procDir = new ProcDir(*(parent->procDir));
 	save_regs(regSave);
 	//tty = new TTYFile();
 	tty = parent->tty;
@@ -52,6 +53,7 @@ Process::Process(int prio, code_type code) :
 	regSave[1]= (uint64_t)&(mapping->startStack[0]);
 	regSave[7] = 0;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
+	procDir = new ProcDir(VirtualFileSystem::root, VirtualFileSystem::root);
 	tty = new TTY();
 	Keyboard::setTTY(tty);
 }

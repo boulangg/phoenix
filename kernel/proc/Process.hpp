@@ -104,7 +104,7 @@ public:
 
 	int open(const char* pathname, int flags, mode_t mode) {
 		(void)flags; (void)mode;
-		int gfd = VirtualFileSystem::open(pathname);
+		int gfd = VirtualFileSystem::open(procDir, pathname);
 		if (gfd < 0) {
 			return gfd;
 		}

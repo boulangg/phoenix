@@ -96,3 +96,19 @@ int sys_getdents64(unsigned int fd, struct linux_dirent64 *dirp, unsigned int co
 	return 0;
 }
 
+char *sys_getcwd(char *buf, size_t size) {
+	(void)buf;
+	(void)size;
+	return 0;
+}
+
+int sys_chdir(const char *path) {
+	(void)path;
+	return -1;
+}
+
+int sys_fchdir(int fd) {
+	(void)fd;
+	return -1;
+}
+

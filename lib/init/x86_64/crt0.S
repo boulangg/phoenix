@@ -27,7 +27,8 @@ _start:
 
 	# get argc and argv
 	mov 16(%rbp), %rdi
-	mov 24(%rbp), %rsi
+	mov %rbp, %rsi
+	addq $24, %rsi
 
 	# Restore argc and argv.
 	#popq %rdi

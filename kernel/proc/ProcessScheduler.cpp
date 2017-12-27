@@ -53,7 +53,8 @@ int ProcessScheduler::init(){
 	// Create init process
 	std::string filename = "/bin/init";
 	//File* f;
-	int fd = VirtualFileSystem::open(filename);
+	struct ProcDir procDir = {VirtualFileSystem::root, VirtualFileSystem::root};
+	int fd = VirtualFileSystem::open(&procDir, filename);
 	//f = KernelFS::getUserApp(filename);
 	//if(f==nullptr)
 	//	return -1;
@@ -132,9 +133,8 @@ pid_t ProcessScheduler::fork() {
 }
 
 int ProcessScheduler::execve(const char* filename, const char* argv[], const char* envp[]) {
-	//File* f;
-	int fd = VirtualFileSystem::open(filename);
-	//f = KernelFS::getUserApp(filename);
+	struct ProcDir* runningProcDir = running->getProcDir();
+	int fd = VirtualFileSystem::open(runningProcDir, filename);
 	if(fd < 0)
 		return -1;
 	File* file = VirtualFileSystem::filestable[fd];
@@ -181,16 +181,14 @@ char* ProcessScheduler::getcwd(char* buffer, size_t size) {
 }
 
 int ProcessScheduler::chdir(const char *path) {
-	std::string pathname(path);
-	int fd = VirtualFileSystem::open(pathname);
-	//f = KernelFS::getUserApp(filename);
-	if(fd < 0)
-		return -1;
-	File* file = VirtualFileSystem::filestable[fd];
-	Dentry* dentry = file->getDentry();
 	struct ProcDir* runningProcDir = running->getProcDir();
+	std::string pathname(path);
+	Dentry* dentry = VirtualFileSystem::getDentry(runningProcDir, pathname);
+	//f = KernelFS::getUserApp(filename);
+	if(dentry == nullptr)
+		return -1;
 	runningProcDir->workDir = dentry;
-	// TODO close fd and free old Dentry workDir
+	// TODO free old Dentry workDir
 	return 0;
 }
 

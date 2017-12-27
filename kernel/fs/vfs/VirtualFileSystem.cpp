@@ -44,10 +44,9 @@ std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pat
 }
 
 
-int VirtualFileSystem::open(const std::string& pathname) {
+int VirtualFileSystem::open(struct ProcDir* procDir, const std::string& pathname) {
 	// TODO handle flags and check access right
-	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
-	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
+	Dentry* dentry = getDentry(procDir, pathname);
 
 	// File not found
 	if (dentry == nullptr) {
@@ -75,6 +74,15 @@ int VirtualFileSystem::open(const std::string& pathname) {
 	// Create new file descriptor
 	filestable.push_back(file);
 	return filestable.size() - 1;
+}
+
+Dentry* VirtualFileSystem::getDentry(struct ProcDir* procDir, const std::string& pathname) {
+	Dentry* start = procDir->rootDir;
+	if (pathname[0] != '/') {
+		start = procDir->workDir;
+	}
+	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
+	return DentryCache::findDentry(start, pathnameVector, 0);
 }
 
 int VirtualFileSystem::close(int fd) {
@@ -119,6 +127,7 @@ int VirtualFileSystem::mount(const char* source, const char* target,
 	SuperBlock* sb = type->readSuperBlock(source, data);
 	if (sb) {
 		mount->mount = sb->getRoot();
+		mount->mount->parent = mount;
 		return 0;
 	}
 	return 1;

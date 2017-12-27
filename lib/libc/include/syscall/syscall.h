@@ -37,6 +37,10 @@ int sys_nanosleep(const struct timespec *req, struct timespec *rem);
 //int sys_getdents(unsigned int fd, struct linux_dirent *dirp, unsigned int count);
 int sys_getdents64(unsigned int fd, struct linux_dirent64 *dirp, unsigned int count);
 
+char *sys_getcwd(char *buf, size_t size);
+int sys_chdir(const char *path);
+int sys_fchdir(int fd);
+
 #ifdef __cplusplus
 }
 #endif
