@@ -52,6 +52,8 @@ public:
 	size_type size() const;
 	bool empty() const;
 
+	void clear();
+
 private:
 	void resize();
 

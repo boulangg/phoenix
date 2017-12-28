@@ -118,6 +118,14 @@ void vector<T>::resize() {
 	_capacity*=2;
 }
 
+template <class T>
+void vector<T>::clear() {
+	delete[] _data;
+	_capacity = DEFAULT_CAPACITY;
+	_size = 0;
+	_data = new T[_capacity];
+}
+
 }
 
 #endif // _VECTOR_TPP_
