@@ -3,8 +3,10 @@
 
 #include <driver/DeviceManager.hpp>
 #include <core/Console.hpp>
-#include <core/Clock.hpp>
 #include <core/interrupt/InterruptManager.hpp>
+
+std::list<Event> IDEChannel::events;
+uint64_t IDEChannel::availableID = 0;
 
 IDEChannel::IDEChannel(IDEDevice* device, IDEChannelRegisters regs, int channelNo) :
 		device(device), base(regs.base), ctrl(regs.ctrl), bmIDE(regs.bmIDE),
@@ -29,6 +31,10 @@ void IDEChannel::processBlockIO(BlockIO bio, bool slave) {
 				cout << "DMA Access\n";
 				InterruptHandler* handler = new InterruptHandlerFunction<IDEChannel::handler>("IDE", {true, false}, nullptr);
 				InterruptManager::requestIRQ(14,handler);
+				if(events.size()){
+					// sleep while there are other IO process blocked
+					this->sleep();
+				}
 				ATAAccessDMA(slave, bio.write, start_sector, (uint64_t)(segment.page->physAddr), 1);
 			}else{
 				cout << "PIO Access\n";
@@ -121,7 +127,7 @@ IDEIdentifyData IDEChannel::getIdentificationSpace() {
 	IDEIdentifyData buffer;
 
 	writeReg(ATA_REG_COMMAND, ATA_CMD_IDENTIFY_PACKET);
-	sleep(1);
+	::sleep(1);
 	readBuffer(ATA_REG_DATA, (void*)&buffer, 128);
 
 	return buffer;
@@ -157,7 +163,7 @@ void IDEChannel::writeReg(std::uint8_t reg, std::uint8_t data) {
 }
 
 int IDEChannel::handler(){
-	cout << "IDE interrupt received !!!!!!!!!\n";
+	IDEChannel::wakeUp();
 	return 0;
 }
 
@@ -223,22 +229,9 @@ std::uint8_t IDEChannel::ATAAccessDMA(bool slave, bool write, std::uint64_t lba,
 
 	// start DMA
 	outb(busMasteringBaseAddress + BUS_MASTER_COMMMAND, 1);
-
-	// TODO delete this while loop
-	// While the interruption mechanism isn't set up, we poll.
-	/*while(true){
-		uint8_t status = inb(busMasteringBaseAddress + BUS_MASTER_STATUS);
-		if(status&0x4){
-			PhysicalAllocator::freePage(prdt);
-			break;
-		}
-	}*/
-
-	struct timespec spec;
-	spec.tv_nsec = 0;
-	spec.tv_sec = 5;
-	Clock::nanosleep(&spec, nullptr);
-
+	
+	this->sleep();
+	IDEChannel::wakeUp();
 
 	return 0;
 }
@@ -354,4 +347,19 @@ std::uint8_t IDEChannel::checkErrors() {
 
 bool IDEChannel::supportsDMA() {
 	return this->device->getMaster() && this->bmIDE != 0;
+}
+
+void IDEChannel::sleep() {
+	uint64_t id = availableID++;
+	Event event(Event::EventType::IOEvent, id);
+	events.push_back(event);
+	ProcessScheduler::wait(event);
+}
+
+void IDEChannel::wakeUp() {
+	if(events.size()){
+		Event event = events.front();
+		events.pop_front();
+		ProcessScheduler::wakeUp(event);
+	}
 }

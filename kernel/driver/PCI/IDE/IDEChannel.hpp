@@ -6,6 +6,7 @@
 #include <driver/PCI/IDE/IDEStruct.hpp>
 
 #include <driver/BlockIO.hpp>
+#include <proc/ProcessScheduler.hpp>
 
 class IDEDevice;
 
@@ -63,6 +64,10 @@ private:
 	void poll();
 	std::uint8_t checkErrors();
 	bool supportsDMA();
+	static std::list<Event> events;
+	static uint64_t availableID;
+	void sleep();
+	static void wakeUp();
 
 	/*std::uint8_t ATARead(std::uint64_t lba, char* buffer, size_t numSec) {
 		return ATAAccess(false, lba, buffer, numSec);

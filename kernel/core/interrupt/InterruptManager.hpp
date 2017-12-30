@@ -287,6 +287,9 @@ public:
 		if (index < 8) {
 			port = 0x21;
 		} else {
+			if(!mask){
+				IRQ_mask(2, false);
+			}
 			port = 0xa1;
 			index -= 8;
 		}
