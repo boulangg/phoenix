@@ -31,7 +31,7 @@ int fsetpos(FILE* str, const fpos_t* pos) {
 	CHECK_FILE(str);
 	(void)str;
 	(void)pos;
-	return fseek(str, pos, SEEK_SET);
+	return fseek(str, *pos, SEEK_SET);
 }
 
 long int ftell(FILE* str) {
