@@ -13,6 +13,9 @@ public:
 
 	}
 
+	virtual mode_t getMode() override;
+	virtual dev_t getDeviceID() override;
+
 	std::uint32_t getBlockNum(std::uint64_t offset);
 
 	virtual Dentry * lookup(Dentry* parent, std::string name) override;

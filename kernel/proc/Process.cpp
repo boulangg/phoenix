@@ -7,9 +7,8 @@
 #include "Process.hpp"
 
 #include <core/Console.hpp>
+#include <driver/input/KeyboardDevice.hpp>
 #include <fs/Elf64.hpp>
-#include <driver/input/Keyboard.hpp>
-
 #include <utility>
 
 #include <proc/ProcessScheduler.hpp>
@@ -29,14 +28,8 @@ Process::Process(Process* parent, int pid, int flags) :
 	procDir = new ProcDir(*(parent->procDir));
 	save_regs(regSave);
 	//tty = new TTYFile();
-	tty = parent->tty;
-	//copyLocalOpenFileTable(parent);
-	FileDescriptor fd = {0};
-	fileDescriptorTable.push_back(fd);
-	fileDescriptorTable.push_back(fd);
-	fileDescriptorTable.push_back(fd);
-	fileDescriptorTable.push_back(fd);
-	fileDescriptorTable.push_back(fd);
+	//tty = parent->tty;
+	fileDescriptorTable = parent->fileDescriptorTable;
 }
 
 Process::Process(int prio, code_type code) :
@@ -54,8 +47,12 @@ Process::Process(int prio, code_type code) :
 	regSave[7] = 0;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	procDir = new ProcDir(VirtualFileSystem::root, VirtualFileSystem::root);
-	tty = new TTY();
-	Keyboard::setTTY(tty);
+	//tty = new TTY();
+	//Keyboard::setTTY(tty);
+	open("/dev/tty", 0, 0);
+	FileDescriptor fd = fileDescriptorTable.front();
+	fileDescriptorTable.push_back(fd);
+	fileDescriptorTable.push_back(fd);
 }
 
 int Process::execve(File* file, const char* argv[], const char* envp[]) {

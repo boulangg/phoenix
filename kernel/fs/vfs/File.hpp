@@ -13,8 +13,8 @@ class Page;
 
 class File {
 public:
-	File() : _pos(0), _dentry(nullptr) {}
-	File(Inode* inode) : _pos(0), _dentry(nullptr), ttyinode(inode) {} // for TTY
+	File() : count(0), _pos(0), _dentry(nullptr) {}
+	File(Inode* inode) : count(0), _pos(0), _dentry(nullptr), ttyinode(inode) {} // for TTY
 	virtual ~File();
 
 	// file_operation

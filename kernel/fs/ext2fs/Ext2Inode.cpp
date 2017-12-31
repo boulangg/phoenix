@@ -46,6 +46,14 @@ std::uint32_t Ext2Inode::getBlockNum(std::uint64_t offset) {
 	return _data->direct_block_addr[offset/sb->getBlockSize()];
 }
 
+mode_t Ext2Inode::getMode() {
+	return _data->type_n_perm;
+}
+
+dev_t Ext2Inode::getDeviceID() {
+	return _data->direct_block_addr[0];
+}
+
 int Ext2Inode::stat_internal(struct stat* stat) {
 		stat->st_dev = 0; // sb->_dev->getDeviceNumber
 		stat->st_ino = ino;

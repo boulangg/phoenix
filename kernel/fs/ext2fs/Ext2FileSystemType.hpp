@@ -11,6 +11,7 @@ public:
 	}
 
 	SuperBlock* readSuperBlock(const std::string& source, const void* data) override {
+		(void)data;
 		Ext2SuperBlock* sb = new Ext2SuperBlock(this, source);
 		if (sb->_valid) {
 			SuperBlock* simplesb = sb;

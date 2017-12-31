@@ -87,19 +87,19 @@ public:
 	void switch_to_user_mode();
 
 	File* getFile(unsigned int fd) {
-		if (fd >= 1 && fd <= 3) {
+		/*if (fd >= 1 && fd <= 3) {
 			return tty;
 		} else if (fd == 4) {
 			File* f = VirtualFileSystem::filestable[0];
 			return f;
-		} else {
+		} else {*/
 			int gfd = fileDescriptorTable[fd].globalFileDescriptor;
 			if (gfd < 0) {
 				return nullptr;
 			} else {
 				return VirtualFileSystem::filestable[gfd];
 			}
-		}
+		//}
 	}
 
 	int open(const char* pathname, int flags, mode_t mode) {
@@ -118,15 +118,6 @@ public:
 		fileDescriptorTable.push_back(fdt_entry);
 		return fileDescriptorTable.size() - 1;
 	}
-
-	/*char* getcwd(char* buffer, size_t size) {
-		// TODO check buffer validity !
-		Dentry* cwd = procDir.workDir;
-		std::string pathname = cwd->getPathName();
-		std::size_t pathSize = std::min(pathname.size(), size);
-		memcpy(buffer, pathname.c_str(), pathSize);
-		return buffer;
-	}*/
 
 	struct ProcDir* getProcDir() {
 		return procDir;
@@ -151,7 +142,7 @@ private:
 	size_type wakeUp;
 	int retval;
 	VirtualMapping* mapping;
-	TTY* tty;
+	//TTY* tty;
 	struct ProcDir* procDir;
 
 	std::vector<FileDescriptor> fileDescriptorTable;

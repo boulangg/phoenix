@@ -10,7 +10,7 @@
 #include <asm/io.h>
 #include <boot/processor_struct.hpp>
 
-#include <driver/input/Keyboard.hpp>
+#include <driver/input/KeyboardDevice.hpp>
 
 struct InterruptFlags {
 	bool FAST : 1;
@@ -114,7 +114,7 @@ private:
 	void* _devID;
 };
 
-template <class Obj, class handler_function>
+template <class Obj, int (Obj::*handler_function)()>
 class InterruptHandlerClass : public InterruptHandler {
 public:
 	//typedef typename Obj::handler_function handler_type;
@@ -129,7 +129,7 @@ public:
 	}
 
 	virtual int operator()() override {
-		return _obj->handler_function();
+		return (_obj->*handler_function)();
 	}
 
 	Obj* _obj;

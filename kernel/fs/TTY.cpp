@@ -11,7 +11,7 @@
 
 #define NEW_LINE '\n'
 
-ssize_t TTY::read_internal(char* ptr, size_t count, loff_t) {
+/*ssize_t TTY::read_internal(char* ptr, size_t count, loff_t) {
 		char* buf = (char*)ptr;
 		size_t curr = 0;
 		if (tios.c_lflag & ICANON) {
@@ -75,4 +75,4 @@ int TTY::addInput(const char val) {
 		ProcessScheduler::wakeUp(ev);
 	}
 	return 0;
-}
+}*/

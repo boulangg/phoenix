@@ -10,53 +10,10 @@
 #include <termios.h>
 #include <fs/vfs/File.hpp>
 
-#define BUFFER_SIZE 1024
 
-class InputBuffer {
-public:
-	typedef char value_type;
-	typedef size_t size_type;
-	typedef value_type& reference;
 
-	InputBuffer() : start(0), end(0), _size(0) {}
 
-	void push_back(const value_type& val) {
-		if (_size < BUFFER_SIZE) {
-			buffer[end] = val;
-			end = (end+1) % BUFFER_SIZE;
-			_size++;
-		}
-	}
-
-	reference front() {
-		return buffer[start];
-	}
-
-	reference back() {
-		size_t last = (end + BUFFER_SIZE - 1) % BUFFER_SIZE;
-		return buffer[last];
-	}
-
-	void pop_back() {
-		end = (end + BUFFER_SIZE - 1) % BUFFER_SIZE;
-		_size--;
-	}
-
-	void pop_front() {
-		start = (start + 1) % BUFFER_SIZE;
-		_size--;
-	}
-
-	size_type size() const {
-		return _size;
-	}
-
-private:
-	value_type buffer[BUFFER_SIZE];
-	int start, end, _size;
-};
-
-class TTY : public File {
+/*class TTY : public File {
 public:
 	TTY() : buffer(), nbDelim(0){
 		initTermios();
@@ -102,6 +59,6 @@ private:
 	InputBuffer buffer;
 	size_t nbDelim;
 
-};
+};*/
 
 #endif // _TTY_HPP_

@@ -12,7 +12,7 @@
 
 #define MAX_TTY 16
 
-class TTYManager {
+/*class TTYManager {
 public:
 	static TTY* getActiveTTY();
 	static TTY* getTTY(size_t num);
@@ -21,6 +21,6 @@ public:
 private:
 	static TTY *ttys[MAX_TTY];
 	static size_t activeTTY;
-};
+};*/
 
 #endif // _TTYManager_HPP_

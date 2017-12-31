@@ -6,7 +6,7 @@
 
 #include <fs/TTYManager.hpp>
 
-TTY* TTYManager::ttys[MAX_TTY] = {};
+/*TTY* TTYManager::ttys[MAX_TTY] = {};
 size_t TTYManager::activeTTY = 0;
 
 
@@ -33,4 +33,4 @@ int TTYManager::setActiveTTY(size_t num) {
 		return 0;
 	}
 	return -1;
-}
+}*/

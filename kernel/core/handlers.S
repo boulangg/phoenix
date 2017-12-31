@@ -92,6 +92,6 @@ nom: \
 // Registers to check later (float, status, ...)
 // xmm*, mmx*, st*, status registers (other than rflags), ds, es, fs, gs
 
-TRAITANT_IT(IT_32_handler, PIT_handler)
-TRAITANT_IT(IT_33_handler, KEYBOARD_handler)
+//TRAITANT_IT(IT_32_handler, PIT_handler)
+//TRAITANT_IT(IT_33_handler, KEYBOARD_handler)
 

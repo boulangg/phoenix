@@ -52,6 +52,12 @@ public:
 
 	// file_operation
 	File* open();
+	virtual mode_t getMode() {
+		return -1;
+	}
+	virtual dev_t getDeviceID() {
+		return -1;
+	}
 
 	Inode(SuperBlock* sb, std::uint64_t ino, size_t size);
 private:

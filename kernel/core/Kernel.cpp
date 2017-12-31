@@ -17,7 +17,8 @@
 #include <fs/vfs/VirtualFileSystem.hpp>
 
 #include <core/Clock.hpp>
-#include <driver/input/Keyboard.hpp>
+#include <driver/TTYDevice.hpp>
+#include <driver/input/KeyboardDevice.hpp>
 
 struct MBR {
 	char bootstrap[436];
@@ -52,7 +53,7 @@ static_assert(sizeof(Partition) == 16, "Size is not correct");
 
 void Kernel::Start() {
 	Clock::init();
-	Keyboard::initKeyboard();
+	KeyboardDevice::initKeyboard();
 
 	VirtualFileSystem::initVFS();
 
@@ -61,6 +62,8 @@ void Kernel::Start() {
 
 	PCIManager::initPCI();
 	RamDiskManager::initRamDisk();
+	TTYDevice* ttydev = new TTYDevice(0x0500);
+	DeviceManager::registerCharacterDevice(ttydev);
 
 	VirtualFileSystem::mount("initrd", "/", "ext2", 0, nullptr);
 	VirtualFileSystem::mount("apps", "/bin", "kernel", 0, nullptr);

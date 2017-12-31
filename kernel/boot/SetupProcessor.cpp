@@ -68,40 +68,6 @@ static void fill_segment_descriptor(uint8_t index, uint32_t base, uint32_t limit
 
 }
 
-static void fill_idt_descriptor_64(uint8_t index, uint64_t offset, uint16_t selector,
-		uint8_t flags, uint8_t ist)
-{
-	struct gate_desc* gate = &(idt[index]);
-
-	gate->offset_1 = offset & 0xFFFF;
-	gate->selector = selector;
-	gate->ist = ist;
-	gate->reserved_1 = 0;
-	gate->flags = (flags | FLAG_P) & 0xEF;
-	gate->offset_2 = (offset >> 16) & 0xFFFF;
-	gate->offset_3 = (offset >> 32);
-	gate->reserved_2 = 0;
-}
-
-static void IRQ_mask(uint16_t index,bool mask){
-	unsigned char m;
-	unsigned char port;
-	if (index < 8) {
-		port = 0x21;
-	} else {
-		port = 0xa1;
-		index -= 8;
-	}
-
-	m = inb(port);
-	if (mask) {
-		m |= (1 << index);
-	} else {
-		m &= ~(1 << index);
-	}
-	outb( port, m);
-}
-
 void SetupProcessor::setupGDT()
 {
 	// KERNEL_CS and KERNEL_DS are already set
@@ -318,17 +284,4 @@ void SetupProcessor::setupAll()
 	InterruptManager::setupSyscall();
 	InterruptManager::setupHandlers();
 	setupGlobalConstructors();
-}
-
-void SetupProcessor::setupHandlers(){
-	uint8_t idt_flags = FLAG_P | FLAG_DPL3 | FLAG_INT;
-	fill_idt_descriptor_64(32,(uint64_t)IT_32_handler,SEL_KERNEL_CS,idt_flags,1);
-	fill_idt_descriptor_64(33,(uint64_t)IT_33_handler,SEL_KERNEL_CS,idt_flags,1);
-	fill_idt_descriptor_64(14, (uint64_t)EXC_14_handler, SEL_KERNEL_CS, idt_flags, 1);
-
-	Clock::setFreq();
-
-	IRQ_mask(0,false);
-	IRQ_mask(1,false);
-
 }
