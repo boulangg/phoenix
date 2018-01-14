@@ -28,8 +28,8 @@ struct PCIConfigSpace {
 	union {
 		uint32_t PCIConfigSpace1;
 		struct {
-			uint16_t status;
 			uint16_t command;
+			uint16_t status;
 		};
 	};
 	union {
@@ -180,6 +180,11 @@ struct PCIDevice {
 			return 0x00;
 		}
 	}
+
+	uint16_t readPCIConfigLine(uint8_t offset);
+	void writePCIConfigLine(uint8_t offset, uint32_t data);
+	bool getMaster();
+	void setMaster(bool enable);
 };
 
 class PCIManager {
@@ -198,6 +203,7 @@ public:
 	static void readPCIConfigSpace(uint8_t bus, uint8_t slot, uint8_t func, PCIConfigSpace& configSpace);
 
 	static uint32_t readPCIConfigLine(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off);
+	static void writePCIConfigLine(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off, uint32_t data);
 private:
 
 	static void checkDevice(uint8_t bus, uint8_t slot);
@@ -205,6 +211,7 @@ private:
 	static int matchDeviceDriver(PCIDevice* device, PCIDriver* driver);
 
 	static void findDrivers(PCIDevice* device);
+	static uint32_t getAddress(uint8_t bus, uint8_t slot, uint8_t func, uint8_t off);
 
 	static std::list<PCIDevice*> _devices;
 	static std::list<PCIDevice*> _unkonwDevices;

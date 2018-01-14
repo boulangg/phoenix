@@ -78,7 +78,7 @@ void Keyboard::processScancode(uint8_t scancode) {
 		Console::keyboardInput((char)scancode);
 	    char str[16];
 	    sprintf(str, "%x, ", scancode);
-		Console::write(str);
+		cout << str;
 	} else if (mode == ASCII) {
 		processSpecialKeys(scancode);
 		if (scancode > 0xe0) {

@@ -1,51 +1,21 @@
 #pragma once
 
 #include <driver/PCI/IDE/IDEChannel.hpp>
-#include <driver/PCI/IDE/IDEDrive.hpp>
-#include <driver/PCI/IDE/IDEStruct.hpp>
 #include <cstdint>
 
-#include "../PCIManager.hpp"
-
+#include <driver/PCI/PCIManager.hpp>
 
 class IDEDevice {
 public:
-	IDEDevice(PCIDevice* device, int deviceID) : deviceID(deviceID), device(device) {
-		initDrives(device);
-	}
+	IDEDevice(PCIDevice* device, int deviceID);
 
-	void initDrives(PCIDevice* device) {
-		// Primary Channel
-		IDEChannelRegisters regs;
-		regs.base = device->getBAR(0);
-		if (regs.base == 0x00 || regs.base == 0x01) {
-			regs.base = 0x1F0;
-		}
-		regs.ctrl = device->getBAR(1);
-		if (regs.ctrl == 0x00 || regs.ctrl == 0x01) {
-			regs.ctrl = 0x3F6;
-		}
-		regs.bmIDE = device->getBAR(4);
-
-		primary = new IDEChannel(this, regs, deviceID*2);
-
-		// Secondary Channel
-		regs.base = device->getBAR(2);
-		if (regs.base == 0x00 || regs.base == 0x01) {
-			regs.base = 0x170;
-		}
-		regs.ctrl = device->getBAR(3);
-		if (regs.ctrl == 0x00 || regs.ctrl == 0x01) {
-			regs.ctrl = 0x376;
-		}
-		regs.bmIDE = device->getBAR(4) + 8;
-
-		secondary = new IDEChannel(this, regs, deviceID*2+1);
-	}
+	bool getMaster();
 
 	IDEChannel* primary;
 	IDEChannel* secondary;
 private:
+
+	void initDrives(PCIDevice* device);
 
 	std::uint8_t readReg(std::uint8_t reg);
 	std::uint8_t writeReg(std::uint8_t reg, std::uint8_t data);

@@ -47,10 +47,16 @@ public:
 	static void toggleCursor(bool enabled);
 	static std::size_t read(char* buf, std::size_t count);
 	static void keyboardInput(char character);
+	Console& operator<<(const char* i);
+	Console& operator<<(char c);
+	Console& operator<<(long i);
+	Console& operator<<(int i);
+	Console& operator<<(uint64_t i);
+	Console& operator<<(uint32_t i);
 
 private:
-	Console();
-	~Console() {}
+	Console() = default;
+	~Console() = default;
 
 	static const std::size_t VGA_WIDTH;
 	static const std::size_t VGA_HEIGHT;
@@ -74,6 +80,5 @@ private:
 	static std::uint16_t makeVgaEntry(char c, std::uint8_t color);
 };
 
-
-
+extern Console& cout;
 #endif /* KERNEL_CONSOLE_HPP_ */

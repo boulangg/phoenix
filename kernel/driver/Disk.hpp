@@ -96,18 +96,13 @@ private:
 	void readMBR() {
 		BlockDevice* dev = nullptr;
 
-		char tmp[1024];
-		sprintf(tmp, "Informations about '%s'\n", storage->getName().c_str());
-		Console::write(tmp);
+		cout << "Informations about '" << storage->getName().c_str() << "'\n";
 
 		PartitionInfo partFull = {0, storage->getSectorNumber(), 0};
 		parts.push_back(partFull);
 		dev = new Partition(this, 0, storage->getName());
 		DeviceManager::registerBlockDevice(dev);
-		sprintf(tmp, "Partition * size: %llu sectors, start: %llu\n",
-				partFull.nbSectors, partFull.startSector);
-		Console::write(tmp);
-
+		cout << "Partition * size: " << partFull.nbSectors << " sectors, start: " << partFull.startSector << "\n";
 
 		Block* block = getBlock(0);
 		MBR* mbr = (MBR*)(block->page->kernelMappAddr + block->offset);
@@ -125,12 +120,10 @@ private:
 				dev = new Partition(this, partNum, name);
 				DeviceManager::registerBlockDevice(dev);
 
-				sprintf(tmp, "Partition %i size: %llu sectors, start: %llu\n", newPart.partno,
-						newPart.nbSectors, newPart.startSector);
-				Console::write(tmp);
+				cout << "Partition " << newPart.partno << " size: " << newPart.nbSectors << " sectors, start: " << newPart.startSector << "\n";
 			}
 		} else {
-			Console::write("No MBR found\n");
+			cout << "No MBR found\n";
 		}
 	}
 

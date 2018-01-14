@@ -9,6 +9,9 @@
 #include <asm/io.h>
 #include <include/constant.h>
 #include <proc/ProcessScheduler.hpp>
+#include <new>
+#include <type_traits>
+#include <stdio.h>
 
 
 using namespace std;
@@ -23,7 +26,13 @@ char Console::kbdBuf[KBD_BUF_SIZE] = {};
 std::size_t Console::kbdBufStart = 0;
 std::size_t Console::kbdBufSize = 0;
 
+static typename std::aligned_storage<sizeof (Console), alignof (Console)>::type
+  stream_buf;
+
+Console& cout = reinterpret_cast<Console&> (stream_buf);
+
 void Console::initConsole() {
+	new (&cout) Console(); //not usefull since we only use static methods, but just in case
 	setColor(VGA::Color::WHITE, VGA::Color::BLACK);
 	clear();
 }
@@ -193,6 +202,40 @@ uint8_t Console::makeColor(VGA::Color fg, VGA::Color bg)
 	return static_cast<uint8_t>(fg) | static_cast<uint8_t>(bg) << 4;
 }
 
+Console& Console::operator<<(const char* str) {
+	Console::write(str);
+	return *this;
+}
 
+Console& Console::operator<<(char c) {
+	Console::write(c);
+	return *this;
+}
 
+Console& Console::operator<<(int i) {
+	char tmp[1024];
+	sprintf(tmp, "%li", i);
+	Console::write(tmp);
+	return *this;
+}
 
+Console& Console::operator<<(long i) {
+	char tmp[1024];
+	sprintf(tmp, "%li", i);
+	Console::write(tmp);
+	return *this;
+}
+
+Console& Console::operator<<(uint64_t i) {
+	char tmp[1024];
+	sprintf(tmp, "%llu", i);
+	Console::write(tmp);
+	return *this;
+}
+
+Console& Console::operator<<(uint32_t i) {
+	char tmp[1024];
+	sprintf(tmp, "%lu", i);
+	Console::write(tmp);
+	return *this;
+}

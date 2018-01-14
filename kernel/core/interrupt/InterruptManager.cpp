@@ -53,27 +53,27 @@ void generic_interrupt_handler(std::uint32_t irq) {
 }
 
 void InterruptManager::Exception_00_DIVZero(std::uint32_t) {
-	Console::write("INT: Divide-by-zero Error\n");
+	cout << "INT: Divide-by-zero Error\n";
 	while(1) {
 
 	}
 }
 
 void InterruptManager::Exception_01_Debug(std::uint32_t) {
-	Console::write("INT: Debug\n");
+	cout << "INT: Debug\n";
 	while(1) {
 
 	}
 }
 
 void InterruptManager::Exception_02_NMI(std::uint32_t) {
-	Console::write("INT: NMI\n");
+	cout << "INT: NMI\n";
 	while(1) {
 
 	}
 }
 void InterruptManager::Exception_03_Breakpoint(std::uint32_t) {
-	Console::write("INT: Breakpoint\n");
+	cout << "INT: Breakpoint\n";
 	while(1) {
 
 	}
@@ -81,7 +81,7 @@ void InterruptManager::Exception_03_Breakpoint(std::uint32_t) {
 
 
 void InterruptManager::Exception_04_Overflow(std::uint32_t) {
-	Console::write("INT: Overflow\n");
+	cout << "INT: Overflow\n";
 	while(1) {
 
 	}
@@ -89,7 +89,7 @@ void InterruptManager::Exception_04_Overflow(std::uint32_t) {
 
 
 void InterruptManager::Exception_05_BoundRange(std::uint32_t) {
-	Console::write("INT: Bound Range\n");
+	cout << "INT: Bound Range\n";
 	while(1) {
 
 	}
@@ -97,7 +97,7 @@ void InterruptManager::Exception_05_BoundRange(std::uint32_t) {
 
 
 void InterruptManager::Exception_06_InvalidOpcode(std::uint32_t) {
-	Console::write("INT: Invalid Opcode\n");
+	cout << "INT: Invalid Opcode\n";
 	while(1) {
 
 	}
@@ -105,7 +105,7 @@ void InterruptManager::Exception_06_InvalidOpcode(std::uint32_t) {
 
 
 void InterruptManager::Exception_07_DeviceNotAvailable(std::uint32_t) {
-	Console::write("INT: Device Not Available\n");
+	cout << "INT: Device Not Available\n";
 	while(1) {
 
 	}
@@ -114,7 +114,7 @@ void InterruptManager::Exception_07_DeviceNotAvailable(std::uint32_t) {
 
 void InterruptManager::Exception_08_DoubleFault(std::uint32_t errorCode) {
 	(void)errorCode;
-	Console::write("INT: Double Fault\n");
+	cout << "INT: Double Fault\n";
 	while(1) {
 
 	}
@@ -122,7 +122,7 @@ void InterruptManager::Exception_08_DoubleFault(std::uint32_t errorCode) {
 
 void InterruptManager::Exception_10_InvalidTSS(std::uint32_t errorCode) {
 	(void)errorCode;
-	Console::write("INT: Invalid TSS\n");
+	cout << "INT: Invalid TSS\n";
 	while(1) {
 
 	}
@@ -131,7 +131,7 @@ void InterruptManager::Exception_10_InvalidTSS(std::uint32_t errorCode) {
 
 void InterruptManager::Exception_11_SegmentNotPresent(std::uint32_t errorCode) {
 	(void)errorCode;
-	Console::write("INT: Segment not Present\n");
+	cout << "INT: Segment not Present\n";
 	while(1) {
 
 	}
@@ -140,7 +140,7 @@ void InterruptManager::Exception_11_SegmentNotPresent(std::uint32_t errorCode) {
 
 void InterruptManager::Exception_12_StackSegmentFault(std::uint32_t errorCode) {
 	(void)errorCode;
-	Console::write("INT: Stack Segment Fault\n");
+	cout << "INT: Stack Segment Fault\n";
 	while(1) {
 
 	}
@@ -149,7 +149,7 @@ void InterruptManager::Exception_12_StackSegmentFault(std::uint32_t errorCode) {
 
 void InterruptManager::Exception_13_GPFault(std::uint32_t errorCode) {
 	(void)errorCode;
-	Console::write("INT: Debug General Protection Fault\n");
+	cout << "INT: Debug General Protection Fault\n";
 	while(1) {
 
 	}
@@ -164,7 +164,7 @@ void InterruptManager::Exception_14_PageFault(std::uint32_t errorCode) {
 
 
 void InterruptManager::Exception_16_x87FP(std::uint32_t) {
-	Console::write("INT: x87 Floating-Point Excpetion\n");
+	cout << "INT: x87 Floating-Point Excpetion\n";
 	while(1) {
 
 	}
@@ -173,7 +173,7 @@ void InterruptManager::Exception_16_x87FP(std::uint32_t) {
 
 void InterruptManager::Exception_17_AlignmentCheck(std::uint32_t errorCode) {
 	(void)errorCode;
-	Console::write("INT: Alignment Check\n");
+	cout << "INT: Alignment Check\n";
 	while(1) {
 
 	}
@@ -181,7 +181,7 @@ void InterruptManager::Exception_17_AlignmentCheck(std::uint32_t errorCode) {
 
 
 void InterruptManager::Exception_18_MachineCheck(std::uint32_t) {
-	Console::write("INT: Machine Check\n");
+	cout << "INT: Machine Check\n";
 	while(1) {
 
 	}
@@ -189,7 +189,7 @@ void InterruptManager::Exception_18_MachineCheck(std::uint32_t) {
 
 
 void InterruptManager::Exception_19_SIMDFP(std::uint32_t) {
-	Console::write("INT: SIMDFP\n");
+	cout << "INT: SIMDFP\n";
 	while(1) {
 
 	}
@@ -197,7 +197,7 @@ void InterruptManager::Exception_19_SIMDFP(std::uint32_t) {
 
 
 void InterruptManager::Exception_20_Virtualization(std::uint32_t) {
-	Console::write("INT: Virtualization\n");
+	cout << "INT: Virtualization\n";
 	while(1) {
 
 	}
@@ -206,7 +206,7 @@ void InterruptManager::Exception_20_Virtualization(std::uint32_t) {
 
 void InterruptManager::Exception_30_Security(std::uint32_t errorCode) {
 	(void)errorCode;
-	Console::write("INT: Security\n");
+	cout << "INT: Security\n";
 	while(1) {
 
 	}
@@ -214,7 +214,7 @@ void InterruptManager::Exception_30_Security(std::uint32_t errorCode) {
 
 
 void InterruptManager::Exception_Reserved(std::uint32_t) {
-	Console::write("INT: Rserved\n");
+	cout << "INT: Rserved\n";
 	while(1) {
 
 	}

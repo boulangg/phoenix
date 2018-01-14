@@ -12,20 +12,41 @@
 #include <stdio.h>
 
 #include <errno.h>
+#include <driver/PCI/IDE/IDEDriver.hpp>
+#include <driver/ramdisk/RamDiskManager.hpp>
 
 extern "C" void PF_handler(int errorCode, void* addr) {
 	ProcessScheduler::pageFault(errorCode, addr);
 }
 
+int IOSetup()
+{
+	IDEDriver* ide = new IDEDriver();
+	PCIManager::registerDriver(ide);
 
+	PCIManager::initPCI();
+	RamDiskManager::initRamDisk();
+
+	VirtualFileSystem::mount("initrd", "/", "ext2", 0, nullptr);
+	VirtualFileSystem::mount("apps", "/bin", "kernel", 0, nullptr);
+	//VirtualFileSystem::mount("initrd", "/", "kernel", 0, nullptr);
+
+	ProcessScheduler::exit(0);
+}
 
 int idle()
 {
-	sti();
-	while(1) {
-		hlt();
+	if(ProcessScheduler::fork() == 0){
+		const char* init_argv[] = {"iosetup", nullptr};
+		const char* init_envp[] = {nullptr};
+		ProcessScheduler::execve(IOSetup, init_argv, init_envp);
+	} else {
+		sti();
+		while(1) {
+			hlt();
+		}
+		cli();
 	}
-	cli();
 	return 0;
 }
 
@@ -45,11 +66,11 @@ int ProcessScheduler::init(){
 	proc->setpriority(IDLE_PRIO);
 	nbProcess = 1;
 	lastAssignedPid=0;
-	running=proc;
 	processVector.push_back(proc);
-	ready.push(proc);
-	unconditionalContextSwitch(proc); // Set page table to idle pagetable
+	running = proc;
+	start_idle(proc->getRegSave());
 
+	// TODO Unreachable code. Need to call this once IOSetup has been done!
 	// Create init process
 	std::string filename = "/bin/init";
 	//File* f;
@@ -100,9 +121,7 @@ void ProcessScheduler::schedule(){
 void ProcessScheduler::exit(int status) {
 	Process *currProc= running;
 	running->setState(ProcessState::Dying);
-	char str[512];
-	sprintf(str,"pid: %d, retval: %d\n", running->getPid(), status);
-	Console::write(str);
+	cout << "pid: " << running->getPid() << ", retval: " << status << "\n";
 	// TODO add to dying queue
 	unconditionalContextSwitch(currProc);
 }
@@ -141,6 +160,16 @@ int ProcessScheduler::execve(const char* filename, const char* argv[], const cha
 
 	running->setName(std::string(filename));
 	running->execve(file, argv, envp);
+
+	load_new_task(running->getRegSave());
+
+	return -1;
+}
+
+int ProcessScheduler::execve(Process::code_type code, const char* argv[], const char* envp[]) {
+
+	running->setName(argv[0]);
+	running->execve(code, argv, envp);
 
 	load_new_task(running->getRegSave());
 

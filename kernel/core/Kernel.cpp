@@ -57,24 +57,9 @@ void Kernel::Start() {
 
 	VirtualFileSystem::initVFS();
 
-	IDEDriver* ide = new IDEDriver();
-	PCIManager::registerDriver(ide);
-
-	PCIManager::initPCI();
-	RamDiskManager::initRamDisk();
 	TTYDevice* ttydev = new TTYDevice(0x0500);
 	DeviceManager::registerCharacterDevice(ttydev);
 
-	VirtualFileSystem::mount("initrd", "/", "ext2", 0, nullptr);
-	VirtualFileSystem::mount("apps", "/bin", "kernel", 0, nullptr);
-	//VirtualFileSystem::mount("initrd", "/", "kernel", 0, nullptr);
-
 	ProcessScheduler::init();
-
-	idle();
-	while(1)
-		hlt();
-	return;
-
 }
 

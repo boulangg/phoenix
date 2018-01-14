@@ -13,6 +13,7 @@
 
 
 extern "C" void ctx_sw(uint64_t* curr, uint64_t* next);
+extern "C" void start_idle(uint64_t* idle);
 extern "C" void load_new_task(uint64_t* curr);
 
 #define IDLE_PRIO 0
@@ -67,6 +68,8 @@ public:
 	static pid_t fork();
 	//static void waitpid(pid_t pid, int* stat_adddr, int options);
 	static int execve(const char* filename,
+			const char* argv[], const char* envp[]);
+	static int execve(Process::code_type code,
 			const char* argv[], const char* envp[]);
 	static pid_t getpid();
 	static int pause();

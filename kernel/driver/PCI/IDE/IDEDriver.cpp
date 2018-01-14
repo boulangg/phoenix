@@ -16,9 +16,7 @@ const std::vector<PCIDeviceID> IDEDriver::getPCIDeviceID() {
 }
 
 int IDEDriver::probe(PCIDevice* device) {
-	char tmp[1024];
-	sprintf(tmp, "IDE device found\n");
-	Console::write(tmp);
+	cout << "IDE device found\n";
 
 	IDEDevice* IDEdevice = new IDEDevice(device, _IDEDevices.size());
 	//IDEdevice->initDrives(device);

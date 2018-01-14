@@ -15,6 +15,10 @@ void *operator new(std::size_t size)
     return malloc(size);
 }
 
+void * operator new (std::size_t size, void * v){
+	return v;
+}
+
 void *operator new[](std::size_t size)
 {
 	if (size==0) {

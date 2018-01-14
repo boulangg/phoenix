@@ -18,8 +18,5 @@ void boot() {
 	Console::initConsole();
 	SetupProcessor::setupAll();
 	Kernel::Start();
-	while(1) {
-		hlt();
-	}
 }
 

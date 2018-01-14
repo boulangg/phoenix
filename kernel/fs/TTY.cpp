@@ -46,7 +46,7 @@ ssize_t TTY::write_internal(char* ptr, size_t count, loff_t) {
 	char* str = (char*)ptr;
 	size_t i = 0;
 	for (; i < count; i++) {
-		Console::write(str[i]);
+		cout << str[i];
 	}
 	return i;
 }
@@ -54,7 +54,7 @@ ssize_t TTY::write_internal(char* ptr, size_t count, loff_t) {
 int TTY::addInput(const char val) {
 	//buffer.push_back(val);
 	if (tios.c_lflag & ECHO) {
-		Console::write(val);
+		cout << val;
 	}
 	if (tios.c_lflag & ICANON) {
 		if (val == tios.c_cc[VERASE]) {
