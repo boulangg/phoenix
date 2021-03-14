@@ -7,6 +7,8 @@
 #ifndef LIB_LIBSTDCPP_INCLUDE_TYPE_TRAITS_
 #define LIB_LIBSTDCPP_INCLUDE_TYPE_TRAITS_
 
+#include <cstddef>
+
 namespace std
 {
 
@@ -25,7 +27,7 @@ struct integral_constant {
 typedef integral_constant<bool,true> true_type;
 typedef integral_constant<bool,false> false_type;
 
-template<std::size_t len, std::size_t align>
+template<size_t len, size_t align>
 struct aligned_storage
 {
       union type

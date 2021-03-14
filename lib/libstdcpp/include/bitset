@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 namespace std {
 
 template <size_t N>
