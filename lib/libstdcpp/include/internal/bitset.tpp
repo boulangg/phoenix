@@ -1,5 +1,8 @@
-#pragma once
-
+/*
+ * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
 
 #define SIZEOF_VECT_ITEM	      sizeof(bitset::vector_t)
 #define ROUNDUP_BITS_EXT(nr, d)   ((nr + d - 1) / d)

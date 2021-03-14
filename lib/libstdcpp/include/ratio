@@ -1,5 +1,10 @@
-#ifndef _RATIO_
-#define _RATIO_
+/*
+ * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
+#pragma once
 
 #include <cstdint>
 #include <type_traits>
@@ -46,4 +51,4 @@ template <class R1, class R2>
 struct ratio_greater_equal : integral_constant < bool, !ratio_less<R1,R2>::value > {};
 
 }
-#endif
+

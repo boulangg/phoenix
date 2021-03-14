@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-
-#ifndef _STDCPP_ALGORITHM_
-#define _STDCPP_ALGORITHM_
+#pragma once
 
 namespace std {
 
@@ -75,4 +73,3 @@ RandomAccessIterator is_heap_until(RandomAccessIterator first,
 		RandomAccessIterator last, Compare comp);
 }
 
-#endif // _STDCPP_ALGORITHM_

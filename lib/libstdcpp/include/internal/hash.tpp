@@ -1,5 +1,8 @@
-#ifndef __HASH_TPP__
-#define __HASH_TPP__
+/*
+ * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
 
 #include <def/def_size.h>
 
@@ -45,4 +48,3 @@ _default_integral_hash(unsigned long long)
 
 }
 
-#endif // __HASH_TPP__

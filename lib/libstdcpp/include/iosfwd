@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef _IOSFWD_
-#define _IOSFWD_
+#pragma once
 
 namespace std {
 template<class charT> struct char_traits;
@@ -73,4 +72,3 @@ typedef basic_fstream<wchar_t>       wfstream;
 //typedef fpos<mbstate_t> wstreampos;
 }
 
-#endif // _IOSFWD_

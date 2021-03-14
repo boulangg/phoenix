@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef __UTILITY__
-#define __UTILITY__
+#pragma once
 
 #include <cstddef>
 #include <type_traits>
@@ -40,11 +39,7 @@ struct pair {
 		first(pr.first), second(pr.second) {}
 	pair(const first_type& a, const second_type& b) :
 		first(a), second(b) {}
-
-
-
 };
 
 }
 
-#endif // __UTILITY__

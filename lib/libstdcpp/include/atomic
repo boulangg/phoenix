@@ -1,5 +1,10 @@
-#ifndef __ATOMIC_H_
-#define __ATOMIC_H_
+/*
+ * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
+#pragma once
 
 namespace std {
 
@@ -195,6 +200,4 @@ void atomic_flag_clear_explicit(atomic_flag*, memory_order) noexcept;
 extern "C" void atomic_thread_fence(memory_order) noexcept;
 extern "C" void atomic_signal_fence(memory_order) noexcept;
 }
-
-
 
