@@ -41,7 +41,7 @@ int memcmp(const void* ptr1, const void* ptr2, size_t num) {
 	return 0;
 }
 
-void* memchr(void* ptr, int value, size_t num) {
+void* memchr(const void* ptr, int value, size_t num) {
 	unsigned char val = (unsigned char)value & 0xFF;
 	unsigned char* p = (unsigned char*)ptr;
 	for (size_t i = 0; i < num; ++i) {

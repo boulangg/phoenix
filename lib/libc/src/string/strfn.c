@@ -89,12 +89,12 @@ size_t strxfrm(char* dst, const char* src, size_t num) {
 	return 0;
 }
 
-char* strchr(char* str, int character) {
+char* strchr(const char* str, int character) {
 	char val = (char)character;
 	size_t i = 0;
 	do {
 		if (str[i] == val) {
-			return str + i;
+			return (char*)str + i;
 		}
 	} while(str[i++] != '\0');
 	return NULL;
@@ -112,22 +112,22 @@ size_t strcspn(const char* str1, const char* str2) {
 	return i;
 }
 
-char* strpbrk(char* str1, const char* str2) {
+char* strpbrk(const char* str1, const char* str2) {
 	size_t i = strcspn(str1, str2);
 	if (str1[i] == '\0') {
 		return NULL;
 	} else {
-		return str1 + i;
+		return (char*)str1 + i;
 	}
 }
 
-char* strrchr(char* str, int character) {
+char* strrchr(const char* str, int character) {
 	char val = (char)character;
 	size_t i = 0;
 	char* last = NULL;
 	do {
 		if (str[i] == val) {
-			last = str + i;
+			last = (char*)str + i;
 		}
 	} while(str[i++] != '\0');
 	return last;
@@ -150,7 +150,7 @@ size_t strspn(const char* str1, const char* str2) {
 	return i;
 }
 
-char* strstr(char* str1, const char* str2) {
+char* strstr(const char* str1, const char* str2) {
 	// TODO not yet implemented
 	(void)str1;
 	(void)str2;

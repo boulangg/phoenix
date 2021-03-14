@@ -5,6 +5,7 @@
  */
 
 #include <fcntl.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stddef.h>
 
@@ -36,11 +37,11 @@ typedef struct FILE {
 	int64_t offset;
 	bool eof;
 	int error;
-	stream_ops* fn;
+	struct stream_ops* fn;
 } FILE;
 
-struct stream_ops str_fn;
-struct stream_ops file_fn;
+extern struct stream_ops str_fn;
+extern struct stream_ops file_fn;
 
 #define CHECK_FILE(str) {if (str == NULL) return EOF;                            \
                          if ((str->flags & MAGIC_MASK) != MAGIC_VALUE) return EOF; \

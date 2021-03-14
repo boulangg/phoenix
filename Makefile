@@ -39,7 +39,7 @@ all:
 
 $(DISK): kernel_target
 	@$(ECHO) "  CP      $(KERNEL) -> $(DISK_DIR)\n"; cp $(KERNEL) $(DISK_DIR)/boot/
-	@$(ECHO) "  GRUBMK\n"; grub-mkrescue -o $(DISK) $(DISK_DIR) 2> /dev/null
+	@$(ECHO) "  GRUBMK\n"; grub-mkrescue -o $(DISK) $(DISK_DIR)
 
 drive:
 	@$(ECHO) "\033[0;33m  Create ext2 drive\033[0m\n"
