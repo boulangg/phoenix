@@ -44,7 +44,7 @@ dd if=/dev/zero of=$DISK bs=$BLKSIZE count=$RDSIZE > /dev/null 2> /dev/null && p
 # Mount it so that we can populate
 mkdir tmp
 print_INFO "Mounting disk (requires sudo)"
-sudo mount $DISK $TMPMOUNT -t ext2 -o loop=/dev/loop0 && print_OK "Mount successful" || print_ERROR "Mount failed"
+sudo mount $DISK $TMPMOUNT -t ext2 && print_OK "Mount successful" || print_ERROR "Mount failed"
 
 # Allow users to modify mounted disk
 print_INFO "Changing permissions of mounted disk (requires sudo)"
