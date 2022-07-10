@@ -32,6 +32,8 @@ int IOSetup()
 	//VirtualFileSystem::mount("initrd", "/", "kernel", 0, nullptr);
 
 	ProcessScheduler::exit(0);
+
+	return -1;
 }
 
 int idle()
