@@ -6,17 +6,26 @@
 include ../../build/utils.mk
 
 ### Compilation sources ###
-SRC_DIRS 		:= src/stdlib src/math src/posix \
-				   src/stdio src/errno src/ctype \
-				   src/string glue src/gcc src
+SRC_DIRS 		:= src
 INCLUDE_DIRS 	:= include
+
+STATIC_LIB_NAME := libc.a
+
+ifeq "$(WEAK_SYSCALL)" "1"
+	SRC_DIRS		+= weak_glue
+	STATIC_LIB_NAME := libc_weak.a
+else
+	SRC_DIRS		+= glue
+endif
+
 SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), c) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), S)
-INCLUDES 		:= $(addprefix -I, $(INCLUDE_DIRS))
+INCLUDES 		:= $(addprefix -I,$(INCLUDE_DIRS))
 
 ### Output directory ###
-OUTPUT=out
-STATIC_LIB=libc.a
+BUILD_DIR	:= build
+OUTPUT_DIR	:= bin
+STATIC_LIB	:= $(OUTPUT_DIR)/$(STATIC_LIB_NAME)
 
 ### Tool flags ###
 CFLAGS	:= -Wall -Wextra -g -std=c11 -mcmodel=kernel -m64 \
@@ -31,42 +40,34 @@ ifneq "$(VERBOSE)" "1"
     include ../../build/quiet.mk
 endif
 
-.PHONY:all static_lib
-static_lib: all
-	@$(ECHO) "\033[0;32m  libc.a succesfully built\033[0m\n"
-	
-all: $(STATIC_LIB)
+ifndef $(QUIET_PREFIX)
+	QUIET_PREFIX := "\\r"
+endif
+
+### Main rules ###
+.PHONY:all static_lib static_lib_build
+static_lib: 
+	@$(ECHO) "\033[0;33m$(QUIET_PREFIX)  Building $(STATIC_LIB_NAME) \033[0m\n"
+	@$(MAKE) static_lib_build --no-print-directory VERBOSE=$(VERBOSE) QUIET_PREFIX="$(QUIET_PREFIX)  "
+	@$(ECHO) "\033[0;32m$(QUIET_PREFIX)  Building $(STATIC_LIB_NAME) succesful\033[0m\n"
+
+static_lib_build: $(STATIC_LIB)
+	@:
+
+all: static_lib
 
 ### Output files ###
-DEPS		:= $(addprefix $(OUTPUT)/, $(call get-deps, $(SRC)))
-OBJS		:= $(addprefix $(OUTPUT)/, $(call get-objs, $(SRC)))
-OUTPUT_DIRS	:= $(addprefix $(OUTPUT)/, $(SRC_DIRS))
+DEPS		:= $(addprefix $(BUILD_DIR)/, $(call get-deps, $(SRC)))
+OBJS		:= $(addprefix $(BUILD_DIR)/, $(call get-objs, $(SRC)))
 
 ### Generate library ###
-$(STATIC_LIB): $(OBJS)
-	$(AR) $(ARFLAGS) $@ $^
+$(STATIC_LIB): $(OBJS) | $(DEPS)
+	$(dir_guard)
+	$(AR) $(ARFLAGS) -o $@ $^
 
 ### Generic rules ###
-$(OUTPUT)/%.d: % | $(OUTPUT)
-	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
+$(eval $(call create-c-targets,$(CFLAGS),$(INCLUDES),$(BUILD_DIR)))
 
-$(OUTPUT)/%.o : % $(OUTPUT)/%.d | $(OUTPUT)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-
-### Add dependency between object file and the directory containing it ###
-$(call create-dir-files, $(OBJS))
-$(call create-dir-files, $(DEPS))
-
-### Create a target for output dirs ###
-$(call create-dir-targets, $(OUTPUT_DIRS))
-
-	
-### Output directory ###
-$(OBJS): | $(OUTPUT)
-$(DEPS): | $(OUTPUT)
-$(OUTPUT):
-	$(MKDIR) -p $@
-	
 ### Include auto-generated dependencies
 ifneq ($(MAKECMDGOALS),clean)
     -include $(DEPS)
@@ -75,4 +76,4 @@ endif
 ### Clean ###
 .PHONY: clean
 clean:
-	rm -rf $(OUTPUT) $(STATIC_LIB)
+	@$(ECHO) "\033[0;32m  Clean libc \033[0m\n"; rm -rf $(BUILD_DIR) $(OUTPUT_DIR)

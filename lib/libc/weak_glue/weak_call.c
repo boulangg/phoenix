@@ -4,7 +4,7 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include "weak_call.h"
+#include "../weak_glue/weak_call.h"
 
 int sys_open(const char *pathname, int flags, mode_t mode) {
 	(void)pathname;

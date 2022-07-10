@@ -1,5 +1,5 @@
 *startfile:
-out/init/x86_64/crt0.S.o%s out/init/x86_64/crti.S.o%s crtbegin%O%s
+build/init/x86_64/crt0.S.o%s build/init/x86_64/crti.S.o%s crtbegin%O%s
 
 *endfile:
-crtend%O%s out/init/x86_64/crtn.S.o%s
+crtend%O%s build/init/x86_64/crtn.S.o%s

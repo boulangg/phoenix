@@ -13,7 +13,7 @@ endif
 BIN := phoenix.bin
 KERNEL_DIR := kernel
 
-KERNEL := $(KERNEL_DIR)/$(BIN)
+KERNEL := $(KERNEL_DIR)/bin/$(BIN)
 
 GDB := gdb
 
@@ -35,7 +35,7 @@ kernel_target: all
 
 all:
 	@$(ECHO) "\033[0;33m  Build kernel\033[0m\n"
-	@$(MAKE) $(BIN) --no-print-directory -C $(KERNEL_DIR)/ VERBOSE=$(VERBOSE)
+	@$(MAKE) all --no-print-directory -C $(KERNEL_DIR)/ VERBOSE=$(VERBOSE)
 
 $(DISK): kernel_target
 	@$(ECHO) "  CP      $(KERNEL) -> $(DISK_DIR)\n"; cp $(KERNEL) $(DISK_DIR)/boot/
@@ -55,8 +55,7 @@ debug: $(DISK) drive
 	@$(ECHO) "  SH      $(GDB)\n"; scripts/terminal.sh -e "$(GDB) $(KERNEL)" &
 
 clean:
-	@$(MAKE) --no-print-directory clean -C kernel/
-	rm -rf $(DISK) $(DISK_DIR)/boot/$(BIN) $(INITRD_DISK)
+	@$(ECHO) "\033[0;32m  Clean disk.iso \033[0m\n"; rm -rf $(DISK) $(DISK_DIR)/boot/$(BIN) $(DRIVE)
 	
 clean-libs:
 	@$(MAKE) --no-print-directory clean -C lib/libc/
@@ -65,4 +64,7 @@ clean-libs:
 clean-user:
 	@$(MAKE) --no-print-directory clean -C user/
 	
-clean-all: clean clean-libs clean-user
+clean-kernel:
+	@$(MAKE) --no-print-directory clean -C kernel/
+	
+clean-all: clean clean-libs clean-user clean-kernel
