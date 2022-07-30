@@ -11,7 +11,7 @@ printf ".section .rawdata\n" >> $2
 
 nb_apps=0
 # Generate include in output file
-for entry in "$1"/*.out
+for entry in "$1"/*
 do
   	filename=$(basename "$entry")
 	filename="${filename%.*}"
@@ -28,7 +28,7 @@ printf "\n" >> $2
 printf ".globl user_apps_symbol_table\n" >> $2
 printf "user_apps_symbol_table:\n" >> $2
 printf "\t.quad $nb_apps\n" >> $2
-for entry in "$1"/*.out
+for entry in "$1"/*
 do
   	filename=$(basename "$entry")
 	filename="${filename%.*}"
@@ -40,7 +40,7 @@ done
 # Generate string table
 
 echo >> $2
-for entry in "$1"/*.out
+for entry in "$1"/*
 do
   	filename=$(basename "$entry")
 	filename="${filename%.*}"

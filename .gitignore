@@ -1,7 +1,8 @@
 # Object Files #
 *.o
 *.d
-*/out/
+*/build/
+*/bin/
 *.a
 *.out
 *.bin

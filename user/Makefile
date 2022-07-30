@@ -9,33 +9,28 @@ LIBC_DIR := ../lib/libc
 LIBSTDCPP_DIR := ../lib/libstdcpp
 
 ### Compilation sources ###
-SRC_DIRS 			:= glue
 APPS_NAMES			:= $(notdir $(call clean-dir-names, $(sort $(dir $(wildcard apps/*/)))))
 LIB_INCLUDE_DIRS 	:= $(LIBC_DIR)/include $(LIBSTDCPP_DIR)/include
 INCLUDE_DIRS 		:= $(LIB_INCLUDE_DIRS)
-LIBRARY_DIRS		:= ../lib/libc ../lib/libstdcpp
-SRC 				:= $(call get-all-files-with-ext, $(SRC_DIRS), c) \
-	               	   $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
-	                   $(call get-all-files-with-ext, $(SRC_DIRS), S)
+LIBRARY_DIRS		:= $(LIBC_DIR)/bin $(LIBSTDCPP_DIR)/bin
 INCLUDES 			:= $(addprefix -I, $(INCLUDE_DIRS))
 LIBRARIES			:= $(addprefix -L, $(LIBRARY_DIRS))
 
-LIBC		:= $(LIBC_DIR)/libc.a
-LIBSTDCPP 	:= $(LIBSTDCPP_DIR)/libstdcpp.a
-
+### CRT files ###
 CRT_DIR		:= init/x86_64
 CRT_SRC		:= init/x86_64/crt0.S init/x86_64/crti.S init/x86_64/crtn.S
 
 ### Output directory ###
-OUTPUT=out
+BUILD_DIR	:= build
+OUTPUT_DIR	:= bin
 
 ### Tool flags ###
 CXXFLAGS    := -Wall -Wextra -nostdinc -nostdinc++ \
-                -g -std=c++11 \
-                -fno-exceptions -fno-rtti \
-                -Wno-packed-bitfield-compat \
-                -fno-stack-protector -fno-builtin-fprintf -fno-builtin-printf \
-                -fno-pie
+               -g -std=c++11 \
+               -fno-exceptions -fno-rtti \
+               -Wno-packed-bitfield-compat \
+               -fno-stack-protector -fno-builtin-fprintf -fno-builtin-printf \
+               -fno-pie
 LDFLAGS 	:= -nodefaultlibs -g -specs=init/x86_64/specs -no-pie
 LIBFLAGS	:= $(LIBRARIES) -lc -lstdcpp
 
@@ -47,67 +42,86 @@ ifneq "$(VERBOSE)" "1"
     include ../build/quiet.mk
 endif
 
+ifndef $(QUIET_PREFIX)
+	QUIET_PREFIX := "\\r"
+endif
 
 ### Output files ###
-DEPS		:= $(addprefix $(OUTPUT)/, $(call get-deps, $(SRC)))
-OBJS		:= $(addprefix $(OUTPUT)/, $(call get-objs, $(SRC)))
-CRT_OBJ		:= $(addprefix $(OUTPUT)/, $(call get-objs, $(CRT_SRC)))
-CRT_DEP		:= $(addprefix $(OUTPUT)/, $(call get-deps, $(CRT_SRC)))
-OUTPUT_DIRS	:= $(addprefix $(OUTPUT)/, $(SRC_DIRS))  $(addprefix $(OUTPUT)/, $(CRT_DIR))
+CRT_OBJS	:= $(addprefix $(BUILD_DIR)/, $(call get-objs, $(CRT_SRC)))
+CRT_DEPS	:= $(addprefix $(BUILD_DIR)/, $(call get-deps, $(CRT_SRC)))
 
-.PHONY:all user_apps static_libc static_libstdcpp
-user_apps: all static_libc static_libstdcpp
-	@$(ECHO) "\033[0;32m  User apps succesfully built\033[0m\n"
+.PHONY:all user_apps user_apps_build static_libc static_libstdcpp
+user_apps: 
+	@$(ECHO) "\033[0;33m$(QUIET_PREFIX)  Building user apps \033[0m\n"
+	@$(MAKE) user_apps_build --no-print-directory VERBOSE=$(VERBOSE) QUIET_PREFIX="$(QUIET_PREFIX)  "
+	@$(ECHO) "\033[0;32m$(QUIET_PREFIX)  Building user apps succesful\033[0m\n"
+
+all: user_apps
 
 ### Generate C librairy ###
 static_libc:
-	@$(ECHO) "\033[0;33m  Build libc.a\033[0m\n"
-	@$(MAKE) static_lib --no-print-directory -C $(LIBC_DIR) VERBOSE=$(VERBOSE)
+	@$(MAKE) static_lib --no-print-directory -C $(LIBC_DIR) VERBOSE=$(VERBOSE) QUIET_PREFIX="$(QUIET_PREFIX)"
 
 ### Generate CPP librairy ###
 static_libstdcpp:
-	@$(ECHO) "\033[0;33m  Build libstdcpp.a\033[0m\n"
-	@$(MAKE) static_lib --no-print-directory -C $(LIBSTDCPP_DIR) VERBOSE=$(VERBOSE)
+	@$(MAKE) static_lib --no-print-directory -C $(LIBSTDCPP_DIR) VERBOSE=$(VERBOSE) QUIET_PREFIX="$(QUIET_PREFIX)"
 
-### Import targets for apps ###
-include build/apps.mk
+### Targets for apps ###
+define APP_BUILD
+dir_guard=@$$(MKDIR) -p $$(@D)
 
-all: $(APPS_TARGETS) 
+#### Compilation sources ####
+$(1)_DIR=$$(addprefix apps/, $(1))
+$(1)_SRC=$$(strip $$(call get-all-files-with-ext, $$($(1)_DIR), cpp) \
+	        	  $$(call get-all-files-with-ext, $$($(1)_DIR), c) \
+	        	  $$(call get-all-files-with-ext, $$($(1)_DIR), S))
+	        
+$(1)_OUT=$$(addprefix $(BUILD_DIR)/, $$($(1)_DIR))
+$(1)_DEPS=$$(addprefix $(BUILD_DIR)/, $(call get-deps, $$($(1)_SRC)))
+$(1)_OBJS=$$(addprefix $(BUILD_DIR)/, $(call get-objs, $$($(1)_SRC)))
+
+$(1)_TARGET=$$(addprefix $(OUTPUT_DIR)/, $(1))
+
+#### Include auto-generated dependencies ####
+ifneq ($$(MAKECMDGOALS),clean)
+ifneq ($$(MAKECMDGOALS),clean-all)
+    -include $$($(1)_DEPS)
+endif
+endif
+
+.PHONY: $(1)_APP
+$(1)_APP:
+	@$(ECHO) "\033[0;33m$(QUIET_PREFIX)  Building $(1) app \033[0m\n"
+	@$(MAKE) $$($(1)_TARGET) --no-print-directory VERBOSE=$(VERBOSE) QUIET_PREFIX="$(QUIET_PREFIX)  "
+	@$(ECHO) "\033[0;32m$(QUIET_PREFIX)  Building $(1) app succesful\033[0m\n"
+
+#### Generate application ####
+$$($(1)_TARGET): $$($(1)_OBJS) | $$(CRT_OBJS) static_libc static_libstdcpp
+	$$(dir_guard)
+	$$(LD) $$(LDFLAGS) $$^ $$(LIBFLAGS) -o $$@
+endef
+
+$(foreach app, $(APPS_NAMES), $(eval $(call APP_BUILD,$(app))))
+
+APPS_TARGETS_MAIN := $(foreach app, $(APPS_NAMES), $(app)_APP)
+
+user_apps_build: $(APPS_TARGETS_MAIN)
 
 ### Generic rules ###
-$(OUTPUT)/%.S.d: %.S | $(OUTPUT)
-	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
-$(OUTPUT)/%.c.d: %.c | $(OUTPUT)
-	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
-$(OUTPUT)/%.cpp.d: %.cpp | $(OUTPUT)
-	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
-
-$(OUTPUT)/%.o : % $(OUTPUT)/%.d | $(OUTPUT)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-### Add dependency between object file and the directory containing it ###
-$(call create-dir-files, $(OBJS))
-$(call create-dir-files, $(CRT_OBJ))
-$(call create-dir-files, $(DEPS))
-$(call create-dir-files, $(CRT_DEP))
-
-### Create a target for output dirs ###
-$(call create-dir-targets, $(OUTPUT_DIRS))
-	
-### Output directory ###
-$(CRT_OBJ): | $(OUTPUT)
-$(CRT_DEP): | $(OUTPUT)
-$(OBJS): | $(OUTPUT)
-$(DEPS): | $(OUTPUT)
-$(OUTPUT):
-	$(MKDIR) -p $@
+$(eval $(call create-cpp-targets,$(CXXFLAGS),$(INCLUDES),$(BUILD_DIR)))
 	
 ### Include auto-generated dependencies
 ifneq ($(MAKECMDGOALS),clean)
-    -include $(DEPS) $(CRT_DEP)
+ifneq ($(MAKECMDGOALS),clean-all)
+    -include $(CRT_DEPS)
+endif
 endif
 
 ### Clean ###
-.PHONY: clean
+.PHONY: clean clean-all
 clean:
-	rm -rf $(OUTPUT) $(BIN)
+	@$(ECHO) "\033[0;32m  Clean user apps \033[0m\n"; rm -rf $(BUILD_DIR) $(OUTPUT_DIR)
+	
+clean-all: clean
+	@$(MAKE) clean --no-print-directory -C $(LIBC_DIR) VERBOSE=$(VERBOSE)
+	@$(MAKE) clean --no-print-directory -C $(LIBSTDCPP_DIR) VERBOSE=$(VERBOSE)

@@ -1,6 +1,6 @@
 b boot 
-add-symbol-file kernel/user/init.out 0x4001c0
+add-symbol-file kernel/build/user_apps/init 0x4001c0
 target remote :1234
-directory kernel/ kernel/boot
+directory kernel/src
 c
 

@@ -8,13 +8,17 @@ include ../../build/utils.mk
 ### Compilation sources ###
 SRC_DIRS 		:= src
 INCLUDE_DIRS 	:= include ../libc/include
+
+STATIC_LIB_NAME := libstdcpp.a
+
 SRC 			:= $(call get-all-files-with-ext, $(SRC_DIRS), cpp) \
 	               $(call get-all-files-with-ext, $(SRC_DIRS), S)
 INCLUDES 		:= $(addprefix -I, $(INCLUDE_DIRS))
 
 ### Output directory ###
-OUTPUT=out
-STATIC_LIB=libstdcpp.a
+BUILD_DIR	:= build
+OUTPUT_DIR	:= bin
+STATIC_LIB	:= $(OUTPUT_DIR)/$(STATIC_LIB_NAME)
 
 ### Tool flags ###
 CXXFLAGS    := -Wall -Wextra -g -std=c++11 -m64 \
@@ -34,42 +38,34 @@ ifneq "$(VERBOSE)" "1"
     include ../../build/quiet.mk
 endif
 
-.PHONY:all static_lib
-static_lib: all
-	@$(ECHO) "\033[0;32m  libstdcpp.a succesfully built\033[0m\n"
-	
-all: $(STATIC_LIB)
+ifndef $(QUIET_PREFIX)
+	QUIET_PREFIX := "\\r"
+endif
+
+### Main rules ###
+.PHONY:all static_lib static_lib_build
+static_lib: 
+	@$(ECHO) "\033[0;33m$(QUIET_PREFIX)  Building libstdcpp.a \033[0m\n"
+	@$(MAKE) static_lib_build --no-print-directory VERBOSE=$(VERBOSE) QUIET_PREFIX="$(QUIET_PREFIX)  "
+	@$(ECHO) "\033[0;32m$(QUIET_PREFIX)  Building libstdcpp.a succesful\033[0m\n"
+
+static_lib_build: $(STATIC_LIB)
+	@:
+
+all: static_lib
 
 ### Output files ###
-DEPS		:= $(addprefix $(OUTPUT)/, $(call get-deps, $(SRC)))
-OBJS		:= $(addprefix $(OUTPUT)/, $(call get-objs, $(SRC)))
-OUTPUT_DIRS	:= $(addprefix $(OUTPUT)/, $(SRC_DIRS))
+DEPS		:= $(addprefix $(BUILD_DIR)/, $(call get-deps, $(SRC)))
+OBJS		:= $(addprefix $(BUILD_DIR)/, $(call get-objs, $(SRC)))
 
 ### Generate library ###
-$(STATIC_LIB): $(OBJS)
-	$(AR) $(ARFLAGS) $@ $^
+$(STATIC_LIB): $(OBJS) | $(DEPS)
+	$(dir_guard)
+	$(AR) $(ARFLAGS) -o $@ $^
 
 ### Generic rules ###
-$(OUTPUT)/%.d: % | $(OUTPUT)
-	$(DEP) $(INCLUDES) -MM $< -MT $@ > $@
+$(eval $(call create-cpp-targets,$(CXXFLAGS),$(INCLUDES),$(BUILD_DIR)))
 
-$(OUTPUT)/%.o : % $(OUTPUT)/%.d | $(OUTPUT)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-
-### Add dependency between object file and the directory containing it ###
-$(call create-dir-files, $(OBJS))
-$(call create-dir-files, $(DEPS))
-
-### Create a target for output dirs ###
-$(call create-dir-targets, $(OUTPUT_DIRS))
-
-	
-### Output directory ###
-$(OBJS): | $(OUTPUT)
-$(DEPS): | $(OUTPUT)
-$(OUTPUT):
-	$(MKDIR) -p $@
-	
 ### Include auto-generated dependencies
 ifneq ($(MAKECMDGOALS),clean)
     -include $(DEPS)
@@ -78,4 +74,4 @@ endif
 ### Clean ###
 .PHONY: clean
 clean:
-	rm -rf $(OUTPUT) $(STATIC_LIB)
+	@$(ECHO) "\033[0;32m  Clean libstdcpp \033[0m\n"; rm -rf $(BUILD_DIR) $(OUTPUT_DIR)
