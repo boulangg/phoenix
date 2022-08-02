@@ -12,9 +12,9 @@ function print_ERROR {
     printf "    \033[0;31m$1\033[0m\n"
 }
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
     print_ERROR "Invalid number of arguments\n"
-    printf "Usage: $0 diskname\n"
+    printf "Usage: $0 diskname bin_dir\n"
     exit 1
 fi
 
@@ -59,6 +59,7 @@ mkdir $TMPMOUNT/proc
  
 # Add executables in /bin
 print_INFO "Add executables"
+cp  $2/* $TMPMOUNT/bin
 #cp -a /bin/cat $TMPMOUNT/bin
  
 # Add some dev files in /dev
