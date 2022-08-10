@@ -1,8 +1,9 @@
 # Object Files #
 *.o
 *.d
-*/build/
-*/bin/
+**/build/
+**/bin/
+*/lib/
 *.a
 *.out
 *.bin
@@ -31,4 +32,10 @@ kernel/phoenix.bin
 cross/
 gcc-*/
 gcc-*
+
+# CMake files #
+CMakeCache.txt
+cmake_install.cmake
+**/CMakeFiles/
+Makefile
 
