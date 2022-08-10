@@ -18,8 +18,6 @@ set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS} "-Wall -Wextra -nostdinc -nostdinc++ -g -
 # Linker flags
 SET(CMAKE_EXE_LINKER_FLAGS  "-nodefaultlibs -g -no-pie")
 
-#-specs=${CMAKE_CURRENT_LIST_FILE}/specs
-
 endif()
 
 function(list_dir parent_dir dir_list)

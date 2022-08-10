@@ -15,8 +15,6 @@ endif()
 
 list_dir(${CMAKE_CURRENT_SOURCE_DIR}/apps app_names)
 
-set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -specs=${CMAKE_CURRENT_SOURCE_DIR}/specs")
-
 foreach(app_name ${app_names})
 
 if (NOT TARGET ${app_name})
