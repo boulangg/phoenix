@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+void sys_exit(int) __attribute__((weak));
+
 __extension__ typedef int __guard __attribute__((mode(__DI__)));
 
 #define ATEXIT_MAX_FUNCS	128
@@ -78,6 +80,12 @@ void __cxa_finalize(void *f) {
 int atexit(void (*f)(void)) {
 	typedef void (*fn_ptr)(void*);
 	return __cxa_atexit((fn_ptr)f, NULL, NULL);
+}
+
+void exit(int exit_code) {
+	__cxa_finalize(NULL);
+	sys_exit(exit_code);
+	__builtin_unreachable();
 }
 
 #ifdef __cplusplus

@@ -4,6 +4,7 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
+#include "stdlib.h"
 #include "stdio/io.h"
 
 typedef void (*func_ptr)();
@@ -12,9 +13,7 @@ extern func_ptr __init_array_start[0], __init_array_end[0];
 extern func_ptr __fini_array_start[0], __fini_array_end[0];
 
 void _init() __attribute__((weak));
-int main(int argc, char** argv) __attribute__((weak));
 void _fini() __attribute__((weak));
-void sys_exit(int) __attribute__((weak));
 
 void __libc_init_array()
 {
@@ -51,13 +50,14 @@ void __libc_fini_array()
 
 }
 
-void __libc_start_main(int argc, char** argv) {
+void __libc_start_main(int (*main) (int, char**, char**), int argc, char** argv, void (*init)(void), void (*fini)(void), void (*rtld_fini)(void), void (* stack_end)) {
+	(void)init;
+	(void)fini;
+	(void)rtld_fini;
+	(void)stack_end;
 	__libc_init_array();
-
-    int ret = main(argc, argv);
-
-    __libc_fini_array();
-
-    sys_exit(ret);
+	atexit(__libc_fini_array);
+	char **envp = argv+argc+1;
+    exit(main(argc, argv, envp));
 }
 
