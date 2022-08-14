@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <fcntl.h>
-//#include <syscall/syscall.h>
 #include <string.h>
 #include <string>
 
@@ -76,7 +75,7 @@ int main(int argc,char* argv[]) {
 		if (status.st_mode & S_IXOTH) {
 			type_perm[9] = 'x';
 		}
-		printf("%s\t%i\t%i\t%s\n", type_perm.c_str(), status.st_nlink, status.st_size, name);
+		printf("%s\t%li\t%li\t%s\n", type_perm.c_str(), status.st_nlink, status.st_size, name);
 	}
 	return 0;
 }

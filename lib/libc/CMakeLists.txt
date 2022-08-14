@@ -16,7 +16,9 @@ set(glue_kernel_inc ${CMAKE_CURRENT_SOURCE_DIR}/glue_kernel)
 
 add_library(c STATIC ${lib_src} ${glue_src})
 target_include_directories(c PUBLIC ${lib_inc} ${glue_inc})
+target_link_libraries(c kernel_options)
 
 add_library(ckernel STATIC ${lib_src} ${glue_kernel_src})
 target_include_directories(ckernel PUBLIC ${lib_inc} ${glue_kernel_inc})
 set_target_properties(ckernel PROPERTIES EXCLUDE_FROM_ALL 1) 
+target_link_libraries(ckernel kernel_options)
