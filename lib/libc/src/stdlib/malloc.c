@@ -12,7 +12,6 @@
 
 #include <stddef.h>
 #define assert(...) (void)(0)
-#define abort() (void)(0)
 
 /*LACKS_UNISTD_H, LACKS_FCNTL_H, LACKS_SYS_PARAM_H, LACKS_SYS_MMAN_H
 LACKS_STRINGS_H, LACKS_STRING_H, LACKS_SYS_TYPES_H,  LACKS_ERRNO_H
@@ -540,6 +539,10 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
   disable, set to MAX_SIZE_T. This may lead to a very slight speed
   improvement at the expense of carrying around more memory.
 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 
 /* Version identifier to allow people to support multiple versions */
 #ifndef DLMALLOC_VERSION
@@ -6298,3 +6301,5 @@ History:
          structure of old version,  but most details differ.)
 
 */
+
+#pragma GCC diagnostic pop

@@ -6,6 +6,7 @@
 
 #include "stdlib.h"
 #include "stdio/io.h"
+#include "sys/sys.h"
 
 typedef void (*func_ptr)();
 extern func_ptr __preinit_array_start[0], __preinit_array_end[0];
@@ -31,10 +32,13 @@ void __libc_init_array()
     for (i = 0; i < count; i++) {
     	__init_array_start[i]();
     }
-
-	init_io();
 }
 
+void __libc_init(char *envp[])
+{
+	init_io();
+	init_sys(envp);
+}
 
 void __libc_fini_array()
 {
@@ -50,7 +54,8 @@ void __libc_fini_array()
 
 }
 
-void __libc_start_main(int (*main) (int, char**, char**), int argc, char** argv, void (*init)(void), void (*fini)(void), void (*rtld_fini)(void), void (* stack_end)) {
+void __libc_start_main(int (*main) (int, char**, char**), int argc, char** argv, void (*init)(void), void (*fini)(void), void (*rtld_fini)(void), void (* stack_end))
+{
 	(void)init;
 	(void)fini;
 	(void)rtld_fini;
@@ -58,6 +63,7 @@ void __libc_start_main(int (*main) (int, char**, char**), int argc, char** argv,
 	__libc_init_array();
 	atexit(__libc_fini_array);
 	char **envp = argv+argc+1;
+	__libc_init(envp);
     exit(main(argc, argv, envp));
 }
 

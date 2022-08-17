@@ -41,6 +41,8 @@ char *sys_getcwd(char *buf, size_t size);
 int sys_chdir(const char *path);
 int sys_fchdir(int fd);
 
+void sys_exit(int returnCode);
+
 #ifdef __cplusplus
 }
 #endif

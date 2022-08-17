@@ -53,6 +53,7 @@ int fputs(const char* s, FILE* str) {
 		if (fputc(s[i], str) == EOF) {
 			return EOF;
 		}
+		i++;
 	}
 	return 0;
 }
