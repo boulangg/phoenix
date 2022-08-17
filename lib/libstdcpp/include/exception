@@ -1,0 +1,12 @@
+#pragma once
+
+namespace std {
+
+typedef void (*terminate_handler)();
+typedef void (*unexpected_handler)();
+
+void terminate();
+
+extern "C" void initEhFrameTable();
+
+}
