@@ -23,6 +23,7 @@ int atexit(void(*func)());
 void exit(int exit_code);
 
 // Other
+#define EXIT_FAILURE -1
 void abort(void);
 
 

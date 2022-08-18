@@ -13,8 +13,8 @@
 #ifndef __cplusplus
 
 #define bool 	_Bool
-#define true 	1
-#define false 	0
+#define true 	(1)
+#define false 	(0)
 
 #else /* __cplusplus */
 
