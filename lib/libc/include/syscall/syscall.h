@@ -43,6 +43,17 @@ int sys_fchdir(int fd);
 
 void sys_exit(int returnCode);
 
+int sys_mlock(const void* addr, size_t length);
+int sys_mlockall(int flags);
+int sys_munlock(const void* addr, size_t length);
+int sys_munlockall(void);
+
+void* sys_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset);
+int sys_munmap(void* addr, size_t length);
+
+int sys_mprotect(void* addr, size_t length, int prot);
+int sys_msync(void* addr, size_t length, int flags);
+
 #ifdef __cplusplus
 }
 #endif
