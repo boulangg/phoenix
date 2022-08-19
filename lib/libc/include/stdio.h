@@ -7,9 +7,10 @@
 #ifndef _STDIO_H_
 #define _STDIO_H_
 
+#include <def/def_size.h>
+#include <def/def_null.h>
+
 #include <stdarg.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include <unistd.h>
 
 #ifdef __cplusplus
@@ -23,7 +24,6 @@ extern "C" {
 
 #define BUFSIZ 4096
 
-struct File;
 typedef struct FILE FILE;
 typedef size_t fpos_t;
 

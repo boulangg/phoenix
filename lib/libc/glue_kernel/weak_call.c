@@ -112,3 +112,62 @@ int sys_fchdir(int fd) {
 	return -1;
 }
 
+int sys_mlock(const void* addr, size_t length)
+{
+	(void)addr;
+	(void)length;
+	return -1;
+}
+
+int sys_mlockall(int flags)
+{
+	(void)flags;
+	return -1;
+}
+
+int sys_munlock(const void* addr, size_t length)
+{
+	(void)addr;
+	(void)length;
+	return -1;
+}
+
+int sys_munlockall(void)
+{
+	return -1;
+}
+
+void* sys_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset)
+{
+	(void)addr;
+	(void)length;
+	(void)prot;
+	(void)flags;
+	(void)fd;
+	(void)offset;
+	return -1;
+}
+
+int sys_munmap(void* addr, size_t length)
+{
+	(void)addr;
+	(void)length;
+	return -1;
+}
+
+int sys_mprotect(void* addr, size_t length, int prot)
+{
+	(void)addr;
+	(void)length;
+	(void)prot;
+	return -1;
+}
+
+int sys_msync(void* addr, size_t length, int flags)
+{
+	(void)addr;
+	(void)length;
+	(void)flags;
+	return -1;
+}
+

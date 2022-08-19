@@ -46,4 +46,15 @@ char *sys_getcwd(char *buf, size_t size) WEAK_SYSCALL;
 int sys_chdir(const char *path) WEAK_SYSCALL;
 int sys_fchdir(int fd) WEAK_SYSCALL;
 
+int sys_mlock(const void* addr, size_t length) WEAK_SYSCALL;
+int sys_mlockall(int flags) WEAK_SYSCALL;
+int sys_munlock(const void* addr, size_t length) WEAK_SYSCALL;
+int sys_munlockall(void) WEAK_SYSCALL;
+
+void* sys_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) WEAK_SYSCALL;
+int sys_munmap(void* addr, size_t length) WEAK_SYSCALL;
+
+int sys_mprotect(void* addr, size_t length, int prot) WEAK_SYSCALL;
+int sys_msync(void* addr, size_t length, int flags) WEAK_SYSCALL;
+
 #endif // __WEAK_CALL_H__

@@ -15,6 +15,11 @@ int write(int fd, const void *buf, size_t count) {
 	return sys_write(fd, buf, count);
 }
 
+void _exit(int status) {
+	sys_exit(status);
+	__builtin_unreachable();
+}
+
 int fork() {
 	return sys_fork();
 }

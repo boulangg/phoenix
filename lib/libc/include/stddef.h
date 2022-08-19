@@ -16,4 +16,6 @@ typedef signed long int		ptrdiff_t;
 
 #include "def/def_null.h"
 
+#define offsetof(type, member)  __builtin_offsetof (type, member)
+
 #endif	// _KERNEL_STDDEF_H_

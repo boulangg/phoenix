@@ -1,11 +1,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "unistd.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-void sys_exit(int) __attribute__((weak));
 
 __extension__ typedef int __guard __attribute__((mode(__DI__)));
 
@@ -84,7 +84,7 @@ int atexit(void (*f)(void)) {
 
 void exit(int exit_code) {
 	__cxa_finalize(NULL);
-	sys_exit(exit_code);
+	_exit(exit_code);
 	__builtin_unreachable();
 }
 

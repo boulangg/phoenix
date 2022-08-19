@@ -1,5 +1,6 @@
-
 #include "io.h"
+
+#include <stdbool.h>
 
 int _IO_file_fgetc(FILE* str) {
 	// Change stream to read mode
