@@ -1,0 +1,57 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "linux-default",
+      "displayName": "Linux Debug",
+      "description": "Sets Make generator, compilers, build and install directory, debug build type",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "VS_TARGET_FILTER": "no-gnustd"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64",
+          "hostOS": [
+            "Linux"
+          ]
+        },
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+        }
+      }
+    },
+    {
+      "name": "linux-default-gnustd",
+      "displayName": "Linux Debug (with gnustd target)",
+      "description": "Sets Make generator, compilers, build and install directory, debug build type",
+      "inherits": "linux-default",
+      "cacheVariables": {
+        "VS_TARGET_FILTER": "gnustd"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-default",
+      "displayName": "Build",
+      "description": "Custom build preset",
+      "configurePreset": "linux-default"
+    },
+    {
+      "name": "build-default-all",
+      "displayName": "Build",
+      "description": "Custom build preset gnustd",
+      "configurePreset": "linux-default-gnustd"
+    }
+  ]
+}

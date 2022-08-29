@@ -42,3 +42,5 @@ endforeach()
 set(${dir_list} ${local_dir_list} PARENT_SCOPE)
 
 endfunction()
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
