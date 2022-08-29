@@ -5,7 +5,8 @@
 #include <cstdint>
 #include <list>
 
-class Session {
+class Session
+{
 public:
 	Session(ProcessGroup* sessionLeaderGroup);
 	~Session();

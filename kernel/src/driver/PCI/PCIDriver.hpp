@@ -5,12 +5,15 @@
 
 #include "PCIManager.hpp"
 
-class PCIDriver {
+class PCIDriver
+{
 public:
-	PCIDriver() {}
-	virtual ~PCIDriver() {}
+	PCIDriver()
+	{}
+	virtual ~PCIDriver()
+	{}
 
-	/* List all device that might be compatible with this driver */
+/* List all device that might be compatible with this driver */
 	virtual const std::vector<PCIDeviceID> getPCIDeviceID() = 0;
 
 	/* Check if the PCI device can be handled by this driver */

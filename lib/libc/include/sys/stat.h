@@ -37,28 +37,29 @@ extern "C" {
 	uint32_t  st_gen;
 };*/
 
-struct stat {
-	dev_t   st_dev;
-	ino_t   st_ino;
-	nlink_t st_nlink;
+	struct stat
+	{
+		dev_t   st_dev;
+		ino_t   st_ino;
+		nlink_t st_nlink;
 
-	mode_t  st_mode;
-	uid_t   st_uid;
-	gid_t   st_gid;
+		mode_t  st_mode;
+		uid_t   st_uid;
+		gid_t   st_gid;
 
-	dev_t   st_rdev;
-	off_t   st_size;
-	size_t  st_blksize;
-	size_t  st_blocks;
+		dev_t   st_rdev;
+		off_t   st_size;
+		size_t  st_blksize;
+		size_t  st_blocks;
 
-	struct timespec	st_atime;
+		struct timespec	st_atime;
 
-	struct timespec	st_mtime;
+		struct timespec	st_mtime;
 
-	struct timespec	st_ctime;
-};
+		struct timespec	st_ctime;
+	};
 
-/* File type */
+	/* File type */
 #define	S_IFMT   00170000
 
 #define	S_IFIFO  00010000
@@ -93,15 +94,15 @@ struct stat {
 #define S_IWOTH 00000002
 #define S_IXOTH 00000004
 
-int chmod(const char *, mode_t);
-int fchmod(int, mode_t);
-int fstat(int, struct stat *);
-int lstat(const char *, struct stat *);
-int mkdir(const char *, mode_t);
-int mkfifo(const char *, mode_t);
-int mknod(const char *, mode_t, dev_t);
-int stat(const char *, struct stat *);
-mode_t umask(mode_t);
+	int chmod(const char*, mode_t);
+	int fchmod(int, mode_t);
+	int fstat(int, struct stat*);
+	int lstat(const char*, struct stat*);
+	int mkdir(const char*, mode_t);
+	int mkfifo(const char*, mode_t);
+	int mknod(const char*, mode_t, dev_t);
+	int stat(const char*, struct stat*);
+	mode_t umask(mode_t);
 
 #ifdef __cplusplus
 }

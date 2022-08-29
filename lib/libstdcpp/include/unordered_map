@@ -11,12 +11,12 @@
 #include <vector>
 #include <list>
 
-namespace std
-{
+namespace std {
 
 template <class Key, class T, class Hash = hash<Key>,
-		class Pred = equal_to<Key>>
-class unordered_multimap {
+	class Pred = equal_to<Key>>
+	class unordered_multimap
+{
 public:
 	typedef Key key_type;
 	typedef T mapped_type;
@@ -30,11 +30,13 @@ public:
 	typedef size_t size_type;
 	typedef ptrdiff_t difference_type;
 
-	bool empty() const noexcept {
+	bool empty() const noexcept
+	{
 		return _size == 0;
 	}
 
-	size_type size() noexcept {
+	size_type size() noexcept
+	{
 		return _size;
 	}
 
@@ -45,4 +47,3 @@ private:
 };
 
 }
-

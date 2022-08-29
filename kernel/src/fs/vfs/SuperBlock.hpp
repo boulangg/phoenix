@@ -153,7 +153,8 @@ private:
 
 class FileSystemType;
 
-class SuperBlock {
+class SuperBlock
+{
 public:
 	SuperBlock(FileSystemType* type);
 	//SuperBlock(FileSystemType* type, Dentry* root);
@@ -200,7 +201,3 @@ public:
 //virtual int check_flags(int);
 
 // dentry_operation
-
-
-
-

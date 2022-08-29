@@ -14,7 +14,8 @@
 #include "SetupProcessor.hpp"
 
 
-void boot() {
+void boot()
+{
 	Console::initConsole();
 	SetupProcessor::setupAll();
 	Kernel::Start();

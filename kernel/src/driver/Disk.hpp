@@ -12,13 +12,15 @@
 #include "Partition.hpp"
 #include "DeviceManager.hpp"
 
-struct PartitionInfo {
+struct PartitionInfo
+{
 	std::uint64_t startSector;
 	std::uint64_t nbSectors;
 	int partno;
 };
 
-struct MBR {
+struct MBR
+{
 	char bootstrap[436];
 	char diskID[10];
 	char MBRPartitionTable[64];
@@ -27,12 +29,16 @@ struct MBR {
 
 static_assert(sizeof(MBR) == 512, "Size is not correct");
 
-struct MBRPartition {
-	union {
-		struct {
+struct MBRPartition
+{
+	union
+	{
+		struct
+		{
 			uint8_t partEntry[16];
 		};
-		struct {
+		struct
+		{
 			std::uint8_t bootIndicator;
 			std::uint8_t startHead;
 			std::uint8_t startSector;
@@ -48,17 +54,21 @@ struct MBRPartition {
 };
 
 
-class Disk {
+class Disk
+{
 public:
-	Disk(BlockStorageDevice* storage) : storage(storage), parts(), cache(storage->getSectorSize()) {
+	Disk(BlockStorageDevice* storage) : storage(storage), parts(), cache(storage->getSectorSize())
+	{
 		readMBR();
 	}
 
-	virtual ~Disk() {
+	virtual ~Disk()
+	{
 
 	}
 
-	PartitionInfo getPartitionInfo(int partno)  {
+	PartitionInfo getPartitionInfo(int partno)
+	{
 		if (partno < 0 || partno >= (int)parts.size()) {
 			return PartitionInfo();
 		} else {
@@ -66,7 +76,8 @@ public:
 		}
 	}
 
-	Block* getBlock(std::uint64_t lba) {
+	Block* getBlock(std::uint64_t lba)
+	{
 		BlockIO bio;
 		BlockIOSegment bioSeg1;
 		Block* block = cache.getBlock(lba);
@@ -87,18 +98,20 @@ public:
 		}
 	}
 
-	std::uint64_t getSectorSize() {
+	std::uint64_t getSectorSize()
+	{
 		return storage->getSectorSize();
 	}
 
 private:
 
-	void readMBR() {
+	void readMBR()
+	{
 		BlockDevice* dev = nullptr;
 
 		cout << "Informations about '" << storage->getName().c_str() << "'\n";
 
-		PartitionInfo partFull = {0, storage->getSectorNumber(), 0};
+		PartitionInfo partFull = { 0, storage->getSectorNumber(), 0 };
 		parts.push_back(partFull);
 		dev = new Partition(this, 0, storage->getName());
 		DeviceManager::registerBlockDevice(dev);
@@ -110,10 +123,10 @@ private:
 			for (int partNum = 0; partNum < 4; partNum++) {
 				MBRPartition part;
 				for (int i = 0; i < 16; i++) {
-					part.partEntry[i] = mbr->MBRPartitionTable[partNum*16+i];
+					part.partEntry[i] = mbr->MBRPartitionTable[partNum * 16 + i];
 				}
 
-				PartitionInfo newPart = {part.partitionStartLBA, part.partitionSize, partNum+1};
+				PartitionInfo newPart = { part.partitionStartLBA, part.partitionSize, partNum + 1 };
 				parts.push_back(newPart);
 				char name[1024];
 				sprintf(name, "%s%i", storage->getName().c_str(), partNum);

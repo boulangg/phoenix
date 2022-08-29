@@ -7,9 +7,11 @@
 #include <cstring>
 
 
-class KernelAddressSpace : public BaseAddressSpace<KernelFSInfo> {
+class KernelAddressSpace : public BaseAddressSpace<KernelFSInfo>
+{
 public:
-	KernelAddressSpace(KernelInode* inode) : BaseAddressSpace(inode) {}
+	KernelAddressSpace(KernelInode* inode) : BaseAddressSpace(inode)
+	{}
 
 	virtual int readPage_internal(Page* p) override;
 };

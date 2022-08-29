@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-extern int errno;
+	extern int errno;
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,8 @@
 
 #define BUFFER_SIZE 1024
 
-void printk(const char* format, ...) {
+void printk(const char* format, ...)
+{
 	char tmp[BUFFER_SIZE];
 	unsigned long int size = BUFFER_SIZE;
 	va_list vl;

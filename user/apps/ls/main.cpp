@@ -9,11 +9,13 @@
 #include <string.h>
 #include <string>
 
-void print_usage() {
+void print_usage()
+{
 	printf("ls [path]");
 }
 
-int main(int argc,char* argv[]) {
+int main(int argc, char* argv[])
+{
 	if (argc > 2) {
 		print_usage();
 		return -1;

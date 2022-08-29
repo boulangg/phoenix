@@ -20,29 +20,33 @@
 #include <boot/SetupProcessor.hpp>
 #include <include/constant.h>
 
-class PageTable {
+class PageTable
+{
 public:
 	PageTable(std::list<VirtualArea*>& list);
 
 	void mapUserVirtualArea(VirtualArea* area);
 
 	int mapPage(uint64_t* physAddr, uint64_t* virtAddr,
-			uint16_t flags, uint16_t highLvlFlags = PAGE_UWP_MASK);
+				uint16_t flags, uint16_t highLvlFlags = PAGE_UWP_MASK);
 
 	void clearTable();
 
-	static PageTable getKernelPageTable() {
+	static PageTable getKernelPageTable()
+	{
 		return PageTable(PageTable::kernelPML4T);
 	}
 
-	uint64_t getPageTablePtr() {
+	uint64_t getPageTablePtr()
+	{
 		return (uint64_t)PML4T & ~(KERNEL_MAPPING_START);
 	}
 
 private:
 	PageTable(uint64_t* pml4t);
 
-	void copyKernelAddressSpace() {
+	void copyKernelAddressSpace()
+	{
 		for (int i = 256; i < 512; ++i) {
 			this->PML4T[i] = PageTable::kernelPML4T[i];
 		}

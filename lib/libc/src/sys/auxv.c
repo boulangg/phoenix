@@ -15,4 +15,3 @@ uint64_t getauxval(uint64_t __type)
 	}
 	return 0;
 }
-

@@ -4,18 +4,21 @@
 
 std::vector<PCIDeviceID> IDEDriver::_deviceIds;
 
-IDEDriver::IDEDriver() {
-	PCIDeviceID id1 = {.vendorID = PCI_ANY_ID, .deviceID = PCI_ANY_ID,
+IDEDriver::IDEDriver()
+{
+	PCIDeviceID id1 = { .vendorID = PCI_ANY_ID, .deviceID = PCI_ANY_ID,
 			.subVendorID = PCI_ANY_ID, .subDeviceID = PCI_ANY_ID,
-			.classCode = 0x01, .classCodeMask = PCI_ANY_ID};
+			.classCode = 0x01, .classCodeMask = PCI_ANY_ID };
 	_deviceIds.push_back(id1);
 }
 
-const std::vector<PCIDeviceID> IDEDriver::getPCIDeviceID() {
+const std::vector<PCIDeviceID> IDEDriver::getPCIDeviceID()
+{
 	return _deviceIds;
 }
 
-int IDEDriver::probe(PCIDevice* device) {
+int IDEDriver::probe(PCIDevice* device)
+{
 	cout << "IDE device found\n";
 
 	IDEDevice* IDEdevice = new IDEDevice(device, _IDEDevices.size());
@@ -25,6 +28,7 @@ int IDEDriver::probe(PCIDevice* device) {
 	return 0;
 }
 
-void IDEDriver::remove(PCIDevice* device) {
+void IDEDriver::remove(PCIDevice* device)
+{
 	(void)device;
 }

@@ -22,7 +22,8 @@
 
 #define BUF_VIRT_SIZE 8
 
-typedef struct FILE {
+typedef struct FILE
+{
 	uint64_t flags;
 	// Buffer for regular read/write
 	char* bufStart;

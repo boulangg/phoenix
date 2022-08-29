@@ -13,8 +13,9 @@ FILE* stdout;
 FILE* stdin;
 FILE* stderr;
 
-void init_io() {
-	// 0: stdin
+void init_io()
+{
+// 0: stdin
 	stdin = malloc(sizeof(FILE));
 	stdin->fileno = 0;
 	stdin->flags = MAGIC_VALUE;
@@ -51,7 +52,8 @@ void init_io() {
 	// TODO finish to properly setup stdout
 }
 
-void bufToFile(FILE* str, char* s, size_t n) {
+void bufToFile(FILE* str, char* s, size_t n)
+{
 	str->flags = MAGIC_VALUE;
 	str->bufStart = s;
 	str->bufPos = s;

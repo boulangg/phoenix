@@ -135,4 +135,3 @@ RandomAccessIterator is_heap_until(RandomAccessIterator first,
 }
 
 }
-

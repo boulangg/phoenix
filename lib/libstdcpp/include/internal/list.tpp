@@ -357,4 +357,3 @@ void list<T>::remove(const value_type& val) {
 
 
 }
-

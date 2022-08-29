@@ -16,14 +16,15 @@
 static char* kernel_sbrk_curr = (char*)KERNEL_HEAP_START;
 static char* kernel_max_heap_curr = (char*)KERNEL_HEAP_START;
 
-void* sys_brk(void* addr) {
+void* sys_brk(void* addr)
+{
 	if (addr == 0) {
 		void* ret = (void*)kernel_sbrk_curr;
 		return ret;
 	} else {
 		char* old_brk = kernel_sbrk_curr;
 		char* new_brk = (char*)addr;
-		if ((new_brk < (char*)KERNEL_HEAP_START )|| (new_brk > (char*)KERNEL_HEAP_END)) {
+		if ((new_brk < (char*)KERNEL_HEAP_START) || (new_brk > (char*)KERNEL_HEAP_END)) {
 			return (void*)old_brk;
 		}
 
@@ -33,7 +34,7 @@ void* sys_brk(void* addr) {
 			Page* new_page = PhysicalAllocator::allocZeroedPage();
 			PageTable kernelPageTable = PageTable::getKernelPageTable();
 			kernelPageTable.mapPage(new_page->physAddr, (uint64_t*)kernel_max_heap_curr, 0x3, 0x3);
-			kernel_max_heap_curr+=PAGE_SIZE;
+			kernel_max_heap_curr += PAGE_SIZE;
 		}
 		return kernel_sbrk_curr;
 	}

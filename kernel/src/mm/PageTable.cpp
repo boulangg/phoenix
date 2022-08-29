@@ -17,11 +17,13 @@
 uint64_t* PageTable::kernelPML4T(kernel_pml4t);
 uint64_t* PageTable::prevPML4T(kernel_pml4t);
 
-PageTable::PageTable(uint64_t* pml4t) {
+PageTable::PageTable(uint64_t* pml4t)
+{
 	this->PML4T = (uint64_t*)((uint64_t)pml4t & PAGE_ADDR_MASK);
 }
 
-PageTable::PageTable(std::list<VirtualArea*>& list) {
+PageTable::PageTable(std::list<VirtualArea*>& list)
+{
 	this->PML4T = PhysicalAllocator::allocZeroedPage()->kernelMappAddr;
 	copyKernelAddressSpace();
 	for (auto it = list.begin(); it != list.end(); ++it) {
@@ -29,7 +31,8 @@ PageTable::PageTable(std::list<VirtualArea*>& list) {
 	}
 }
 
-void PageTable::mapUserVirtualArea(VirtualArea* area) {
+void PageTable::mapUserVirtualArea(VirtualArea* area)
+{
 	if (PML4T == nullptr) {
 		return;
 	}
@@ -38,7 +41,7 @@ void PageTable::mapUserVirtualArea(VirtualArea* area) {
 	if (area->flags & VirtualArea::FLAGS::VM_KERNEL) {
 		flags = PAGE_KWP_MASK;
 	}
-	for (uint64_t addr = (uint64_t)(area->addrStart) & PAGE_ADDR_MASK; addr < (uint64_t)area->addrEnd; addr+=PAGE_SIZE) {
+	for (uint64_t addr = (uint64_t)(area->addrStart) & PAGE_ADDR_MASK; addr < (uint64_t)area->addrEnd; addr += PAGE_SIZE) {
 		uint64_t* virtAddr = (uint64_t*)addr;
 		Page* physPage = area->getPage(index);
 		mapPage(physPage->physAddr, virtAddr, flags);
@@ -46,7 +49,8 @@ void PageTable::mapUserVirtualArea(VirtualArea* area) {
 	}
 }
 
-int PageTable::mapPage(uint64_t* physAddr, uint64_t* virtAddr, uint16_t flags, uint16_t highLvlFlags) {
+int PageTable::mapPage(uint64_t* physAddr, uint64_t* virtAddr, uint16_t flags, uint16_t highLvlFlags)
+{
 	if (PML4T == nullptr) {
 		return -1;
 	}

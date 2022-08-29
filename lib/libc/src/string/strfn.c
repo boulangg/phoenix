@@ -7,7 +7,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-char* strcpy(char* dst, const char* src) {
+char* strcpy(char* dst, const char* src)
+{
 	size_t i = 0;
 	do {
 		dst[i] = src[i];
@@ -15,18 +16,20 @@ char* strcpy(char* dst, const char* src) {
 	return dst;
 }
 
-char* strncpy(char* dst, const char* src, size_t num) {
+char* strncpy(char* dst, const char* src, size_t num)
+{
 	size_t i = 0;
 	do {
 		dst[i] = src[i];
-	} while((src[i++] != '\0') && (i < num));
+	} while ((src[i++] != '\0') && (i < num));
 	do {
 		dst[i++] = '\0';
 	} while (i < num);
 	return dst;
 }
 
-char* strcat(char* dst, const char* src) {
+char* strcat(char* dst, const char* src)
+{
 	size_t i = 0;
 	while (dst[i] != '\0') {
 		++i;
@@ -38,7 +41,8 @@ char* strcat(char* dst, const char* src) {
 	return dst;
 }
 
-char* strncat(char* dst, const char* src, size_t num) {
+char* strncat(char* dst, const char* src, size_t num)
+{
 	size_t i = 0;
 	while (dst[i] != '\0') {
 		++i;
@@ -51,7 +55,8 @@ char* strncat(char* dst, const char* src, size_t num) {
 	return dst;
 }
 
-int strcmp(const char* str1, const char* str2) {
+int strcmp(const char* str1, const char* str2)
+{
 	size_t i = 0;
 	for (; (str1[i] != '\0') && (str2[i] != '\0'); ++i) {
 		if (str1[i] != str2[i]) {
@@ -61,14 +66,16 @@ int strcmp(const char* str1, const char* str2) {
 	return str1[i] - str2[i];
 }
 
-int strcoll(const char* str1, const char* str2) {
-	// TODO not yet implemented
+int strcoll(const char* str1, const char* str2)
+{
+// TODO not yet implemented
 	(void)str1;
 	(void)str2;
 	return 0;
 }
 
-int strncmp(const char* str1, const char* str2, size_t num) {
+int strncmp(const char* str1, const char* str2, size_t num)
+{
 	size_t i = 0;
 	for (; (str1[i] != '\0') && (str2[i] != '\0') && (i < num); ++i) {
 		if (str1[i] != str2[i]) {
@@ -81,26 +88,29 @@ int strncmp(const char* str1, const char* str2, size_t num) {
 	return str1[i] - str2[i];
 }
 
-size_t strxfrm(char* dst, const char* src, size_t num) {
-	// TODO not yet implemented
+size_t strxfrm(char* dst, const char* src, size_t num)
+{
+// TODO not yet implemented
 	(void)dst;
 	(void)src;
 	(void)num;
 	return 0;
 }
 
-char* strchr(const char* str, int character) {
+char* strchr(const char* str, int character)
+{
 	char val = (char)character;
 	size_t i = 0;
 	do {
 		if (str[i] == val) {
 			return (char*)str + i;
 		}
-	} while(str[i++] != '\0');
+	} while (str[i++] != '\0');
 	return NULL;
 }
 
-size_t strcspn(const char* str1, const char* str2) {
+size_t strcspn(const char* str1, const char* str2)
+{
 	size_t i = 0;
 	for (; str1[i] != '\0'; ++i) {
 		for (size_t j = 0; str2[j] != '\0'; ++j) {
@@ -112,7 +122,8 @@ size_t strcspn(const char* str1, const char* str2) {
 	return i;
 }
 
-char* strpbrk(const char* str1, const char* str2) {
+char* strpbrk(const char* str1, const char* str2)
+{
 	size_t i = strcspn(str1, str2);
 	if (str1[i] == '\0') {
 		return NULL;
@@ -121,7 +132,8 @@ char* strpbrk(const char* str1, const char* str2) {
 	}
 }
 
-char* strrchr(const char* str, int character) {
+char* strrchr(const char* str, int character)
+{
 	char val = (char)character;
 	size_t i = 0;
 	char* last = NULL;
@@ -129,11 +141,12 @@ char* strrchr(const char* str, int character) {
 		if (str[i] == val) {
 			last = (char*)str + i;
 		}
-	} while(str[i++] != '\0');
+	} while (str[i++] != '\0');
 	return last;
 }
 
-size_t strspn(const char* str1, const char* str2) {
+size_t strspn(const char* str1, const char* str2)
+{
 	size_t i = 0;
 	do {
 		bool contains = false;
@@ -146,30 +159,31 @@ size_t strspn(const char* str1, const char* str2) {
 		if (contains == false) {
 			return i;
 		}
-	} while(str1[i++] != '\0');
+	} while (str1[i++] != '\0');
 	return i;
 }
 
-char* strstr(const char* str1, const char* str2) {
-	// TODO not yet implemented
+char* strstr(const char* str1, const char* str2)
+{
+// TODO not yet implemented
 	(void)str1;
 	(void)str2;
 	return NULL;
 }
 
-char* strtok(char* str, const char* delims) {
-	// TODO not yet implemented
+char* strtok(char* str, const char* delims)
+{
+// TODO not yet implemented
 	(void)str;
 	(void)delims;
 	return NULL;
 }
 
-size_t strlen(const char* str) {
+size_t strlen(const char* str)
+{
 	size_t len = 0;
 	while (str[len] != '\0') {
 		++len;
 	}
 	return len;
 }
-
-

@@ -8,7 +8,8 @@ class PCIDriver;
 
 #define PCI_ANY_ID (uint32_t)(~(uint32_t)0)
 
-struct PCIDeviceID {
+struct PCIDeviceID
+{
 	uint32_t vendorID;
 	uint32_t deviceID;
 	uint32_t subVendorID;
@@ -17,107 +18,134 @@ struct PCIDeviceID {
 	uint32_t classCodeMask;
 };
 
-struct PCIConfigSpace {
-	union {
+struct PCIConfigSpace
+{
+	union
+	{
 		uint32_t PCIConfigSpace0;
-		struct {
+		struct
+		{
 			uint16_t deviceID;
 			uint16_t vendorID;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace1;
-		struct {
+		struct
+		{
 			uint16_t command;
 			uint16_t status;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace2;
-		struct {
+		struct
+		{
 			uint8_t revisionID;
 			uint8_t progIF;
 			uint8_t subclassCode;
 			uint8_t classCode;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace3;
-		struct {
+		struct
+		{
 			uint8_t BIST;
 			uint8_t headerType;
 			uint8_t latencyTimer;
 			uint8_t cacheLineSize;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace4;
 		uint32_t BAR0;
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace5;
 		uint32_t BAR1;
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace6;
 		uint32_t BAR2;
-		struct {
+		struct
+		{
 			uint8_t secondaryLatencyTimer;
 			uint8_t subordinateBusNumber;
 			uint8_t secondaryBusNumber;
 			uint8_t primaryBusNumber;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace7;
 		uint32_t BAR3;
-		struct {
+		struct
+		{
 			uint16_t secondaryStatus;
 			uint8_t IOLimit;
 			uint8_t IOBase;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace8;
 		uint32_t BAR4;
-		struct {
+		struct
+		{
 			uint16_t memoryLimit;
 			uint16_t memoryBase;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace9;
 		uint32_t BAR5;
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace10;
 		uint32_t cardBusCISpointer;
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace11;
-		struct {
+		struct
+		{
 			uint16_t subDeviceID;
 			uint16_t subVendorID;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace12;
 		uint32_t expansionROMBaseAdress;
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace13;
-		union {
+		union
+		{
 			char reserved_0[3];
 			uint8_t capabilitiesPointer;
 		};
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace14;
 		char reserved_1[4];
 	};
-	union {
+	union
+	{
 		uint32_t PCIConfigSpace15;
-		struct {
+		struct
+		{
 			uint8_t maxLatency;
 			uint8_t minGrant;
 			uint8_t interruptPIN;
@@ -126,7 +154,8 @@ struct PCIConfigSpace {
 	};
 };
 
-struct PCIDevice {
+struct PCIDevice
+{
 
 	PCIDevice(uint8_t bus, uint8_t slot, uint8_t function);
 
@@ -135,35 +164,42 @@ struct PCIDevice {
 	uint8_t function;
 	PCIConfigSpace configSpace;
 
-	inline uint16_t getVendorID() const {
+	inline uint16_t getVendorID() const
+	{
 		return configSpace.vendorID;
 	}
 
-	inline uint16_t getDeviceID() const {
+	inline uint16_t getDeviceID() const
+	{
 		return configSpace.deviceID;
 	}
 
-	inline uint16_t getSubVendorID() const {
+	inline uint16_t getSubVendorID() const
+	{
 		return configSpace.subVendorID;
 	}
 
-	inline uint16_t getSubDeviceID() const {
+	inline uint16_t getSubDeviceID() const
+	{
 		return configSpace.subDeviceID;
 	}
 
-	inline uint16_t getClassCode() const {
+	inline uint16_t getClassCode() const
+	{
 		return configSpace.classCode;
 	}
 
-	inline uint32_t getDeviceType() const {
+	inline uint32_t getDeviceType() const
+	{
 		return ((uint32_t)configSpace.classCode << 24) |
-			   ((uint32_t)configSpace.subclassCode << 16) |
-			   ((uint32_t)configSpace.progIF << 8) |
-			   ((uint32_t)configSpace.revisionID);
+			((uint32_t)configSpace.subclassCode << 16) |
+			((uint32_t)configSpace.progIF << 8) |
+			((uint32_t)configSpace.revisionID);
 	}
 
-	inline uint16_t getBAR(uint8_t index) {
-		switch(index) {
+	inline uint16_t getBAR(uint8_t index)
+	{
+		switch (index) {
 		case 0:
 			return configSpace.BAR0;
 		case 1:
@@ -187,7 +223,8 @@ struct PCIDevice {
 	void setMaster(bool enable);
 };
 
-class PCIManager {
+class PCIManager
+{
 public:
 
 	static void initPCI();
@@ -217,4 +254,3 @@ private:
 	static std::list<PCIDevice*> _unkonwDevices;
 	static std::list<PCIDriver*> _drivers;
 };
-

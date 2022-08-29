@@ -11,7 +11,8 @@
 namespace std {
 
 template <class charT>
-class char_traits {
+class char_traits
+{
 public:
 	typedef charT char_type;
 	static size_t length(const char_type* s);
@@ -20,7 +21,8 @@ public:
 };
 
 template <>
-class char_traits<char> {
+class char_traits<char>
+{
 public:
 	typedef char char_type;
 	typedef int int_type;
@@ -29,7 +31,8 @@ public:
 	static void assign(char_type& r, const char_type& c) noexcept;
 };
 
-class string {
+class string
+{
 public:
 	string();
 	string(const char* s);
@@ -50,7 +53,7 @@ public:
 	char& operator[](int pos);
 	const char& operator[](int pos) const;
 
-	string& append (const char* s, size_t n);
+	string& append(const char* s, size_t n);
 
 	size_t size() const;
 	size_t length() const;
@@ -61,7 +64,7 @@ public:
 
 	const char* c_str() const;
 
-	string substr (size_t pos = 0, size_t len = string::npos) const;
+	string substr(size_t pos = 0, size_t len = string::npos) const;
 
 	static const size_t npos = -1;
 private:
@@ -73,4 +76,3 @@ private:
 string operator+( const string& lhs, const string& rhs );
 
 }
-

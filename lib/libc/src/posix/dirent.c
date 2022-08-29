@@ -11,7 +11,8 @@
 
 #define min(X, Y) (X < Y ? X : Y)
 
-typedef struct DIR {
+typedef struct DIR
+{
 	ino_t d_ino;
 	char d_name[NAME_MAX + 1];
 	int fd;
@@ -22,13 +23,15 @@ typedef struct DIR {
 
 } DIR;
 
-int closedir(DIR *dir) {
+int closedir(DIR* dir)
+{
 	close(dir->fd);
 	free(dir);
 	return 0;
 }
 
-DIR *opendir(const char *pathname) {
+DIR* opendir(const char* pathname)
+{
 	int fd = open(pathname, O_DIRECTORY, 0);
 	if (fd < 0) {
 		return NULL;
@@ -43,15 +46,17 @@ DIR *opendir(const char *pathname) {
 	return dir;
 }
 
-struct dirent *readdir(DIR *dir) {
-	// TODO CHECK_DIR(dir);
+struct dirent* readdir(DIR* dir)
+{
+// TODO CHECK_DIR(dir);
 	struct dirent* dirp;
 	readdir_r(dir, &dir->dirp, &dirp);
 	return dirp;
 }
 
-int readdir_r(DIR *dir, struct dirent *entry, struct dirent **result) {
-	// TODO CHECK_DIR(dir);
+int readdir_r(DIR* dir, struct dirent* entry, struct dirent** result)
+{
+// TODO CHECK_DIR(dir);
 	if (dir->readdirPos == dir->readdirSize) {
 		int ret = sys_getdents64(dir->fd, (struct linux_dirent64*)(dir->readdirBuffer), READDIR_BUF_SIZE);
 		if (ret < 0) {
@@ -75,19 +80,22 @@ int readdir_r(DIR *dir, struct dirent *entry, struct dirent **result) {
 	return 0;
 }
 
-void rewinddir(DIR *dir) {
-	// TODO CHECK_DIR(dir);
+void rewinddir(DIR* dir)
+{
+// TODO CHECK_DIR(dir);
 	sys_llseek(dir->fd, 0, SEEK_SET);
 }
 
-void seekdir(DIR *dir, long int offset) {
-	// TODO CHECK_DIR(dir);
+void seekdir(DIR* dir, long int offset)
+{
+// TODO CHECK_DIR(dir);
 	sys_llseek(dir->fd, offset, SEEK_SET);
 	dir->readdirSize = 0;
 	dir->readdirPos = 0;
 }
 
-long int telldir(DIR *dir) {
-	// TODO CHECK_DIR(dir)
+long int telldir(DIR* dir)
+{
+// TODO CHECK_DIR(dir)
 	return sys_llseek(dir->fd, 0, SEEK_CUR);
 }

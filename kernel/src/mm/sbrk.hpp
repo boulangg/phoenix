@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-void* sys_brk(void* addr);
+	void* sys_brk(void* addr);
 
 #ifdef __cplusplus
 }

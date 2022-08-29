@@ -6,7 +6,8 @@
 
 #include <string.h>
 
-void* memcpy(void* restrict dst, const void* restrict src, size_t count) {
+void* memcpy(void* restrict dst, const void* restrict src, size_t count)
+{
 	const char* p = (const char*)src;
 	char* q = (char*)dst;
 	for (size_t i = 0; i < count; i++) {
@@ -15,7 +16,8 @@ void* memcpy(void* restrict dst, const void* restrict src, size_t count) {
 	return dst;
 }
 
-void* memmove(void* dst, const void* src, size_t num) {
+void* memmove(void* dst, const void* src, size_t num)
+{
 	const char* p = (const char*)src;
 	char* q = (char*)dst;
 	if (p < q) {
@@ -24,13 +26,14 @@ void* memmove(void* dst, const void* src, size_t num) {
 		}
 	} else if (p > q) {
 		for (size_t i = 0; i < num; ++i) {
-			q[num-1+i] = p[num-1+i];
+			q[num - 1 + i] = p[num - 1 + i];
 		}
 	}
 	return dst;
 }
 
-int memcmp(const void* ptr1, const void* ptr2, size_t num) {
+int memcmp(const void* ptr1, const void* ptr2, size_t num)
+{
 	const char* p = (const char*)ptr1;
 	const char* q = (const char*)ptr2;
 	for (size_t i = 0; i < num; ++i) {
@@ -41,23 +44,23 @@ int memcmp(const void* ptr1, const void* ptr2, size_t num) {
 	return 0;
 }
 
-void* memchr(const void* ptr, int value, size_t num) {
+void* memchr(const void* ptr, int value, size_t num)
+{
 	unsigned char val = (unsigned char)value & 0xFF;
 	unsigned char* p = (unsigned char*)ptr;
 	for (size_t i = 0; i < num; ++i) {
 		if (p[i] == val) {
-			return (void*)(p+i);
+			return (void*)(p + i);
 		}
 	}
 	return NULL;
 }
 
-void* memset(void* dst, int ch, size_t count) {
+void* memset(void* dst, int ch, size_t count)
+{
 	char* q = (char*)dst;
 	for (size_t i = 0; i < count; ++i) {
 		*q++ = ch;
 	}
 	return dst;
 }
-
-

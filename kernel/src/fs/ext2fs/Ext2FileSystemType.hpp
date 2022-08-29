@@ -4,13 +4,16 @@
 
 #include "Ext2SuperBlock.hpp"
 
-class Ext2FileSystemType : public FileSystemType {
+class Ext2FileSystemType : public FileSystemType
+{
 public:
-	Ext2FileSystemType() : FileSystemType("ext2") {
+	Ext2FileSystemType() : FileSystemType("ext2")
+	{
 
 	}
 
-	SuperBlock* readSuperBlock(const std::string& source, const void* data) override {
+	SuperBlock* readSuperBlock(const std::string& source, const void* data) override
+	{
 		(void)data;
 		Ext2SuperBlock* sb = new Ext2SuperBlock(this, source);
 		if (sb->_valid) {

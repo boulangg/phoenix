@@ -5,7 +5,8 @@
 
 #include <driver/PCI/PCIManager.hpp>
 
-class IDEDevice {
+class IDEDevice
+{
 public:
 	IDEDevice(PCIDevice* device, int deviceID);
 

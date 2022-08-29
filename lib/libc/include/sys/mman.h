@@ -28,19 +28,19 @@
 extern "C" {
 #endif
 
-int mlock(const void* addr, size_t length);
-int mlockall(int flags);
-int munlock(const void* addr, size_t length);
-int munlockall(void);
+	int mlock(const void* addr, size_t length);
+	int mlockall(int flags);
+	int munlock(const void* addr, size_t length);
+	int munlockall(void);
 
-void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset);
-int munmap(void* addr, size_t length);
+	void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset);
+	int munmap(void* addr, size_t length);
 
-int mprotect(void* addr, size_t length, int prot);
-int msync(void* addr, size_t length, int flags);
+	int mprotect(void* addr, size_t length, int prot);
+	int msync(void* addr, size_t length, int flags);
 
-int shm_open(const char* name, int oflag, mode_t mode);
-int shm_unlink(const char* name);
+	int shm_open(const char* name, int oflag, mode_t mode);
+	int shm_unlink(const char* name);
 
 #ifdef _cplusplus
 }

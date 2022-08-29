@@ -12,9 +12,11 @@
 namespace std {
 
 template <size_t N>
-class bitset {
+class bitset
+{
 public:
-	class reference {
+	class reference
+	{
 		friend class bitset;
 		reference();                                // no public constructor
 		reference(bitset& b, size_t pos);
@@ -50,7 +52,7 @@ public:
 
 	size_t count() const;
 	size_t size() const;
-	bool test (size_t pos) const;
+	bool test(size_t pos) const;
 	bool any() const;
 	bool none() const;
 	bool all() const noexcept;
@@ -80,4 +82,3 @@ bitset<N> operator^(const bitset<N>& lhs, const bitset<N>& rhs);
 
 /** Implementation **/
 #include "internal/bitset.tpp"
-

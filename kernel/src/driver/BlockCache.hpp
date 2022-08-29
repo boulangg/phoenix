@@ -7,7 +7,8 @@
 
 #include <mm/PhysicalAllocator.hpp>
 
-struct Block {
+struct Block
+{
 	Page* page;
 	std::uint64_t len;
 	std::uint64_t offset;
@@ -17,9 +18,11 @@ struct Block {
 };
 
 
-class BlockCache {
+class BlockCache
+{
 
-	struct BlockCacheData {
+	struct BlockCacheData
+	{
 		Page* page;
 		std::uint64_t lbaStart;
 		std::uint64_t lbaEnd;
@@ -28,12 +31,14 @@ class BlockCache {
 
 public:
 
-	BlockCache(std::uint64_t blockSize) : blockData(), blockSize(blockSize) {
+	BlockCache(std::uint64_t blockSize) : blockData(), blockSize(blockSize)
+	{
 
 	}
 
-	Block* getBlock(std::uint64_t lba) {
-		for (auto data: blockData) {
+	Block* getBlock(std::uint64_t lba)
+	{
+		for (auto data : blockData) {
 			if (data->lbaStart >= lba && data->lbaEnd < lba) {
 				return data->blocks[lba - data->lbaStart];
 			} else {
@@ -44,15 +49,15 @@ public:
 		data = new BlockCacheData();
 		Page* newPage = PhysicalAllocator::allocZeroedPage();
 		data->page = newPage;
-		std::uint64_t nbBlockPerPage = PAGE_SIZE/blockSize;
-		data->lbaStart = (lba / nbBlockPerPage)*nbBlockPerPage;
+		std::uint64_t nbBlockPerPage = PAGE_SIZE / blockSize;
+		data->lbaStart = (lba / nbBlockPerPage) * nbBlockPerPage;
 		data->lbaEnd = data->lbaStart + nbBlockPerPage;
 		for (std::uint64_t i = 0; i < nbBlockPerPage; i++) {
 			Block* newBlock = new Block();
-			newBlock->lba = data->lbaStart+i;
+			newBlock->lba = data->lbaStart + i;
 			newBlock->page = newPage;
 			newBlock->len = blockSize;
-			newBlock->offset = blockSize*i;
+			newBlock->offset = blockSize * i;
 			newBlock->dirty = false;
 			newBlock->valid = false;
 			data->blocks.push_back(newBlock);
@@ -61,7 +66,8 @@ public:
 		return (data->blocks[lba - data->lbaStart]);
 	}
 
-	void releaseBlock(Block* block) {
+	void releaseBlock(Block* block)
+	{
 		(void)block;
 	}
 

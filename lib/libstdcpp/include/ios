@@ -12,7 +12,8 @@
 
 namespace std {
 
-class ios_base {
+class ios_base
+{
 public:
 	// Member types
 	typedef uint64_t fmtflags;
@@ -20,12 +21,19 @@ public:
 	typedef uint8_t iostate;
 	typedef uint8_t openmode;
 
-	enum event { erase_event, imbue_event, copyfmt_event };
+	enum event
+	{
+		erase_event, imbue_event, copyfmt_event
+	};
 	typedef void (*event_callback) (event ev, ios_base& obj, int index);
 
-	enum seekdir { beg, cur, end };
+	enum seekdir
+	{
+		beg, cur, end
+	};
 
-	class ios_base::Init {
+	class ios_base::Init
+	{
 		static int init_cnt;
 	public:
 		Init();
@@ -67,7 +75,7 @@ public:
 	// Constructors
 protected:
 	ios_base();
-	ios_base (const ios_base&) = delete;
+	ios_base(const ios_base&) = delete;
 
 public:
 	// Destructor
@@ -75,14 +83,14 @@ public:
 
 	// Formatting
 	fmtflags flags() const;
-	fmtflags flags (fmtflags fmtfl);
-	fmtflags setf (fmtflags fmtfl);
-	fmtflags setf (fmtflags fmtfl, fmtflags mask);
-	void unsetf (fmtflags mask);
+	fmtflags flags(fmtflags fmtfl);
+	fmtflags setf(fmtflags fmtfl);
+	fmtflags setf(fmtflags fmtfl, fmtflags mask);
+	void unsetf(fmtflags mask);
 	streamsize precision() const;
-	streamsize precision (streamsize prec);
+	streamsize precision(streamsize prec);
 	streamsize width() const;
-	streamsize width (streamsize wide);
+	streamsize width(streamsize wide);
 
 private:
 	fmtflags formatFlags;
@@ -92,7 +100,8 @@ private:
 
 
 template <class charT, class traits = char_traits<charT> >
-class basic_ios : public ios_base {
+class basic_ios : public ios_base
+{
 public:
 	// Member types
 	typedef charT char_type;
@@ -102,10 +111,10 @@ public:
 	typedef traits_type::off_type off_type;
 
 	// Constructors
-	explicit basic_ios(basic_streambuf<char_type,traits_type>* sb);
+	explicit basic_ios(basic_streambuf<char_type, traits_type>* sb);
 protected:
 	basic_ios();
-	basic_ios (const basic_ios&) = delete;
+	basic_ios(const basic_ios&) = delete;
 	basic_ios& operator= (const basic_ios&) = delete;
 
 public:
@@ -130,18 +139,18 @@ public:
 	void clear(iostate state = goodbit);
 
 	// Misc
-	basic_ostream<char_type,traits_type>* tie() const;
-	basic_ostream<char_type,traits_type>* tie(basic_ostream<char_type,traits_type>* tiestr);
+	basic_ostream<char_type, traits_type>* tie() const;
+	basic_ostream<char_type, traits_type>* tie(basic_ostream<char_type, traits_type>* tiestr);
 	iostate exceptions() const;
-	void exceptions (iostate except);
-	basic_streambuf<char_type,traits_type>* rdbuf() const;
-	basic_streambuf<char_type,traits_type>* rdbuf(basic_streambuf<char_type,traits_type>* sb);
+	void exceptions(iostate except);
+	basic_streambuf<char_type, traits_type>* rdbuf() const;
+	basic_streambuf<char_type, traits_type>* rdbuf(basic_streambuf<char_type, traits_type>* sb);
 	char narrow(char_type wc, char dfault) const;
 	char_type widen(char c) const;
 
 protected:
 	void init(streambuf* sb);
-	void move(ios&  x);
+	void move(ios& x);
 	void move(ios&& x);
 	void swap(ios& x) noexcept;
 	void set_rdbuf(streambuf* sb);
@@ -152,4 +161,3 @@ private:
 };
 
 }
-

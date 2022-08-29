@@ -15,27 +15,27 @@ extern "C" {
 
 /// Standard C
 // Dynamic memory management
-void* calloc(size_t num, size_t size);
-void free(void* ptr);
-void* malloc(size_t size);
-void* realloc(void* ptr, size_t size);
-int atexit(void(*func)());
-void exit(int exit_code);
+	void* calloc(size_t num, size_t size);
+	void free(void* ptr);
+	void* malloc(size_t size);
+	void* realloc(void* ptr, size_t size);
+	int atexit(void(*func)());
+	void exit(int exit_code);
 
-// Other
+	// Other
 #define EXIT_FAILURE -1
-void abort(void);
+	void abort(void);
 
 
-/// Linux methods
-// Environment variables
-extern char** environ;
-const char* getenv(const char* varName);
+	/// Linux methods
+	// Environment variables
+	extern char** environ;
+	const char* getenv(const char* varName);
 
-int clearenv(void);
-//int putenv(char *string);
-//int setenv(const char *name, const char *value, int overwrite);
-//int unsetenv(const char *name);
+	int clearenv(void);
+	//int putenv(char *string);
+	//int setenv(const char *name, const char *value, int overwrite);
+	//int unsetenv(const char *name);
 
 #ifdef __cplusplus
 }

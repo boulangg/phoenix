@@ -1,7 +1,8 @@
 #include <driver/PCI/IDE/IDEStruct.hpp>
 
-template<int s, int t> struct check_size {
-  static_assert(s == t, "wrong size");
+template<int s, int t> struct check_size
+{
+	static_assert(s == t, "wrong size");
 };
 
 #define offsetof(st, m) __builtin_offsetof(st, m)

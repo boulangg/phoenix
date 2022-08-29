@@ -7,7 +7,8 @@
 
 class Disk;
 
-class Partition : public BlockDevice {
+class Partition : public BlockDevice
+{
 public:
 	Partition(Disk* storage, int partNo, std::string name);
 	virtual ~Partition();

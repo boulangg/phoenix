@@ -5,26 +5,31 @@
 #include "KernelAddressSpace.hpp"
 
 KernelInode::KernelInode(KernelSuperBlock* sb) : BaseInode(sb, 0, user_apps_symbol_table.nb_user_apps),
-		type(TYPE_FILE), sb(sb), app() {
+type(TYPE_FILE), sb(sb), app()
+{
 	mapping = new KernelAddressSpace(this);
 }
 
 KernelInode::KernelInode(KernelSuperBlock* sb, std::uint64_t ino, struct apps_desc app) :
-	BaseInode(sb, ino, app.apps_end - app.apps_start), type(TYPE_FILE), sb(sb), app(app) {
+	BaseInode(sb, ino, app.apps_end - app.apps_start), type(TYPE_FILE), sb(sb), app(app)
+{
 	mapping = new KernelAddressSpace(this);
 }
 
 
-KernelInode::~KernelInode() {
+KernelInode::~KernelInode()
+{
 
 }
 
 // inode_operations
-Dentry* KernelInode::create(Dentry*, std::string) {
+Dentry* KernelInode::create(Dentry*, std::string)
+{
 	return nullptr;
 }
 
-Dentry * KernelInode::lookup(Dentry* parent, std::string name) {
+Dentry* KernelInode::lookup(Dentry* parent, std::string name)
+{
 	if (type == TYPE_DIR) {
 		KernelInode* inode = sb->getFile(name);
 		if (inode != nullptr) {
@@ -35,7 +40,8 @@ Dentry * KernelInode::lookup(Dentry* parent, std::string name) {
 }
 
 // file_operation
-File* KernelInode::open_internal() {
+File* KernelInode::open_internal()
+{
 	if (type == TYPE_DIR) {
 		return nullptr;
 	} else {

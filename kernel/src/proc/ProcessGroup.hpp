@@ -5,7 +5,8 @@
 
 #include <proc/Process.hpp>
 
-class ProcessGroup {
+class ProcessGroup
+{
 public:
 	ProcessGroup(Process* leader);
 	~ProcessGroup();

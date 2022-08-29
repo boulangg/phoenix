@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include "io.h"
 
-int vsscanf(const char* s, const char* format, va_list arg) {
+int vsscanf(const char* s, const char* format, va_list arg)
+{
 	FILE str;
 	bufToFile(&str, (char*)s, (size_t)-1);
 	int res = vfscanf(&str, format, arg);

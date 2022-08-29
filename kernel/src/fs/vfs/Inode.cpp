@@ -6,20 +6,22 @@
 #include <driver/CharacterDevice.hpp>
 
 Inode::Inode(SuperBlock* sb, std::uint64_t ino, size_t size) :
-		sb(sb), ino(ino), size(size), mapping(nullptr), dentries()
+	sb(sb), ino(ino), size(size), mapping(nullptr), dentries()
 {
 
 }
 
-Inode::~Inode() {
-}
+Inode::~Inode()
+{}
 
-Dentry* Inode::lookup(Dentry* parent, std::string name) {
+Dentry* Inode::lookup(Dentry* parent, std::string name)
+{
 	(void)parent; (void)name;
 	return nullptr;
 }
 
-File* Inode::open() {
+File* Inode::open()
+{
 	mode_t mode = getMode();
 	if (S_ISCHR(mode)) {
 		dev_t devID = getDeviceID();

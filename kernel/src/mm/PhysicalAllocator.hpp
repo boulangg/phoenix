@@ -14,7 +14,8 @@
 #include <include/constant.h>
 #include "Page.hpp"
 
-class PhysicalAllocator {
+class PhysicalAllocator
+{
 public:
 	static void initAllocator(Page* page_array, uint64_t nb_physical_pages);
 	static Page* allocPage();

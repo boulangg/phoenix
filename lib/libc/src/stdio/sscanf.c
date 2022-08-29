@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include "io.h"
 
-int sscanf(const char* s, const char* format, ...) {
+int sscanf(const char* s, const char* format, ...)
+{
 	va_list v;
 	va_start(v, format);
 	FILE str;

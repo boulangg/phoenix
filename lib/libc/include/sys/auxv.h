@@ -21,7 +21,8 @@
 typedef struct
 {
 	uint64_t a_type;
-	union {
+	union
+	{
 		uint64_t a_val;
 		void* a_ptr;
 		void (*a_fnc)();
@@ -32,7 +33,7 @@ typedef struct
 extern "C" {
 #endif
 
-extern uint64_t getauxval(uint64_t __type);
+	extern uint64_t getauxval(uint64_t __type);
 
 #ifdef __cplusplus
 }

@@ -11,53 +11,65 @@
 
 class Page;
 
-class File {
+class File
+{
 public:
-	File() : count(0), _pos(0), _dentry(nullptr) {}
-	File(Inode* inode) : count(0), _pos(0), _dentry(nullptr), ttyinode(inode) {} // for TTY
+	File() : count(0), _pos(0), _dentry(nullptr)
+	{}
+	File(Inode* inode) : count(0), _pos(0), _dentry(nullptr), ttyinode(inode)
+	{} // for TTY
 	virtual ~File();
 
 	// file_operation
 	//virtual loff_t lseek(loff_t, int32_t);
-	ssize_t read(char* buffer, size_t size) {
+	ssize_t read(char* buffer, size_t size)
+	{
 		ssize_t bytes = read_internal(buffer, size, _pos);
 		_pos += bytes;
 		return bytes;
 	}
 
 
-	ssize_t write(char* buffer, size_t size) {
+	ssize_t write(char* buffer, size_t size)
+	{
 		ssize_t bytes = write_internal(buffer, size, _pos);
 		_pos += bytes;
 		return bytes;
 	}
 
-	loff_t lseek(loff_t offset, uint32_t origin) {
+	loff_t lseek(loff_t offset, uint32_t origin)
+	{
 		return lseek_internal(offset, origin);
 	}
 
-	Dentry* getDentry() {
+	Dentry* getDentry()
+	{
 		return _dentry;
 	}
 
-	void setDentry(Dentry* d) {
+	void setDentry(Dentry* d)
+	{
 		_dentry = d;
 	}
 
-	virtual Inode* getInode() {
+	virtual Inode* getInode()
+	{
 		return ttyinode;
 	}
 
-	virtual loff_t getPos() {
+	virtual loff_t getPos()
+	{
 		return 0;
 	}
 
-	virtual int64_t lseek_internal(int64_t offset, uint32_t origin) {
+	virtual int64_t lseek_internal(int64_t offset, uint32_t origin)
+	{
 		(void)offset; (void)origin;
 		return 0;
 	}
 
-	virtual int getdents64(struct linux_dirent64 *dirp, size_t size) {
+	virtual int getdents64(struct linux_dirent64* dirp, size_t size)
+	{
 		return getdents64_internal(dirp, size);
 	}
 
@@ -71,7 +83,8 @@ protected:
 private:
 	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) = 0;
 	virtual ssize_t write_internal(char* buffer, size_t size, loff_t offset);
-	virtual int getdents64_internal(struct linux_dirent64 *dirp, size_t size) {
+	virtual int getdents64_internal(struct linux_dirent64* dirp, size_t size)
+	{
 		(void)dirp; (void)size;
 		return 0;
 	}

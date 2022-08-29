@@ -89,5 +89,3 @@ load_new_task:
 	push %rcx
 	popfq
     ret
-
-

@@ -7,8 +7,9 @@
 #include "Elf64.hpp"
 #include <fs/vfs/VirtualFileSystem.hpp>
 
-VirtualMapping* Elf64::getVirtualMapping(File* file) {
-	//File* file = VirtualFileSystem::filestable[fd];
+VirtualMapping* Elf64::getVirtualMapping(File* file)
+{
+//File* file = VirtualFileSystem::filestable[fd];
 	VirtualMapping* virtualMap = new VirtualMapping();
 	Elf64_Ehdr fileHeader;
 	// TODO check succesful lseek
@@ -19,13 +20,13 @@ VirtualMapping* Elf64::getVirtualMapping(File* file) {
 	Elf64_Phdr programHeader;
 	for (uint32_t i = 0; i < fileHeader.e_phnum; ++i) {
 		// TODO check succesful lseek
-		file->lseek(fileHeader.e_phoff + i*fileHeader.e_phentsize, SEEK_SET);
+		file->lseek(fileHeader.e_phoff + i * fileHeader.e_phentsize, SEEK_SET);
 		// TODO check succesful read
 		file->read((char*)&programHeader, sizeof(Elf64_Phdr));
 		if (programHeader.p_type == programType::PT_LOAD) {
 			uint64_t prot = VirtualMapping::PROT::NONE;
 			uint64_t flags = VirtualMapping::FLAGS::PRIVATE |
-					VirtualMapping::FLAGS::FIXED;
+				VirtualMapping::FLAGS::FIXED;
 
 			if (programHeader.p_flags & programFlag::PF_R) {
 				prot |= VirtualMapping::PROT::READ;
@@ -34,14 +35,14 @@ VirtualMapping* Elf64::getVirtualMapping(File* file) {
 			if (programHeader.p_flags & programFlag::PF_W) {
 				prot |= VirtualMapping::PROT::WRITE;
 				virtualMap->startData = (uint64_t*)(programHeader.p_vaddr);
-				virtualMap->endData = (uint64_t*)(programHeader.p_vaddr+programHeader.p_memsz);
+				virtualMap->endData = (uint64_t*)(programHeader.p_vaddr + programHeader.p_memsz);
 			}
 
 			if (programHeader.p_flags & programFlag::PF_X) {
 				prot |= VirtualMapping::PROT::EXEC;
 				flags |= VirtualMapping::FLAGS::EXECUTABLE;
 				virtualMap->startCode = (uint64_t*)(programHeader.p_vaddr);
-				virtualMap->endCode = (uint64_t*)(programHeader.p_vaddr+programHeader.p_filesz);
+				virtualMap->endCode = (uint64_t*)(programHeader.p_vaddr + programHeader.p_filesz);
 			}
 
 			uint64_t* addr = (uint64_t*)(programHeader.p_vaddr);

@@ -7,7 +7,8 @@
 
 #include "../PCIDriver.hpp"
 
-class IDEDriver : public PCIDriver {
+class IDEDriver : public PCIDriver
+{
 public:
 	IDEDriver();
 
@@ -17,11 +18,13 @@ public:
 
 	virtual void remove(PCIDevice* device);
 
-	IDEDrive* getDrive() {
+	IDEDrive* getDrive()
+	{
 		return _IDEDevices.front()->primary->disks[0];
 	}
 
-	static std::string getNameForDrive(int channelNo, bool slave) {
+	static std::string getNameForDrive(int channelNo, bool slave)
+	{
 		std::string name = "hd";
 		int id = 2 * channelNo + (int)slave;
 		if (id < 26) {

@@ -18,23 +18,23 @@ void _fini() __attribute__((weak));
 
 void __libc_init_array()
 {
-    size_t count;
-    size_t i;
+	size_t count;
+	size_t i;
 
-    count = __preinit_array_end - __preinit_array_start;
-    for (i = 0; i < count; i++) {
-        __preinit_array_start[i]();
-    }
+	count = __preinit_array_end - __preinit_array_start;
+	for (i = 0; i < count; i++) {
+		__preinit_array_start[i]();
+	}
 
-    _init();
+	_init();
 
-    count = __init_array_end - __init_array_start;
-    for (i = 0; i < count; i++) {
-    	__init_array_start[i]();
-    }
+	count = __init_array_end - __init_array_start;
+	for (i = 0; i < count; i++) {
+		__init_array_start[i]();
+	}
 }
 
-void __libc_init(char *envp[])
+void __libc_init(char* envp[])
 {
 	init_io();
 	init_sys(envp);
@@ -42,19 +42,19 @@ void __libc_init(char *envp[])
 
 void __libc_fini_array()
 {
-    size_t count;
-    size_t i;
+	size_t count;
+	size_t i;
 
-    count = __fini_array_end - __fini_array_start;
-    for (i = count; i > 0; i--) {
-    	__fini_array_start[i-1]();
-    }
+	count = __fini_array_end - __fini_array_start;
+	for (i = count; i > 0; i--) {
+		__fini_array_start[i - 1]();
+	}
 
-    _fini();
+	_fini();
 
 }
 
-void __libc_start_main(int (*main) (int, char**, char**), int argc, char** argv, void (*init)(void), void (*fini)(void), void (*rtld_fini)(void), void (* stack_end))
+void __libc_start_main(int (*main) (int, char**, char**), int argc, char** argv, void (*init)(void), void (*fini)(void), void (*rtld_fini)(void), void(*stack_end))
 {
 	(void)init;
 	(void)fini;
@@ -62,8 +62,7 @@ void __libc_start_main(int (*main) (int, char**, char**), int argc, char** argv,
 	(void)stack_end;
 	__libc_init_array();
 	atexit(__libc_fini_array);
-	char **envp = argv+argc+1;
+	char** envp = argv + argc + 1;
 	__libc_init(envp);
-    exit(main(argc, argv, envp));
+	exit(main(argc, argv, envp));
 }
-

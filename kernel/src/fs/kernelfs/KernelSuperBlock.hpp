@@ -6,10 +6,12 @@
 #include "KernelDentry.hpp"
 #include <fs/vfs/VirtualFileSystem.hpp>
 
-class KernelSuperBlock : public BaseSuperBlock<KernelFSInfo> {
+class KernelSuperBlock : public BaseSuperBlock<KernelFSInfo>
+{
 
 public:
-	KernelSuperBlock(FileSystemType* type, const std::string& source) : BaseSuperBlock(type) {
+	KernelSuperBlock(FileSystemType* type, const std::string& source) : BaseSuperBlock(type)
+	{
 		std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(source);
 		Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);
 		(void)src;
@@ -21,12 +23,13 @@ public:
 		root = new KernelDentry(inoderoot);
 		for (uint64_t i = 0; i < user_apps_symbol_table.nb_user_apps; ++i) {
 			struct apps_desc app = user_apps_symbol_table.apps[i];
-			KernelInode* appInode = new KernelInode(this, i+1, app);
+			KernelInode* appInode = new KernelInode(this, i + 1, app);
 			_files.push_back(appInode);
 		}
 	}
 
-	KernelInode* getFile(std::string name) {
+	KernelInode* getFile(std::string name)
+	{
 		for (auto file : _files) {
 			if (name.compare(*(file->app.apps_name)) == 0) {
 				return file;
@@ -35,7 +38,8 @@ public:
 		return nullptr;
 	}
 
-	virtual Inode* allocInode() {
+	virtual Inode* allocInode()
+	{
 		return nullptr;
 	}
 

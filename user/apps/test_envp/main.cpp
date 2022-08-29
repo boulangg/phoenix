@@ -4,11 +4,12 @@
 #include <unistd.h>
 #include <sys/auxv.h>
 
-int main(int argc, char* argv[], char* envp[]) {
+int main(int argc, char* argv[], char* envp[])
+{
 	(void)argc;
 	(void)argv;
 	int envpCount = 0;
-	while(envp[envpCount] != NULL) {
+	while (envp[envpCount] != NULL) {
 		printf("%s\n", envp[envpCount]);
 		envpCount++;
 	}

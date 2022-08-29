@@ -4,12 +4,15 @@
 
 #include "KernelSuperBlock.hpp"
 
-class KernelFileSystemType : public FileSystemType {
+class KernelFileSystemType : public FileSystemType
+{
 
 public:
-	KernelFileSystemType() : FileSystemType("kernel") {}
+	KernelFileSystemType() : FileSystemType("kernel")
+	{}
 
-	SuperBlock* readSuperBlock(const std::string& source, const void* data) override {
+	SuperBlock* readSuperBlock(const std::string& source, const void* data) override
+	{
 		(void)data;
 		SuperBlock* sb = new KernelSuperBlock(this, source);
 		supers.push_back(sb);

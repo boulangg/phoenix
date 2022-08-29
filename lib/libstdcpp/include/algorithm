@@ -10,7 +10,8 @@ namespace std {
 
 // Non-modifying sequence operations
 template <class InputIterator, class T>
-InputIterator find (InputIterator first, InputIterator last, const T& val) {
+InputIterator find(InputIterator first, InputIterator last, const T& val)
+{
 	for (auto it = first; it != last; ++it) {
 		if (*first == val) {
 			return first;
@@ -21,22 +22,26 @@ InputIterator find (InputIterator first, InputIterator last, const T& val) {
 
 // Min/max
 template <class T>
-const T& min(const T& a, const T& b) {
+const T& min(const T& a, const T& b)
+{
 	return !(b < a) ? a : b;
 }
 
 template <class T, class Compare>
-const T& min(const T& a, const T& b, Compare comp) {
+const T& min(const T& a, const T& b, Compare comp)
+{
 	return !comp(b, a) ? a : b;
 }
 
 template <class T>
-const T& max(const T& a, const T& b) {
+const T& max(const T& a, const T& b)
+{
 	return (a < b) ? b : a;
 }
 
 template <class T, class Compare>
-const T& max(const T& a, const T& b, Compare comp) {
+const T& max(const T& a, const T& b, Compare comp)
+{
 	return comp(a, b) ? b : a;
 }
 
@@ -46,30 +51,29 @@ void push_heap(RandomAccessIterator first, RandomAccessIterator last);
 
 template <class RandomAccessIterator, class Compare>
 void push_heap(RandomAccessIterator first, RandomAccessIterator last,
-		Compare comp);
+			   Compare comp);
 
 template <class RandomAccessIterator, class Compare>
 void pop_heap(RandomAccessIterator first, RandomAccessIterator last,
-		Compare comp);
+			  Compare comp);
 
 template <class RandomAccessIterator, class Compare>
 void make_heap(RandomAccessIterator first, RandomAccessIterator last,
-		Compare comp );
+			   Compare comp);
 
 template <class RandomAccessIterator, class Compare>
 void remove_heap(RandomAccessIterator first, RandomAccessIterator item,
-		RandomAccessIterator last, Compare comp);
+				 RandomAccessIterator last, Compare comp);
 
 template <class RandomAccessIterator, class Compare>
 void sort_heap(RandomAccessIterator first, RandomAccessIterator last,
-		Compare comp);
+			   Compare comp);
 
 template <class RandomAccessIterator, class Compare>
 bool is_heap(RandomAccessIterator first, RandomAccessIterator last,
-		Compare comp);
+			 Compare comp);
 
 template <class RandomAccessIterator, class Compare>
 RandomAccessIterator is_heap_until(RandomAccessIterator first,
-		RandomAccessIterator last, Compare comp);
+								   RandomAccessIterator last, Compare comp);
 }
-

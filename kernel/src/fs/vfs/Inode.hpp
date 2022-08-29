@@ -9,7 +9,8 @@
 
 class SuperBlock;
 
-class Inode {
+class Inode
+{
 public:
 	virtual ~Inode();
 
@@ -21,7 +22,7 @@ public:
 
 	// inode_operations
 	//virtual Dentry* create(Dentry* parent, std::string name);
-	virtual Dentry * lookup(Dentry* parent, std::string name);
+	virtual Dentry* lookup(Dentry* parent, std::string name);
 	//virtual struct dentry * (*lookup) (struct inode *parent, struct dentry *, unsigned int);
 	//int (*link) (struct dentry *,struct inode *,struct dentry *);
 	//int (*unlink) (struct inode *,struct dentry *);
@@ -44,7 +45,8 @@ public:
 	//		unsigned open_flag, umode_t create_mode, int *opened);
 	//int (*tmpfile) (struct inode *, struct dentry *, umode_t);
 
-	int stat(struct stat* stat) {
+	int stat(struct stat* stat)
+	{
 		return stat_internal(stat);
 	}
 
@@ -52,17 +54,25 @@ public:
 
 	// file_operation
 	File* open();
-	virtual mode_t getMode() {
+	virtual mode_t getMode()
+	{
 		return -1;
 	}
-	virtual dev_t getDeviceID() {
+	virtual dev_t getDeviceID()
+	{
 		return -1;
 	}
 
 	Inode(SuperBlock* sb, std::uint64_t ino, size_t size);
 private:
-	virtual File* open_internal() {return nullptr;}
-	virtual int stat_internal(struct stat* stat) {(void)stat;return ENOSYS;}
+	virtual File* open_internal()
+	{
+		return nullptr;
+	}
+	virtual int stat_internal(struct stat* stat)
+	{
+		(void)stat; return ENOSYS;
+	}
 
 public:
 	SuperBlock* sb;

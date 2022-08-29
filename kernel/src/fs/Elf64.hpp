@@ -11,7 +11,8 @@
 
 #include <mm/VirtualMapping.hpp>
 
-class Elf64 {
+class Elf64
+{
 
 	typedef uint64_t Elf64_Addr;
 	typedef uint64_t Elf64_Off;
@@ -20,7 +21,8 @@ class Elf64 {
 	typedef uint64_t Elf64_Xword;
 	typedef int64_t  Elf64_Sxword;
 
-	typedef struct {
+	typedef struct
+	{
 		unsigned char e_ident[16]; 	/* ELF identification */
 		Elf64_Half e_type; 			/* Object file type */
 		Elf64_Half e_machine; 		/* Machine type */
@@ -37,7 +39,8 @@ class Elf64 {
 		Elf64_Half e_shstrndx; 		/* Section name string table index */
 	} Elf64_Ehdr;
 
-	enum ident {
+	enum ident
+	{
 		EI_MAG0 = 0, 		// File identification
 		EI_MAG1 = 1,
 		EI_MAG2 = 2,
@@ -51,30 +54,35 @@ class Elf64 {
 		EI_NIDENT = 16	 	// Size of e_ident[]
 	};
 
-	enum magicValue{
+	enum magicValue
+	{
 		MAG0_VAL = '\x7f',
 		MAG1_VAL = '7',
 		MAG2_VAL = 'E',
 		MAG3_VAL = 'F'
 	};
 
-	enum classValue {
+	enum classValue
+	{
 		ELFCLASS32 = 1,		// 32-bits objects
 		ELFCLASS64 = 2		// 64-bits objects
 	};
 
-	enum dataValue {
+	enum dataValue
+	{
 		ELFDATA2LSB = 1, 	// little-endian data structures
 		ELFDATA2MSB = 2		// big-endian data structures
 	};
 
-	enum OSABIValue {
+	enum OSABIValue
+	{
 		ELFOSABI_SYSV = 0, 			// System V ABI
 		ELFOSABI_HPUX = 1, 			// HP-UX operating system
 		ELFOSABI_STANDALONE = 255	// Standalone (embedded) application
 	};
 
-	enum typeValue {
+	enum typeValue
+	{
 		ET_NONE = 0, 	// No file type
 		ET_REL = 1, 	// Relocable object file
 		ET_EXEC = 2, 	// Executable file
@@ -86,7 +94,8 @@ class Elf64 {
 		ET_HIPROC = 0xFFFF
 	};
 
-	enum specialSectionindex {
+	enum specialSectionindex
+	{
 		SHN_UNDEF = 0, 			// Undefined or meaningless section reference
 		SHN_LOPROC = 0xFF00, 	// Processor-specific use
 		SHN_HIPROC = 0xFF1F,
@@ -96,7 +105,8 @@ class Elf64 {
 		SHN_COMMON = 0xFFF2		// COMMON block
 	};
 
-	typedef struct {
+	typedef struct
+	{
 		Elf64_Word sh_name; 		/* Section name */
 		Elf64_Word sh_type; 		/* Section type */
 		Elf64_Xword sh_flags; 		/* Section attributes */
@@ -109,7 +119,8 @@ class Elf64 {
 		Elf64_Xword sh_entsize; 	/* Size of entries, if section has table */
 	} Elf64_Shdr;
 
-	enum sectionType {
+	enum sectionType
+	{
 		SHT_NULL = 0, 		// Unused section header
 		SHT_PROGBITS = 1, 	// Informations defined by the program
 		SHT_SYMTAB = 2, 	// Linker symbol table
@@ -130,7 +141,8 @@ class Elf64 {
 		SHT_HIPROC = 0x7FFFFFFF,
 	};
 
-	enum sectionFlag {
+	enum sectionFlag
+	{
 		SHF_WRITE = 0x1, 		// Contains writable data
 		SHF_ALLOC = 0x2, 		// Section located in memory image of program
 		SHF_EXECINSTR = 0x4, 	// Contains executable instructions
@@ -138,7 +150,8 @@ class Elf64 {
 		SHF_MASKPROC = 0xF0000000, 	// Processor-specific use
 	};
 
-	typedef struct {
+	typedef struct
+	{
 		Elf64_Word st_name; 	/* Symbol name */
 		unsigned char st_info; 	/* Type and Binding attributes */
 		unsigned char st_other; /* Reserved */
@@ -147,7 +160,8 @@ class Elf64 {
 		Elf64_Xword st_size; 	/* Size of object (e.g., common) */
 	} Elf64_Sym;
 
-	enum symbolBindings {
+	enum symbolBindings
+	{
 		STD_LOCAL = 0, 		// Not visible outside the object file
 		STD_GLOBAL = 1, 	// Global symbol, visible to all object files
 		STD_WEAK = 2, 		// Global scope but with lower precedence than global symbols
@@ -157,7 +171,8 @@ class Elf64 {
 		STD_HIPROc = 15,
 	};
 
-	enum SymbolType {
+	enum SymbolType
+	{
 		STT_NOTYPE = 0, 	// No type specified
 		STT_OBJECT = 1, 	// Data object
 		STT_FUNC = 2, 		// Function entry point
@@ -173,18 +188,21 @@ class Elf64 {
 #define ELF64_R_TYPE(i)((i) & 0xffffffffL)
 #define ELF64_R_INFO(s, t)(((s) << 32) + ((t) & 0xffffffffL))
 
-	typedef struct {
+	typedef struct
+	{
 		Elf64_Addr r_offset; 	/* Address of reference */
 		Elf64_Xword r_info; 	/* Symbol index and type of relocation */
 	} Elf64_Rel;
 
-	typedef struct {
+	typedef struct
+	{
 		Elf64_Addr r_offset; 	/* Address of reference */
 		Elf64_Xword r_info; 	/* Symbol index and type of relocation */
 		Elf64_Sxword r_addend; 	/* Constant part of expression */
 	} Elf64_Rela;
 
-	typedef struct {
+	typedef struct
+	{
 		Elf64_Word p_type; 		/* Type of segment */
 		Elf64_Word p_flags; 	/* Segment attributes */
 		Elf64_Off p_offset; 	/* Offset in file */
@@ -195,7 +213,8 @@ class Elf64 {
 		Elf64_Xword p_align; 	/* Alignment of segment */
 	} Elf64_Phdr;
 
-	enum programType {
+	enum programType
+	{
 		PT_NULL = 0,		// Unused entry
 		PT_LOAD = 1, 		// Loadable segment
 		PT_DYNAMIC = 2, 	// Dynamic linking table
@@ -209,7 +228,8 @@ class Elf64 {
 		PT_HIPROC = 0x7FFFFFFF,
 	};
 
-	enum programFlag {
+	enum programFlag
+	{
 		PF_X = 0x1,		// Execute permission
 		PF_W = 0x2,		// Write permission
 		PF_R = 0x4,		// Read permission

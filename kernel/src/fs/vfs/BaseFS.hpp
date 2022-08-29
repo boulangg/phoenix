@@ -9,7 +9,8 @@
 #include "AddressSpace.hpp"
 
 template <class SuperBlock, class Inode, class Dentry, class File, class AddressSpace>
-class BaseFSInfo {
+class BaseFSInfo
+{
 public:
 	typedef SuperBlock superblock_t;
 	typedef Inode inode_t;
@@ -20,7 +21,8 @@ public:
 
 
 template <class FSInfo>
-class BaseFile : public File {
+class BaseFile : public File
+{
 public:
 	typedef typename FSInfo::superblock_t superblock_t;
 	typedef typename FSInfo::inode_t inode_t;
@@ -33,7 +35,8 @@ public:
 
 	}*/
 
-	BaseFile(inode_t* inode) : File(), _inode(inode) {
+	BaseFile(inode_t* inode) : File(), _inode(inode)
+	{
 		_inode = inode;
 	}
 
@@ -41,7 +44,8 @@ public:
 
 	}*/
 
-	virtual ~BaseFile() {
+	virtual ~BaseFile()
+	{
 
 	}
 
@@ -49,13 +53,15 @@ public:
 		return static_cast<Dentry*>(_dentry);
 	}*/
 
-	virtual Inode* getInode() override {
+	virtual Inode* getInode() override
+	{
 		return static_cast<Inode*>(_inode);
 	}
 
-	virtual int64_t lseek_internal(int64_t offset, uint32_t origin) override {
-		// TODO check overflows
-		switch(origin) {
+	virtual int64_t lseek_internal(int64_t offset, uint32_t origin) override
+	{
+// TODO check overflows
+		switch (origin) {
 		case SEEK_SET:
 			_pos = offset;
 			break;
@@ -78,14 +84,15 @@ public:
 		return 0;
 	}
 
-	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) override {
+	virtual ssize_t read_internal(char* buffer, size_t size, loff_t offset) override
+	{
 		size_t i;
 		for (i = offset; i < offset + size && i < _inode->size; i++) {
 			size_t pageNo = i / PAGE_SIZE;
 			Page* p = _inode->mapping->getPage(pageNo);
-			buffer[i] = ((char*)p->kernelMappAddr)[i%PAGE_SIZE];
+			buffer[i] = ((char*)p->kernelMappAddr)[i % PAGE_SIZE];
 		}
-		return i-offset;
+		return i - offset;
 	}
 
 	/*virtual int doMmap(struct VirtualArea *area) override {
@@ -97,7 +104,8 @@ protected:
 };
 
 template <class FSInfo>
-class BaseDentry : public Dentry {
+class BaseDentry : public Dentry
+{
 public:
 	typedef typename FSInfo::superblock_t superblock_t;
 	typedef typename FSInfo::inode_t inode_t;
@@ -105,22 +113,24 @@ public:
 	typedef typename FSInfo::file_t file_t;
 	typedef typename FSInfo::address_space_t address_space_t;
 
-	BaseDentry(inode_t* inode) : Dentry((Inode*)inode) {
-		//dentry_t* d = this;
-		//_inode = inode;
-		//_parent = this;
-		//_children.push_back(d);
-		//_mount = nullptr;
+	BaseDentry(inode_t* inode) : Dentry((Inode*)inode)
+	{
+//dentry_t* d = this;
+//_inode = inode;
+//_parent = this;
+//_children.push_back(d);
+//_mount = nullptr;
 		_inode = inode;
 	}
 
 	BaseDentry(Dentry* parent, inode_t* inode, std::string name) : Dentry(parent, inode, name),
-			_inode(inode)
+		_inode(inode)
 	{
 
 	}
 
-	virtual ~BaseDentry() {
+	virtual ~BaseDentry()
+	{
 
 	}
 
@@ -145,7 +155,8 @@ protected:
 };
 
 template <class FSInfo>
-class BaseInode : public Inode {
+class BaseInode : public Inode
+{
 public:
 	typedef typename FSInfo::superblock_t superblock_t;
 	typedef typename FSInfo::inode_t inode_t;
@@ -154,12 +165,13 @@ public:
 	typedef typename FSInfo::address_space_t address_space_t;
 
 	BaseInode(superblock_t* sb, std::uint64_t ino, size_t size) : Inode((SuperBlock*)sb, ino, size),
-			sb(sb)
+		sb(sb)
 	{
 
 	}
 
-	virtual ~BaseInode() {
+	virtual ~BaseInode()
+	{
 
 	}
 
@@ -171,7 +183,8 @@ public:
 };
 
 template <class FSInfo>
-class BaseSuperBlock : public SuperBlock {
+class BaseSuperBlock : public SuperBlock
+{
 public:
 	typedef typename FSInfo::superblock_t superblock_t;
 	typedef typename FSInfo::inode_t inode_t;
@@ -179,15 +192,18 @@ public:
 	typedef typename FSInfo::file_t file_t;
 	typedef typename FSInfo::address_space_t address_space_t;
 
-	BaseSuperBlock(FileSystemType* type) : SuperBlock(type), root(nullptr) {
+	BaseSuperBlock(FileSystemType* type) : SuperBlock(type), root(nullptr)
+	{
 
 	}
 
-	virtual ~BaseSuperBlock() {
+	virtual ~BaseSuperBlock()
+	{
 
 	}
 
-	virtual Dentry* getRoot() override {
+	virtual Dentry* getRoot() override
+	{
 		return static_cast<Dentry*>(root);
 	}
 
@@ -196,7 +212,8 @@ public:
 };
 
 template <class FSInfo>
-class BaseAddressSpace : public AddressSpace {
+class BaseAddressSpace : public AddressSpace
+{
 public:
 	typedef typename FSInfo::superblock_t superblock_t;
 	typedef typename FSInfo::inode_t inode_t;
@@ -204,9 +221,11 @@ public:
 	typedef typename FSInfo::file_t file_t;
 	typedef typename FSInfo::address_space_t address_space_t;
 
-	BaseAddressSpace(inode_t* inode) : AddressSpace(inode), _host(inode) {}
+	BaseAddressSpace(inode_t* inode) : AddressSpace(inode), _host(inode)
+	{}
 
-	virtual ~BaseAddressSpace() {
+	virtual ~BaseAddressSpace()
+	{
 
 	}
 

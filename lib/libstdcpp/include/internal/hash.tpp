@@ -47,4 +47,3 @@ _default_integral_hash(unsigned long long)
 #undef _default_integral_hash
 
 }
-

@@ -11,7 +11,8 @@
 
 namespace std {
 template <class Iterator>
-class generic_iterator {
+class generic_iterator
+{
 protected:
 	typedef iterator_traits<Iterator> _trait_type;
 
@@ -22,83 +23,103 @@ public:
 	typedef typename _trait_type::reference         reference;
 	typedef typename _trait_type::iterator_category iterator_category;
 
-	constexpr generic_iterator() noexcept : _current() {}
+	constexpr generic_iterator() noexcept : _current()
+	{}
 
-	explicit generic_iterator(const Iterator& It) noexcept : _current(It) {}
+	explicit generic_iterator(const Iterator& It) noexcept : _current(It)
+	{}
 
-	reference operator*() const noexcept {
+	reference operator*() const noexcept
+	{
 		return *_current;
 	}
 
-	pointer operator->() const noexcept {
+	pointer operator->() const noexcept
+	{
 		return _current;
 	}
 
-	generic_iterator& operator++() noexcept {
+	generic_iterator& operator++() noexcept
+	{
 		++_current;
 		return *this;
 	}
 
-	generic_iterator operator++(int) noexcept {
+	generic_iterator operator++(int) noexcept
+	{
 		return generic_iterator(_current++);
 	}
 
-	generic_iterator& operator--() noexcept {
+	generic_iterator& operator--() noexcept
+	{
 		--_current;
 		return *this;
 	}
 
-	generic_iterator operator--(int) noexcept {
+	generic_iterator operator--(int) noexcept
+	{
 		return generic_iterator(_current--);
 	}
 
-	reference operator[](difference_type n) const noexcept {
+	reference operator[](difference_type n) const noexcept
+	{
 		return _current[n];
 	}
 
-	generic_iterator& operator+=(difference_type n) noexcept {
+	generic_iterator& operator+=(difference_type n) noexcept
+	{
 		_current += n;
 		return *this;
 	}
 
-	generic_iterator operator+(difference_type n) const noexcept {
+	generic_iterator operator+(difference_type n) const noexcept
+	{
 		return generic_iterator(_current + n);
 	}
 
-	generic_iterator& operator-=(difference_type n) const noexcept {
+	generic_iterator& operator-=(difference_type n) const noexcept
+	{
 		_current -= n;
 		return *this;
 	}
 
-	generic_iterator operator-(difference_type n) const noexcept {
+	generic_iterator operator-(difference_type n) const noexcept
+	{
 		return generic_iterator(_current - n);
 	}
 
-	bool operator==(const generic_iterator& it) {
+	bool operator==(const generic_iterator& it)
+	{
 		return (_current == it._current);
 	}
 
-	bool operator!=(const generic_iterator& it) {
+	bool operator!=(const generic_iterator& it)
+	{
 		return (_current != it._current);
 	}
 
-	bool operator<(const generic_iterator& it) {
+	bool operator<(const generic_iterator& it)
+	{
 		return (_current < it._current);
 	}
 
-	bool operator>(const generic_iterator& it) {
+	bool operator>(const generic_iterator& it)
+	{
 		return (_current > it._current);
 	}
 
-	bool operator<=(const generic_iterator& it) {
+	bool operator<=(const generic_iterator& it)
+	{
 		return (_current <= it._current);
 	}
 
-	bool operator>=(const generic_iterator& it) {
+	bool operator>=(const generic_iterator& it)
+	{
 		return (_current >= it._current);
 	}
 
-	const Iterator& base() const {
+	const Iterator& base() const
+	{
 		return _current;
 	}
 
@@ -108,8 +129,9 @@ protected:
 
 template <class Iterator>
 inline typename generic_iterator<Iterator>::difference_type operator-(
-		const generic_iterator<Iterator> lhs,
-		const generic_iterator<Iterator> rhs) {
+	const generic_iterator<Iterator> lhs,
+	const generic_iterator<Iterator> rhs)
+{
 	return lhs.base() - rhs.base();
 }
 

@@ -11,22 +11,27 @@
 #include "InputDevice.hpp"
 #include "InputManager.hpp"
 
-class KeyboardDevice : public InputDevice {
+class KeyboardDevice : public InputDevice
+{
 public:
 
 	static void initKeyboard();
 
-	KeyboardDevice() : InputDevice("Keyboard") {}
-	virtual ~KeyboardDevice() {}
+	KeyboardDevice() : InputDevice("Keyboard")
+	{}
+	virtual ~KeyboardDevice()
+	{}
 
-	int IRQHandler() {
+	int IRQHandler()
+	{
 		uint8_t scancode = inb(0x60);
 		processScancode(scancode);
 		sync();
 		return 0;
 	}
 
-	virtual int handleEvent(unsigned int , unsigned int , int ) override {
+	virtual int handleEvent(unsigned int, unsigned int, int) override
+	{
 		return 0;
 	}
 
@@ -37,8 +42,9 @@ public:
 	};*/
 
 protected:
-	void processScancode(int scancode) {
-		// Scan code set 1 QWERTY hardcoded only for regular key (up to keycode 88) pressed & released
+	void processScancode(int scancode)
+	{
+// Scan code set 1 QWERTY hardcoded only for regular key (up to keycode 88) pressed & released
 		if (scancode <= 88) {
 			reportKey(scancode, 1);
 		} else if (scancode >= 128 && scancode <= 216) {

@@ -20,7 +20,8 @@
 #include <driver/TTYDevice.hpp>
 #include <driver/input/KeyboardDevice.hpp>
 
-struct MBR {
+struct MBR
+{
 	char bootstrap[436];
 	char diskID[10];
 	char MBRPartitionTable[64];
@@ -29,12 +30,16 @@ struct MBR {
 
 static_assert(sizeof(MBR) == 512, "Size is not correct");
 
-struct Partition {
-	union {
-		struct {
+struct Partition
+{
+	union
+	{
+		struct
+		{
 			uint8_t partEntry[16];
 		};
-		struct {
+		struct
+		{
 			std::uint8_t bootIndicator;
 			std::uint8_t startHead;
 			std::uint8_t startSector;
@@ -51,7 +56,8 @@ struct Partition {
 
 static_assert(sizeof(Partition) == 16, "Size is not correct");
 
-void Kernel::Start() {
+void Kernel::Start()
+{
 	Clock::init();
 	KeyboardDevice::initKeyboard();
 
@@ -62,4 +68,3 @@ void Kernel::Start() {
 
 	ProcessScheduler::init();
 }
-

@@ -5,20 +5,23 @@
 #include "InputDevice.hpp"
 #include "InputHandler.hpp"
 
-class InputManager {
+class InputManager
+{
 public:
 	static void init();
 
-	static void registerDevice(InputDevice* device) {
+	static void registerDevice(InputDevice* device)
+	{
 		_devices.push_back(device);
-		for (auto handler: _handlers) {
+		for (auto handler : _handlers) {
 			handler->connect(device, 0);
 		}
 	}
 
-	static void registerHandler(InputHandler* handler) {
+	static void registerHandler(InputHandler* handler)
+	{
 		_handlers.push_back(handler);
-		for (auto device: _devices) {
+		for (auto device : _devices) {
 			handler->connect(device, 0);
 		}
 	}

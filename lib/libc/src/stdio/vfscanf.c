@@ -14,7 +14,8 @@
 // %[*][width][length]specifier
 
 // Supported length options
-enum ARG_LENGTH {
+enum ARG_LENGTH
+{
 	LENGTH_NONE,	// "(none)"
 	LENGTH_HH,		// "hh"
 	LENGTH_H,		// "h"
@@ -27,7 +28,8 @@ enum ARG_LENGTH {
 };
 
 // Supported specifiers
-enum ARG_SPEC {
+enum ARG_SPEC
+{
 	SPEC_INT,				// "i"
 	SPEC_INT_DEC,			// "d"
 	SPEC_UINT_DEC,			// "u"
@@ -52,14 +54,16 @@ enum ARG_SPEC {
 // ".(number)"
 // ".*"
 
-struct arg_info {
+struct arg_info
+{
 	bool ignored;
 	int width;
 	enum ARG_LENGTH length;
 	enum ARG_SPEC specifier;
 };
 
-int hexToInt(char c) {
+int hexToInt(char c)
+{
 	if (isdigit(c)) {
 		return c - '0';
 	} else if (c >= 'a' && c <= 'f') {
@@ -72,7 +76,8 @@ int hexToInt(char c) {
 }
 
 
-int vfscanf(FILE* str, const char* format, va_list arg) {
+int vfscanf(FILE* str, const char* format, va_list arg)
+{
 	CHECK_FILE(str);
 	// TODO
 	(void)str;

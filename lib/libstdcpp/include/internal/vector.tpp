@@ -124,4 +124,3 @@ void vector<T>::clear() {
 }
 
 }
-

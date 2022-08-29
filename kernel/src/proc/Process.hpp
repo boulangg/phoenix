@@ -26,9 +26,10 @@
 
 extern int idle();
 
-extern "C" void save_regs(uint64_t* curr);
+extern "C" void save_regs(uint64_t * curr);
 
-enum class ProcessState{
+enum class ProcessState
+{
 	Running,
 	Ready,
 	SemaphoreBlocked,
@@ -40,11 +41,13 @@ enum class ProcessState{
 	Zombie
 };
 
-struct FileDescriptor {
+struct FileDescriptor
+{
 	int globalFileDescriptor;
 };
 
-class Process {
+class Process
+{
 public:
 	typedef int (*code_type) ();
 	typedef uint64_t size_type;
@@ -61,24 +64,50 @@ public:
 
 	bool operator<(const Process& p) const;
 
-	void setState(ProcessState s){state=s;}
-	ProcessState getState() {return state;}
+	void setState(ProcessState s)
+	{
+		state = s;
+	}
+	ProcessState getState()
+	{
+		return state;
+	}
 
-	 VirtualMapping* getMapping() {return mapping;}
+	VirtualMapping* getMapping()
+	{
+		return mapping;
+	}
 
-	size_type* getRegSave() {return regSave;}
+	size_type* getRegSave()
+	{
+		return regSave;
+	}
 
-	void setName(const std::string& name) {
+	void setName(const std::string& name)
+	{
 		this->name = name;
 	}
 
-	int getPid() {return pid;}
-	int setpgid(int pgid) { this->pgid = pgid; return 0;}
+	int getPid()
+	{
+		return pid;
+	}
+	int setpgid(int pgid)
+	{
+		this->pgid = pgid; return 0;
+	}
 
-	int getpriority() {return prio;}
-	int setpriority(int prio) {this->prio = prio; return 0;}
+	int getpriority()
+	{
+		return prio;
+	}
+	int setpriority(int prio)
+	{
+		this->prio = prio; return 0;
+	}
 
-	static Process* getIdleProc() {
+	static Process* getIdleProc()
+	{
 		if (scheduler == nullptr) {
 			scheduler = new Process(0, idle);
 		}
@@ -87,23 +116,25 @@ public:
 
 	void switch_to_user_mode();
 
-	File* getFile(unsigned int fd) {
-		/*if (fd >= 1 && fd <= 3) {
-			return tty;
-		} else if (fd == 4) {
-			File* f = VirtualFileSystem::filestable[0];
-			return f;
-		} else {*/
-			int gfd = fileDescriptorTable[fd].globalFileDescriptor;
-			if (gfd < 0) {
-				return nullptr;
-			} else {
-				return VirtualFileSystem::filestable[gfd];
-			}
-		//}
+	File* getFile(unsigned int fd)
+	{
+/*if (fd >= 1 && fd <= 3) {
+	return tty;
+} else if (fd == 4) {
+	File* f = VirtualFileSystem::filestable[0];
+	return f;
+} else {*/
+		int gfd = fileDescriptorTable[fd].globalFileDescriptor;
+		if (gfd < 0) {
+			return nullptr;
+		} else {
+			return VirtualFileSystem::filestable[gfd];
+		}
+	//}
 	}
 
-	int open(const char* pathname, int flags, mode_t mode) {
+	int open(const char* pathname, int flags, mode_t mode)
+	{
 		(void)flags; (void)mode;
 		int gfd = VirtualFileSystem::open(procDir, pathname);
 		if (gfd < 0) {
@@ -115,12 +146,13 @@ public:
 				return fd;
 			}
 		}
-		FileDescriptor fdt_entry = {gfd};
+		FileDescriptor fdt_entry = { gfd };
 		fileDescriptorTable.push_back(fdt_entry);
 		return fileDescriptorTable.size() - 1;
 	}
 
-	struct ProcDir* getProcDir() {
+	struct ProcDir* getProcDir()
+	{
 		return procDir;
 	}
 
