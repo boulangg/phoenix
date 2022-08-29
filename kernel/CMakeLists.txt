@@ -13,7 +13,7 @@ set(lib_inc
 		${CMAKE_CURRENT_SOURCE_DIR}/src 
 		${arch_dir})
 set(scripts_dir ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
-set(linker_gen_src ${arch_dir}/build/linker.gen)
+set(linker_gen_src ${arch_dir}/linker.gen)
 set(kernel_name phoenix.bin)
 set(kernel_app_names init;ls)
 
@@ -39,6 +39,7 @@ set(kernel_apps_dir ${CMAKE_CURRENT_BINARY_DIR}/kernel_apps)
 file(MAKE_DIRECTORY ${kernel_apps_dir})
 
 add_custom_target(kernel_apps_dir_populate)
+set_target_properties(kernel_apps_dir_populate PROPERTIES FOLDER kernel_internal)
 foreach(app_name ${kernel_app_names})
 if (NOT TARGET ${app_name}_cp_kernel)
 	add_custom_command(	OUTPUT ${kernel_apps_dir}/${app_name}
@@ -48,6 +49,7 @@ if (NOT TARGET ${app_name}_cp_kernel)
 						DEPENDS ${app_name})
 	add_custom_target(${app_name}_cp_kernel DEPENDS ${kernel_apps_dir}/${app_name})
 	add_dependencies(kernel_apps_dir_populate ${app_name}_cp_kernel)
+	set_target_properties(${app_name}_cp_kernel PROPERTIES FOLDER kernel_internal)
 endif()
 endforeach()
 
@@ -63,6 +65,7 @@ set(user_apps_dir ${CMAKE_CURRENT_BINARY_DIR}/user_apps)
 file(MAKE_DIRECTORY ${user_apps_dir})
 
 add_custom_target(user_apps_dir_populate)
+set_target_properties(user_apps_dir_populate PROPERTIES FOLDER kernel_internal)
 foreach(app_name ${user_app_names})
 if (NOT TARGET ${app_name}_cp_user)
 	add_custom_command(	OUTPUT ${user_apps_dir}/${app_name}
@@ -72,6 +75,7 @@ if (NOT TARGET ${app_name}_cp_user)
 						DEPENDS ${app_name})
 	add_custom_target(${app_name}_cp_user DEPENDS ${user_apps_dir}/${app_name})
 	add_dependencies(user_apps_dir_populate ${app_name}_cp_user)
+	set_target_properties(${app_name}_cp_user PROPERTIES FOLDER kernel_internal)
 endif()
 endforeach()
 
@@ -79,10 +83,14 @@ set(initrd_dir ${CMAKE_CURRENT_BINARY_DIR}/initrd)
 file(MAKE_DIRECTORY ${initrd_dir})
 set(initrd_disk ${initrd_dir}initrd.iso)
 
+
+set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/terminal.sh)
+
 add_custom_command(	OUTPUT ${initrd_disk}
-					COMMAND	${scripts_dir}/initrd.sh ${initrd_disk} ${user_apps_dir}
+					COMMAND	${terminal} -e "${scripts_dir}/initrd.sh ${initrd_disk} ${user_apps_dir}"
 					DEPENDS ${scripts_dir}/initrd.sh ${user_app_names})
 add_custom_target(initrd_disk DEPENDS ${initrd_disk} user_apps_dir_populate)
+set_target_properties(initrd_disk PROPERTIES FOLDER kernel)
 					
 set(initrd_src ${initrd_dir}/initrd.S)
 add_custom_command( OUTPUT ${initrd_src}
@@ -97,6 +105,7 @@ add_custom_command(	OUTPUT ${linker_src}
 					DEPENDS ${linker_gen_src})
 					
 add_custom_target(linker_file DEPENDS ${linker_src})
+set_target_properties(linker_file PROPERTIES FOLDER kernel_internal)
 
 # Generate Kernel file
 SET(CMAKE_EXE_LINKER_FLAGS  "-nodefaultlibs -g -specs=${CMAKE_CURRENT_SOURCE_DIR}/specs -no-pie -T${linker_src}")
@@ -109,4 +118,5 @@ set_target_properties(kernel
 			PROPERTIES 	PREFIX ""
 						OUTPUT_NAME ${kernel_name}
 						SUFFIX "")
+set_target_properties(kernel PROPERTIES FOLDER kernel)
 
