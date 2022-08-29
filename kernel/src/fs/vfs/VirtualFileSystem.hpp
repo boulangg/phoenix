@@ -14,9 +14,11 @@
 #include "Inode.hpp"
 
 
-class FileSystemType {
+class FileSystemType
+{
 public:
-	virtual ~FileSystemType() {
+	virtual ~FileSystemType()
+	{
 
 	}
 
@@ -31,7 +33,8 @@ public:
 
 protected:
 	FileSystemType(std::string name) : name(name),
-			fs_flags(), supers() {
+		fs_flags(), supers()
+	{
 
 	}
 
@@ -41,14 +44,17 @@ public:
 	std::list<SuperBlock*> supers;
 };
 
-struct ProcDir {
+struct ProcDir
+{
 	Dentry* rootDir;
 	Dentry* workDir;
 
-	ProcDir(Dentry* root, Dentry* work) : rootDir(root), workDir(work) {}
+	ProcDir(Dentry* root, Dentry* work) : rootDir(root), workDir(work)
+	{}
 };
 
-class VirtualFileSystem {
+class VirtualFileSystem
+{
 public:
 	static void initVFS();
 
@@ -64,10 +70,11 @@ public:
 	static int lstat(const char*, struct stat*);
 
 	static int mount(const char* source, const char* target,
-			const char* fileSystemType, std::uint64_t mountFlags,
-			const void* data);
+					 const char* fileSystemType, std::uint64_t mountFlags,
+					 const void* data);
 
-	static FileSystemType* findFS(const char* filesystemtype) {
+	static FileSystemType* findFS(const char* filesystemtype)
+	{
 		for (auto fst : fileSystemType) {
 			if (fst->name.compare(filesystemtype) == 0) {
 				return fst;
@@ -76,11 +83,13 @@ public:
 		return nullptr;
 	}
 
-	static int getdents64(unsigned int fd, struct linux_dirent64 *dirp, size_t count) {
+	static int getdents64(unsigned int fd, struct linux_dirent64* dirp, size_t count)
+	{
 		return filestable[fd]->getdents64(dirp, count);
 	}
 
-	static void registerFS(FileSystemType* fs) {
+	static void registerFS(FileSystemType* fs)
+	{
 		fileSystemType.push_back(fs);
 	}
 
@@ -115,4 +124,3 @@ public:
 	// Register file system
 	static int registerFileSystem(FileSystem* fs);
 };*/
-

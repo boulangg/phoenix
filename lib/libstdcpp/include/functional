@@ -9,17 +9,21 @@
 namespace std {
 
 template< class T >
-class less {
+class less
+{
 public:
-	bool operator()( const T& lhs, const T& rhs ) const {
+	bool operator()(const T& lhs, const T& rhs) const
+	{
 		return lhs < rhs;
 	}
 };
 
 template< class T >
-class greater {
+class greater
+{
 public:
-	bool operator()( const T& lhs, const T& rhs ) const {
+	bool operator()(const T& lhs, const T& rhs) const
+	{
 		return lhs > rhs;
 	}
 };
@@ -28,12 +32,14 @@ template<class Key>
 struct hash;
 
 template <class T>
-struct equal_to {
+struct equal_to
+{
 	typedef T first_argument_type;
 	typedef T second_argument_type;
 	typedef bool result_type;
-	bool operator()(const T& x, const T& y) const {
-		return x==y;
+	bool operator()(const T& x, const T& y) const
+	{
+		return x == y;
 	}
 };
 

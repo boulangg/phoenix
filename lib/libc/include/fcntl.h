@@ -44,17 +44,18 @@ extern "C" {
 
 #define O_LARGEFILE 0x00000000
 
-struct flock_t {
-	short l_type;
-	short l_whence;
-	off_t l_start;
-	off_t l_len;
-	pid_t l_pid;
-};
+	struct flock_t
+	{
+		short l_type;
+		short l_whence;
+		off_t l_start;
+		off_t l_len;
+		pid_t l_pid;
+	};
 
-int creat(const char* path, mode_t mode);
-int fcntl(int fd, int cmd, ...);
-int open(const char* pathname, int flags, ...);
+	int creat(const char* path, mode_t mode);
+	int fcntl(int fd, int cmd, ...);
+	int open(const char* pathname, int flags, ...);
 
 #ifdef __cplusplus
 }

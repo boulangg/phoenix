@@ -4,7 +4,8 @@
 
 #include <syscall/syscall.h>
 
-int open(const char *pathname, int flags, ...) {
+int open(const char* pathname, int flags, ...)
+{
 	va_list(va);
 	va_start(va, flags);
 	mode_t mode = va_arg(va, mode_t);

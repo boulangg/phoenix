@@ -25,7 +25,7 @@
 
 
 static void fill_segment_descriptor_64(uint8_t index, uint64_t base, uint32_t limit,
-		uint8_t flags, uint8_t sizebits)
+									   uint8_t flags, uint8_t sizebits)
 {
 	uint32_t p0, p1, p2, p3;
 
@@ -43,12 +43,12 @@ static void fill_segment_descriptor_64(uint8_t index, uint64_t base, uint32_t li
 	p2 = base >> 32;
 	p3 = 0;
 
-	gdt[index] = (((uint64_t) p1) << 32) | p0;
-	gdt[index+1] = (((uint64_t) p3) << 32) | p2;
+	gdt[index] = (((uint64_t)p1) << 32) | p0;
+	gdt[index + 1] = (((uint64_t)p3) << 32) | p2;
 }
 
 static void fill_segment_descriptor(uint8_t index, uint32_t base, uint32_t limit,
-		uint8_t flags, uint8_t sizebits)
+									uint8_t flags, uint8_t sizebits)
 {
 	uint32_t p0, p1;
 
@@ -64,7 +64,7 @@ static void fill_segment_descriptor(uint8_t index, uint32_t base, uint32_t limit
 	p1 |= (sizebits & 0xF) << 20;
 	p1 |= base & 0xFF000000;
 
-	gdt[index] = (((uint64_t) p1) << 32) | p0;
+	gdt[index] = (((uint64_t)p1) << 32) | p0;
 
 }
 
@@ -73,20 +73,20 @@ void SetupProcessor::setupGDT()
 	// KERNEL_CS and KERNEL_DS are already set
 	// TSS is set separately
 	fill_segment_descriptor(USER_CS_INDEX, USER_CS_BASE,
-			USER_CS_LIMIT, USER_CS_FLAGS, USER_CS_SIZEB);
+							USER_CS_LIMIT, USER_CS_FLAGS, USER_CS_SIZEB);
 	fill_segment_descriptor(USER_DS_INDEX, USER_DS_BASE,
-			USER_DS_LIMIT, USER_DS_FLAGS, USER_DS_SIZEB);
+							USER_DS_LIMIT, USER_DS_FLAGS, USER_DS_SIZEB);
 	fill_segment_descriptor(USER_CS_32_INDEX, USER_CS_32_BASE,
-			USER_CS_32_LIMIT, USER_CS_FLAGS, USER_CS_32_SIZEB);
+							USER_CS_32_LIMIT, USER_CS_FLAGS, USER_CS_32_SIZEB);
 	fill_segment_descriptor(USER_DS_32_INDEX, USER_DS_32_BASE,
-			USER_DS_32_LIMIT, USER_DS_32_FLAGS, USER_DS_32_SIZEB);
+							USER_DS_32_LIMIT, USER_DS_32_FLAGS, USER_DS_32_SIZEB);
 	set_GDT(GDT_SIZE, gdt);
 }
 
 
 void SetupProcessor::setupIDT()
 {
-	set_IDT(sizeof(idt)-1, idt);
+	set_IDT(sizeof(idt) - 1, idt);
 }
 
 void SetupProcessor::setupTSS()
@@ -94,18 +94,18 @@ void SetupProcessor::setupTSS()
 	tss.rsp0 = (uint64_t*)KERNEL_STACK_TOP;
 	tss.ist1 = (uint64_t*)USER_INT_STACK_END;
 	fill_segment_descriptor_64(TSS_INDEX, TSS_BASE,
-			TSS_LIMIT, TSS_FLAGS, TSS_SIZEB);
+							   TSS_LIMIT, TSS_FLAGS, TSS_SIZEB);
 	set_TSS(SEL_TSS);
 }
 
 void SetupProcessor::copyMultibootInfo()
 {
 	uint32_t* orig_multiboot_info_ptr = (uint32_t*)(uint64_t)multiboot_info;
-	uint32_t size = ((orig_multiboot_info_ptr[0]-1)>> 2) + 1;
+	uint32_t size = ((orig_multiboot_info_ptr[0] - 1) >> 2) + 1;
 	if (size > MULTIBOOT_INFO_SIZE) {
 		size = MULTIBOOT_INFO_SIZE;
 	}
-	for (uint32_t i = 0; i < size ; ++i) {
+	for (uint32_t i = 0; i < size; ++i) {
 		multiboot_info_tags[i] = orig_multiboot_info_ptr[i];
 	}
 }
@@ -133,19 +133,21 @@ void SetupProcessor::setupPIC()
 	outb(0xa0, 0x20);
 }
 
-static uint64_t* get_free_page(uint64_t nb_pages, uint64_t page_size) {
+static uint64_t* get_free_page(uint64_t nb_pages, uint64_t page_size)
+{
 	uint64_t* physical_pages = (uint64_t*)(uint64_t)kernel_page_limit;
-	kernel_page_limit += nb_pages*page_size;
-	for (uint64_t i = 0; i < nb_pages*page_size/8; i++) {
+	kernel_page_limit += nb_pages * page_size;
+	for (uint64_t i = 0; i < nb_pages * page_size / 8; i++) {
 		physical_pages[i] = 0;
 	}
 	return physical_pages;
 }
 
-static void initPageArray(Page* page_array, uint64_t nb_phys_pages, multiboot_tag_mmap *mmap) {
-	for (uint64_t i=0; i < nb_phys_pages; ++i) {
-		page_array[i].physAddr = (uint64_t*)(i*PAGE_SIZE);
-		page_array[i].kernelMappAddr = (uint64_t*)(i*PAGE_SIZE+KERNEL_START);
+static void initPageArray(Page* page_array, uint64_t nb_phys_pages, multiboot_tag_mmap* mmap)
+{
+	for (uint64_t i = 0; i < nb_phys_pages; ++i) {
+		page_array[i].physAddr = (uint64_t*)(i * PAGE_SIZE);
+		page_array[i].kernelMappAddr = (uint64_t*)(i * PAGE_SIZE + KERNEL_START);
 		page_array[i].type = PageType::UNUSABLE;
 	}
 
@@ -160,10 +162,10 @@ static void initPageArray(Page* page_array, uint64_t nb_phys_pages, multiboot_ta
 				page_array[i].type = PageType::FREE;
 			}
 		}
-		mmap_entry = (multiboot_memory_map_t *)((unsigned long)mmap_entry + mmap->entry_size);
+		mmap_entry = (multiboot_memory_map_t*)((unsigned long)mmap_entry + mmap->entry_size);
 	}
 
-	uint64_t kernel_index_start = (((uint64_t)&_kernel_start)- KERNEL_HIGH_VMA) / PAGE_SIZE;
+	uint64_t kernel_index_start = (((uint64_t)&_kernel_start) - KERNEL_HIGH_VMA) / PAGE_SIZE;
 	uint64_t kernel_index_end = (kernel_page_limit) / PAGE_SIZE;
 
 	for (uint64_t i = kernel_index_start; i < kernel_index_end; i++) {
@@ -174,7 +176,8 @@ static void initPageArray(Page* page_array, uint64_t nb_phys_pages, multiboot_ta
 
 }
 
-static void mapLinearPage(uint64_t* PML4T, uint64_t* physAddr, uint64_t* virtAddr) {
+static void mapLinearPage(uint64_t* PML4T, uint64_t* physAddr, uint64_t* virtAddr)
+{
 	uint16_t highLvlFlags = 0x3;
 	uint16_t flags = 0x3;
 	uint64_t PML4T_index = ((uint64_t)virtAddr >> PML4E_INDEX_OFFSET) & PML4E_INDEX_MASK;
@@ -198,23 +201,24 @@ static void mapLinearPage(uint64_t* PML4T, uint64_t* physAddr, uint64_t* virtAdd
 	PT[PTE_index] = PTE | flags;
 }
 
-void SetupProcessor::setupMemoryMapping() {
+void SetupProcessor::setupMemoryMapping()
+{
 	uint64_t max_available_addr = 0x0;
-	multiboot_tag *tag;
-	tag = (multiboot_tag*) (multiboot_info_tags+2);
+	multiboot_tag* tag;
+	tag = (multiboot_tag*)(multiboot_info_tags + 2);
 	while (tag->type != MULTIBOOT_TAG_TYPE_MMAP &&
-			tag->type != MULTIBOOT_TAG_TYPE_END) {
-		tag=(multiboot_tag *)((uint8_t*)tag+((tag->size+7)&~7));
+		   tag->type != MULTIBOOT_TAG_TYPE_END) {
+		tag = (multiboot_tag*)((uint8_t*)tag + ((tag->size + 7) & ~7));
 	}
 
 	if (tag->type == MULTIBOOT_TAG_TYPE_MMAP) {
-		multiboot_tag_mmap *mmap = (multiboot_tag_mmap*)tag;
+		multiboot_tag_mmap* mmap = (multiboot_tag_mmap*)tag;
 		multiboot_mmap_entry* mmap_entry;
 		mmap_entry = mmap->entries;
 		while ((char*)mmap_entry < ((char*)tag + tag->size)) {
 			uint64_t mmap_entry_addr_end = mmap_entry->addr + mmap_entry->len;
 			if (mmap_entry->type == MULTIBOOT_MEMORY_AVAILABLE) {
-				if ( mmap_entry_addr_end > max_available_addr) {
+				if (mmap_entry_addr_end > max_available_addr) {
 					max_available_addr = mmap_entry_addr_end;
 				}
 			}
@@ -224,30 +228,30 @@ void SetupProcessor::setupMemoryMapping() {
 			if (mmap_entry_addr_start < EARLY_FULL_MAPPING) {
 				mmap_entry_addr_start = EARLY_FULL_MAPPING;
 			}
-			for (uint64_t i = mmap_entry_addr_start; i < mmap_entry_addr_end; i+= PAGE_SIZE) {
-				mapLinearPage(kernel_pml4t, (uint64_t*)i, (uint64_t*)(KERNEL_MAPPING_START+i));
+			for (uint64_t i = mmap_entry_addr_start; i < mmap_entry_addr_end; i += PAGE_SIZE) {
+				mapLinearPage(kernel_pml4t, (uint64_t*)i, (uint64_t*)(KERNEL_MAPPING_START + i));
 			}
 
-			mmap_entry = (multiboot_memory_map_t *)((unsigned long)mmap_entry + mmap->entry_size);
+			mmap_entry = (multiboot_memory_map_t*)((unsigned long)mmap_entry + mmap->entry_size);
 		}
 
 		// Initialize physical pages allocator
-		uint64_t nb_physical_pages = (max_available_addr + PAGE_SIZE-1) / PAGE_SIZE;
-		uint64_t nb_pages_required = (nb_physical_pages*sizeof(Page) + PAGE_SIZE-1) / PAGE_SIZE;
+		uint64_t nb_physical_pages = (max_available_addr + PAGE_SIZE - 1) / PAGE_SIZE;
+		uint64_t nb_pages_required = (nb_physical_pages * sizeof(Page) + PAGE_SIZE - 1) / PAGE_SIZE;
 		Page* page_array = (Page*)get_free_page(nb_pages_required, PAGE_SIZE);
-		page_array = (Page*)((uint64_t)page_array+KERNEL_MAPPING_START);
+		page_array = (Page*)((uint64_t)page_array + KERNEL_MAPPING_START);
 		initPageArray(page_array, nb_physical_pages, mmap);
 		PhysicalAllocator::initAllocator(page_array, nb_physical_pages);
 
 		PageTable kernelPageTable = PageTable::getKernelPageTable();
 		// Setup interruption stack
-		for (uint64_t addr = KERNEL_IST1_BOTTOM; addr < KERNEL_IST1_TOP; addr+=PAGE_SIZE)  {
+		for (uint64_t addr = KERNEL_IST1_BOTTOM; addr < KERNEL_IST1_TOP; addr += PAGE_SIZE) {
 			Page* page = PhysicalAllocator::allocZeroedPage();
 			kernelPageTable.mapPage(page->physAddr, (uint64_t*)addr, 0x3, 0x3);
 		}
 
 		// Setup syscall stack
-		for (uint64_t addr = KERNEL_SYSCALL_BOTTOM; addr < KERNEL_SYSCALL_TOP; addr+=PAGE_SIZE)  {
+		for (uint64_t addr = KERNEL_SYSCALL_BOTTOM; addr < KERNEL_SYSCALL_TOP; addr += PAGE_SIZE) {
 			Page* page = PhysicalAllocator::allocZeroedPage();
 			kernelPageTable.mapPage(page->physAddr, (uint64_t*)addr, 0x3, 0x3);
 		}
@@ -257,7 +261,8 @@ void SetupProcessor::setupMemoryMapping() {
 	}
 }
 
-void SetupProcessor::setupSyscall() {
+void SetupProcessor::setupSyscall()
+{
 	enable_syscall();
 	uint64_t STAR = ((((uint64_t)SEL_USER_CS_32) << 48) | (((uint64_t)SEL_KERNEL_CS) << 32) | 0);
 	load_syscall(STAR, (uint64_t)syscall64_handler, 0, 0);
@@ -266,7 +271,8 @@ void SetupProcessor::setupSyscall() {
 typedef void (*func_ptr)(void);
 extern func_ptr _init_array_start[0], _init_array_end[0];
 
-void SetupProcessor::setupGlobalConstructors() {
+void SetupProcessor::setupGlobalConstructors()
+{
 	for (auto fn = _init_array_start; fn != _init_array_end; fn++) {
 		(*fn)();
 	}

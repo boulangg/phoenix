@@ -6,11 +6,12 @@
 char** environ;
 auxv_t* __auxv_ptr;
 
-void init_sys(char** envp) {
+void init_sys(char** envp)
+{
 	environ = envp;
 
 	size_t i = 0;
-	while(environ[i] != 0) {
+	while (environ[i] != 0) {
 		i++;
 	}
 

@@ -1,9 +1,11 @@
 
 #include <unistd.h>
 
-class A {
+class A
+{
 public:
-	A(int i) : i(i) {}
+	A(int i) : i(i)
+	{}
 
 	static int a;
 	static A* b;
@@ -16,8 +18,9 @@ A* A::b = new A(3);
 
 int a = 1;
 
-int main() {
-	while(1) {
+int main()
+{
+	while (1) {
 
 	}
 	static int bss[8000];

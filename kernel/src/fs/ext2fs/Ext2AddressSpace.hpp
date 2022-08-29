@@ -8,9 +8,11 @@
 
 #include "Ext2SuperBlock.hpp"
 
-class Ext2AddressSpace : public BaseAddressSpace<Ext2FSInfo> {
+class Ext2AddressSpace : public BaseAddressSpace<Ext2FSInfo>
+{
 public:
-	Ext2AddressSpace(Ext2Inode* inode) : BaseAddressSpace(inode) {}
+	Ext2AddressSpace(Ext2Inode* inode) : BaseAddressSpace(inode)
+	{}
 
 	virtual int readPage_internal(Page* p) override;
 };

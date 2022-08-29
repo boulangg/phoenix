@@ -6,7 +6,8 @@
 class Inode;
 class File;
 
-class Dentry {
+class Dentry
+{
 public:
 	// d_release
 	virtual ~Dentry();
@@ -33,7 +34,8 @@ public:
 	//Dentry* getParent() const;
 	//void setParent(Dentry* parent);
 
-	std::string getPathName(bool isParent = false) {
+	std::string getPathName(bool isParent = false)
+	{
 		std::string ret("");
 		if (parent == this) {
 			ret += std::string("/");
@@ -53,7 +55,8 @@ public:
 
 	bool isRoot();
 
-	virtual Inode* getInode() {
+	virtual Inode* getInode()
+	{
 		return inode;
 	}
 
@@ -73,4 +76,3 @@ public:
 	std::list<Dentry*> children;
 	Dentry* mount;
 };
-

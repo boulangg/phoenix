@@ -1,12 +1,14 @@
 #include <sys/types.h>
 
-struct timeval {
+struct timeval
+{
 	time_t      tv_sec;     /* seconds */
 	suseconds_t tv_usec;    /* microseconds */
 };
 
 
-struct tms {
+struct tms
+{
 	clock_t tms_utime;  // user CPU time
 	clock_t tms_stime;  // system CPU time
 	clock_t tms_cutime; // user CPU of terminated child processes

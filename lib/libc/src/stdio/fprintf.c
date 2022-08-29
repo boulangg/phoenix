@@ -6,7 +6,8 @@
 
 #include <stdio.h>
 
-int fprintf(FILE* str, const char* format, ...) {
+int fprintf(FILE* str, const char* format, ...)
+{
 	va_list v;
 	va_start(v, format);
 	int res = vfprintf(str, format, v);

@@ -6,7 +6,8 @@
 
 #include <stdio.h>
 
-int fscanf(FILE* str, const char* format, ...) {
+int fscanf(FILE* str, const char* format, ...)
+{
 	va_list v;
 	va_start(v, format);
 	int res = vfscanf(str, format, v);

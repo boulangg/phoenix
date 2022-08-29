@@ -3,11 +3,14 @@
 #include "BlockIO.hpp"
 #include <string>
 
-class BlockStorageDevice {
+class BlockStorageDevice
+{
 public:
-	virtual ~BlockStorageDevice() {}
-	// TODO replace by processRequests
-	void loadBlockIO(BlockIO bio) {
+	virtual ~BlockStorageDevice()
+	{}
+// TODO replace by processRequests
+	void loadBlockIO(BlockIO bio)
+	{
 		processBlockIO(bio);
 	}
 	//void processRequests(RequestQueue);
@@ -16,11 +19,13 @@ public:
 	virtual std::uint64_t getSectorNumber() = 0;
 	virtual std::uint32_t getSectorSize() = 0;
 
-	const std::string& getName() {
+	const std::string& getName()
+	{
 		return name;
 	}
 
-	void setName(std::string name) {
+	void setName(std::string name)
+	{
 		this->name = name;
 	}
 

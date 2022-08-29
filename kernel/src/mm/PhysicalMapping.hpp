@@ -13,7 +13,8 @@
 #include <vector>
 #include <include/constant.h>
 
-class PhysicalMapping {
+class PhysicalMapping
+{
 public:
 	PhysicalMapping(uint64_t nb);
 	PhysicalMapping(const PhysicalMapping&);
@@ -32,10 +33,11 @@ public:
 
 
 private:
-	void writeOnPage(Page* pg, const char* src, int offset, int size) {
-		// TODO check validity of arguments
+	void writeOnPage(Page* pg, const char* src, int offset, int size)
+	{
+// TODO check validity of arguments
 		char* dst = (char*)(pg->kernelMappAddr) + offset;
-		for (int i = 0 ; i < size; ++i) {
+		for (int i = 0; i < size; ++i) {
 			dst[i] = src[i];
 		}
 	}

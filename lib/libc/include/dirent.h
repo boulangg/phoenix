@@ -7,24 +7,25 @@
 extern "C" {
 #endif
 
-typedef struct DIR DIR;
+	typedef struct DIR DIR;
 #define NAME_MAX 255
 
-struct dirent {
-    ino_t          d_ino;       /* numéro d'inœud */
-    char           d_name[NAME_MAX + 1];   /* nom du fichier */
-    //off_t          d_off;       /* décalage jusqu'à la dirent suivante */
-    //unsigned short d_reclen;    /* longueur de cet enregistrement */
-    //unsigned char  d_type;      /* type du fichier */
-};
+	struct dirent
+	{
+		ino_t          d_ino;       /* numéro d'inœud */
+		char           d_name[NAME_MAX + 1];   /* nom du fichier */
+		//off_t          d_off;       /* décalage jusqu'à la dirent suivante */
+		//unsigned short d_reclen;    /* longueur de cet enregistrement */
+		//unsigned char  d_type;      /* type du fichier */
+	};
 
-int closedir(DIR *);
-DIR *opendir(const char *);
-struct dirent *readdir(DIR *);
-int readdir_r(DIR *, struct dirent *, struct dirent **);
-void rewinddir(DIR *);
-void seekdir(DIR *, long int);
-long int telldir(DIR *);
+	int closedir(DIR*);
+	DIR* opendir(const char*);
+	struct dirent* readdir(DIR*);
+	int readdir_r(DIR*, struct dirent*, struct dirent**);
+	void rewinddir(DIR*);
+	void seekdir(DIR*, long int);
+	long int telldir(DIR*);
 
 #ifdef __cplusplus
 }

@@ -12,7 +12,8 @@
 #include <driver/BlockStorageDevice.hpp>
 
 
-struct IDEChannelRegisters {
+struct IDEChannelRegisters
+{
 	std::uint16_t base;
 	std::uint16_t ctrl;
 	std::uint16_t bmIDE;
@@ -97,21 +98,24 @@ typedef std::uint8_t IDEDiskType;
 
 class IDEChannel;
 
-class IDEDrive : public BlockStorageDevice {
+class IDEDrive : public BlockStorageDevice
+{
 
 public:
-	virtual std::uint64_t getStorageSize() override ;
+	virtual std::uint64_t getStorageSize() override;
 	virtual std::uint32_t getSectorSize();
-	virtual std::uint64_t getSectorNumber() {
+	virtual std::uint64_t getSectorNumber()
+	{
 		return nbSectors;
 	}
 
 
-	void getDriveModel(char* buffer, size_t size) {
+	void getDriveModel(char* buffer, size_t size)
+	{
 		uint64_t k;
 		for (k = 0; (k < 40) && (k < size - 2); k += 2) {
-			buffer[k] = identifyData.modelNumber[k+1];
-			buffer[k+1] = identifyData.modelNumber[k];
+			buffer[k] = identifyData.modelNumber[k + 1];
+			buffer[k + 1] = identifyData.modelNumber[k];
 		}
 		buffer[k] = '\0';
 	}

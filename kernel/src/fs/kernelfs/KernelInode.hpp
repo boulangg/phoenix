@@ -6,14 +6,15 @@ class KernelSuperBlock;
 
 #include <boot/processor_struct.hpp>
 
-class KernelInode : public BaseInode<KernelFSInfo> {
+class KernelInode : public BaseInode<KernelFSInfo>
+{
 public:
 	virtual ~KernelInode();
 
 	// inode_operations
 	virtual Dentry* create(Dentry*, std::string);
 
-	virtual Dentry * lookup(Dentry* parent, std::string name);
+	virtual Dentry* lookup(Dentry* parent, std::string name);
 
 	// file_operation
 
@@ -31,4 +32,3 @@ public:
 	KernelSuperBlock* sb;
 	struct apps_desc app;
 };
-

@@ -8,33 +8,45 @@
 
 #include <cstddef>
 
-namespace std
+namespace std {
+
+template< class T > struct remove_reference
 {
-
-template< class T > struct remove_reference      {typedef T type;};
-template< class T > struct remove_reference<T&>  {typedef T type;};
-template< class T > struct remove_reference<T&&> {typedef T type;};
-
-template <class T, T v>
-struct integral_constant {
-	static constexpr T value = v;
-	typedef T value_type;
-	typedef integral_constant<T,v> type;
-	constexpr operator T() { return v; }
+	typedef T type;
+};
+template< class T > struct remove_reference<T&>
+{
+	typedef T type;
+};
+template< class T > struct remove_reference<T&&>
+{
+	typedef T type;
 };
 
-typedef integral_constant<bool,true> true_type;
-typedef integral_constant<bool,false> false_type;
+template <class T, T v>
+struct integral_constant
+{
+	static constexpr T value = v;
+	typedef T value_type;
+	typedef integral_constant<T, v> type;
+	constexpr operator T()
+	{
+		return v;
+	}
+};
+
+typedef integral_constant<bool, true> true_type;
+typedef integral_constant<bool, false> false_type;
 
 template<size_t len, size_t align>
 struct aligned_storage
 {
-      union type
-      {
-      unsigned char data[len];
-      struct __attribute__((__aligned__((align)))) { } _align;
-      };
+	union type
+	{
+		unsigned char data[len];
+		struct __attribute__((__aligned__((align))))
+		{} _align;
+	};
 };
 
 }
-

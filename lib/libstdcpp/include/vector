@@ -16,7 +16,8 @@
 namespace std {
 
 template <class T>
-class vector {
+class vector
+{
 public:
 	typedef T value_type;
 	typedef value_type& reference;
@@ -27,21 +28,27 @@ public:
 	typedef generic_iterator<pointer> iterator;
 
 	vector();
-	vector (size_type n, const_reference val);
+	vector(size_type n, const_reference val);
 	vector(const vector& v);
 	vector(vector&& v);
 
 	~vector();
 
-	iterator begin() const {return iterator(_data);}
-	iterator end() const {return iterator(_data+_size);}
+	iterator begin() const
+	{
+		return iterator(_data);
+	}
+	iterator end() const
+	{
+		return iterator(_data + _size);
+	}
 
 	reference operator[](int pos) const;
 
-    vector<T>& operator=(const vector<T>& v);
-    vector<T>& operator=(vector<T>&& v);
+	vector<T>& operator=(const vector<T>& v);
+	vector<T>& operator=(vector<T>&& v);
 
-	reference front() const ;
+	reference front() const;
 	reference back();
 
 	void push_back(const_reference val);
@@ -64,4 +71,3 @@ private:
 }
 
 #include "internal/vector.tpp"
-

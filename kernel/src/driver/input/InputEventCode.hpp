@@ -289,7 +289,7 @@
 #define KEY_MEDIA          226
 
 #define KEY_SWITCHVIDEOMODE 227    /* Cycle between available video
-                       outputs (Monitor/LCD/TV-out/etc) */
+					   outputs (Monitor/LCD/TV-out/etc) */
 #define KEY_KBDILLUMTOGGLE  228
 #define KEY_KBDILLUMDOWN    229
 #define KEY_KBDILLUMUP      230
@@ -312,8 +312,8 @@
 #define KEY_VIDEO_PREV        242    /* drive previous video source */
 #define KEY_BRIGHTNESS_CYCLE  243    /* brightness up, after max is min */
 #define KEY_BRIGHTNESS_AUTO   244    /* Set Auto Brightness: manual
-                      brightness control is off,
-                      rely on ambient */
+					  brightness control is off,
+					  rely on ambient */
 #define KEY_BRIGHTNESS_ZERO   KEY_BRIGHTNESS_AUTO
 #define KEY_DISPLAY_OFF       245    /* display device to off state */
 
@@ -757,7 +757,7 @@
 #define SW_TABLET_MODE           0x01  /* set = tablet mode */
 #define SW_HEADPHONE_INSERT      0x02  /* set = inserted */
 #define SW_RFKILL_ALL            0x03  /* rfkill master switch, type "any"
-                     set = radio enabled */
+					 set = radio enabled */
 #define SW_RADIO                 SW_RFKILL_ALL    /* deprecated */
 #define SW_MICROPHONE_INSERT     0x04  /* set = inserted */
 #define SW_DOCK                  0x05  /* set = plugged into dock */
@@ -824,7 +824,8 @@
 #define SND_MAX          0x07
 #define SND_CNT      (SND_MAX+1)
 
-struct InputValue {
+struct InputValue
+{
 	uint16_t type;
 	uint16_t code;
 	int32_t value;

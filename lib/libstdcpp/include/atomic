@@ -9,7 +9,8 @@
 namespace std {
 
 // 29.3, order and consistency
-typedef enum memory_order {
+typedef enum memory_order
+{
 	memory_order_relaxed,
 	memory_order_consume,
 	memory_order_acquire,
@@ -35,7 +36,8 @@ T kill_dependency(T y) noexcept;
 
 // 29.5, generic types
 template <class T>
-struct atomic {
+struct atomic
+{
 	bool is_lock_free() const volatile noexcept;
 	bool is_lock_free() const noexcept;
 	void store(T, memory_order = memory_order_seq_cst) volatile noexcept;
@@ -71,35 +73,35 @@ template<class T> struct atomic<T*>;
 // Table 145 or inferred from Table 146 or from bool.
 // If it is atomic<T>, then the declaration is a template
 // declaration prefixed with template <class T>.
-bool atomic_is_lock_free(const volatile atomic-type *) noexcept;
-bool atomic_is_lock_free(const atomic-type *) noexcept;
-void atomic_init(volatile atomic-type *, T) noexcept;
-void atomic_init(atomic-type *, T) noexcept;
-void atomic_store(volatile atomic-type *, T) noexcept;
-void atomic_store(atomic-type *, T) noexcept;
-void atomic_store_explicit(volatile atomic-type *, T, memory_order) noexcept;
-void atomic_store_explicit(atomic-type *, T, memory_order) noexcept;
-T atomic_load(const volatile atomic-type *) noexcept;
-T atomic_load(const atomic-type *) noexcept;
-T atomic_load_explicit(const volatile atomic-type *, memory_order) noexcept;
-T atomic_load_explicit(const atomic-type *, memory_order) noexcept;
-T atomic_exchange(volatile atomic-type *, T) noexcept;
-T atomic_exchange(atomic-type *, T) noexcept;
-T atomic_exchange_explicit(volatile atomic-type *, T, memory_order) noexcept;
-T atomic_exchange_explicit(atomic-type *, T, memory_order) noexcept;
-bool atomic_compare_exchange_weak(volatile atomic-type *, T*, T) noexcept;
-bool atomic_compare_exchange_weak(atomic-type *, T*, T) noexcept;
-bool atomic_compare_exchange_strong(volatile atomic-type *, T*, T) noexcept;
-bool atomic_compare_exchange_strong(atomic-type *, T*, T) noexcept;
-bool atomic_compare_exchange_weak_explicit(volatile atomic-type *, T*, T,
-memory_order, memory_order) noexcept;
-bool atomic_compare_exchange_weak_explicit(atomic-type *, T*, T,
-memory_order, memory_order) noexcept;
-bool atomic_compare_exchange_strong_explicit(volatile atomic-type *, T*, T,
-memory_order, memory_order) noexcept;
-bool atomic_compare_exchange_strong_explicit(atomic-type *, T*, T,
-memory_order, memory_order) noexcept;
-// 29.6.2, templated operations on atomic types
+bool atomic_is_lock_free(const volatile atomic - type*) noexcept;
+bool atomic_is_lock_free(const atomic - type*) noexcept;
+void atomic_init(volatile atomic - type*, T) noexcept;
+void atomic_init(atomic - type*, T) noexcept;
+void atomic_store(volatile atomic - type*, T) noexcept;
+void atomic_store(atomic - type*, T) noexcept;
+void atomic_store_explicit(volatile atomic - type*, T, memory_order) noexcept;
+void atomic_store_explicit(atomic - type*, T, memory_order) noexcept;
+T atomic_load(const volatile atomic - type*) noexcept;
+T atomic_load(const atomic - type*) noexcept;
+T atomic_load_explicit(const volatile atomic - type*, memory_order) noexcept;
+T atomic_load_explicit(const atomic - type*, memory_order) noexcept;
+T atomic_exchange(volatile atomic - type*, T) noexcept;
+T atomic_exchange(atomic - type*, T) noexcept;
+T atomic_exchange_explicit(volatile atomic - type*, T, memory_order) noexcept;
+T atomic_exchange_explicit(atomic - type*, T, memory_order) noexcept;
+bool atomic_compare_exchange_weak(volatile atomic - type*, T*, T) noexcept;
+bool atomic_compare_exchange_weak(atomic - type*, T*, T) noexcept;
+bool atomic_compare_exchange_strong(volatile atomic - type*, T*, T) noexcept;
+bool atomic_compare_exchange_strong(atomic - type*, T*, T) noexcept;
+bool atomic_compare_exchange_weak_explicit(volatile atomic - type*, T*, T,
+										   memory_order, memory_order) noexcept;
+bool atomic_compare_exchange_weak_explicit(atomic - type*, T*, T,
+										   memory_order, memory_order) noexcept;
+bool atomic_compare_exchange_strong_explicit(volatile atomic - type*, T*, T,
+											 memory_order, memory_order) noexcept;
+bool atomic_compare_exchange_strong_explicit(atomic - type*, T*, T,
+											 memory_order, memory_order) noexcept;
+											 // 29.6.2, templated operations on atomic types
 template <class T>
 T atomic_fetch_add(volatile atomic<T>*, T) noexcept;
 template <class T>
@@ -146,26 +148,26 @@ T atomic_fetch_xor_explicit(atomic<T>*, T, memory_order) noexcept;
 // Table 145 or inferred from Table 146.
 // If it is atomic<T>, then the declaration is a template
 // specialization declaration prefixed with template <>.
-integral atomic_fetch_add(volatile atomic-integral *, integral ) noexcept;
-integral atomic_fetch_add(atomic-integral *, integral ) noexcept;
-integral atomic_fetch_add_explicit(volatile atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_add_explicit(atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_sub(volatile atomic-integral *, integral ) noexcept;
-integral atomic_fetch_sub(atomic-integral *, integral ) noexcept;
-integral atomic_fetch_sub_explicit(volatile atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_sub_explicit(atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_and(volatile atomic-integral *, integral ) noexcept;
-integral atomic_fetch_and(atomic-integral *, integral ) noexcept;
-integral atomic_fetch_and_explicit(volatile atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_and_explicit(atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_or(volatile atomic-integral *, integral ) noexcept;
-integral atomic_fetch_or(atomic-integral *, integral ) noexcept;
-integral atomic_fetch_or_explicit(volatile atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_or_explicit(atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_xor(volatile atomic-integral *, integral ) noexcept;
-integral atomic_fetch_xor(atomic-integral *, integral ) noexcept;
-integral atomic_fetch_xor_explicit(volatile atomic-integral *, integral , memory_order) noexcept;
-integral atomic_fetch_xor_explicit(atomic-integral *, integral , memory_order) noexcept;
+integral atomic_fetch_add(volatile atomic - integral*, integral) noexcept;
+integral atomic_fetch_add(atomic - integral*, integral) noexcept;
+integral atomic_fetch_add_explicit(volatile atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_add_explicit(atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_sub(volatile atomic - integral*, integral) noexcept;
+integral atomic_fetch_sub(atomic - integral*, integral) noexcept;
+integral atomic_fetch_sub_explicit(volatile atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_sub_explicit(atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_and(volatile atomic - integral*, integral) noexcept;
+integral atomic_fetch_and(atomic - integral*, integral) noexcept;
+integral atomic_fetch_and_explicit(volatile atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_and_explicit(atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_or(volatile atomic - integral*, integral) noexcept;
+integral atomic_fetch_or(atomic - integral*, integral) noexcept;
+integral atomic_fetch_or_explicit(volatile atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_or_explicit(atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_xor(volatile atomic - integral*, integral) noexcept;
+integral atomic_fetch_xor(atomic - integral*, integral) noexcept;
+integral atomic_fetch_xor_explicit(volatile atomic - integral*, integral, memory_order) noexcept;
+integral atomic_fetch_xor_explicit(atomic - integral*, integral, memory_order) noexcept;
 // 29.6.4, partial specializations for pointers
 template <class T>
 T* atomic_fetch_add(volatile atomic<T*>*, ptrdiff_t) noexcept;
@@ -200,4 +202,3 @@ void atomic_flag_clear_explicit(atomic_flag*, memory_order) noexcept;
 extern "C" void atomic_thread_fence(memory_order) noexcept;
 extern "C" void atomic_signal_fence(memory_order) noexcept;
 }
-

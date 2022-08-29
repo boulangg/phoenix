@@ -8,11 +8,12 @@
 
 #include <core/interrupt/InterruptManager.hpp>
 
-void KeyboardDevice::initKeyboard() {
+void KeyboardDevice::initKeyboard()
+{
 	KeyboardDevice* device = new KeyboardDevice();
 	InterruptHandler* handler =
-			new InterruptHandlerClass<KeyboardDevice,
-			&KeyboardDevice::IRQHandler>("Keyboard", {true, false}, nullptr, device);
+		new InterruptHandlerClass<KeyboardDevice,
+		&KeyboardDevice::IRQHandler>("Keyboard", { true, false }, nullptr, device);
 	InterruptManager::requestIRQ(1, handler);
 	InputManager::registerDevice(device);
 }
@@ -26,7 +27,7 @@ void KeyboardDevice::initKeyboard() {
 
 void KEYBOARD_handler() {
 	outb(0x20, 0x20);
-    int scancode = inb(0x60);
+	int scancode = inb(0x60);
 	Keyboard::processScancode(scancode);
 }
 
@@ -76,8 +77,8 @@ int Keyboard::handleInterrupt() {
 void Keyboard::processScancode(uint8_t scancode) {
 	if (mode == RAW) {
 		Console::keyboardInput((char)scancode);
-	    char str[16];
-	    sprintf(str, "%x, ", scancode);
+		char str[16];
+		sprintf(str, "%x, ", scancode);
 		cout << str;
 	} else if (mode == ASCII) {
 		processSpecialKeys(scancode);

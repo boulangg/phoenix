@@ -12,24 +12,26 @@
 #include <fs/vfs/PageCache.hpp>
 
 VirtualArea::VirtualArea(uint64_t* addrStart, uint64_t* addrEnd, uint64_t flags,
-		File* file, uint64_t offset, uint64_t fileSize) {
+						 File* file, uint64_t offset, uint64_t fileSize)
+{
 	this->addrStart = addrStart;
 	this->addrEnd = addrEnd;
 	this->flags = flags;
 	this->file = file;
 	this->offset = offset;
 	this->fileSize = fileSize;
-	uint64_t nbPages = (((uint64_t)addrEnd)+PAGE_SIZE-1)/PAGE_SIZE
-			- ((uint64_t)addrStart)/PAGE_SIZE;
+	uint64_t nbPages = (((uint64_t)addrEnd) + PAGE_SIZE - 1) / PAGE_SIZE
+		- ((uint64_t)addrStart) / PAGE_SIZE;
 	if ((flags & FLAGS::VM_WRITE)
-			&& !(flags & FLAGS::VM_SHARED) ) {
+		&& !(flags & FLAGS::VM_SHARED)) {
 		physicalPages = new PhysicalMapping(nbPages);
 	} else {
 		physicalPages = nullptr;
 	}
 }
 
-VirtualArea::VirtualArea(const VirtualArea& virtArea) {
+VirtualArea::VirtualArea(const VirtualArea& virtArea)
+{
 	addrStart = virtArea.addrStart;
 	addrEnd = virtArea.addrEnd;
 	flags = virtArea.flags;
@@ -43,16 +45,19 @@ VirtualArea::VirtualArea(const VirtualArea& virtArea) {
 	}
 }
 
-VirtualArea::~VirtualArea() {
+VirtualArea::~VirtualArea()
+{
 	delete this->physicalPages;
 }
 
-size_t VirtualArea::getNbPages() {
-	return (((uint64_t)addrEnd)+PAGE_SIZE-1)/PAGE_SIZE
-			- ((uint64_t)addrStart)/PAGE_SIZE;
+size_t VirtualArea::getNbPages()
+{
+	return (((uint64_t)addrEnd) + PAGE_SIZE - 1) / PAGE_SIZE
+		- ((uint64_t)addrStart) / PAGE_SIZE;
 }
 
-Page* VirtualArea::getPage(uint64_t index) {
+Page* VirtualArea::getPage(uint64_t index)
+{
 	if (physicalPages != nullptr) {
 		Page* page = physicalPages->getPage(index);
 		if (page == nullptr) {
@@ -60,15 +65,15 @@ Page* VirtualArea::getPage(uint64_t index) {
 			physicalPages->setPage(index, page);
 			// Copy page if it comes from a file
 			if (file != nullptr) {
-				int64_t startPageOffset = (offset/PAGE_SIZE + index)*PAGE_SIZE;
-				int64_t startOffsetLimit = (int64_t)offset-startPageOffset;
+				int64_t startPageOffset = (offset / PAGE_SIZE + index) * PAGE_SIZE;
+				int64_t startOffsetLimit = (int64_t)offset - startPageOffset;
 				int64_t startCpy = std::max(startOffsetLimit, (int64_t)0);
 
 				int64_t endOffsetLimit = startOffsetLimit + fileSize;
 				int64_t endCpy = std::min((int64_t)PAGE_SIZE, endOffsetLimit);
 
 				AddressSpace* mapping = file->getInode()->mapping;
-				int fileIndex = offset/PAGE_SIZE + index;
+				int fileIndex = offset / PAGE_SIZE + index;
 				Page* filePage = PageCache::getPage(mapping, fileIndex);
 				mapping->readPage(filePage);
 				for (int64_t i = startCpy; i < endCpy; ++i) {
@@ -80,7 +85,7 @@ Page* VirtualArea::getPage(uint64_t index) {
 		return page;
 	} else {
 		AddressSpace* mapping = file->getInode()->mapping;
-		int fileIndex = offset/PAGE_SIZE + index;
+		int fileIndex = offset / PAGE_SIZE + index;
 		Page* page = PageCache::getPage(mapping, fileIndex);
 		mapping->readPage(page);
 		return page;
@@ -88,12 +93,13 @@ Page* VirtualArea::getPage(uint64_t index) {
 }
 
 
-bool VirtualArea::tryMergeArea(VirtualArea* area) {
+bool VirtualArea::tryMergeArea(VirtualArea* area)
+{
 	if (this->flags != area->flags) {
 		return false;
 	}
 	if ((this->addrEnd != area->addrStart)
-			& (this->file == area->file)){
+		& (this->file == area->file)) {
 		return false;
 	}
 	if (this->file == nullptr) {

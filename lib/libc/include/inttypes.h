@@ -20,11 +20,11 @@ typedef unsigned int		uint32_t;
 typedef unsigned long long	uint64_t;
 
 #if __WORDSIZE == 64
-	typedef int64_t		intptr_t ;
-	typedef uint64_t	uintptr_t;
+typedef int64_t		intptr_t;
+typedef uint64_t	uintptr_t;
 #else
-	typedef int32_t		intptr_t ;
-	typedef uint32_t	uintptr_t;
+typedef int32_t		intptr_t;
+typedef uint32_t	uintptr_t;
 #endif
 
 #endif // __INTTYPES_H__

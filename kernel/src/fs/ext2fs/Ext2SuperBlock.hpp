@@ -15,7 +15,8 @@
 #include "Ext2Inode.hpp"
 #include "Ext2Dentry.hpp"
 
-class Ext2SuperBlock : public BaseSuperBlock<Ext2FSInfo> {
+class Ext2SuperBlock : public BaseSuperBlock<Ext2FSInfo>
+{
 public:
 	Ext2SuperBlock(FileSystemType* type, const std::string& source) :
 		BaseSuperBlock(type), _logBlockSize(10)
@@ -24,7 +25,7 @@ public:
 		Dentry* src = DentryCache::findDentry(VirtualFileSystem::root, pathnameVector, 0);
 		(void)src;
 		_dev = DeviceManager::getBlockDevice("initrd");
-		Block* blk = _dev->getBlock(1024/_dev->getSectorSize());
+		Block* blk = _dev->getBlock(1024 / _dev->getSectorSize());
 		ext2_superblock_t* sb = new ext2_superblock_t();
 		memcpy((void*)sb, (void*)(((char*)(blk->page->kernelMappAddr)) + blk->offset), 512);
 		if (sb->signature == EXT2_SIGNATURE) {
@@ -40,7 +41,8 @@ public:
 		}
 	}
 
-	void initSuperBlock() {
+	void initSuperBlock()
+	{
 		_valid = true;
 		_logBlockSize = 10 + _superBlock->log_block_size;
 
@@ -56,11 +58,12 @@ public:
 		root = new Ext2Dentry(_rootInode);
 	}
 
-	void readBlockGroupDescTable() {
+	void readBlockGroupDescTable()
+	{
 		_blockGroupDescTable = new ext2_block_group_desc_t[_nbGroupBlock];
 		std::uint64_t blockStart = 1;
-		if(getBlockSize()==1024)
-			blockStart=2;
+		if (getBlockSize() == 1024)
+			blockStart = 2;
 		std::uint64_t nbBlock = roundUp(_nbGroupBlock * sizeof(ext2_block_group_desc_t), getBlockSize());
 		std::uint64_t offset = 0;
 		std::uint64_t maxSize = sizeof(ext2_block_group_desc_t) * _nbGroupBlock;
@@ -82,20 +85,23 @@ public:
 		}
 	}
 
-	static uint64_t roundUp(std::uint64_t num, std::uint64_t den) {
-		 if(den == 0)
-			 return 0;
-		 if( num % den == 0)
-			 return num/den;
-		 else
-			 return num/den+1;
+	static uint64_t roundUp(std::uint64_t num, std::uint64_t den)
+	{
+		if (den == 0)
+			return 0;
+		if (num % den == 0)
+			return num / den;
+		else
+			return num / den + 1;
 	}
 
-	virtual Inode* allocInode() override {
+	virtual Inode* allocInode() override
+	{
 		return nullptr;
 	}
 
-	Ext2Inode* getInode(std::uint32_t ino) {
+	Ext2Inode* getInode(std::uint32_t ino)
+	{
 		std::uint64_t blockGroupNo = (ino - 1) / _superBlock->block_group_inodes;
 		std::uint64_t blockGroupIndex = (ino - 1) % _superBlock->block_group_inodes;
 		std::uint64_t blockNo = _blockGroupDescTable[blockGroupNo].start_inode_table + ((blockGroupIndex * _inodeStructSize) / getBlockSize());
@@ -115,13 +121,15 @@ public:
 		return inode;
 	}
 
-	void blockToSector(const std::uint32_t blockNo, std::uint64_t* sectorNo, std::uint32_t* sectorCount) {
-		// TODO implement _dev->getLockSectorSize
+	void blockToSector(const std::uint32_t blockNo, std::uint64_t* sectorNo, std::uint32_t* sectorCount)
+	{
+// TODO implement _dev->getLockSectorSize
 		*sectorCount = 1 << (_logBlockSize - 9);
 		*sectorNo = blockNo * *sectorCount;
 	}
 
-	std::uint64_t getBlockSize() {
+	std::uint64_t getBlockSize()
+	{
 		return 1 << _logBlockSize;
 	}
 

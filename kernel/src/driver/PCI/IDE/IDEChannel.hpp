@@ -10,7 +10,8 @@
 
 class IDEDevice;
 
-class IDEChannel {
+class IDEChannel
+{
 
 	static const std::uint8_t DISK_NUM = 2;
 	static const uint8_t BUS_MASTER_COMMMAND = 0;
@@ -60,7 +61,7 @@ private:
 	void writeReg(std::uint8_t reg, std::uint8_t data);
 	std::uint8_t ATAAccessPIO(bool slave, bool write, std::uint64_t lba, char* buffer, std::uint32_t numSec);
 	std::uint8_t ATAAccessDMA(bool slave, bool write, std::uint64_t lba, uint64_t physAddr, std::uint32_t numSec);
-	std::uint8_t sendCommand(bool slave, bool write, std::uint64_t lba, std::uint32_t numSec,bool isDMA);
+	std::uint8_t sendCommand(bool slave, bool write, std::uint64_t lba, std::uint32_t numSec, bool isDMA);
 	void poll();
 	std::uint8_t checkErrors();
 	bool supportsDMA();

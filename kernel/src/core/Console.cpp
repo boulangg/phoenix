@@ -20,18 +20,19 @@ using namespace std;
 size_t Console::row = 0;
 size_t Console::column = 0;
 uint8_t Console::color = 0;
-uint16_t* Console::screen = (uint16_t*) (0xB8000 | KERNEL_MAPPING_START);
+uint16_t* Console::screen = (uint16_t*)(0xB8000 | KERNEL_MAPPING_START);
 bool Console::cursor_enabled = true;
 char Console::kbdBuf[KBD_BUF_SIZE] = {};
 std::size_t Console::kbdBufStart = 0;
 std::size_t Console::kbdBufSize = 0;
 
-static typename std::aligned_storage<sizeof (Console), alignof (Console)>::type
-  stream_buf;
+static typename std::aligned_storage<sizeof(Console), alignof (Console)>::type
+stream_buf;
 
 Console& cout = reinterpret_cast<Console&> (stream_buf);
 
-void Console::initConsole() {
+void Console::initConsole()
+{
 	new (&cout) Console(); //not usefull since we only use static methods, but just in case
 	setColor(VGA::Color::WHITE, VGA::Color::BLACK);
 	clear();
@@ -48,7 +49,7 @@ void Console::clear()
 	column = 0;
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
-			const size_t index = y*VGA_WIDTH + x;
+			const size_t index = y * VGA_WIDTH + x;
 			screen[index] = makeVgaEntry(' ', color);
 		}
 	}
@@ -61,7 +62,7 @@ void Console::write(char c)
 	updateCursor();
 }
 
-void Console::write(const char *str)
+void Console::write(const char* str)
 {
 	size_t index = 0;
 	while (str[index] != '\0') {
@@ -71,19 +72,23 @@ void Console::write(const char *str)
 	updateCursor();
 }
 
-void Console::write(const std::string& str) {
+void Console::write(const std::string& str)
+{
 	Console::write(str.c_str());
 }
 
-void Console::write(std::string& str) {
+void Console::write(std::string& str)
+{
 	Console::write(str.c_str());
 }
 
-void Console::write(std::string&& str) {
+void Console::write(std::string&& str)
+{
 	Console::write(str.c_str());
 }
 
-size_t Console::read(char* buf, size_t count) {
+size_t Console::read(char* buf, size_t count)
+{
 	size_t curr = 0;
 	if (kbdBufSize == 0) {
 		Event ev(Event::EventType::FileEvent, 0);
@@ -97,12 +102,13 @@ size_t Console::read(char* buf, size_t count) {
 	return curr;
 }
 
-void Console::keyboardInput(char character) {
+void Console::keyboardInput(char character)
+{
 	if ((character == '\b') && (kbdBufSize > 0)) {
 		kbdBufSize--;
 	}
 	if ((character != '\b') && (kbdBufSize < 1024)) {
-		kbdBuf[(kbdBufStart+kbdBufSize) % KBD_BUF_SIZE] = character;
+		kbdBuf[(kbdBufStart + kbdBufSize) % KBD_BUF_SIZE] = character;
 		kbdBufSize++;
 	}
 	Console::write(character);
@@ -124,34 +130,34 @@ void Console::scrollUp()
 {
 	for (size_t y = 1; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
-			const size_t index_src = y*VGA_WIDTH + x;
-			const size_t index_dest = (y-1)*VGA_WIDTH + x;
+			const size_t index_src = y * VGA_WIDTH + x;
+			const size_t index_dest = (y - 1) * VGA_WIDTH + x;
 			screen[index_dest] = screen[index_src];
 		}
 	}
 	for (size_t x = 0; x < VGA_WIDTH; x++) {
-		putEntryAt(' ', x, VGA_HEIGHT-1);
+		putEntryAt(' ', x, VGA_HEIGHT - 1);
 	}
 	if (row != 0) {
-		row --;
+		row--;
 	}
 }
 
 void Console::putEntryAt(char c, size_t x, size_t y)
 {
-	const size_t index = y*VGA_WIDTH + x;
+	const size_t index = y * VGA_WIDTH + x;
 	screen[index] = makeVgaEntry(c, color);
 }
 
 void Console::updateCursor()
 {
 	if (cursor_enabled) {
-		const size_t index = row*VGA_WIDTH + column;
+		const size_t index = row * VGA_WIDTH + column;
 
 		outb(0x3D4, 0x0F);
-		outb(0x3D5, (uint8_t) (index & 0xFF));
+		outb(0x3D5, (uint8_t)(index & 0xFF));
 		outb(0x3D4, 0x0E);
-		outb(0x3D5, (uint8_t) ((index >> 8) & 0xFF));
+		outb(0x3D5, (uint8_t)((index >> 8) & 0xFF));
 	}
 }
 
@@ -159,25 +165,25 @@ void Console::processChar(char c)
 {
 	if (c == '\b') {
 		if (column > 0) {
-			column --;
+			column--;
 			putEntryAt(' ', column, row);
 		}
 	} else if (c == '\t') {
-		column  = (column & 0xF8) + 0x8;
+		column = (column & 0xF8) + 0x8;
 	} else if (c == '\n') {
 		column = 0;
-		row ++;
+		row++;
 	} else if (c == '\f') {
 		clear();
 	} else if (c == '\r') {
 		column = 0;
-	} else if (c >= 32 && c<=126) {
+	} else if (c >= 32 && c <= 126) {
 		putEntryAt(c, column, row);
-		column ++;
+		column++;
 	}
 
 	if (column >= VGA_WIDTH) {
-		row ++;
+		row++;
 		column = 0;
 	}
 	if (row >= VGA_HEIGHT) {
@@ -202,38 +208,44 @@ uint8_t Console::makeColor(VGA::Color fg, VGA::Color bg)
 	return static_cast<uint8_t>(fg) | static_cast<uint8_t>(bg) << 4;
 }
 
-Console& Console::operator<<(const char* str) {
+Console& Console::operator<<(const char* str)
+{
 	Console::write(str);
 	return *this;
 }
 
-Console& Console::operator<<(char c) {
+Console& Console::operator<<(char c)
+{
 	Console::write(c);
 	return *this;
 }
 
-Console& Console::operator<<(int i) {
+Console& Console::operator<<(int i)
+{
 	char tmp[1024];
 	sprintf(tmp, "%i", i);
 	Console::write(tmp);
 	return *this;
 }
 
-Console& Console::operator<<(long i) {
+Console& Console::operator<<(long i)
+{
 	char tmp[1024];
 	sprintf(tmp, "%li", i);
 	Console::write(tmp);
 	return *this;
 }
 
-Console& Console::operator<<(uint64_t i) {
+Console& Console::operator<<(uint64_t i)
+{
 	char tmp[1024];
 	sprintf(tmp, "%llu", i);
 	Console::write(tmp);
 	return *this;
 }
 
-Console& Console::operator<<(uint32_t i) {
+Console& Console::operator<<(uint32_t i)
+{
 	char tmp[1024];
 	sprintf(tmp, "%u", i);
 	Console::write(tmp);

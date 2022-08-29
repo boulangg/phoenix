@@ -8,7 +8,8 @@
 #include <unistd.h>
 
 
-int _IO_str_fgetc(FILE* str) {
+int _IO_str_fgetc(FILE* str)
+{
 	if (str->bufPos >= str->bufEnd) {
 		return EOF;
 	} else {
@@ -16,8 +17,9 @@ int _IO_str_fgetc(FILE* str) {
 	}
 }
 
-int _IO_str_fputc(int c, FILE* str) {
-	if (str->bufEnd >= str->bufStart+str->bufSize) {
+int _IO_str_fputc(int c, FILE* str)
+{
+	if (str->bufEnd >= str->bufStart + str->bufSize) {
 		return EOF;
 	} else {
 		*(str->bufEnd++) = c;

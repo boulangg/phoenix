@@ -6,7 +6,8 @@
 #include "BlockDevice.hpp"
 #include "CharacterDevice.hpp"
 
-class DeviceManager {
+class DeviceManager
+{
 public:
 
 
@@ -15,7 +16,8 @@ public:
 	static void registerBlockDevice(BlockDevice* dev);
 	static void registerCharacterDevice(CharacterDevice* dev);
 
-	static BlockDevice* getBlockDevice(std::string name) {
+	static BlockDevice* getBlockDevice(std::string name)
+	{
 		for (auto blk : _blockDevices) {
 			if (blk->getName().compare(name) == 0) {
 				return blk;
@@ -27,8 +29,9 @@ public:
 	static std::list<BlockStorageDevice*> getAllStorageDevices();
 	static std::list<BlockDevice*> getAllBlockDevices();
 
-	static CharacterDevice* getCharacterDevice(dev_t devID) {
-		for (auto dev: _characterDevices) {
+	static CharacterDevice* getCharacterDevice(dev_t devID)
+	{
+		for (auto dev : _characterDevices) {
 			if (dev->getDeviceID() == devID) {
 				return dev;
 			}

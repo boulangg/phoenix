@@ -14,13 +14,14 @@
 #define MODE_BIN    0x2
 #define MODE_EXCL   0x4
 
-FILE* fopen(const char* filename, const char* mode) {
+FILE* fopen(const char* filename, const char* mode)
+{
 	int flags = 0;
 	int i = 0;
 	int modeFlags = 0;
 	do {
 		i++;
-		switch(mode[i]) {
+		switch (mode[i]) {
 		case '+':
 			modeFlags |= MODE_UPDATE;
 			break;
@@ -36,7 +37,7 @@ FILE* fopen(const char* filename, const char* mode) {
 		}
 	} while (i != 0);
 
-	switch(mode[0]) {
+	switch (mode[0]) {
 	case 'r':
 		flags = O_RDWR;
 		break;
@@ -79,4 +80,3 @@ FILE* fopen(const char* filename, const char* mode) {
 
 
 }
-

@@ -14,7 +14,8 @@
 #include <mm/VirtualArea.hpp>
 #include <mm/PageTable.hpp>
 
-class VirtualMapping {
+class VirtualMapping
+{
 
 public:
 
@@ -26,14 +27,16 @@ public:
 	//void addVirtualArea(VirtualArea&);
 
 	// Protection on pages
-	enum PROT {
+	enum PROT
+	{
 		NONE = 0x0,
 		READ = 0x1,
 		WRITE = 0x2,
 		EXEC = 0x4
 	};
 
-	enum FLAGS {
+	enum FLAGS
+	{
 		SHARED = 0x1,
 		PRIVATE = 0x2,
 		FIXED = 0x4,
@@ -51,9 +54,9 @@ public:
 	void updatePageTable(VirtualArea*);
 
 	uint64_t* mmap(uint64_t* addr, uint64_t len, uint64_t prot,
-			uint64_t flags, File* file, uint64_t offset);
+				   uint64_t flags, File* file, uint64_t offset);
 	uint64_t* mmap(uint64_t* addr, uint64_t len, uint64_t prot,
-			uint64_t flags, File* file, uint64_t offset, uint64_t fileSize);
+				   uint64_t flags, File* file, uint64_t offset, uint64_t fileSize);
 
 	int munmap(uint64_t* vAddr, size_t length);
 
@@ -63,7 +66,7 @@ public:
 	PageTable* reloadPageTable();
 	PageTable* getPageTable();
 
-	void initMainArgs(const char*argv[], const char*envp[]);
+	void initMainArgs(const char* argv[], const char* envp[]);
 	void setEntryPoint(uint64_t* entryPoint);
 
 private:
@@ -81,7 +84,7 @@ private:
 	 * return the area containing the parameter
 	 */
 	std::list<VirtualArea*>::iterator mergeSurroundingAreas(
-			std::list<VirtualArea*>::iterator currIt);
+		std::list<VirtualArea*>::iterator currIt);
 
 	uint64_t* findFreeVirtualArea(uint64_t* addr, uint64_t len);
 

@@ -12,7 +12,8 @@
 #include <include/constant.h>
 class AddressSpace;
 
-enum PageType {
+enum PageType
+{
 	UNUSABLE,
 	FREE,
 	ALLOCATED,
@@ -20,7 +21,8 @@ enum PageType {
 	CACHE
 };
 
-class Page {
+class Page
+{
 public:
 	uint64_t* physAddr;
 	uint64_t* kernelMappAddr;
@@ -28,8 +30,9 @@ public:
 	uint64_t offset;
 	AddressSpace* mapping;
 
-	static void copyPage(Page* src, Page* dst) {
-		for (uint64_t i = 0; i < PAGE_SIZE/sizeof(uint64_t); ++i) {
+	static void copyPage(Page* src, Page* dst)
+	{
+		for (uint64_t i = 0; i < PAGE_SIZE / sizeof(uint64_t); ++i) {
 			dst->kernelMappAddr[i] = src->kernelMappAddr[i];
 		}
 	}

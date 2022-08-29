@@ -10,12 +10,13 @@ void printk(const char* format, ...);
 #endif
 
 template <std::size_t ExpectedSize, std::size_t RealSize>
-struct check_size {
+struct check_size
+{
 	static_assert(ExpectedSize == RealSize, "Incorrect size");
 };
 
 template <class T, class S, std::size_t ExpectedSize, std::size_t RealSize = offsetof(T, S)>
-struct check_offset {
+struct check_offset
+{
 	static_assert(ExpectedSize == RealSize, "Incorrect size");
 };
-

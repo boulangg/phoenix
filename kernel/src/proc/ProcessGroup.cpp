@@ -1,20 +1,24 @@
 #include "ProcessGroup.hpp"
 
-ProcessGroup::ProcessGroup(Process* leader) : gid(leader->getPid()), listProc() {
+ProcessGroup::ProcessGroup(Process* leader) : gid(leader->getPid()), listProc()
+{
 	listProc.push_back(leader);
 }
 
 
-void ProcessGroup::addProcess(Process* proc) {
+void ProcessGroup::addProcess(Process* proc)
+{
 	listProc.push_back(proc);
 	proc->setpgid(gid);
 }
 
-ProcessGroup::~ProcessGroup() {
+ProcessGroup::~ProcessGroup()
+{
 
 }
 
-void ProcessGroup::removeProcess(Process* proc) {
+void ProcessGroup::removeProcess(Process* proc)
+{
 	for (auto it = listProc.begin(); it != listProc.end(); ++it) {
 		if (*it == proc) {
 			listProc.erase(it);
@@ -23,6 +27,7 @@ void ProcessGroup::removeProcess(Process* proc) {
 	}
 }
 
-bool ProcessGroup::empty() {
+bool ProcessGroup::empty()
+{
 	return (listProc.size() == 0);
 }

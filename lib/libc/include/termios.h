@@ -118,7 +118,8 @@ typedef char cc_t;
 typedef size_t speed_t;
 typedef uint32_t tcflag_t;
 
-struct termios {
+struct termios
+{
 	tcflag_t c_iflag;    // input modes
 	tcflag_t c_oflag;    // output modes
 	tcflag_t c_cflag;    // control modes

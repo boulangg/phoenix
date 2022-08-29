@@ -7,11 +7,13 @@
 #include <mm/PhysicalAllocator.hpp>
 #include <fs/vfs/AddressSpace.hpp>
 
-class PageCache {
+class PageCache
+{
 
 public:
-	static Page* getPage(AddressSpace* mapping, std::uint64_t index) {
-		// Check if page exist
+	static Page* getPage(AddressSpace* mapping, std::uint64_t index)
+	{
+// Check if page exist
 		for (Page* page : pages) {
 			if (page->mapping == mapping && page->offset == index) {
 				return page;

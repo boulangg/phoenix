@@ -11,7 +11,8 @@
 namespace std {
 
 template <class charT, class traits = char_traits<charT> >
-class basic_istream : public basic_ios<charT, traits> {
+class basic_istream : public basic_ios<charT, traits>
+{
 
 public:
 	// Member types
@@ -21,17 +22,18 @@ public:
 	typedef traits_type::pos_type pos_type;
 	typedef traits_type::off_type off_type;
 
-	class sentry {
+	class sentry
+	{
 	public:
-	  explicit sentry (basic_istream& is, bool noskipws = false);
-	  ~sentry();
-	  explicit operator bool() const;
-	  sentry (const sentry&) = delete;
-	  sentry& operator= (const sentry&) = delete;
+		explicit sentry(basic_istream& is, bool noskipws = false);
+		~sentry();
+		explicit operator bool() const;
+		sentry(const sentry&) = delete;
+		sentry& operator= (const sentry&) = delete;
 	};
 
 	// Constructors
-	explicit basic_istream (basic_streambuf<char_type,traits_type>* sb);
+	explicit basic_istream(basic_streambuf<char_type, traits_type>* sb);
 	basic_istream(const basic_istream&) = delete;
 protected:
 	basic_istream(basic_istream&& x);
@@ -54,10 +56,10 @@ public:
 	basic_istream& operator>>(double& val);
 	basic_istream& operator>>(long double& val);
 	basic_istream& operator>>(void*& val);
-	basic_istream& operator>>(basic_streambuf<char_type,traits_type>* sb );
+	basic_istream& operator>>(basic_streambuf<char_type, traits_type>* sb);
 	basic_istream& operator>>(basic_istream& (*pf)(basic_istream&));
 	basic_istream& operator>>(
-			basic_ios<char_type,traits_type>& (*pf)(basic_ios<char_type,traits_type>&));
+		basic_ios<char_type, traits_type>& (*pf)(basic_ios<char_type, traits_type>&));
 	basic_istream& operator>>(ios_base& (*pf)(ios_base&));
 
 	// Unformatted input
@@ -66,9 +68,9 @@ public:
 	basic_istream& get(char_type& c);
 	basic_istream& get(char_type* s, streamsize n);
 	basic_istream& get(char_type* s, streamsize n, char_type delim);
-	basic_istream& get(basic_streambuf<char_type,traits_type>& sb);
-	basic_istream& get(basic_streambuf<char_type,traits_type>& sb, char_type delim);
-	basic_istream& getline(char_type* s, streamsize n );
+	basic_istream& get(basic_streambuf<char_type, traits_type>& sb);
+	basic_istream& get(basic_streambuf<char_type, traits_type>& sb, char_type delim);
+	basic_istream& getline(char_type* s, streamsize n);
 	basic_istream& getline(char_type* s, streamsize n, char_type delim);
 	basic_istream& ignore(streamsize n = 1, int_type delim = traits_type::eof());
 	int_type peek();
@@ -92,4 +94,3 @@ protected:
 };
 
 }
-

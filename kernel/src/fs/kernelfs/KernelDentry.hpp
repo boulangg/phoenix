@@ -4,13 +4,16 @@
 
 #include "KernelFile.hpp"
 
-class KernelDentry : public BaseDentry<KernelFSInfo> {
+class KernelDentry : public BaseDentry<KernelFSInfo>
+{
 public:
-	KernelDentry(KernelInode* inode) : BaseDentry(inode) {
+	KernelDentry(KernelInode* inode) : BaseDentry(inode)
+	{
 
 	}
 
-	KernelDentry(Dentry* parent, KernelInode* inode, std::string name) : BaseDentry(parent, inode, name) {
+	KernelDentry(Dentry* parent, KernelInode* inode, std::string name) : BaseDentry(parent, inode, name)
+	{
 
 	}
 };

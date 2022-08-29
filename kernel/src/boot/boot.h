@@ -11,8 +11,8 @@
 extern "C" {
 #endif
 
-void boot();
-void idle();
+	void boot();
+	void idle();
 
 #ifdef __cplusplus
 }

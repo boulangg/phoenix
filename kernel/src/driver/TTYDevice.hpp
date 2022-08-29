@@ -13,7 +13,8 @@
 
 #define NEW_LINE '\n'
 
-struct keybind {
+struct keybind
+{
 	char map[256];
 };
 
@@ -21,42 +22,50 @@ extern struct keybind normal_keybind;
 
 #define BUFFER_SIZE 1024
 
-class InputBuffer {
+class InputBuffer
+{
 public:
 	typedef char value_type;
 	typedef size_t size_type;
 	typedef value_type& reference;
 
-	InputBuffer() : start(0), end(0), _size(0) {}
+	InputBuffer() : start(0), end(0), _size(0)
+	{}
 
-	void push_back(const value_type& val) {
+	void push_back(const value_type& val)
+	{
 		if (_size < BUFFER_SIZE) {
 			buffer[end] = val;
-			end = (end+1) % BUFFER_SIZE;
+			end = (end + 1) % BUFFER_SIZE;
 			_size++;
 		}
 	}
 
-	reference front() {
+	reference front()
+	{
 		return buffer[start];
 	}
 
-	reference back() {
+	reference back()
+	{
 		size_t last = (end + BUFFER_SIZE - 1) % BUFFER_SIZE;
 		return buffer[last];
 	}
 
-	void pop_back() {
+	void pop_back()
+	{
 		end = (end + BUFFER_SIZE - 1) % BUFFER_SIZE;
 		_size--;
 	}
 
-	void pop_front() {
+	void pop_front()
+	{
 		start = (start + 1) % BUFFER_SIZE;
 		_size--;
 	}
 
-	size_type size() const {
+	size_type size() const
+	{
 		return _size;
 	}
 
@@ -65,27 +74,31 @@ private:
 	int start, end, _size;
 };
 
-class TTYDevice : public InputHandler, public CharacterDevice {
+class TTYDevice : public InputHandler, public CharacterDevice
+{
 public:
-	TTYDevice(dev_t devID) : InputHandler(), CharacterDevice(), buffer(), nbDelim(0) {
+	TTYDevice(dev_t devID) : InputHandler(), CharacterDevice(), buffer(), nbDelim(0)
+	{
 		initTermios();
 		setDeviceID(devID);
 		InputManager::registerHandler(this);
 	}
 
-	virtual ~TTYDevice() {}
+	virtual ~TTYDevice()
+	{}
 
-	//virtual dev_t getDeviceID();
+//virtual dev_t getDeviceID();
 
-	/*virtual int connect(InputDevice *dev, const struct input_device_id *id) override {
+/*virtual int connect(InputDevice *dev, const struct input_device_id *id) override {
 
-	}*/
+}*/
 
-	/*virtual void disconnect(InputDevice *handle) override {
+/*virtual void disconnect(InputDevice *handle) override {
 
-	}*/
+}*/
 
-	virtual ssize_t read(char* ptr, size_t count, loff_t) override {
+	virtual ssize_t read(char* ptr, size_t count, loff_t) override
+	{
 		char* buf = (char*)ptr;
 		size_t curr = 0;
 		if (tios.c_lflag & ICANON) {
@@ -97,7 +110,7 @@ public:
 				buf[curr] = buffer.front();
 				buffer.pop_front();
 				curr++;
-				if (buf[curr-1] == NEW_LINE) {
+				if (buf[curr - 1] == NEW_LINE) {
 					nbDelim--;
 					break;
 				}
@@ -116,7 +129,8 @@ public:
 		return curr;
 	}
 
-	virtual ssize_t write(const char* ptr, size_t count, loff_t) override {
+	virtual ssize_t write(const char* ptr, size_t count, loff_t) override
+	{
 		char* str = (char*)ptr;
 		size_t i = 0;
 		for (; i < count; i++) {
@@ -125,8 +139,9 @@ public:
 		return i;
 	}
 
-	virtual void handleEvents(const std::vector<InputValue>& vals) {
-		for (auto inputVal: vals) {
+	virtual void handleEvents(const std::vector<InputValue>& vals)
+	{
+		for (auto inputVal : vals) {
 			if (inputVal.value == 0) {
 				continue;
 			}
@@ -164,7 +179,8 @@ private:
 	int getTermios(struct termios*);
 	int setTermios(struct termios*);
 
-	void initTermios() {
+	void initTermios()
+	{
 		tios.c_cc[VEOF] = 0;
 		tios.c_cc[VEOL] = 0;
 		tios.c_cc[VERASE] = '\b';
@@ -192,4 +208,3 @@ private:
 
 
 };
-

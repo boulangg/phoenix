@@ -14,18 +14,20 @@
 #define QUARTZ 0x1234DD
 #define CLOCKFREQ 60
 
-uint64_t Clock::h=0;
-uint64_t Clock::m=0;
-uint64_t Clock::s=0;
-uint64_t Clock::intern=0;
-uint64_t Clock::totalIntern=0;
+uint64_t Clock::h = 0;
+uint64_t Clock::m = 0;
+uint64_t Clock::s = 0;
+uint64_t Clock::intern = 0;
+uint64_t Clock::totalIntern = 0;
 std::list<Event> Clock::timers;
 
-void PIT_handler(){
+void PIT_handler()
+{
 	Clock::tic();
 }
 
-int Clock::tic(){
+int Clock::tic()
+{
 	totalIntern++;
 	intern++;
 	if (intern >= CLOCKFREQ) {
@@ -45,13 +47,14 @@ int Clock::tic(){
 	return 0;
 }
 
-Clock::Clock() {
-}
+Clock::Clock()
+{}
 
-Clock::~Clock() {
-}
+Clock::~Clock()
+{}
 
-void Clock::checkTimers() {
+void Clock::checkTimers()
+{
 	for (auto it = timers.begin(); it != timers.end();) {
 		auto ev = *it;
 		if (ev.getId() <= s) {
@@ -63,17 +66,18 @@ void Clock::checkTimers() {
 	}
 }
 
-void Clock::setFreq(){
-	outb(0x43,0x34);
-	outb(0x40,(QUARTZ/CLOCKFREQ) % 256);
-	outb(0x40,(QUARTZ/CLOCKFREQ) >> 8);
+void Clock::setFreq()
+{
+	outb(0x43, 0x34);
+	outb(0x40, (QUARTZ / CLOCKFREQ) % 256);
+	outb(0x40, (QUARTZ / CLOCKFREQ) >> 8);
 }
 
-int Clock::nanosleep(const struct timespec *req, struct timespec *) {
-	Event ev(Event::EventType::TimerEvent, s+req->tv_sec);
+int Clock::nanosleep(const struct timespec* req, struct timespec*)
+{
+	Event ev(Event::EventType::TimerEvent, s + req->tv_sec);
 	timers.push_back(ev);
 	ProcessScheduler::wait(ev);
 	//ProcessScheduler::sleep();
 	return 0;
 }
-

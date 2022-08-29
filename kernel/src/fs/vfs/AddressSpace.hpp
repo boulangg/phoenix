@@ -7,14 +7,16 @@
 
 class Inode;
 
-class AddressSpace {
+class AddressSpace
+{
 public:
 	AddressSpace(Inode* host);
 
 	Page* getPage(size_t pageNo);
 	virtual ~AddressSpace();
 
-	int readPage(Page *p) {
+	int readPage(Page* p)
+	{
 		return readPage_internal(p);
 	}
 

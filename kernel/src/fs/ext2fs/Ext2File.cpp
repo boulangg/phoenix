@@ -5,11 +5,13 @@
 #include "algorithm"
 #include "cstring"
 
-Ext2File::Ext2File(Ext2Inode* inode) : BaseFile(inode) {
+Ext2File::Ext2File(Ext2Inode* inode) : BaseFile(inode)
+{
 
 }
 
-ssize_t Ext2File::read_internal(char* buffer, size_t size, loff_t offset) {
+ssize_t Ext2File::read_internal(char* buffer, size_t size, loff_t offset)
+{
 	std::uint64_t i;
 	for (i = offset; i < offset + size && i < _inode->size; ) {
 		size_t pageNo = i / PAGE_SIZE;
@@ -17,19 +19,20 @@ ssize_t Ext2File::read_internal(char* buffer, size_t size, loff_t offset) {
 		_inode->mapping->readPage(p);
 		void* destination = buffer + i - offset;
 		void* source = ((char*)p->kernelMappAddr) + i % PAGE_SIZE;
-		std::uint64_t length = std::min(_inode->size - i, offset + size -i);
+		std::uint64_t length = std::min(_inode->size - i, offset + size - i);
 		length = std::min(length, (pageNo + 1) * PAGE_SIZE - i);
 		memcpy(destination, source, length);
-		i+=length;
+		i += length;
 	}
-	return i-offset;
+	return i - offset;
 }
 
 #include <core/Debug.hpp>
 
 check_size<sizeof(struct linux_dirent64), 24> testsize;
 
-int Ext2File::getdents64_internal(struct linux_dirent64 *dirp, size_t size) {
+int Ext2File::getdents64_internal(struct linux_dirent64* dirp, size_t size)
+{
 	int i = 0;
 	while (true) {
 		char buffer[4096];

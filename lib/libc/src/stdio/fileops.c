@@ -2,10 +2,11 @@
 
 #include <stdbool.h>
 
-int _IO_file_fgetc(FILE* str) {
-	// Change stream to read mode
+int _IO_file_fgetc(FILE* str)
+{
+// Change stream to read mode
 	if (str->flags & BUFWRITE) {
-		if (fflush(str)==EOF) {
+		if (fflush(str) == EOF) {
 			return EOF;
 		}
 		//fflush(str);
@@ -13,7 +14,7 @@ int _IO_file_fgetc(FILE* str) {
 	}
 	// Fill in bufferwith data from stream
 	if (str->bufPos >= str->bufEnd) {
-		str->offset += str->bufPos-str->bufStart;
+		str->offset += str->bufPos - str->bufStart;
 		//lseek(str->fileno, str->offset, SEEK_SET);
 		int count = read(str->fileno, str->bufStart, str->bufSize);
 		if (count == 0) {
@@ -26,17 +27,18 @@ int _IO_file_fgetc(FILE* str) {
 	return *(str->bufPos++);
 }
 
-int _IO_file_fputc(int c, FILE* str) {
-	// Change stream to write mode
+int _IO_file_fputc(int c, FILE* str)
+{
+// Change stream to write mode
 	if (!(str->flags & BUFWRITE)) {
-		str->offset += str->bufPos-str->bufStart;
+		str->offset += str->bufPos - str->bufStart;
 		str->flags |= BUFWRITE;
 		str->bufPos = str->bufStart;
 		str->bufEnd = str->bufStart + str->bufSize;
 	}
 	// Flush if buffer full
 	if (str->bufPos >= str->bufEnd) {
-		if (fflush(str)==EOF) {
+		if (fflush(str) == EOF) {
 			return EOF;
 		}
 	}

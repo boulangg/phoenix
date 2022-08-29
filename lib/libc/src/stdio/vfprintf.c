@@ -14,17 +14,19 @@
 // %[flags][width][.precision][length]specifier
 
 // Supported flags options
-enum ARG_FLAG {
-	FLAG_NONE 	= 0x00,		// "(none)"
-	FLAG_MINUS	= 0x01,		// "-"
-	FLAG_PLUS	= 0x02,		// "+"
-	FLAG_SPACE	= 0x04,		// "(space)"
-	FLAG_HASH	= 0x08,		// "#"
-	FLAG_ZERO	= 0x10		// "0"
+enum ARG_FLAG
+{
+	FLAG_NONE = 0x00,		// "(none)"
+	FLAG_MINUS = 0x01,		// "-"
+	FLAG_PLUS = 0x02,		// "+"
+	FLAG_SPACE = 0x04,		// "(space)"
+	FLAG_HASH = 0x08,		// "#"
+	FLAG_ZERO = 0x10		// "0"
 };
 
 // Supported length options
-enum ARG_LENGTH {
+enum ARG_LENGTH
+{
 	LENGTH_NONE,	// "(none)"
 	LENGTH_HH,		// "hh"
 	LENGTH_H,		// "h"
@@ -37,7 +39,8 @@ enum ARG_LENGTH {
 };
 
 // Supported specifiers
-enum ARG_SPEC {
+enum ARG_SPEC
+{
 	SPEC_INT_DEC,			// "d" or "i"
 	SPEC_UINT_DEC,			// "u"
 	SPEC_UINT_OCT,			// "o"
@@ -67,7 +70,8 @@ enum ARG_SPEC {
 // ".(number)"
 // ".*"
 
-struct arg_info {
+struct arg_info
+{
 	int flags;
 	int width;
 	int precision;
@@ -174,7 +178,7 @@ static int print_int(FILE* str, struct arg_info* arg_info, va_list arg, int* cou
 
 	if (sign) {
 		fputc(sign, str);
-		*count +=1;
+		*count += 1;
 		len--;
 	}
 
@@ -270,7 +274,7 @@ static int print_uint(FILE* str, struct arg_info* arg_info, va_list arg, int* co
 
 	// Increase len with HASH
 	if ((arg_info->flags & FLAG_HASH) &&
-			(arg_info->specifier != SPEC_UINT_DEC)) {
+		(arg_info->specifier != SPEC_UINT_DEC)) {
 		len++;
 		if (hash) {
 			len++;
@@ -292,7 +296,7 @@ static int print_uint(FILE* str, struct arg_info* arg_info, va_list arg, int* co
 
 	// Print HASH
 	if ((arg_info->flags & FLAG_HASH) &&
-			(arg_info->specifier != SPEC_UINT_DEC)) {
+		(arg_info->specifier != SPEC_UINT_DEC)) {
 		len--;
 		fputc('0', str);
 		*count += 1;
@@ -352,7 +356,7 @@ static int print_str(FILE* str, struct arg_info* arg_info, va_list arg, int* cou
 {
 	(void)arg_info;
 
-	char *str_arg = va_arg(arg, char *);
+	char* str_arg = va_arg(arg, char*);
 	while (*str_arg != '\0') {
 		fputc(*str_arg, str);
 		str_arg++;
@@ -407,31 +411,31 @@ int (*fprintf_arg_table[])(FILE* str, struct arg_info* arg_info, va_list arg, in
 static void get_arg_flag(const char** format, struct arg_info* arg_info)
 {
 	arg_info->flags = FLAG_NONE;
-	while(1) {
-	switch(**format) {
-	case '-':
-		++(*format);
-		arg_info->flags |= FLAG_MINUS;
-		break;
-	case '+':
-		++(*format);
-		arg_info->flags |= FLAG_PLUS;
-		break;
-	case ' ':
-		++(*format);
-		arg_info->flags |= FLAG_SPACE;
-		break;
-	case '#':
-		++(*format);
-		arg_info->flags |= FLAG_HASH;
-		break;
-	case '0':
-		++(*format);
-		arg_info->flags |= FLAG_ZERO;
-		break;
-	default:
-		return;
-	}
+	while (1) {
+		switch (**format) {
+		case '-':
+			++(*format);
+			arg_info->flags |= FLAG_MINUS;
+			break;
+		case '+':
+			++(*format);
+			arg_info->flags |= FLAG_PLUS;
+			break;
+		case ' ':
+			++(*format);
+			arg_info->flags |= FLAG_SPACE;
+			break;
+		case '#':
+			++(*format);
+			arg_info->flags |= FLAG_HASH;
+			break;
+		case '0':
+			++(*format);
+			arg_info->flags |= FLAG_ZERO;
+			break;
+		default:
+			return;
+		}
 	}
 	return;
 }
@@ -451,7 +455,7 @@ static int read_int(const char** format)
 
 static void get_arg_number(const char** format, int* number, va_list arg)
 {
-	switch(**format) {
+	switch (**format) {
 	case '*':
 		*number = va_arg(arg, int);
 		++(*format);
@@ -486,7 +490,7 @@ static void get_arg_width(const char** format, struct arg_info* arg_info, va_lis
 // Identify "precision" option, if any
 static void get_arg_precision(const char** format, struct arg_info* arg_info, va_list arg)
 {
-	switch(**format) {
+	switch (**format) {
 	case '.':
 		++(*format);
 		get_arg_number(format, &(arg_info->precision), arg);
@@ -503,7 +507,7 @@ static void get_arg_precision(const char** format, struct arg_info* arg_info, va
 // Identify "length" option, if any
 static void get_arg_length(const char** format, struct arg_info* arg_info)
 {
-	switch(**format) {
+	switch (**format) {
 	case 'h':
 		++(*format);
 		if (**format == 'h') {
@@ -547,7 +551,7 @@ static void get_arg_length(const char** format, struct arg_info* arg_info)
 // Identify "specifier"
 static void get_arg_spec(const char** format, struct arg_info* arg_info)
 {
-	switch(**format) {
+	switch (**format) {
 	case 'd':
 		arg_info->specifier = SPEC_INT_DEC;
 		break;
@@ -612,7 +616,8 @@ static void get_arg_spec(const char** format, struct arg_info* arg_info)
 	++(*format);
 }
 
-int vfprintf(FILE* str, const char* format, va_list arg) {
+int vfprintf(FILE* str, const char* format, va_list arg)
+{
 	CHECK_FILE(str);
 
 	int arg_count = 0;

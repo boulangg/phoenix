@@ -6,7 +6,8 @@
 
 #include <stdio.h>
 
-int scanf(const char* format, ...) {
+int scanf(const char* format, ...)
+{
 	va_list v;
 	va_start(v, format);
 	int res = vfscanf(stdin, format, v);

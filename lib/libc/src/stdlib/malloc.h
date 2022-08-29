@@ -12,10 +12,10 @@
 extern "C" {
 #endif
 
-void* malloc(size_t);
-void free(void*);
-void* calloc(size_t,size_t);
-void* realloc(void* ptr, size_t size);
+	void* malloc(size_t);
+	void free(void*);
+	void* calloc(size_t, size_t);
+	void* realloc(void* ptr, size_t size);
 
 #ifdef __cplusplus
 }
@@ -23,4 +23,3 @@ void* realloc(void* ptr, size_t size);
 
 
 #endif // MALLOC_H_
-

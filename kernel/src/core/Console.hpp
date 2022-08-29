@@ -14,33 +14,35 @@
 #define KBD_BUF_SIZE 1024
 
 namespace VGA {
-enum class Color {
+enum class Color
+{
 	BLACK = 0,
-			BLUE = 1,
-			GREEN = 2,
-			CYAN = 3,
-			RED = 4,
-			MAGENTA = 5,
-			BROWN = 6,
-			LIGHT_GREY = 7,
-			DARK_GREY = 8,
-			LIGHT_BLUE = 9,
-			LIGHT_GREEN = 10,
-			LIGHT_CYAN = 11,
-			LIGHT_RED = 12,
-			LIGHT_MAGENTA = 13,
-			LIGHT_BROWN = 14,
-			WHITE = 15,
+	BLUE = 1,
+	GREEN = 2,
+	CYAN = 3,
+	RED = 4,
+	MAGENTA = 5,
+	BROWN = 6,
+	LIGHT_GREY = 7,
+	DARK_GREY = 8,
+	LIGHT_BLUE = 9,
+	LIGHT_GREEN = 10,
+	LIGHT_CYAN = 11,
+	LIGHT_RED = 12,
+	LIGHT_MAGENTA = 13,
+	LIGHT_BROWN = 14,
+	WHITE = 15,
 };
 }
 
-class Console {
+class Console
+{
 public:
 	static void initConsole();
 	static void setColor(VGA::Color fg, VGA::Color bg);
 	static void clear();
 	static void write(char c);
-	static void write(const char *str);
+	static void write(const char* str);
 	static void write(std::string& str);
 	static void write(std::string&& str);
 	static void write(const std::string& str);

@@ -16,7 +16,8 @@
 Process* Process::scheduler = nullptr;
 
 Process::Process(Process* parent, int pid, int flags) :
-		pid(pid), prio(0), state(ProcessState::Ready), wakeUp(0), retval(0)/*, localOpenFileTable()*/ {
+	pid(pid), prio(0), state(ProcessState::Ready), wakeUp(0), retval(0)/*, localOpenFileTable()*/
+{
 	(void)flags;
 	ppid = parent->pid;
 	pgid = parent->pgid;
@@ -33,7 +34,8 @@ Process::Process(Process* parent, int pid, int flags) :
 }
 
 Process::Process(int prio, code_type code) :
-		prio(prio), state(ProcessState::Ready), wakeUp(0), retval(0)/*, localOpenFileTable()*/ {
+	prio(prio), state(ProcessState::Ready), wakeUp(0), retval(0)/*, localOpenFileTable()*/
+{
 	pid = 0;
 	name = "idle";
 	ppid = pid;
@@ -41,9 +43,9 @@ Process::Process(int prio, code_type code) :
 	sid = pid;
 	mapping = new VirtualMapping();
 	mapping->setEntryPoint((uint64_t*)code);
-	const char* tmp[] = {nullptr};
-	mapping->initMainArgs(tmp,tmp);
-	regSave[1]= (uint64_t)&(mapping->startStack[1]);
+	const char* tmp[] = { nullptr };
+	mapping->initMainArgs(tmp, tmp);
+	regSave[1] = (uint64_t) & (mapping->startStack[1]);
 	regSave[7] = 0;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	procDir = new ProcDir(VirtualFileSystem::root, VirtualFileSystem::root);
@@ -55,9 +57,10 @@ Process::Process(int prio, code_type code) :
 	fileDescriptorTable.push_back(fd);
 }
 
-int Process::execve(File* file, const char* argv[], const char* envp[]) {
-	//if(fd < 0)
-	//	return -1;
+int Process::execve(File* file, const char* argv[], const char* envp[])
+{
+//if(fd < 0)
+//	return -1;
 	if (file == nullptr) {
 		return -1;
 	}
@@ -65,49 +68,53 @@ int Process::execve(File* file, const char* argv[], const char* envp[]) {
 	// context switch (or reuse the old one while keeping the kernel stacks)
 	//delete mapping;
 	mapping = Elf64::getVirtualMapping(file);
-	if(mapping==nullptr)
+	if (mapping == nullptr)
 		return -1;
 	mapping->initMainArgs(argv, envp);
-	regSave[1]= (uint64_t)&(mapping->startStack[0]);
+	regSave[1] = (uint64_t) & (mapping->startStack[0]);
 	regSave[7] = RFLAGS_INIT;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	return 0;
 }
 
-int Process::execve(code_type code, const char* argv[], const char* envp[]) {
-	// TODO schedule delayed deletion to keep the kernelStack usable until next
-	// context switch (or reuse the old one while keeping the kernel stacks)
-	//delete mapping;
+int Process::execve(code_type code, const char* argv[], const char* envp[])
+{
+// TODO schedule delayed deletion to keep the kernelStack usable until next
+// context switch (or reuse the old one while keeping the kernel stacks)
+//delete mapping;
 	mapping->setEntryPoint((uint64_t*)code);
 	mapping->initMainArgs(argv, envp);
-	regSave[1]= (uint64_t)&(mapping->startStack[1]);
+	regSave[1] = (uint64_t) & (mapping->startStack[1]);
 	regSave[7] = 0;
 	regSave[8] = mapping->getPageTable()->getPageTablePtr();
 	return 0;
 }
 
-Process::~Process() {
-	// FIXME memory leak
-	/*for (LocalOpenFile fd : localOpenFileTable) {
-		ProcessScheduler::decrementGlobalFileRefCount(fd.openFileTableIndex);
-	}*/
+Process::~Process()
+{
+// FIXME memory leak
+/*for (LocalOpenFile fd : localOpenFileTable) {
+	ProcessScheduler::decrementGlobalFileRefCount(fd.openFileTableIndex);
+}*/
 }
 
-bool Process::operator<(const Process& p) const{
-	return prio<p.prio;
+bool Process::operator<(const Process& p) const
+{
+	return prio < p.prio;
 }
 
-const std::string Process::getState(ProcessState state) {
-	switch(state){
-	case ProcessState::Running :
+const std::string Process::getState(ProcessState state)
+{
+	switch (state) {
+	case ProcessState::Running:
 		return "Running";
-	case ProcessState::Ready :
+	case ProcessState::Ready:
 		return "Ready";
-	case ProcessState::Dying :
+	case ProcessState::Dying:
 		return "Dying";
 	case ProcessState::Zombie:
 		return "Zombie";
-	case ProcessState::Sleeping :
+	case ProcessState::Sleeping:
 		return "Sleeping";
 	case ProcessState::SonBlocked:
 		return "SonBlocked";
@@ -115,8 +122,7 @@ const std::string Process::getState(ProcessState state) {
 		return "IOBlocked";
 	case ProcessState::SemaphoreBlocked:
 		return "SemaphareBlocked";
-	default :
+	default:
 		return "Unknown state !!";
 	}
 }
-

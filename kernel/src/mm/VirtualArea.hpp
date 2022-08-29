@@ -13,10 +13,11 @@
 #include <fs/vfs/File.hpp>
 #include <mm/Page.hpp>
 
-class VirtualArea {
+class VirtualArea
+{
 public:
 	VirtualArea(uint64_t* addrStart, uint64_t* addrEnd, uint64_t flags,
-			File* file, uint64_t offset, uint64_t fileSize);
+				File* file, uint64_t offset, uint64_t fileSize);
 	VirtualArea(const VirtualArea&);
 	~VirtualArea();
 
@@ -26,7 +27,8 @@ public:
 	bool tryMergeArea(VirtualArea* area);
 
 
-	enum FLAGS {
+	enum FLAGS
+	{
 		VM_WRITE = 0x1,
 		VM_READ = 0x2,
 		VM_EXEC = 0x4,

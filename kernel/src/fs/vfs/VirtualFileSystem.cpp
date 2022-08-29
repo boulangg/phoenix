@@ -10,8 +10,9 @@ Dentry* VirtualFileSystem::root;
 std::vector<File*> VirtualFileSystem::filestable;
 std::list<FileSystemType*> VirtualFileSystem::fileSystemType;
 
-void VirtualFileSystem::initVFS() {
-	// Create root inode
+void VirtualFileSystem::initVFS()
+{
+// Create root inode
 	Inode* inode = new Inode(nullptr, 0, 0);
 	root = new Dentry(inode);
 	FileSystemType* fs;
@@ -21,8 +22,9 @@ void VirtualFileSystem::initVFS() {
 	registerFS(fs);
 }
 
-std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pathname) {
-	// TODO correct error (doesn't handle correctly last '/' even for files)
+std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pathname)
+{
+// TODO correct error (doesn't handle correctly last '/' even for files)
 	std::vector<std::string> res;
 	size_t i = 0;
 	if (pathname[0] == '/') {
@@ -34,7 +36,7 @@ std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pat
 			continue;
 		}
 		res.push_back(pathname.substr(start, i - start));
-		start = i+1;
+		start = i + 1;
 	}
 	if (i != start) {
 		res.push_back(pathname.substr(start, i - start));
@@ -44,8 +46,9 @@ std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pat
 }
 
 
-int VirtualFileSystem::open(struct ProcDir* procDir, const std::string& pathname) {
-	// TODO handle flags and check access right
+int VirtualFileSystem::open(struct ProcDir* procDir, const std::string& pathname)
+{
+// TODO handle flags and check access right
 	Dentry* dentry = getDentry(procDir, pathname);
 
 	// File not found
@@ -76,7 +79,8 @@ int VirtualFileSystem::open(struct ProcDir* procDir, const std::string& pathname
 	return filestable.size() - 1;
 }
 
-Dentry* VirtualFileSystem::getDentry(struct ProcDir* procDir, const std::string& pathname) {
+Dentry* VirtualFileSystem::getDentry(struct ProcDir* procDir, const std::string& pathname)
+{
 	Dentry* start = procDir->rootDir;
 	if (pathname[0] != '/') {
 		start = procDir->workDir;
@@ -85,7 +89,8 @@ Dentry* VirtualFileSystem::getDentry(struct ProcDir* procDir, const std::string&
 	return DentryCache::findDentry(start, pathnameVector, 0);
 }
 
-int VirtualFileSystem::close(int fd) {
+int VirtualFileSystem::close(int fd)
+{
 	filestable[fd]->count--;
 	if (filestable[fd]->count == 0) {
 		delete filestable[fd];
@@ -95,26 +100,30 @@ int VirtualFileSystem::close(int fd) {
 }
 
 
-int VirtualFileSystem::stat(const char* pathname, struct stat* stat) {
+int VirtualFileSystem::stat(const char* pathname, struct stat* stat)
+{
 	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
 	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
 	dentry->inode->stat(stat);
 	return 0;
 }
 
-int VirtualFileSystem::fstat(File* file, struct stat* stat) {
+int VirtualFileSystem::fstat(File* file, struct stat* stat)
+{
 	return file->getInode()->stat(stat);
 }
 
-int VirtualFileSystem::lstat(const char* pathname, struct stat* stat) {
+int VirtualFileSystem::lstat(const char* pathname, struct stat* stat)
+{
 	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
 	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
 	return dentry->inode->stat(stat);
 }
 
 int VirtualFileSystem::mount(const char* source, const char* target,
-		const char* fileSystemType, uint64_t,
-		const void* data) {
+							 const char* fileSystemType, uint64_t,
+							 const void* data)
+{
 
 	std::vector<std::string> mountVector = parsePathname(target);
 	Dentry* mount = DentryCache::findDentry(VirtualFileSystem::root, mountVector, 0);
@@ -132,5 +141,3 @@ int VirtualFileSystem::mount(const char* source, const char* target,
 	}
 	return 1;
 }
-
-

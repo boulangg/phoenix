@@ -7,40 +7,48 @@
 #include <new>
 #include <cstdlib>
 
-void* operator new(std::size_t size) {
-	if (size==0) {
+void* operator new(std::size_t size)
+{
+	if (size == 0) {
 		size = 1;
 	}
-    return malloc(size);
+	return malloc(size);
 }
 
-void* operator new[](std::size_t size) {
-	if (size==0) {
+void* operator new[](std::size_t size)
+{
+	if (size == 0) {
 		size = 1;
 	}
-    return malloc(size);
+	return malloc(size);
 }
 
-void* operator new(std::size_t, void* ptr) {
+void* operator new(std::size_t, void* ptr)
+{
 	return ptr;
 }
 
-void* operator new[](std::size_t, void* ptr) {
+void* operator new[](std::size_t, void* ptr)
+{
 	return ptr;
 }
 
-void operator delete(void* ptr) {
-    free(ptr);
+void operator delete(void* ptr)
+{
+	free(ptr);
 }
 
-void operator delete[](void* ptr) {
-    free(ptr);
+void operator delete[](void* ptr)
+{
+	free(ptr);
 }
 
-void operator delete(void* ptr, std::size_t) {
-    free(ptr);
+void operator delete(void* ptr, std::size_t)
+{
+	free(ptr);
 }
 
-void operator delete[](void* ptr, std::size_t) {
-    free(ptr);
+void operator delete[](void* ptr, std::size_t)
+{
+	free(ptr);
 }

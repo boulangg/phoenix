@@ -5,9 +5,11 @@
 
 #include "BlockCache.hpp"
 
-class BlockDevice {
+class BlockDevice
+{
 public:
-	virtual ~BlockDevice() {
+	virtual ~BlockDevice()
+	{
 
 	}
 

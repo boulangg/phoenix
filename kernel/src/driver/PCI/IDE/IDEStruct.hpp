@@ -3,8 +3,9 @@
 #include <cstdint>
 
 // Source ATA 3, ATA 8 and SATA 3 specifications
-struct __attribute__((packed)) IDEIdentifyData {
-	// Word 0 - 63
+struct __attribute__((packed)) IDEIdentifyData
+{
+// Word 0 - 63
 	std::uint16_t generalConfiguration;
 	std::uint16_t numLogicalCylinders;
 	std::uint16_t specificConfiguration;

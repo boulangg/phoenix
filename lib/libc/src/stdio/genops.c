@@ -8,7 +8,8 @@
 
 #include <stdlib.h>
 
-int fgetc(FILE* str) {
+int fgetc(FILE* str)
+{
 	CHECK_FILE(str);
 	// read ungetc buffer
 	if (str->bufVirtPos < BUF_VIRT_SIZE) {
@@ -19,9 +20,10 @@ int fgetc(FILE* str) {
 	return str->fn->fgetc(str);
 }
 
-char* fgets(char* s, int num, FILE* str) {
+char* fgets(char* s, int num, FILE* str)
+{
 	int i = 0;
-	while (i < num-1) {
+	while (i < num - 1) {
 		int c = fgetc(str);
 		if (c == EOF) {
 			if (feof(str) && i == 0) {
@@ -41,12 +43,14 @@ char* fgets(char* s, int num, FILE* str) {
 	return s;
 }
 
-int fputc(int c, FILE* str) {
+int fputc(int c, FILE* str)
+{
 	CHECK_FILE(str);
 	return str->fn->fputc(c, str);
 }
 
-int fputs(const char* s, FILE* str) {
+int fputs(const char* s, FILE* str)
+{
 	CHECK_FILE(str);
 	int i = 0;
 	while (s[i] != '\0') {
@@ -58,15 +62,18 @@ int fputs(const char* s, FILE* str) {
 	return 0;
 }
 
-int getc(FILE* str) {
+int getc(FILE* str)
+{
 	return fgetc(str);
 }
 
-int getchar() {
+int getchar()
+{
 	return fgetc(stdin);
 }
 
-char* gets(char* s) {
+char* gets(char* s)
+{
 	int i = 0;
 	int c = fgetc(stdin);
 	while (c != '\n') {
@@ -85,15 +92,18 @@ char* gets(char* s) {
 	return s;
 }
 
-int putc(int c, FILE* str) {
+int putc(int c, FILE* str)
+{
 	return fputc(c, str);
 }
 
-int putchar(int c) {
+int putchar(int c)
+{
 	return fputc(c, stdout);
 }
 
-int puts(const char* s) {
+int puts(const char* s)
+{
 	if (fputs(s, stdout) == EOF) {
 		return EOF;
 	}
@@ -107,7 +117,8 @@ int puts(const char* s) {
 	return EOF;
 }*/
 
-int ungetc(int c, FILE* str) {
+int ungetc(int c, FILE* str)
+{
 	CHECK_FILE(str);
 	if (str->flags & BUFWRITE) {
 		return EOF;
@@ -127,10 +138,11 @@ int ungetc(int c, FILE* str) {
 	}*/
 }
 
-int fflush(FILE* str) {
+int fflush(FILE* str)
+{
 	CHECK_FILE(str);
 	if (str->flags & BUFWRITE) {
-		size_t wr_size = str->bufPos-str->bufStart;
+		size_t wr_size = str->bufPos - str->bufStart;
 		if (wr_size > 0) {
 			//lseek(str->fileno, 0, SEEK_END);
 			if ((size_t)write(str->fileno, str->bufStart, wr_size) != wr_size) {
@@ -143,7 +155,8 @@ int fflush(FILE* str) {
 	return 0;
 }
 
-int fclose(FILE* str) {
+int fclose(FILE* str)
+{
 	CHECK_FILE(str);
 	fflush(str);
 	if (!(str->flags & USERBUF)) {
@@ -152,17 +165,20 @@ int fclose(FILE* str) {
 	return close(str->fileno);
 }
 
-int feof(FILE* str) {
+int feof(FILE* str)
+{
 	CHECK_FILE(str);
 	return str->eof;
 }
 
-int ferror(FILE* str) {
+int ferror(FILE* str)
+{
 	CHECK_FILE(str);
 	return str->error;
 }
 
-int setvbuf(FILE* str, char* buffer, int mode, size_t size) {
+int setvbuf(FILE* str, char* buffer, int mode, size_t size)
+{
 	CHECK_FILE(str);
 	if (size == 0) {
 		size = 1;
@@ -187,7 +203,8 @@ int setvbuf(FILE* str, char* buffer, int mode, size_t size) {
 	return 0;
 }
 
-int setbuf(FILE * str, char* buffer) {
+int setbuf(FILE* str, char* buffer)
+{
 	CHECK_FILE(str);
 	if (buffer == NULL) {
 		return setvbuf(str, buffer, _IONBF, BUFSIZ);

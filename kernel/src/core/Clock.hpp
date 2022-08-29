@@ -18,29 +18,43 @@
 extern "C" {
 #endif
 
-void PIT_handler();
+	void PIT_handler();
 
 #ifdef __cplusplus
 }
 #endif
 
-class Clock {
+class Clock
+{
 public:
 	Clock();
 	~Clock();
-	static void init() {
+	static void init()
+	{
 		setFreq();
-		InterruptHandler* handler = new InterruptHandlerFunction<Clock::tic>("Clock", {true, false}, nullptr);
+		InterruptHandler* handler = new InterruptHandlerFunction<Clock::tic>("Clock", { true, false }, nullptr);
 		InterruptManager::requestIRQ(0, handler);
 	}
 
 	static void setFreq();
-	static uint64_t sec(){return s;}
-	static uint64_t min(){return m;}
-	static uint64_t hour(){return h;}
-	static uint64_t current_clock_kernel(){return totalIntern;}
+	static uint64_t sec()
+	{
+		return s;
+	}
+	static uint64_t min()
+	{
+		return m;
+	}
+	static uint64_t hour()
+	{
+		return h;
+	}
+	static uint64_t current_clock_kernel()
+	{
+		return totalIntern;
+	}
 	static int tic();
-	static int nanosleep(const struct timespec *req, struct timespec *rem);
+	static int nanosleep(const struct timespec* req, struct timespec* rem);
 
 private:
 	static void checkTimers();

@@ -3,37 +3,45 @@
 
 #include <syscall/syscall.h>
 
-int close(int fd) {
+int close(int fd)
+{
 	return sys_close(fd);
 }
 
-int read(int fd, void *buf, size_t count) {
+int read(int fd, void* buf, size_t count)
+{
 	return sys_read(fd, buf, count);
 }
 
-int write(int fd, const void *buf, size_t count) {
+int write(int fd, const void* buf, size_t count)
+{
 	return sys_write(fd, buf, count);
 }
 
-void _exit(int status) {
+void _exit(int status)
+{
 	sys_exit(status);
 	__builtin_unreachable();
 }
 
-int fork() {
+int fork()
+{
 	return sys_fork();
 }
 
-int execve(const char *file, char *const argv[], char *const envp[]) {
+int execve(const char* file, char* const argv[], char* const envp[])
+{
 	return sys_execve(file, argv, envp);
 }
 
-int getpid() {
+int getpid()
+{
 	return sys_getpid();
 }
 
-int brk(void* addr) {
-    void* oldBrk = sys_brk((void*)0);
+int brk(void* addr)
+{
+	void* oldBrk = sys_brk((void*)0);
 	if (sys_brk(addr) != oldBrk) {
 		return 0;
 	} else {
@@ -42,7 +50,8 @@ int brk(void* addr) {
 	}
 }
 
-unsigned int sleep(unsigned int seconds) {
+unsigned int sleep(unsigned int seconds)
+{
 	struct timespec spec;
 	spec.tv_nsec = 0;
 	spec.tv_sec = seconds;
@@ -50,7 +59,8 @@ unsigned int sleep(unsigned int seconds) {
 	return ret;
 }
 
-void* sbrk(intptr_t increment) {
+void* sbrk(intptr_t increment)
+{
 	if (increment == 0) {
 		return sys_brk(0);
 	}

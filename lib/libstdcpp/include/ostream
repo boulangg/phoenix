@@ -10,7 +10,8 @@
 
 namespace std {
 template <class charT, class traits = char_traits<charT> >
-class basic_ostream : public basic_ios<charT, traits> {
+class basic_ostream : public basic_ios<charT, traits>
+{
 
 public:
 	// Member types
@@ -20,17 +21,18 @@ public:
 	typedef traits_type::pos_type pos_type;
 	typedef traits_type::off_type off_type;
 
-	class sentry {
+	class sentry
+	{
 	public:
-	  explicit sentry (basic_istream& is, bool noskipws = false);
-	  ~sentry();
-	  explicit operator bool() const;
-	  sentry (const sentry&) = delete;
-	  sentry& operator= (const sentry&) = delete;
+		explicit sentry(basic_istream& is, bool noskipws = false);
+		~sentry();
+		explicit operator bool() const;
+		sentry(const sentry&) = delete;
+		sentry& operator= (const sentry&) = delete;
 	};
 
 	// Constructors
-	explicit basic_ostream (basic_streambuf<char_type,traits_type>* sb);
+	explicit basic_ostream(basic_streambuf<char_type, traits_type>* sb);
 	basic_ostream(const basic_ostream&) = delete;
 protected:
 	basic_ostream(basic_ostream&& x);
@@ -52,10 +54,10 @@ public:
 	basic_ostream& operator<<(double val);
 	basic_ostream& operator<<(long double val);
 	basic_ostream& operator<<(void* val);
-	basic_ostream& operator<<(basic_streambuf<char_type,traits_type>* sb );
+	basic_ostream& operator<<(basic_streambuf<char_type, traits_type>* sb);
 	basic_ostream& operator<<(basic_ostream& (*pf)(basic_ostream&));
 	basic_ostream& operator<<(
-			basic_ios<char_type,traits_type>& (*pf)(basic_ios<char_type,traits_type>&));
+		basic_ios<char_type, traits_type>& (*pf)(basic_ios<char_type, traits_type>&));
 	basic_ostream& operator<<(ios_base& (*pf)(ios_base&));
 
 	// Unformatted output
@@ -80,4 +82,3 @@ protected:
 };
 
 }
-
