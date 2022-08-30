@@ -27,17 +27,6 @@ extern "C" {
 	typedef struct FILE FILE;
 	typedef size_t fpos_t;
 
-	typedef int (*fgetc_fn)(FILE* str);
-	typedef int (*fputc_fn)(int c, FILE* str);
-	//typedef int (*fflush_fn)(FILE* str);
-
-	typedef struct stream_ops
-	{
-		fgetc_fn fgetc;
-		fputc_fn fputc;
-		//fflush_fn fflush;
-	} stream_ops;
-
 	extern FILE* stdout;
 	extern FILE* stdin;
 	extern FILE* stderr;

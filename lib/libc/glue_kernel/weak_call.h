@@ -27,6 +27,7 @@ int sys_open(const char* pathname, int flags, mode_t mode) WEAK_SYSCALL;
 int sys_close(int fd) WEAK_SYSCALL;
 ssize_t sys_read(int fd, void* buf, size_t count) WEAK_SYSCALL;
 ssize_t sys_write(int fd, const void* buf, size_t count) WEAK_SYSCALL;
+off_t sys_lseek(unsigned int fd, off_t offset, int whence) WEAK_SYSCALL;
 int sys_stat(const char*, struct stat*) WEAK_SYSCALL;
 int sys_fstat(int, struct stat*) WEAK_SYSCALL;
 int sys_lstat(const char*, struct stat*) WEAK_SYSCALL;

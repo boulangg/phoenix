@@ -9,6 +9,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 
 // A format specifier follow the following prototype:
 // %[flags][width][.precision][length]specifier
@@ -94,13 +95,8 @@ static int print_error(FILE* str, struct arg_info* arg_info, va_list arg, int* c
 	(void)arg_info;
 	(void)arg;
 
-	fputc('E', str);
-	fputc('R', str);
-	fputc('R', str);
-	fputc('O', str);
-	fputc('R', str);
-	fputc(' ', str);
-	(*count)++;
+	fputs("ERROR ", str);
+	(*count)+=6;
 	return 0;
 }
 
@@ -146,7 +142,7 @@ static int print_int(FILE* str, struct arg_info* arg_info, va_list arg, int* cou
 
 	if (arg_info->precision == -1) {
 		if (arg_info->flags & FLAG_ZERO) {
-			arg_info->precision = arg_info->width;
+			arg_info->precision = abs(arg_info->width);
 			if (sign) {
 				arg_info->precision -= 1;
 			}
@@ -168,12 +164,15 @@ static int print_int(FILE* str, struct arg_info* arg_info, va_list arg, int* cou
 	}
 
 	int nbSpace = 0;
-	if (len + nbZero < arg_info->width) {
-		nbSpace = arg_info->width - (len + nbZero);
+	if (len + nbZero < abs(arg_info->width)) {
+		nbSpace = abs(arg_info->width) - (len + nbZero);
 	}
 
-	for (int i = 0; i < nbSpace; i++) {
-		fputc(' ', str);
+	// Right-justify
+	if (!(arg_info->flags & FLAG_MINUS)) {
+		for (int i = 0; i < nbSpace; i++) {
+			fputc(' ', str);
+		}
 	}
 
 	if (sign) {
@@ -194,6 +193,13 @@ static int print_int(FILE* str, struct arg_info* arg_info, va_list arg, int* cou
 	}
 	for (int i = 0; i < len; i++) {
 		fputc(buf[i], str);
+	}
+
+	// Left-justify
+	if (arg_info->flags & FLAG_MINUS) {
+		for (int i = 0; i < nbSpace; i++) {
+			fputc(' ', str);
+		}
 	}
 
 	*count += nbSpace + nbZero + len;
@@ -357,11 +363,35 @@ static int print_str(FILE* str, struct arg_info* arg_info, va_list arg, int* cou
 	(void)arg_info;
 
 	char* str_arg = va_arg(arg, char*);
+
+	int len = strlen(str_arg);
+
+	// Count space
+	int nbSpace = 0;
+	if (len < arg_info->width) {
+		nbSpace = arg_info->width - (len);
+	}
+
+	// Right-justify
+	if (!(arg_info->flags & FLAG_MINUS)) {
+		for (int i = 0; i < nbSpace; i++) {
+			fputc(' ', str);
+		}
+	}
+
 	while (*str_arg != '\0') {
 		fputc(*str_arg, str);
 		str_arg++;
-		(*count)++;
 	}
+
+	// Left-justify
+	if (arg_info->flags & FLAG_MINUS) {
+		for (int i = 0; i < nbSpace; i++) {
+			fputc(' ', str);
+		}
+	}
+	(*count) += nbSpace + len;
+
 	return 0;
 }
 
@@ -481,10 +511,12 @@ static void get_arg_number(const char** format, int* number, va_list arg)
 // Identify "width" option, if any
 static void get_arg_width(const char** format, struct arg_info* arg_info, va_list arg)
 {
-	get_arg_number(format, &(arg_info->width), arg);
-	if (arg_info->width <= 0) {
-		arg_info->width = 1;
+	int width;
+	get_arg_number(format, &(width), arg);
+	if (width < 0) {
+		arg_info->flags |= FLAG_MINUS;
 	}
+	arg_info->width = abs(width);
 }
 
 // Identify "precision" option, if any

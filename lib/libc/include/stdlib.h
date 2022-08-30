@@ -13,14 +13,17 @@
 extern "C" {
 #endif
 
-/// Standard C
-// Dynamic memory management
+	/// Standard C
+	// Dynamic memory management
 	void* calloc(size_t num, size_t size);
 	void free(void* ptr);
 	void* malloc(size_t size);
 	void* realloc(void* ptr, size_t size);
 	int atexit(void(*func)());
 	void exit(int exit_code);
+
+	// Misc
+	int abs(int value);
 
 	// Other
 #define EXIT_FAILURE -1

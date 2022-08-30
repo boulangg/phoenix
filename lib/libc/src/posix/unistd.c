@@ -8,14 +8,19 @@ int close(int fd)
 	return sys_close(fd);
 }
 
-int read(int fd, void* buf, size_t count)
+ssize_t read(int fd, void* buf, size_t count)
 {
 	return sys_read(fd, buf, count);
 }
 
-int write(int fd, const void* buf, size_t count)
+ssize_t write(int fd, const void* buf, size_t count)
 {
 	return sys_write(fd, buf, count);
+}
+
+off_t lseek(int fd, off_t offset, int whence)
+{
+	return sys_lseek(fd, offset, whence);
 }
 
 void _exit(int status)

@@ -9,9 +9,15 @@
 
 int errno = 0;
 
+char* sys_errlist[] = {
+	"unknown"
+};
+int sys_nerr = 1;
+
 char* strerror(int errnum)
 {
-// TODO not yet implemented
-	(void)errnum;
-	return NULL;
+	if (errnum > 0 && errnum < sys_nerr) {
+		return sys_errlist[errnum];
+	}
+	return sys_errlist[0];
 }

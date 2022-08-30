@@ -11,37 +11,21 @@ int fgetpos(FILE* str, fpos_t* pos)
 int fseek(FILE* str, long int offset, int origin)
 {
 	CHECK_FILE(str);
-	(void)str;
-	(void)offset;
-	(void)origin;
-	switch (origin) {
-	case SEEK_SET:
-		break;
-	case SEEK_CUR:
-		break;
-	case SEEK_END:
-		break;
-	default:
-		return EOF;
-	}
-
-	//str->bufVirtPos = BUF_VIRT_SIZE;
-	return -1;
+	fflush(str);
+	str->bufPos = str->bufEnd;
+	return lseek(str->fileno, offset, origin);
 }
 
 int fsetpos(FILE* str, const fpos_t* pos)
 {
 	CHECK_FILE(str);
-	(void)str;
-	(void)pos;
 	return fseek(str, *pos, SEEK_SET);
 }
 
 long int ftell(FILE* str)
 {
 	CHECK_FILE(str);
-	return str->offset + (str->bufPos - str->bufStart) + BUF_VIRT_SIZE - str->bufVirtPos;;
-
+	return lseek(str->fileno, 0, SEEK_CUR) - (str->bufEnd - str->bufPos);
 }
 
 void rewind(FILE* str)
