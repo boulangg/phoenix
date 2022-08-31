@@ -34,7 +34,7 @@ typedef unsigned long long key_t;
 
 // Size types
 #include <def/def_size.h>
-typedef signed long long   ssize_t;
+typedef signed long   ssize_t;
 
 // Id types
 typedef unsigned int       id_t;

@@ -96,6 +96,12 @@ extern "C" {
 		__builtin_unreachable();
 	}
 
+	int abs(int x)
+	{
+		int y = x >> 31;
+		return (x ^ y) - y;
+	}
+
 #ifdef __cplusplus
 };
 #endif

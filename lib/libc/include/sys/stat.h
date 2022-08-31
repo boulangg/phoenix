@@ -80,19 +80,19 @@ extern "C" {
 
 /* File mode bits */
 #define S_IRWXU 00000700
-#define S_IRUSR 00000100
+#define S_IRUSR 00000400
 #define S_IWUSR 00000200
-#define S_IXUSR 00000400
+#define S_IXUSR 00000100
 
 #define S_IRWXG 00000070
-#define S_IRGRP 00000010
+#define S_IRGRP 00000040
 #define S_IWGRP 00000020
-#define S_IXGRP 00000040
+#define S_IXGRP 00000010
 
 #define S_IRWXO 00000007
-#define S_IROTH 00000001
+#define S_IROTH 00000004
 #define S_IWOTH 00000002
-#define S_IXOTH 00000004
+#define S_IXOTH 00000001
 
 	int chmod(const char*, mode_t);
 	int fchmod(int, mode_t);

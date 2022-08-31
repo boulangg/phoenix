@@ -30,6 +30,14 @@ ssize_t sys_read(int fd, void* buf, size_t count)
 	return -1;
 }
 
+off_t sys_lseek(unsigned int fd, off_t offset, int whence)
+{
+	(void)fd;
+	(void)offset;
+	(void)whence;
+	return -1;
+}
+
 int sys_close(int fd)
 {
 	(void)fd;

@@ -19,6 +19,7 @@ extern "C" {
 
 	ssize_t sys_read(unsigned int fd, void* buf, size_t count);
 	ssize_t sys_write(unsigned int fd, const void* buf, size_t count);
+	off_t sys_lseek(unsigned int fd, off_t offset, int whence);
 	int sys_open(const char* pathname, int flags, mode_t mode);
 	int sys_close(unsigned int fd);
 	int sys_stat(const char*, struct stat*);
