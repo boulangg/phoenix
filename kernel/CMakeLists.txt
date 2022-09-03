@@ -119,4 +119,3 @@ set_target_properties(kernel
 						OUTPUT_NAME ${kernel_name}
 						SUFFIX "")
 set_target_properties(kernel PROPERTIES FOLDER kernel)
-
