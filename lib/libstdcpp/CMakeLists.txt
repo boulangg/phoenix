@@ -12,5 +12,3 @@ add_library(stdcpp STATIC ${lib_src})
 target_include_directories(stdcpp PUBLIC ${lib_inc})
 target_link_libraries(stdcpp kernel_options)
 set_target_properties(stdcpp PROPERTIES FOLDER lib)
-
-

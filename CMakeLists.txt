@@ -35,7 +35,7 @@ add_custom_command(	OUTPUT ${disk_name}
 add_custom_target(	launch
 					COMMAND ${terminal} -e "${qemu} ${qemu_opts}" &
 					DEPENDS ${drive_name} ${disk_name})
-set_target_properties(debug_bin PROPERTIES FOLDER kernel)
+set_target_properties(launch PROPERTIES FOLDER kernel)
 
 
 set(kernel_debug_dir ${CMAKE_CURRENT_SOURCE_DIR}/bin)
@@ -67,4 +67,3 @@ add_custom_target(	debug
 					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 					DEPENDS ${drive_name} ${disk_name} debug_bin)
 set_target_properties(debug PROPERTIES FOLDER kernel)
-					

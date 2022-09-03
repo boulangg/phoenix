@@ -5,6 +5,10 @@
 
 void init_buffer(FILE* str)
 {
+	if (str->flags & SF_STRING) {
+		return 0;
+	}
+
 	if (str->bufStart == NULL) {
 		str->bufStart = malloc(str->bufSize);
 		str->bufPos = str->bufStart;
@@ -14,6 +18,10 @@ void init_buffer(FILE* str)
 
 int bufWrite(FILE* str)
 {
+	if (str->flags & SF_STRING) {
+		return EOF;
+	}
+
 	ssize_t nb = 0;
 	while (nb < str->bufPos - str->bufStart) {
 		ssize_t res = write(str->fileno, str->bufStart + nb, str->bufPos - str->bufStart - nb);

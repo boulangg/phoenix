@@ -17,9 +17,9 @@
 
 #define SF_READ		0x00000001
 #define SF_WRITE	0x00000002
+#define SF_STRING	0x00000010
 #define SF_USERBUF	0x00000020
 
-#define BUF_VIRT_SIZE 8
 
 typedef struct FILE
 {

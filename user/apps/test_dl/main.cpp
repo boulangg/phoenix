@@ -4,7 +4,8 @@
 
 #include <string>
 
-int main() {
+int main()
+{
 	void* dlHandle = dlopen("/usr/bin/cat", RTLD_LAZY);
 	std::string symName = "fprintf";
 	void* symAddr = dlsym(dlHandle, symName.c_str());
