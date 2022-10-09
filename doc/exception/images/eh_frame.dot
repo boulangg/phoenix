@@ -1,0 +1,163 @@
+digraph {
+    #bgcolor="transparent"
+
+    # Nodes
+    node [ shape=none fontname=Helvetica ]
+
+    n0 [ label = <
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="white">
+            <tr>
+                <td colspan="2" port="0" bgcolor="#909090">.eh_frame_hdr</td>
+            </tr>
+            <tr>
+                <td align="left">uint8_t</td>
+                <td align="left">Version</td>
+            </tr>
+            <tr>
+                <td align="left">uint8_t</td>
+                <td align="left">eh frame ptr enc</td>
+            </tr>
+            <tr>
+                <td align="left">uint8_t</td>
+                <td align="left">FDE count enc</td>
+            </tr>
+            <tr>
+                <td align="left">uint8_t</td>
+                <td align="left">Table enc</td>
+            </tr>
+            <tr>
+                <td align="left">enc</td>
+                <td align="left">eh frame ptr</td>
+            </tr>
+            <tr>
+                <td align="left">enc</td>
+                <td align="left">FDE count</td>
+            </tr>
+            <tr>
+                <td align="left">bst_entry[fde_count]</td>
+                <td align="left" port="7">Binary Search Table</td>
+            </tr>
+        </table>
+    > ]
+    
+    n1 [ label = <
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="white">
+            <tr>
+                <td colspan="2" port="0" bgcolor="#909090">bst_entry</td>
+            </tr>
+            <tr>
+                <td align="left">enc</td>
+                <td align="left">Initial Location</td>
+            </tr>
+            <tr>
+                <td align="left">enc</td>
+                <td align="left" port="2">FDE Address</td>
+            </tr>
+        </table>
+    > ]
+    
+    
+    n2 [ label = <
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="white">
+            <tr>
+                <td  colspan="2" port="0" bgcolor="#909090">FDE</td>
+            </tr>
+            <tr>
+                <td align="left">uint32_t</td>
+                <td align="left">Length</td>
+            </tr>
+            <tr>
+                <td align="left" bgcolor="#d8d8d8">uint64_t</td>
+                <td align="left" bgcolor="#d8d8d8">Extended Length</td>
+            </tr>
+            <tr>
+                <td align="left">uint32_t</td>
+                <td align="left" port="3">CIE ptr (Offset)</td>
+            </tr>
+            <tr>
+                <td align="left">enc</td>
+                <td align="left">IP begin</td>
+            </tr>
+            <tr>
+                <td align="left">enc</td>
+                <td align="left">IP range</td>
+            </tr>
+            <tr>
+                <td align="left" bgcolor="#d8d8d8">uleb128</td>
+                <td align="left" bgcolor="#d8d8d8">Augmentation Data Length</td>
+            </tr>
+            <tr>
+                <td align="left" bgcolor="#d8d8d8">enc</td>
+                <td align="left" bgcolor="#d8d8d8">Augmentation Data</td>
+            </tr>
+            <tr>
+                <td align="left">char[]</td>
+                <td align="left">Call Frame Instructions</td>
+            </tr>
+        </table>
+    > ]
+    
+    n3 [ label = <
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4" bgcolor="white">
+            <tr>
+                <td colspan="2" port="0" bgcolor="#909090">CIE</td>
+            </tr>
+            <tr>
+                <td align="left">uint32_t</td>
+                <td align="left">Length</td>
+            </tr>
+            <tr>
+                <td align="left" bgcolor="#d8d8d8">uint64_t</td>
+                <td align="left" bgcolor="#d8d8d8">Extended Length</td>
+            </tr>
+            <tr>
+                <td align="left">uint32_t</td>
+                <td align="left">CIE ID</td>
+            </tr>
+            <tr>
+                <td align="left">uint8_t</td>
+                <td align="left">Version</td>
+            </tr>
+            <tr>
+                <td align="left">char[]</td>
+                <td align="left">Augmentation String</td>
+            </tr>
+            <tr>
+                <td align="left">uleb128</td>
+                <td align="left">Code Alignment Factor</td>
+            </tr>
+            <tr>
+                <td align="left">sleb128</td>
+                <td align="left">Data Alignment Factor</td>
+            </tr>
+            <tr>
+                <td align="left">enc</td>
+                <td align="left">Return Address Register</td>
+            </tr>
+            <tr>
+                <td align="left" bgcolor="#d8d8d8">uleb128</td>
+                <td align="left" bgcolor="#d8d8d8">Augmentation Data Length</td>
+            </tr>
+            <tr>
+                <td align="left" bgcolor="#d8d8d8">enc</td>
+                <td align="left" bgcolor="#d8d8d8">Augmentation Data</td>
+            </tr>
+            <tr>
+                <td align="left">char[]</td>
+                <td align="left">Initial Call Frame Instructions</td>
+            </tr>
+        </table>
+    > ]
+    
+    # layout
+    rankdir=LR
+    node [shape=plaintext]
+
+    n0:0->n1:0->n2:0->n3:0 [style=invis minlen=1]
+
+    # Edges
+    n0:7 -> n1:0:w  [constraint=false style=dashed]
+    n1:2:e -> n2:0:w  [constraint=false]
+    n2:3:e -> n3:0:w  [constraint=false]
+
+}
