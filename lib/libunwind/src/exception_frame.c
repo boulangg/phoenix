@@ -314,14 +314,26 @@ uint64_t unwind_apply_cfa_rule(uint64_t reg, uint64_t cfa, unwind_cursor_t curso
 	case CFA_RULE_UNDEF:
 		return 0;
 	case CFA_RULE_SAME:
+		if (reg >= DW_X86_64_SIZE) {
+			DEBUG_LOG("CFA rule %x (CFA_RULE_SAME) parameter 'reg' is invalid: %x\n", rule.type, reg);
+			abort();
+		}
 		return cursor.regs[reg];
 	case CFA_RULE_OFFSET:
 		return *(uint64_t*)(cfa + rule.offset);
 	case CFA_RULE_VAL_OFFSET:
 		return cfa + rule.offset;
 	case CFA_RULE_REGISTER:
+		if (rule.reg >= DW_X86_64_SIZE) {
+			DEBUG_LOG("CFA rule %x (CFA_RULE_REGISTER) parameter 'rule.reg' is invalid: %x\n", rule.type, reg);
+			abort();
+		}
 		return cursor.regs[rule.reg];
 	case CFA_RULE_CFA_REGISTER_OFFSET:
+		if (rule.reg >= DW_X86_64_SIZE) {
+			DEBUG_LOG("CFA rule %x (CFA_RULE_CFA_REGISTER_OFFSET) parameter 'rule.reg' is invalid: %x\n", rule.type, reg);
+			abort();
+		}
 		return cursor.regs[rule.reg] + rule.offset;
 	case CFA_RULE_EXPR:
 		DEBUG_LOG("CFA rule %x (CFA_RULE_EXPR) not supported\n", rule.type);
