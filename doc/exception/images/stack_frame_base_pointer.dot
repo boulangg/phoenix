@@ -1,0 +1,81 @@
+digraph {
+    bgcolor="transparent"
+
+    # Nodes
+    node [ shape=none fontname=Helvetica ]
+
+    n0 [ label = <
+        <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr>
+                <td bgcolor="#909090" >Position</td>
+                <td bgcolor="#909090" >Contents</td>
+                <td bgcolor="#909090" >Register Value</td>
+                <td bgcolor="#909090" >Register Pointer</td>
+                <td bgcolor="#909090" >Frame</td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffff60" align="right">8n+16(%rbp)</td>
+                <td bgcolor="#ffff60">memory argument eightbyte n</td>
+                <td bgcolor="#ffff60"> </td>
+                <td bgcolor="#ffff60"> </td>
+                <td bgcolor="#ffff60" rowspan="3">Previous</td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffff60" align="right"></td>
+                <td bgcolor="#ffff60">...</td>
+                <td bgcolor="#ffff60"> </td>
+                <td bgcolor="#ffff60"> </td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffff60" align="right">16(%rbp)</td>
+                <td bgcolor="#ffff60">memory argument eightbyte 0</td>
+                <td bgcolor="#ffff60"> </td>
+                <td bgcolor="#ffff60">RSP[N-1]=CFA[N-1]</td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffc760" align="right">8(%rbp)</td>
+                <td bgcolor="#ffc760">return address</td>
+                <td bgcolor="#ffc760">RIP[N-1]</td>
+                <td bgcolor="#ffc760"> </td>
+                <td bgcolor="#ffc760" rowspan="6">Current</td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffc760" align="right">0(%rbp)</td>
+                <td bgcolor="#ffc760">previous %rbp value</td>
+                <td bgcolor="#ffc760">RBP[N-1]</td>
+                <td bgcolor="#ffc760">RBP[N]</td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffc760" align="right">-8(%rbp)</td>
+                <td bgcolor="#ffc760">unspecified</td>
+                <td bgcolor="#ffc760"> </td>
+                <td bgcolor="#ffc760"> </td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffc760" align="right"> </td>
+                <td bgcolor="#ffc760">...</td>
+                <td bgcolor="#ffc760"> </td>
+                <td bgcolor="#ffc760"> </td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffc760" align="right">0(%rsp)</td>
+                <td bgcolor="#ffc760">variable size</td>
+                <td bgcolor="#ffc760"> </td>
+                <td bgcolor="#ffc760">RSP[N]</td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffc760" align="right"> </td>
+                <td bgcolor="#ffc760">local variables</td>
+                <td bgcolor="#ffc760"> </td>
+                <td bgcolor="#ffc760"> </td>
+            </tr>
+            <tr>
+                <td bgcolor="#ff6060" align="right">-128(%rsp)</td>
+                <td bgcolor="#ff6060">red zone</td>
+                <td bgcolor="#ff6060"> </td>
+                <td bgcolor="#ff6060"> </td>
+                <td bgcolor="#ff6060" rowspan="6">Other</td>
+            </tr>
+        </table>
+    > ]
+}

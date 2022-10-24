@@ -7,6 +7,7 @@
 #include "stdlib.h"
 #include "stdio/io.h"
 #include "sys/sys.h"
+#include "dl/dl_helpers.h"
 
 typedef void (*func_ptr)();
 extern func_ptr __preinit_array_start[0], __preinit_array_end[0];
@@ -33,6 +34,7 @@ void __libc_init(char* envp[])
 {
 	init_io();
 	init_sys(envp);
+	init_dl();
 }
 
 void __libc_fini_array()

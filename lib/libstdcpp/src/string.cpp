@@ -20,7 +20,7 @@ size_t char_traits<char>::length(const char_type* s)
 	return len;
 }
 
-void char_traits<char>::assign(char_type& r, const char_type& c)
+void char_traits<char>::assign(char_type& r, const char_type& c) noexcept
 {
 	r = c;
 }

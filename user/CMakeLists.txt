@@ -14,6 +14,11 @@ if (NOT TARGET c)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libc dependency/libc)
 endif()
 
+# Include unwind lib
+if (NOT TARGET unwind)
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libunwind dependency/libunwind)
+endif()
+
 # Include stdcpp lib
 if (NOT TARGET stdcpp)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libstdcpp dependency/libstdcpp)
@@ -32,7 +37,7 @@ foreach(app_name ${app_names})
 				
 		# Create a target for the user app build with custom standard lib implementation
 		add_executable(${app_name} ${${app_name}_src})
-		target_link_libraries(${app_name} stdcpp c kernel_options nostd_options)
+		target_link_libraries(${app_name} c stdcpp unwind nostd_options)
 		set_target_properties(${app_name} PROPERTIES FOLDER user)
 
 		# Create a target for the user app build with gcc standard lib implementation

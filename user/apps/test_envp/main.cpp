@@ -3,11 +3,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/auxv.h>
+#include <link.h>
 
 int main(int argc, char* argv[], char* envp[])
 {
-	(void)argc;
-	(void)argv;
+	for (int i = 0; i < argc; i++) {
+		printf("arg %i: %s\n", i, argv[i]);
+	}
+	printf("\n");
+
 	int envpCount = 0;
 	while (envp[envpCount] != NULL) {
 		printf("%s\n", envp[envpCount]);
@@ -15,13 +19,27 @@ int main(int argc, char* argv[], char* envp[])
 	}
 	printf("\n");
 
-	const char* username = getenv("USERNAME");
+	const char* username = getenv("USER");
 	if (username != NULL) {
-		printf("USERNAME: %s\n", username);
+		printf("USER: %s\n", username);
 	}
+	printf("\n");
 
-	uint64_t val = getauxval(AT_PHDR);
-	printf("AT_PHDR: %p\n", (void*)val);
+	printf("AT_PAGESZ: 0x%p\n", (void*)getauxval(AT_PAGESZ));
+	printf("AT_ENTRY:  0x%p\n", (void*)getauxval(AT_ENTRY));
+	printf("AT_PHDR:   0x%p\n", (void*)getauxval(AT_PHDR));
+	printf("AT_PHENT:  %lu (bytes)\n", getauxval(AT_PHENT));
+	printf("AT_PHNUM:  %lu\n", getauxval(AT_PHNUM));
+
+	dl_iterate_phdr(
+		[](struct dl_phdr_info* info, size_t size, void* data)
+		{
+			(void)size;
+			(void)data;
+			printf("%s, %p, %p, %i\n", info->dlpi_name, (void*)info->dlpi_addr, info->dlpi_phdr, info->dlpi_phnum);
+			return 0;
+		},
+		nullptr);
 
 	return 0;
 }

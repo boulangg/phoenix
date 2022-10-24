@@ -5,10 +5,14 @@ enable_language(CXX)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake_config/compiler_flags.cmake)
 
+if (NOT TARGET unwind)
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libunwind dependency/libunwind)
+endif()
+
 file(GLOB_RECURSE lib_src ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 set(lib_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/../libc/include)
 
 add_library(stdcpp STATIC ${lib_src})
 target_include_directories(stdcpp PUBLIC ${lib_inc})
-target_link_libraries(stdcpp kernel_options)
+target_link_libraries(stdcpp unwind nostd_options)
 set_target_properties(stdcpp PROPERTIES FOLDER lib)

@@ -53,7 +53,7 @@ extern "C" {
 		ELFDATA2MSB = 2		/* big-endian data structures */
 	};
 
-	enum versionValue : Elf64_Word
+	enum versionValue
 	{
 		EV_CURRENT = 1
 	};
@@ -70,7 +70,7 @@ extern "C" {
 		ELFSYSVABIVERSION = 0
 	};
 
-	enum typeValue : Elf64_Half
+	enum typeValue
 	{
 		ET_NONE = 0, 		/* No file type */
 		ET_REL = 1, 		/* Relocable object file */
@@ -86,9 +86,9 @@ extern "C" {
 	typedef struct
 	{
 		unsigned char 	e_ident[EI_NIDENT]; /* ELF identification */
-		typeValue 		e_type; 			/* Object file type */
+		Elf64_Half 		e_type; 			/* Object file type */
 		Elf64_Half 		e_machine; 			/* Machine type */
-		versionValue 	e_version; 			/* Object file version */
+		Elf64_Word		e_version; 			/* Object file version */
 		Elf64_Addr 		e_entry; 			/* Entry point address */
 		Elf64_Off 		e_phoff; 			/* Program header offset */
 		Elf64_Off 		e_shoff; 			/* Section header offset */
@@ -114,7 +114,7 @@ extern "C" {
 		SHN_COMMON = 0xFFF2		/* COMMON block */
 	};
 
-	enum sectionType : Elf64_Word
+	enum sectionType
 	{
 		SHT_NULL = 0, 					/* Unused section header */
 		SHT_PROGBITS = 1, 				/* Informations defined by the program */
@@ -140,7 +140,7 @@ extern "C" {
 		SHT_HIPROC = 0x7FFFFFFF,
 	};
 
-	enum sectionFlag : Elf64_Xword
+	enum sectionFlag
 	{
 		SHF_WRITE = 0x1, 				/* Contains writable data */
 		SHF_ALLOC = 0x2, 				/* Section located in memory image of program */
@@ -164,7 +164,7 @@ extern "C" {
 		GRP_MASKPROC = 0xf0000000
 	};
 
-	enum compressionType : Elf64_Word
+	enum compressionType
 	{
 		ELFCOMPRESS_ZLIB = 1,				/* ZLIB algoritm */
 		ELFCOMPRESS_LOOS = 0x60000000,		/* Operating system-specific semantics */
@@ -175,17 +175,17 @@ extern "C" {
 
 	typedef struct
 	{
-		compressionType	ch_type;		/* Compression algorithm */
+		Elf64_Word	ch_type;		/* Compression algorithm */
 		Elf64_Word	ch_reserved;
-		Elf64_Xword	ch_size;			/* Size in bytes of the uncompressed data */
-		Elf64_Xword	ch_addralign;		/* Required alignment for the uncompressed data. */
+		Elf64_Xword	ch_size;		/* Size in bytes of the uncompressed data */
+		Elf64_Xword	ch_addralign;	/* Required alignment for the uncompressed data. */
 	} Elf64_Chdr;
 
 	typedef struct
 	{
 		Elf64_Word 	sh_name; 		/* Section name */
-		sectionType sh_type; 		/* Section type */
-		sectionFlag sh_flags; 		/* Section attributes */
+		Elf64_Word	sh_type; 		/* Section type */
+		Elf64_Xword sh_flags; 		/* Section attributes */
 		Elf64_Addr 	sh_addr; 		/* Virtual address in memory */
 		Elf64_Off 	sh_offset; 		/* Offset in file */
 		Elf64_Xword sh_size; 		/* Size of section */
@@ -197,7 +197,7 @@ extern "C" {
 
 	// Symbol table
 
-	enum symbolBindings : unsigned char
+	enum symbolBindings
 	{
 		STB_LOCAL = 0, 		/* Not visible outside the object file */
 		STB_GLOBAL = 1, 	/* Global symbol, visible to all object files */
@@ -208,7 +208,7 @@ extern "C" {
 		STB_HIPROc = 15,
 	};
 
-	enum symbolType : unsigned char
+	enum symbolType
 	{
 		STT_NOTYPE = 0, 	/* No type specified */
 		STT_OBJECT = 1, 	/* Data object */
@@ -262,7 +262,7 @@ extern "C" {
 
 	// Program header table
 
-	enum programType : Elf64_Word
+	enum programType
 	{
 		PT_NULL = 0,					/* Unused entry */
 		PT_LOAD = 1, 					/* Loadable segment */
@@ -282,7 +282,7 @@ extern "C" {
 		PT_HIPROC = 0x7FFFFFFF,
 	};
 
-	enum programFlag : Elf64_Word
+	enum programFlag
 	{
 		PF_X = 0x1,					/* Execute permission */
 		PF_W = 0x2,					/* Write permission */
@@ -293,8 +293,8 @@ extern "C" {
 
 	typedef struct
 	{
-		programType	p_type; 	/* Type of segment */
-		programFlag	p_flags; 	/* Segment attributes */
+		Elf64_Word	p_type; 	/* Type of segment */
+		Elf64_Word	p_flags; 	/* Segment attributes */
 		Elf64_Off 	p_offset; 	/* Offset in file */
 		Elf64_Addr 	p_vaddr; 	/* Virtual address in memory */
 		Elf64_Addr 	p_paddr; 	/* Reserved */
@@ -325,7 +325,7 @@ extern "C" {
 
 	// Dynamic table
 
-	enum dynTag : Elf64_Sxword
+	enum dynTag
 	{
 		DT_NULL = 0, 			/* ignored */ 	/* Marks the end of the dynamic array */
 		DT_NEEDED = 1, 			/* d_val */ 	/* The string table offset of the name of a needed library. */
