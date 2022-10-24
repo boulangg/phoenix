@@ -67,3 +67,5 @@ add_custom_target(	debug
 					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 					DEPENDS ${drive_name} ${disk_name} debug_bin)
 set_target_properties(debug PROPERTIES FOLDER kernel)
+
+add_subdirectory(tests)

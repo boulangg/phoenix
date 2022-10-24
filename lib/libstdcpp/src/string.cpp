@@ -205,5 +205,4 @@ bool operator==(const string& lhs, const string& rhs)
 {
 	return lhs.compare(rhs) == 0;
 }
-
 }
