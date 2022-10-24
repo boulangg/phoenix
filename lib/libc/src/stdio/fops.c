@@ -6,7 +6,7 @@
 void init_buffer(FILE* str)
 {
 	if (str->flags & SF_STRING) {
-		return 0;
+		return;
 	}
 
 	if (str->bufStart == NULL) {

@@ -38,8 +38,7 @@ typedef struct FILE
 	bool error;
 } FILE;
 
-#define CHECK_FILE(str) {if ((str->flags & MAGIC_MASK) != MAGIC_VALUE) return EOF; \
-                         if (str->fileno == NULL) return EOF;}
+#define CHECK_FILE(str) {if ((str->flags & MAGIC_MASK) != MAGIC_VALUE) return EOF;}
 
 void init_io();
 void init_file(FILE* str);

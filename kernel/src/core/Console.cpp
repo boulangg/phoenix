@@ -239,7 +239,7 @@ Console& Console::operator<<(long i)
 Console& Console::operator<<(uint64_t i)
 {
 	char tmp[1024];
-	sprintf(tmp, "%llu", i);
+	sprintf(tmp, "%lu", i);
 	Console::write(tmp);
 	return *this;
 }

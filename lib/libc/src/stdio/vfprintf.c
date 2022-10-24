@@ -96,7 +96,7 @@ static int print_error(FILE* str, struct arg_info* arg_info, va_list arg, int* c
 	(void)arg;
 
 	fputs("ERROR ", str);
-	(*count)+=6;
+	(*count) += 6;
 	return 0;
 }
 

@@ -171,7 +171,7 @@ void* sys_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t off
 	(void)flags;
 	(void)fd;
 	(void)offset;
-	return -1;
+	return (void*)-1;
 }
 
 int sys_munmap(void* addr, size_t length)
