@@ -6,10 +6,10 @@
 
 int main()
 {
-	void* dlHandle = dlopen("/usr/bin/cat", RTLD_LAZY);
+	/*void* dlHandle = dlopen("/usr/bin/cat", RTLD_LAZY);
 	std::string symName = "fprintf";
 	void* symAddr = dlsym(dlHandle, symName.c_str());
 
-	printf("%s, %p", symName.c_str(), symAddr);
+	printf("%s, %p", symName.c_str(), symAddr);*/
 	return 0;
 }

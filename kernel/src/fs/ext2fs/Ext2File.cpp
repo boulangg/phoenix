@@ -19,7 +19,7 @@ ssize_t Ext2File::read_internal(char* buffer, size_t size, loff_t offset)
 		_inode->mapping->readPage(p);
 		void* destination = buffer + i - offset;
 		void* source = ((char*)p->kernelMappAddr) + i % PAGE_SIZE;
-		std::uint64_t length = std::min(_inode->size - i, offset + size - i);
+		std::uint64_t length = std::min<std::uint64_t>(_inode->size - i, offset + size - i);
 		length = std::min(length, (pageNo + 1) * PAGE_SIZE - i);
 		memcpy(destination, source, length);
 		i += length;

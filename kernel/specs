@@ -1,4 +1,5 @@
 *startfile:
+%:if-exists(empty_start%O%s)
 
-
-*endfile:
+*startfile:
+%:if-exists(empty_end%O%s)
