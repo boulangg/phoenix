@@ -55,7 +55,8 @@ public:
 
 	string& append(const char* s, size_t n);
 
-	size_t size() const;
+	bool empty() const noexcept;
+	size_t size() const noexcept;
 	size_t length() const;
 	size_t capacity() const;
 

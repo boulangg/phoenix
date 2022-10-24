@@ -124,7 +124,12 @@ string& string::operator=(string&& str)
 	return *this;
 }
 
-size_t string::size() const
+bool string::empty() const noexcept
+{
+	return _size == 0;
+}
+
+size_t string::size() const noexcept
 {
 	return _size;
 }
@@ -157,7 +162,7 @@ string& string::append(const char* str, size_t len)
 int string::compare(const string& str) const
 {
 	size_t i = 0;
-	while ((str._data[i] != '\0') & (_data[i] != '\0')) {
+	while ((str._data[i] != '\0') && (_data[i] != '\0')) {
 		if (str._data[i] != _data[i]) {
 			return (str._data[i] - _data[i]);
 		}
