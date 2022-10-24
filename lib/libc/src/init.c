@@ -13,9 +13,6 @@ extern func_ptr __preinit_array_start[0], __preinit_array_end[0];
 extern func_ptr __init_array_start[0], __init_array_end[0];
 extern func_ptr __fini_array_start[0], __fini_array_end[0];
 
-void _init() __attribute__((weak));
-void _fini() __attribute__((weak));
-
 void __libc_init_array()
 {
 	size_t count;
@@ -25,8 +22,6 @@ void __libc_init_array()
 	for (i = 0; i < count; i++) {
 		__preinit_array_start[i]();
 	}
-
-	_init();
 
 	count = __init_array_end - __init_array_start;
 	for (i = 0; i < count; i++) {
@@ -49,9 +44,6 @@ void __libc_fini_array()
 	for (i = count; i > 0; i--) {
 		__fini_array_start[i - 1]();
 	}
-
-	_fini();
-
 }
 
 void __libc_start_main(int (*main) (int, char**, char**), int argc, char** argv, void (*init)(void), void (*fini)(void), void (*rtld_fini)(void), void(*stack_end))

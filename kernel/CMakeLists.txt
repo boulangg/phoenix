@@ -81,7 +81,7 @@ endforeach()
 
 set(initrd_dir ${CMAKE_CURRENT_BINARY_DIR}/initrd)
 file(MAKE_DIRECTORY ${initrd_dir})
-set(initrd_disk ${initrd_dir}initrd.iso)
+set(initrd_disk ${initrd_dir}/initrd.iso)
 
 
 set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/terminal.sh)

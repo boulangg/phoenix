@@ -2,6 +2,8 @@ if(NOT DEFINED COMPILER_FLAGS)
 
 set(COMPILER_FLAGS True)
 
+enable_testing()
+
 # C generic compiler/linker flags
 set(C_STANDARD 11)
 set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -g -fno-exceptions -Wno-packed-bitfield-compat -fno-stack-protector -fno-builtin-fprintf")
@@ -18,7 +20,6 @@ set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS} "-Wall -Wextra -g -fno-exceptions -fno-rt
 # Linker flags
 SET(CMAKE_EXE_LINKER_FLAGS  "-g")
 
-
 add_library(kernel_options INTERFACE)
 target_link_options(kernel_options INTERFACE -nodefaultlibs -no-pie -lgcc)
 target_compile_options(kernel_options INTERFACE 
@@ -26,7 +27,7 @@ target_compile_options(kernel_options INTERFACE
 		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>)
 
 add_library(nostd_options INTERFACE)
-target_link_options(nostd_options INTERFACE -nodefaultlibs -no-pie)
+target_link_options(nostd_options INTERFACE -nodefaultlibs -nostdlib -no-pie)
 
 endif()
 
