@@ -1,4 +1,4 @@
-name: CMake
+name: Build + Unit Tests
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
 
 jobs:
   build_user:
-    name: Build User executables
+    name: Build + Unit Tests
 
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.

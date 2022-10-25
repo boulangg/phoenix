@@ -1,3 +1,5 @@
+[![Build + Unit Tests](https://github.com/boulangg/phoenix/actions/workflows/cmake.yml/badge.svg)](https://github.com/boulangg/phoenix/actions/workflows/cmake.yml)
+
 # Phoenix
 
 Compiling (and testing) this project required the foolowing tools:
