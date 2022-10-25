@@ -5,13 +5,13 @@ set(COMPILER_FLAGS True)
 enable_testing()
 
 # C generic compiler/linker flags
-set(C_STANDARD 11)
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -g -Wno-packed-bitfield-compat -fno-stack-protector -fno-builtin-fprintf")
+# set(C_STANDARD 11)
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -g -Wno-packed-bitfield-compat -fno-stack-protector -fno-builtin-fprintf -std=c11")
 set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # C++ generic compiler/linker flags
-set(CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -g -Wno-packed-bitfield-compat -fno-stack-protector -fno-builtin-fprintf -fno-use-cxa-atexit")
+# set(CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -g -Wno-packed-bitfield-compat -fno-stack-protector -fno-builtin-fprintf -fno-use-cxa-atexit  -std=c++17")
 set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # ASM generic compiler/linker flags

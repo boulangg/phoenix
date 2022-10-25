@@ -31,3 +31,6 @@ file(GLOB_RECURSE unittestsuite_src ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_library(unittestsuite SHARED ${unittestsuite_src})
 target_link_libraries(unittestsuite unittest) # c_shared stdcpp_shared unwind_shared unittest nostd_shared_options)
 set_target_properties(unittestsuite PROPERTIES FOLDER test)
+
+add_test(NAME unit_test_framework 
+	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/dependency/UnitTestFramework/unittest_runner ${CMAKE_CURRENT_BINARY_DIR}/libunittestsuite.so)
