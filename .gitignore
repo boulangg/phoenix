@@ -3,7 +3,6 @@
 *.d
 **/build/
 **/bin/
-*/lib/
 *.a
 *.out
 *.bin

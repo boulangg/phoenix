@@ -2,11 +2,25 @@
 
 namespace std {
 
+class exception
+{
+public:
+	exception() noexcept;
+	exception(const exception&) noexcept;
+	exception& operator=(const exception&) noexcept;
+	virtual ~exception();
+	virtual const char* what() const noexcept;
+
+private:
+	const char* _msg;
+};
+
+class bad_exception;
+class nested_exception;
+
 typedef void (*terminate_handler)();
+void terminate() noexcept;
+
 typedef void (*unexpected_handler)();
-
-void terminate();
-
-extern "C" void initEhFrameTable();
 
 }

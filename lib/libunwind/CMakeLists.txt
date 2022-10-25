@@ -14,5 +14,12 @@ set(lib_inc ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library(unwind STATIC ${lib_src})
 target_include_directories(unwind PUBLIC ${lib_inc})
-target_link_libraries(unwind c)
+target_link_libraries(unwind c nostd_options)
+set_target_properties(unwind PROPERTIES OUTPUT_NAME unwind)
 set_target_properties(unwind PROPERTIES FOLDER lib)
+
+add_library(unwind_shared SHARED ${lib_src})
+target_include_directories(unwind_shared PUBLIC ${lib_inc})
+target_link_libraries(unwind_shared c_shared nostd_shared_options)
+set_target_properties(unwind_shared PROPERTIES OUTPUT_NAME unwind)
+set_target_properties(unwind_shared PROPERTIES FOLDER lib)

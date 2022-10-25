@@ -77,4 +77,14 @@ private:
 string operator+(const string& lhs, const string& rhs);
 bool operator==(const string& lhs, const string& rhs);
 
+std::string to_string(int value);
+std::string to_string(long value);
+std::string to_string(long long value);
+std::string to_string(unsigned value);
+std::string to_string(unsigned long value);
+std::string to_string(unsigned long long value);
+std::string to_string(float value);
+std::string to_string(double value);
+std::string to_string(long double value);
+
 }
