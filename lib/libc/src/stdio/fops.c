@@ -91,6 +91,7 @@ size_t fread(void* buffer, size_t size, size_t count, FILE* str)
 		}
 		memcpy(buf + nb, str->bufPos, len);
 
+		str->bufPos += len;
 		nb += len;
 	}
 

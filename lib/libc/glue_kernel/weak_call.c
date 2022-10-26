@@ -196,3 +196,9 @@ int sys_msync(void* addr, size_t length, int flags)
 	(void)flags;
 	return -1;
 }
+
+long sys_time(long* tloc)
+{
+	(void)tloc;
+	return -1;
+}
