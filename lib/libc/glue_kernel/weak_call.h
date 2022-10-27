@@ -59,6 +59,10 @@ int sys_munmap(void* addr, size_t length) WEAK_SYSCALL;
 int sys_mprotect(void* addr, size_t length, int prot) WEAK_SYSCALL;
 int sys_msync(void* addr, size_t length, int flags) WEAK_SYSCALL;
 
-long sys_time(long* tloc) WEAK_SYSCALL;
+time_t sys_time(time_t* tloc) WEAK_SYSCALL;
+
+int sys_clock_getres(clockid_t clk_id, void* res) WEAK_SYSCALL;
+int sys_clock_gettime(clockid_t clk_id, void* tp) WEAK_SYSCALL;
+int sys_clock_settime(clockid_t clk_id, const void* tp) WEAK_SYSCALL;
 
 #endif // __WEAK_CALL_H__

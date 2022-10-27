@@ -42,7 +42,11 @@ extern "C" {
 		struct timespec it_value;     // timer expiration
 	};
 
-	//#define CLOCK_REALTIME
+#define CLOCK_REALTIME 0			// System - wide realtime clock.
+#define CLOCK_MONOTONIC 1			// Clock that cannot be set and represents monotonic time since some unspecified starting point.
+#define CLOCK_PROCESS_CPUTIME_ID 2	// High - resolution per - process timer from the CPU.
+#define CLOCK_THREAD_CPUTIME_ID 3	// Thread - specific CPU - time clock.
+
 	//#define TIMER_ABSTIME
 
 	extern int getdate_err;
@@ -50,9 +54,12 @@ extern "C" {
 	char* asctime(const struct tm*);
 	char* asctime_r(const struct tm*, char*);
 	clock_t    clock(void);
+
+	// Clock and time functions
 	int        clock_getres(clockid_t, struct timespec*);
 	int        clock_gettime(clockid_t, struct timespec*);
 	int        clock_settime(clockid_t, const struct timespec*);
+
 	char* ctime(const time_t*);
 	char* ctime_r(const time_t*, char*);
 	double     difftime(time_t, time_t);

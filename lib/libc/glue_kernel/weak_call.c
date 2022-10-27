@@ -197,8 +197,29 @@ int sys_msync(void* addr, size_t length, int flags)
 	return -1;
 }
 
-long sys_time(long* tloc)
+time_t sys_time(time_t* tloc)
 {
 	(void)tloc;
+	return -1;
+}
+
+int sys_clock_getres(clockid_t clk_id, void* res)
+{
+	(void)clk_id;
+	(void)res;
+	return -1;
+}
+
+int sys_clock_gettime(clockid_t clk_id, void* tp)
+{
+	(void)clk_id;
+	(void)tp;
+	return -1;
+}
+
+int sys_clock_settime(clockid_t clk_id, const void* tp)
+{
+	(void)clk_id;
+	(void)tp;
 	return -1;
 }

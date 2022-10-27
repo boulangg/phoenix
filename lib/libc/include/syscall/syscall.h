@@ -55,6 +55,12 @@ extern "C" {
 	int sys_mprotect(void* addr, size_t length, int prot);
 	int sys_msync(void* addr, size_t length, int flags);
 
+	time_t sys_time(time_t* tloc);
+
+	int sys_clock_getres(clockid_t clk_id, void* res);
+	int sys_clock_gettime(clockid_t clk_id, void* tp);
+	int sys_clock_settime(clockid_t clk_id, const void* tp);
+
 #ifdef __cplusplus
 }
 #endif
