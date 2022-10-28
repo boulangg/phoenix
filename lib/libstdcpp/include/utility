@@ -6,28 +6,27 @@
 
 #pragma once
 
-#include <cstddef>
 #include <type_traits>
 
 namespace std {
 
-template< class T >
-void swap(T& a, T& b)
-{
-	T tmp = a;
-	a = b;
-	b = tmp;
-}
-
 size_t nearest_power_2(size_t num);
 
-template<typename T>
-constexpr typename std::remove_reference<T>::type&& move(T&& t)
+template<class T>
+constexpr std::remove_reference_t<T>&& move(T&& t) noexcept
 {
-	return static_cast<typename std::remove_reference<T>::type&&>(t);
+	return static_cast<std::remove_reference_t<T>&&>(t);
 }
 
-template <class T1, class T2>
+template<class T>
+void swap(T& a, T& b) noexcept
+{
+	T tmp = std::move(a);
+	a = std::move(b);
+	b = std::move(tmp);
+}
+
+template<class T1, class T2>
 struct pair
 {
 	typedef T1 first_type;

@@ -8,6 +8,8 @@
 #include <utility>
 #include <algorithm>
 
+#include "utils.h"
+
 #define DEFAULT_CAPACITY 4
 
 namespace std {
@@ -43,7 +45,7 @@ string::string(const char* s) : string(s, char_traits<char>::length(s))
 
 }
 
-string::string(const char* s, size_t n) : _size(n), _capacity(nearest_power_2(_size + 1)), _data(new char[_capacity])
+string::string(const char* s, size_t n) : _size(n), _capacity(utils::nearest_power_2(_size + 1)), _data(new char[_capacity])
 {
 	char_traits<char>::copy(_data, s, _size);
 	_data[_size] = '\0';
@@ -104,7 +106,7 @@ string& string::operator=(const string& str)
 string& string::operator=(const char* str)
 {
 	_size = char_traits<char>::length(str);
-	_capacity = nearest_power_2(_size + 1);
+	_capacity = utils::nearest_power_2(_size + 1);
 	delete[] _data;
 	_data = new char[_capacity];
 	char_traits<char>::copy(_data, str, _size + 1);
@@ -147,7 +149,7 @@ size_t string::capacity() const
 string& string::append(const char* str, size_t len)
 {
 	if (_size + len > _capacity) {
-		_capacity = std::nearest_power_2(_size + len + 1);
+		_capacity = utils::nearest_power_2(_size + len + 1);
 		char* tmp = new char[_capacity];
 		char_traits<char>::copy(tmp, _data, _size);
 		delete[] _data;

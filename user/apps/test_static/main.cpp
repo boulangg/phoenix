@@ -1,6 +1,8 @@
 
 #include <unistd.h>
 
+#include <type_traits>
+
 class A
 {
 public:
@@ -20,6 +22,7 @@ int a = 1;
 
 int main()
 {
+	bool test = std::is_void<A>::value;
 	while (1) {
 
 	}
