@@ -1,0 +1,597 @@
+#pragma once
+
+#include <exception>
+//#include <initializer_list>
+#include <functional>
+#include <memory>
+#include <type_traits>
+#include <utility>
+
+namespace std {
+
+class bad_optional_access : public exception
+{
+public:
+	bad_optional_access() = default;
+	virtual ~bad_optional_access() = default;
+
+	const char* what() const noexcept override
+	{
+		return "bad optional access";
+	}
+};
+
+
+struct nullopt_t {
+	explicit constexpr nullopt_t(int)
+	{}
+};
+
+//inline constexpr nullopt_t nullopt{};
+
+template <class T>
+class optional
+{
+private:
+	template<typename... Cond>
+	using Requires = enable_if_t<conjunction_v<Cond...>, bool>;
+
+	template<typename _T, typename _U>
+	using _is_optional_convertible = disjunction<
+		is_constructible<_T, const optional<_U>&>,
+		is_constructible<_T, optional<_U>&>,
+		is_constructible<_T, const optional<_U>&&>,
+		is_constructible<_T, optional<_U>&&>,
+		is_convertible<const optional<_U>&, _T>,
+		is_convertible<optional<_U>&, _T>,
+		is_convertible<const optional<_U>&&, _T>,
+		is_convertible<optional<_U>&&, _T>>;
+
+	template<typename _T, typename _U>
+	using _is_optional_assignable = disjunction<
+		_is_optional_convertible<_T, _U>,
+		is_assignable<_T&, optional<_U>&>,
+		is_assignable<_T&, const optional<_U>&>,
+		is_assignable<_T&, optional<_U>&&>,
+		is_assignable<_T&, const optional<_U>&&>>;
+
+
+public:
+	typedef T value_type;
+
+	constexpr optional() noexcept
+	{}
+	
+	constexpr optional(std::nullopt_t) noexcept
+	{}
+	
+	constexpr optional(const optional& other) : 
+		_has_value(other._has_value), _value(*other)
+	{}
+
+	constexpr optional(optional&& other) noexcept(std::is_nothrow_move_constructible<T>::value) : 
+		_has_value(other._has_value), _value(std::move(*other))
+	{}
+
+	template <class U,
+		Requires<
+			negation<is_same<T, U>>,
+			is_constructible<T, const U&>,
+			negation<_is_optional_convertible<T, U>>,
+			is_convertible<const U&, T>> = true>
+	constexpr optional(const optional<U>& other) : _has_value(other._has_value), _value(*other)
+	{}
+
+	template <class U,
+		Requires<
+			negation<is_same<T, U>>,
+			is_constructible<T, const U&>,
+			negation<_is_optional_convertible<T, U>>,
+			negation<is_convertible<const U&, T>>> = false>
+	explicit constexpr optional(const optional<U>& other) : _has_value(other._has_value), _value(*other)
+	{}
+
+	template <class U,
+		Requires<
+			negation<is_same<T, U>>,
+			is_constructible<T, U&&>,
+			negation<_is_optional_convertible<T, U>>,
+			is_convertible<U&&, T>> = true>
+	constexpr optional(optional<U>&& other) : _has_value(other._has_value), _value(std::move(*other))
+	{}
+
+	template <class U,
+		Requires<
+			negation<is_same<T, U>>,
+			is_constructible<T, U&&>,
+			negation<_is_optional_convertible<T, U>>,
+			negation<is_convertible<U&&, T>>> = false>
+	explicit constexpr optional(optional<U>&& other) : _has_value(other._has_value), _value(std::move(*other))
+	{}
+
+	//template <class... Args,
+	//	typename = Requires<is_constructible<T, initializer_list<T>&, Args&&...>>>
+	//constexpr explicit optional(std::in_place_t, Args&&... args)
+	//{
+	//	emplace(std::forward<Args>(args)...);
+	//}
+
+	//template <class U, class... Args,
+	//	typename = Requires<
+	//		is_constructible<T, U&&>, 
+	//		negation<is_same<remove_cvref<U>, in_place_t>>, 
+	//		negation<is_same<remove_cvref<U>, std::optional<T>>>>>
+	//constexpr explicit optional(in_place_t,
+	//							initializer_list<U> ilist,
+	//							Args&&... args)
+	//{
+	//	emplace(ilist, std::forward<Args>(args)...);
+	//}
+
+	template <class U = T,
+		Requires<
+			is_constructible<T, U&&>,
+			negation<is_same<remove_cvref<U>, in_place_t>>,
+			negation<is_same<remove_cvref<U>, std::optional<T>>>, 
+			is_convertible<U&&, T>> = true>
+	constexpr optional(U&& value)
+	{
+		emplace(std::forward<U>(value));
+	}
+
+	template <class U = T,
+		Requires<
+			is_constructible<T, U&&>,
+			negation<is_same<remove_cvref<U>, in_place_t>>,
+			negation<is_same<remove_cvref<U>, std::optional<T>>>,
+			negation<is_convertible<U&&, T>>> = false>
+	constexpr explicit optional(U&& value)
+	{
+		emplace(std::forward<U>(value));
+	}
+
+	~optional() = default;
+
+	constexpr optional& operator=(std::nullopt_t) noexcept
+	{
+		reset();
+		return *this;
+	}
+
+	template<
+		typename = Requires<
+			is_copy_constructible<T>, 
+			is_copy_assignable<T>>>
+	constexpr optional& operator=(const optional& other)
+	{
+		if (other._has_value) {
+			if (_has_value) {
+				_has_value = true;
+				_value = *other;
+			} else {
+				_has_value = true;
+				_value.T::T(*other);
+			}
+		} else {
+			if (_has_value) {
+				reset();
+			}
+		}
+	}
+
+	template<
+		typename = Requires<
+		is_move_constructible<T>,
+		is_move_assignable<T>>>
+	constexpr optional& operator=(optional&& other) noexcept(std::is_nothrow_move_assignable_v<T> && std::is_nothrow_move_constructible_v<T>)
+	{
+		if (other._has_value) {
+			if (_has_value) {
+				_has_value = true;
+				_value = std::move(*other);
+			} else {
+				_has_value = true;
+				_value.T::T(std::move(*other));
+			}
+		} else {
+			if (_has_value) {
+				reset();
+			}
+		}
+	}
+
+	template <class U = T, 
+		typename = Requires<
+			negation<is_same<remove_cvref<U>, std::optional<T>>>, 
+			is_constructible<T, U>, 
+			is_assignable<T&, U>, 
+			conjunction<negation<is_scalar<T>>, negation<is_same<decay<U>, T>>>>>
+	constexpr optional& operator=(U&& value)
+	{
+		if (_has_value) {
+			_has_value = true;
+			_value = std::forward<U>(value);
+		} else {
+			_has_value = true;
+			_value.T::T(std::forward<U>(value));
+		}
+	}
+
+	template <class U, 
+		typename = Requires<
+			negation<_is_optional_assignable<T, U>>, 
+			is_constructible<T, const U&>, 
+			is_assignable<T&, const U&>>>
+	constexpr optional& operator=(const optional<U>& other)
+	{
+		if (other._has_value) {
+			if (_has_value) {
+				_has_value = true;
+				_value = *other;
+			} else {
+				_has_value = true;
+				_value.T::T(*other);
+			}
+		} else {
+			if (_has_value) {
+				reset();
+			}
+		}
+	}
+
+	template <class U,
+		typename = Requires<
+			negation<_is_optional_assignable<T, U>>,
+			is_constructible<T, U>,
+			is_assignable<T&, U>>>
+	constexpr optional& operator=(optional<U>&& other)
+	{
+		if (other._has_value) {
+			if (_has_value) {
+				_has_value = true;
+				_value = std::move(*other);
+			} else {
+				_has_value = true;
+				_value.T::T(std::move(*other));
+			}
+		} else {
+			if (_has_value) {
+				reset();
+			}
+		}
+	}
+
+	constexpr const T* operator->() const noexcept
+	{
+		return &_value;
+	}
+
+	constexpr T* operator->() noexcept
+	{
+		return &_value;
+	}
+
+	constexpr const T& operator*() const& noexcept
+	{
+		return _value;
+	}
+
+	constexpr T& operator*() & noexcept
+	{
+		return _value;
+	}
+
+	constexpr const T&& operator*() const&& noexcept
+	{
+		return std::move(_value);
+	}
+
+	constexpr T&& operator*() && noexcept
+	{
+		return std::move(_value);
+	}
+
+	constexpr explicit operator bool() const noexcept
+	{
+		return _has_value;
+	}
+
+	constexpr bool has_value() const noexcept
+	{
+		return _has_value;
+	}
+
+	constexpr T& value() &
+	{
+		if (!_has_value) {
+			throw bad_optional_access();
+		} else {
+			return _value;
+		}
+	}
+
+	constexpr const T& value() const &
+	{
+		if (!_has_value) {
+			throw bad_optional_access();
+		} else {
+			return _value;
+		}
+	}
+
+	constexpr T&& value() &&
+	{
+		if (!_has_value) {
+			throw bad_optional_access();
+		} else {
+			return std::move(_value);
+		}
+	}
+
+	constexpr const T&& value() const &&
+	{
+		if (!_has_value) {
+			throw bad_optional_access();
+		} else {
+			return std::move(_value);
+		}
+	}
+
+	template <class U>
+	constexpr T value_or(U&& default_value) const&
+	{
+		if (_has_value) {
+			return _value;
+		} else {
+			return static_cast<T>(std::forward<U>(default_value));
+		}
+	}
+
+	template <class U>
+	constexpr T value_or(U&& default_value) &&
+	{
+		if (_has_value) {
+			return std::move(_value);
+		} else {
+			return static_cast<T>(std::forward<U>(default_value));
+		}
+	}
+
+	constexpr void swap(optional& other) noexcept(std::is_nothrow_move_constructible_v<T> && std::is_nothrow_swappable_v<T>)
+	{
+		if (_has_value && other._has_value) {
+			std::swap(_value, other._value);
+		} else if (_has_value) {
+			std::construct_at(&_value, std::move(other._value));
+			_value.reset();
+		} else if (other._has_value) {
+			std::construct_at(&_value, std::move(other._value));
+			other.reset();
+		}
+	}
+
+	constexpr void reset() noexcept
+	{
+		if (_has_value) {
+			_value.T::~T();
+			_has_value = false;
+		}
+	}
+
+	template <class... Args>
+	constexpr T& emplace(Args&&... args)
+	{
+		reset();
+		_has_value = true;
+		std::construct_at(&_value, std::forward<Args>(args)...);
+		return _value;
+	}
+
+	//template <class U, class... Args>
+	//constexpr T& emplace(std::initializer_list<U> ilist, Args&&... args)
+	//{
+	//	reset();
+	//	_has_value = true;
+	//	_value.T::T(ilist, std::forward<Args>(args)...);
+	//	return _value;
+	//}
+
+private:
+	bool _has_value = false;
+	T _value;
+};
+
+template <class T, class U>
+constexpr bool operator==(const optional<T>& lhs, const optional<U>& rhs)
+{
+	if (bool(lhs) != bool(rhs)) {
+		return false;
+	} else if (bool(lhs) == false) {
+		return true;
+	} else {
+		return *lhs == *rhs;
+	}
+}
+
+template <class T, class U>
+constexpr bool operator!=(const optional<T>& lhs, const optional<U>& rhs)
+{
+	if (bool(lhs) != bool(rhs)) {
+		return false;
+	} else if (bool(lhs) == false) {
+		return true;
+	} else {
+		return *lhs != *rhs;
+	}
+}
+
+template <class T, class U>
+constexpr bool operator<(const optional<T>& lhs, const optional<U>& rhs)
+{
+	if (bool(lhs) != bool(rhs)) {
+		return false;
+	} else if (bool(lhs) == false) {
+		return true;
+	} else {
+		return *lhs < *rhs;
+	}
+}
+
+template <class T, class U>
+constexpr bool operator<=(const optional<T>& lhs, const optional<U>& rhs)
+{
+	if (bool(lhs) != bool(rhs)) {
+		return false;
+	} else if (bool(lhs) == false) {
+		return true;
+	} else {
+		return *lhs <= *rhs;
+	}
+}
+
+template <class T, class U>
+constexpr bool operator>(const optional<T>& lhs, const optional<U>& rhs)
+{
+	if (bool(lhs) != bool(rhs)) {
+		return false;
+	} else if (bool(lhs) == false) {
+		return true;
+	} else {
+		return *lhs > *rhs;
+	}
+}
+
+template <class T, class U>
+constexpr bool operator>=(const optional<T>& lhs, const optional<U>& rhs)
+{
+	if (bool(lhs) != bool(rhs)) {
+		return false;
+	} else if (bool(lhs) == false) {
+		return true;
+	} else {
+		return *lhs >= *rhs;
+	}
+}
+
+//template< class T, std::three_way_comparable_with<T> U >
+//constexpr std::compare_three_way_result_t<T, U>
+//operator<=>(const optional<T>& lhs, const optional<U>& rhs);
+
+template< class T >
+constexpr bool operator==(const optional<T>& opt, std::nullopt_t) noexcept
+{
+	return !opt;
+}
+
+//template< class T >
+//constexpr std::strong_ordering
+//operator<=>(const optional<T>& opt, std::nullopt_t) noexcept;
+
+template <class T, class U>
+constexpr bool operator==(const optional<T>& opt, const U& value)
+{
+	return bool(opt) ? *opt == value : false;
+}
+
+template <class T, class U>
+constexpr bool operator==(const T& value, const optional<U>& opt)
+{
+	return bool(opt) ? value == *opt : false;
+}
+
+template <class T, class U>
+constexpr bool operator!=(const optional<T>& opt, const U& value)
+{
+	return bool(opt) ? *opt != value : true;
+}
+
+template <class T, class U>
+constexpr bool operator!=(const T& value, const optional<U>& opt)
+{
+	return bool(opt) ? value != *opt : true;
+}
+
+template <class T, class U>
+constexpr bool operator<(const optional<T>& opt, const U& value)
+{
+	return bool(opt) ? *opt < value : true;
+}
+
+template <class T, class U>
+constexpr bool operator<(const T& value, const optional<U>& opt)
+{
+	return bool(opt) ? value < *opt : false;
+}
+
+template <class T, class U>
+constexpr bool operator<=(const optional<T>& opt, const U& value)
+{
+	return bool(opt) ? *opt <= value : true;
+}
+
+template <class T, class U>
+constexpr bool operator<=(const T& value, const optional<U>& opt)
+{
+	return bool(opt) ? value <= *opt : false;
+}
+
+template <class T, class U>
+constexpr bool operator>(const optional<T>& opt, const U& value)
+{
+	return bool(opt) ? *opt > value  : false;
+}
+
+template <class T, class U>
+constexpr bool operator>(const T& value, const optional<U>& opt)
+{
+	return bool(opt) ? value > *opt  : true;
+}
+
+template <class T, class U>
+constexpr bool operator>=(const optional<T>& opt, const U& value)
+{
+	return bool(opt) ? *opt >= value : false;
+}
+
+template <class T, class U>
+constexpr bool operator>=(const T& value, const optional<U>& opt)
+{
+	return bool(opt) ? value >= *opt : true;
+}
+
+//template< class T, std::three_way_comparable_with<T> U >
+//constexpr std::compare_three_way_result_t<T, U>
+//operator<=>(const optional<T>& opt, const U& value);
+
+template <class T>
+constexpr optional<decay_t<T>> make_optional(T&& value)
+{
+	return optional<decay_t<T>>(forward<T>(value));
+}
+
+template <class T, class... Args>
+constexpr optional<T> make_optional(Args&&... args)
+{
+	return optional<T>(in_place, forward<Args>(args)...);
+}
+
+//template <class T, class U, class... Args>
+//constexpr optional<T> make_optional(initializer_list<U> il, Args&&... args)
+//{
+//	return optional<T>(in_place, il, forward<Args>(args)...);
+//}
+
+template <class T, typename = enable_if_t<is_move_constructible_v<T> && is_swappable_v<T>>>
+constexpr void swap(optional<T>& lhs, optional<T>& rhs) noexcept(std::is_nothrow_move_constructible_v<T> && std::is_nothrow_swappable_v<T>)
+{
+	lhs.swap(rhs);
+}
+
+template<class T>
+struct hash<optional<T>>;
+
+// Deduction guide
+//template<class T>
+//optional(T)->optional<T>;
+
+}
