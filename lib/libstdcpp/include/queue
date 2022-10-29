@@ -55,12 +55,12 @@ public:
 	void push(value_type&& val)
 	{
 		_ctnr.push_back(val);
-		push_heap(_ctnr.begin(), _ctnr.end(), _cmp);
+		std::push_heap(_ctnr.begin(), _ctnr.end(), _cmp);
 	}
 
 	void pop()
 	{
-		pop_heap(_ctnr.begin(), _ctnr.end(), _cmp);
+		std::pop_heap(_ctnr.begin(), _ctnr.end(), _cmp);
 		_ctnr.pop_back();
 	}
 
@@ -68,7 +68,7 @@ public:
 	{
 		auto it = std::find(_ctnr.begin(), _ctnr.end(), val);
 		if (it != _ctnr.end()) {
-			std::remove_heap(_ctnr.begin(), it, _ctnr.end(), _cmp);
+			std::__remove_heap(_ctnr.begin(), it, _ctnr.end(), _cmp);
 			_ctnr.pop_back();
 		}
 	}
@@ -80,4 +80,3 @@ private:
 
 }
 
-#include "internal/heap.tpp"
