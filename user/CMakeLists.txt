@@ -27,6 +27,9 @@ endif()
 # List all user apps in 'apps'' folder
 list_dir(${CMAKE_CURRENT_SOURCE_DIR}/apps app_names)
 
+# Add pretty printer for libstdcpp
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libstdcpp/debug/gdb-printers.py ${CMAKE_CURRENT_BINARY_DIR}/debug/ COPYONLY)
+
 # Create target for all user apps in 'apps'' folder
 foreach(app_name ${app_names})
 	if (NOT TARGET ${app_name})
