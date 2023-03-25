@@ -35,3 +35,6 @@ file(GLOB_RECURSE unittest_runner_src ${CMAKE_CURRENT_SOURCE_DIR}/runner/*.cpp)
 add_executable(unittest_runner ${unittest_runner_src})
 target_link_libraries(unittest_runner unittest dl) # c stdcpp unwind unittest nostd_options)
 set_target_properties(unittest_runner PROPERTIES FOLDER test)
+set_target_properties(unittest_runner PROPERTIES
+	VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+	VS_DEBUGGER_COMMAND_ARGUMENTS "bar.txt")

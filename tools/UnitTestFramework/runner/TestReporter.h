@@ -67,16 +67,19 @@ public:
 
 	void ReportSuccess(const TestClassMetadata* classMetadata, const TestMethodMetadata* methodMetadata, std::chrono::nanoseconds duration)
 	{
+		(void)classMetadata;
 		printf("  Success %s (%li ns)\n", methodMetadata->methodName.c_str(), std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
 	}
 
 	void ReportSkipped(const TestClassMetadata* classMetadata, const TestMethodMetadata* methodMetadata)
 	{
+		(void)classMetadata;
 		printf("  Skipped %s\n", methodMetadata->methodName.c_str());
 	}
 
 	void ReportFailure(const TestClassMetadata* classMetadata, const TestMethodMetadata* methodMetadata, const TestFailureException& exc, std::chrono::nanoseconds duration)
 	{
+		(void)classMetadata;
 		printf("  Failure %s (%li ns)\n", methodMetadata->methodName.c_str(), std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
 		printf("    - %s\n", exc.getMessage().c_str());
 	}
