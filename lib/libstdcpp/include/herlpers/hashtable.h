@@ -148,7 +148,17 @@ public:
 
 	// size_type max_size() const noexcept;
 
-	iterator find(const key_type& key)
+	Value& at(const key_type& key)
+	{
+		auto it = find(key);
+		if (it == end()) {
+			throw std::out_of_range();
+		} else {
+			return *it;
+		}
+	}
+
+	iterator find(const Key& key)
 	{
 		size_t i = reduce(key);
 		node_type** bucket = _buckets + i;
@@ -159,6 +169,12 @@ public:
 			return iterator(n, bucket);
 		}
 	}
+
+	bool contains(const Key& key)
+	{
+		return find(key) != end();
+	}
+
 	// const_iterator& find(const key_type& key) const noexcept;
 
 	iterator begin()
@@ -172,9 +188,16 @@ public:
 	}
 	// const_iterator& end()
 
-	void insert(const value_type& value)
+	std::pair<iterator, bool> insert(const value_type& value)
 	{
 		auto& key = extract(value);
+
+		auto it = find(key);
+		if (it == end()) {
+			return std::pair<iterator, bool>(std::move(it), false);
+		}
+
+
 	}
 
 private:

@@ -7,6 +7,7 @@
 #pragma once
 
 #include <functional>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 #include <list>
@@ -74,12 +75,47 @@ private:
 	hashtable_type _hashtable;
 
 public:
-
-
 	using iterator = typename hashtable_type::iterator;
+
+	iterator begin()
+	{
+		return _hashtable->begin();
+	}
+
+	iterator end()
+	{
+		return _hashtable->end();
+	}
+
+	T& at(const Key& key)
+	{
+		return _hashtable[key];
+	}
+
+	T& operator[](const Key& key)
+	{
+		auto it = find(key);
+		if (it == end()) {
+			auto res = insert(value_type(key, T{}));
+			it = res.first;
+		}
+
+		return *it;//->second;
+	}
+
+	size_type count(const Key& key) const
+	{
+		return contains(key);
+	}
+
 	iterator find(const Key& key)
 	{
 		return _hashtable.find(key);
+	}
+
+	bool contains(const Key& key) const
+	{
+		return _hashtable.contains(key);
 	}
 
 };
