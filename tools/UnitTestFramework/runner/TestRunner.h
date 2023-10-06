@@ -23,21 +23,21 @@ public:
 		void* dlHandle = dlopen(_path.c_str(), RTLD_NOW);
 		err = dlerror();
 		if (err != 0) {
-			printf("%s", err);
+			printf("%s\n", err);
 			abort();
 		}
 
 		void* __start_TEST_SECTION_INIT_METADATA = dlsym(dlHandle, "__start_TEST_INIT");
 		err = dlerror();
 		if (err != 0) {
-			printf("%s", err);
+			printf("%s\n", err);
 			abort();
 		}
 
 		void* __stop_TEST_SECTION_INIT_METADATA = dlsym(dlHandle, "__stop_TEST_INIT");
 		err = dlerror();
 		if (err != 0) {
-			printf("%s", err);
+			printf("%s\n", err);
 			abort();
 		}
 

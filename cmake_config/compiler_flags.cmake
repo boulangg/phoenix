@@ -24,13 +24,16 @@ add_library(nostd_options INTERFACE)
 target_link_options(nostd_options INTERFACE -nodefaultlibs -nostdlib -no-pie)
 target_compile_options(nostd_options INTERFACE 
 		$<$<COMPILE_LANGUAGE:C>:-nostdinc>
-		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>)
+		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>
+)
 		
 add_library(nostd_shared_options INTERFACE)
 target_link_options(nostd_shared_options INTERFACE -nodefaultlibs -nostdlib -fPIC)
 target_compile_options(nostd_shared_options INTERFACE 
 		$<$<COMPILE_LANGUAGE:C>:-nostdinc>
-		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>)
+		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>
+		-DIS_SHARED_LIB
+)
 
 add_library(kernel_options INTERFACE)
 target_compile_options(kernel_options INTERFACE -fno-exceptions

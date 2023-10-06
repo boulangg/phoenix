@@ -14,8 +14,8 @@ set(libstdcpp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR
 
 
 # GDB pretty-printer
-#file(GLOB gdb_printers_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/*.cpp)
-#message("gdb_printers_src: "${gdb_printers_src})
+#file(GLOB gdb_printer_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/*.cpp)
+#message("gdb_printer_src: "${gdb_printer_src})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py ${CMAKE_CURRENT_BINARY_DIR}/debug/ COPYONLY)
 
 add_library(stdcpp STATIC ${libstdcpp_src})
