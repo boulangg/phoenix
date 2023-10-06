@@ -86,10 +86,10 @@ public:
 					instance.Invoke(_tearDown);
 				}
 				auto end = std::chrono::system_clock::now();
-				reporter.ReportSuccess(_info->metadata, testCase->metadata, end - start);
+				reporter.ReportSuccess(_metadata, _info->metadata, testCase->metadata, end - start);
 			} catch (const TestFailureException& exc) {
 				auto end = std::chrono::system_clock::now();
-				reporter.ReportFailure(_info->metadata, testCase->metadata, exc, end - start);
+				reporter.ReportFailure(_metadata, _info->metadata, testCase->metadata, exc, end - start);
 			}
 		}
 		auto endTestSuite = std::chrono::system_clock::now();

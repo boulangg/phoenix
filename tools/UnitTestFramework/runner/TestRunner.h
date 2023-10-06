@@ -16,7 +16,7 @@ public:
 	TestRunner(const std::string& path) : _path(path)
 	{}
 
-	void RunTests()
+	int RunTests()
 	{
 		char* err = 0;
 
@@ -63,6 +63,8 @@ public:
 			TestSuite testSuite(testGroup.first, testGroup.second);
 			testSuite.RunTestSuite(testReporter);
 		}
+
+		return testReporter.isSuccess() ? 0 : 1;
 	}
 
 private:

@@ -26,8 +26,9 @@ char Console::kbdBuf[KBD_BUF_SIZE] = {};
 std::size_t Console::kbdBufStart = 0;
 std::size_t Console::kbdBufSize = 0;
 
-static typename std::aligned_storage<sizeof(Console), alignof (Console)>::type
-stream_buf;
+static unsigned char stream_buf[sizeof(Console)] alignas(alignof(Console));
+//static typename std::<sizeof(Console), alignof (Console)>::type
+//stream_buf;
 
 Console& cout = reinterpret_cast<Console&> (stream_buf);
 
