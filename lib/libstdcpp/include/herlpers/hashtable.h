@@ -64,12 +64,12 @@ public:
 
 	pointer operator->() const
 	{
-		return _node;
+		return &_node->value;
 	}
 
 	reference operator*() const
 	{
-		return *_node;
+		return _node->value;
 	}
 
 	//friend void swap(_hashtable_iterator& lhs, _hashtable_iterator& rhs);
@@ -78,7 +78,8 @@ public:
 	template<class T>
 	friend bool operator!=(const hashtable_iterator<T>&, const hashtable_iterator<T>&);
 
-private:
+//private:
+public:
 	node_type* _node;
 	node_type** _bucket;
 };
@@ -150,7 +151,7 @@ public:
 
 	Value& at(const key_type& key)
 	{
-		auto it = find(key);
+		iterator it = find(key);
 		if (it == end()) {
 			throw std::out_of_range();
 		} else {
@@ -169,18 +170,18 @@ public:
 			return iterator(n, bucket);
 		}
 	}
+	// const_iterator& find(const key_type& key) const noexcept;
 
 	bool contains(const Key& key)
 	{
 		return find(key) != end();
 	}
 
-	// const_iterator& find(const key_type& key) const noexcept;
-
 	iterator begin()
 	{
 		return iterator(*_buckets, _buckets);
 	}
+	// const_iterator& begin()
 
 	iterator end()
 	{
@@ -188,16 +189,62 @@ public:
 	}
 	// const_iterator& end()
 
+	void clear() noexcept
+	{
+		node_type** bucket = _buckets;
+		while (*bucket != _end) {
+			if (*bucket == nullptr) {
+				++bucket;
+			} else {
+				node_type* oldNode = *bucket;
+				*bucket = (*bucket)->next;
+				--_node_count;
+				delete oldNode;
+			}
+		}
+	}
+
 	std::pair<iterator, bool> insert(const value_type& value)
 	{
-		auto& key = extract(value);
+		const key_type& key = extract(value);
 
-		auto it = find(key);
-		if (it == end()) {
+		iterator it = find(key);
+		if (it != end()) {
 			return std::pair<iterator, bool>(std::move(it), false);
 		}
 
+		size_t i = reduce(key);
+		node_type** bucket = _buckets + i;
+		node_type* newNode = new node_type{ value, *bucket };
+		*bucket = newNode;
+		++_node_count;
+		return std::pair<iterator, bool>(iterator(newNode, bucket), true);
+	}
 
+	iterator erase(iterator pos)
+	{
+		node_type** bucket = pos._bucket;
+		while (*bucket != pos._node) {
+			bucket = &(*bucket)->next;
+		}
+
+		node_type* oldNode = *bucket;
+		*bucket = (*bucket)->next;
+		--_node_count;
+		++pos;
+		delete oldNode;
+		return pos;
+	}
+
+	size_type erase(const Key& key)
+	{
+		iterator it = find(key);
+		if (it == end()) {
+			return 0;
+		} else {
+			erase(it);
+			return 1;
+		}
 	}
 
 private:

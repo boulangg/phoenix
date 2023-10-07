@@ -4,9 +4,9 @@
 
 using namespace UnitTestFramework;
 
-namespace stdlib {
+namespace libc {
 
-TEST_CLASS(string_test)
+TEST_CLASS(string)
 {
 public:
 	TEST_METHOD(memset_test)
@@ -16,11 +16,6 @@ public:
 		buffer[5] = '1';
 		memset(buffer, '2', BUFFER_SIZE);
 		Assert::AreEqual('2', buffer[5]);
-	}
-
-	TEST_METHOD(test_bis)
-	{
-		Assert::AreEqual(1, 2);
 	}
 };
 

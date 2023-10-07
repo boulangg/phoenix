@@ -60,7 +60,7 @@ private:
 	struct extractor {
 		const key_type& operator()(const value_type& value) const
 		{
-			return value.second;
+			return value.first;
 		}
 	};
 
@@ -79,12 +79,12 @@ public:
 
 	iterator begin()
 	{
-		return _hashtable->begin();
+		return _hashtable.begin();
 	}
 
 	iterator end()
 	{
-		return _hashtable->end();
+		return _hashtable.end();
 	}
 
 	T& at(const Key& key)
@@ -100,7 +100,7 @@ public:
 			it = res.first;
 		}
 
-		return *it;//->second;
+		return *it->second;
 	}
 
 	size_type count(const Key& key) const
@@ -118,6 +118,25 @@ public:
 		return _hashtable.contains(key);
 	}
 
+	void clear() noexcept
+	{
+		_hashtable.clear();
+	}
+
+	std::pair<iterator, bool> insert(const value_type& value)
+	{
+		return _hashtable.insert(value);
+	}
+
+	iterator erase(iterator pos)
+	{
+		return _hashtable.erase(pos);
+	}
+
+	size_type erase(const Key& key)
+	{
+		return _hashtable.erase(key);
+	}
 };
 
 }

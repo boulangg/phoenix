@@ -70,6 +70,12 @@ struct TestSuitesResult
 
 class TestReporter
 {
+private:
+	static float nanoToMilliSec(std::chrono::nanoseconds duration)
+	{
+		return duration.count() / 1000.0f;
+	}
+
 public:
 	void ReportTestSuiteBegin(const TestSuiteMetadata& testSuiteMetadata)
 	{
@@ -90,7 +96,7 @@ public:
 		_result.skippedCount += testSuiteResult.skippedCount;
 		_result.time += duration;
 
-		printf(" \u2514\u2500 Finished in %li ns\n", std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
+		printf(" \u2514\u2500 Finished in %.2f ms\n", nanoToMilliSec(duration));
 	}
 
 	void ReportSuccess(const TestSuiteMetadata& testSuiteMetadata, const TestClassMetadata* classMetadata, const TestMethodMetadata* methodMetadata, std::chrono::nanoseconds duration)
@@ -101,7 +107,7 @@ public:
 		testSuiteResult.addTestCaseResult(TestCaseResult{ testCaseName, TestCaseStatus::Success, duration, {} });
 
 		(void)classMetadata;
-		printf(" \u251C\u2500 \u2713 Success %-20s (%li ns)\n", testCaseName, std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
+		printf(" \u251C\u2500 \u2713 Success %-20s (%.2f ms)\n", testCaseName, nanoToMilliSec(duration));
 	}
 
 	void ReportSkipped(const TestSuiteMetadata& testSuiteMetadata, const TestClassMetadata* classMetadata, const TestMethodMetadata* methodMetadata)
@@ -124,7 +130,7 @@ public:
 		testSuiteResult.addTestCaseResult(TestCaseResult{ testCaseName, TestCaseStatus::Failure, duration, TestCaseErrorInfo{ errorMessage } });
 
 		(void)classMetadata;
-		printf(" \u251C\u2500 \u2715 Failure %-20s (%li ns)\n", testCaseName, std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
+		printf(" \u251C\u2500 \u2715 Failure %-20s (%.2f ms)\n", testCaseName, nanoToMilliSec(duration));
 		printf(" \u2502    - %s\n", errorMessage.c_str());
 	}
 

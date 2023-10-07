@@ -21,7 +21,7 @@ if (NOT TARGET stdcpp)
 endif()
 
 # Include unit test framework lib
-if (NOT TARGET unittest)
+if (NOT TARGET unittest_shared)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../tools/UnitTestFramework dependency/UnitTestFramework)
 endif()
 
@@ -29,9 +29,9 @@ endif()
 file(GLOB_RECURSE unittestsuite_src ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 add_library(unittestsuite SHARED ${unittestsuite_src})
-#target_link_libraries(unittestsuite unittest)
-target_link_libraries(unittestsuite unittest c_shared stdcpp_shared unwind_shared nostd_shared_options)
-#target_link_libraries(unittestsuite unittest c_shared stdcpp_shared unwind_shared nostd_shared_options)
+#target_link_libraries(unittestsuite unittest_shared)
+target_link_libraries(unittestsuite unittest_shared c_shared stdcpp_shared unwind_shared nostd_shared_options)
+#target_link_libraries(unittestsuite unittest_shared c_shared stdcpp_shared unwind_shared nostd_shared_options)
 set_target_properties(unittestsuite PROPERTIES FOLDER test)
 
 add_dependencies(unittestsuite unittest_runner)

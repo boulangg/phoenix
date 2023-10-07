@@ -27,7 +27,7 @@ extern "C" {
 
 	// Other
 #define EXIT_FAILURE -1
-	void abort(void);
+	void abort(void) __attribute__((__noreturn__));
 
 
 	/// Linux methods
