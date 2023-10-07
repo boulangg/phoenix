@@ -10,6 +10,11 @@ using namespace UnitTestFramework;
 
 int main(int argc, const char* argv[])
 {
+	if (argc != 2) {
+		printf("Expecting one argument with the dll name to test\n");
+		abort();
+	}
+
 	UnitTestRunner::TestRunner testRunner(argv[1]);
-	testRunner.RunTests();
+	return testRunner.RunTests();
 }

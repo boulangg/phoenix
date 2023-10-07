@@ -1,0 +1,20 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "cppgdb",
+      "name": "libunittestsuite.so",
+      "project": "CMakeLists.txt",
+      "projectTarget": "libunittestsuite.so",
+      "comment": "Learn how to configure WSL debugging. For more info, see http://aka.ms/vslinuxdebug",
+      "debuggerConfiguration": "gdb",
+      "args": [
+        "./libunittestsuite.so"
+      ],
+      "env": {},
+      "cwd ": "cd ~/.vs/phoenix/build/linux-default/test;",
+      "program": "./dependency/UnitTestFramework/unittest_runner"
+    }
+  ]
+}

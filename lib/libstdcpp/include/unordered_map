@@ -7,43 +7,136 @@
 #pragma once
 
 #include <functional>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 #include <list>
 
+#include "herlpers/hashtable.h"
+
 namespace std {
 
-template <class Key, class T, class Hash = hash<Key>,
-	class Pred = equal_to<Key>>
-	class unordered_multimap
+template <class Key, class T, class Hash = hash<Key>, class KeyEqual = equal_to<Key>>
+class unordered_map
 {
+private:
+	static constexpr size_t _defaultBucketSize = 64;
+
 public:
-	typedef Key key_type;
-	typedef T mapped_type;
-	typedef pair<const key_type, mapped_type> value_type;
-	typedef Hash hasher;
-	typedef Pred key_equal;
-	typedef value_type& reference;
-	typedef const value_type& const_reference;
-	typedef value_type* pointer;
-	typedef const value_type* const_pointer;
-	typedef size_t size_type;
-	typedef ptrdiff_t difference_type;
+	using key_type = Key;
+	using mapped_type = T;
+	using value_type = pair<const key_type, T>;
+	using size_type = size_t;
+	using difference_type = ptrdiff_t;
+	using hasher = Hash;
+	using key_equal = KeyEqual;
+	using reference = value_type&;
+	using const_reference = const value_type&;
+	using pointer = value_type*;
+	using const_pointer = const value_type*;
+
+	unordered_map() : unordered_map(_defaultBucketSize)
+	{}
+
+	explicit unordered_map(size_type bucket_count, const hasher& hash = hasher(), const key_equal& equal = key_equal()) :
+		_bucket_count(bucket_count), _size(0), _extractor(), _hasher(hash), _key_equal(equal),
+		_hashtable(_bucket_count, _extractor, _hasher, _key_equal)
+	{}
+
+	unordered_map(size_type bucket_count, const Hash& hash) : unordered_map(bucket_count, hash, key_equal())
+	{}
 
 	bool empty() const noexcept
 	{
-		return _size == 0;
+		return size() == 0;
 	}
 
 	size_type size() noexcept
 	{
-		return _size;
+		return _hashtable.size();
 	}
 
 private:
+	struct extractor {
+		const key_type& operator()(const value_type& value) const
+		{
+			return value.first;
+		}
+	};
+
 	size_type _bucket_count;
 	size_type _size;
-	std::vector<std::list<value_type>> _hastable;
+	extractor _extractor;
+	hasher _hasher;
+	key_equal _key_equal;
+
+
+	using hashtable_type = std::detail::hashtable<key_type, value_type, extractor, hasher, key_equal>;
+	hashtable_type _hashtable;
+
+public:
+	using iterator = typename hashtable_type::iterator;
+
+	iterator begin()
+	{
+		return _hashtable.begin();
+	}
+
+	iterator end()
+	{
+		return _hashtable.end();
+	}
+
+	T& at(const Key& key)
+	{
+		return _hashtable[key];
+	}
+
+	T& operator[](const Key& key)
+	{
+		auto it = find(key);
+		if (it == end()) {
+			auto res = insert(value_type(key, T{}));
+			it = res.first;
+		}
+
+		return *it->second;
+	}
+
+	size_type count(const Key& key) const
+	{
+		return contains(key);
+	}
+
+	iterator find(const Key& key)
+	{
+		return _hashtable.find(key);
+	}
+
+	bool contains(const Key& key) const
+	{
+		return _hashtable.contains(key);
+	}
+
+	void clear() noexcept
+	{
+		_hashtable.clear();
+	}
+
+	std::pair<iterator, bool> insert(const value_type& value)
+	{
+		return _hashtable.insert(value);
+	}
+
+	iterator erase(iterator pos)
+	{
+		return _hashtable.erase(pos);
+	}
+
+	size_type erase(const Key& key)
+	{
+		return _hashtable.erase(key);
+	}
 };
 
 }

@@ -10,13 +10,12 @@ if (NOT TARGET unwind)
 endif()
 
 file(GLOB_RECURSE libstdcpp_src ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-set(libstdcpp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/../libc/include)
+set(libstdcpp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/../libc/include ${CMAKE_CURRENT_SOURCE_DIR}/debug)
 
 
 # GDB pretty-printer
-#file(GLOB gdb_printers_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/*.cpp)
-#message("gdb_printers_src: "${gdb_printers_src})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py ${CMAKE_CURRENT_BINARY_DIR}/debug/ COPYONLY)
+set(gdb_printer_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.S ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py)
+set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.S APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py)
 
 add_library(stdcpp STATIC ${libstdcpp_src})
 target_include_directories(stdcpp PUBLIC ${libstdcpp_inc})

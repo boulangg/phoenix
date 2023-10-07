@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+namespace std {
+
 #define BUFFER_SIZE 128
 template<typename T>
 static std::string string_format(const char* format, T value)
@@ -55,4 +57,6 @@ std::string to_string(double value)
 std::string to_string(long double value)
 {
 	return string_format("%Lf", value);
+}
+
 }

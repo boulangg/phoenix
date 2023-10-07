@@ -2,6 +2,10 @@
 
 #include "UnitTestFrameworkAssert.h"
 
+#include <cstdint>
+#include <string>
+#include <typeinfo>
+
 extern "C" const void* __start_TEST_INIT;
 extern "C" const void* __stop_TEST_INIT;
 
@@ -9,16 +13,16 @@ namespace UnitTestFramework {
 
 struct TestMethodMetadata
 {
-	std::string methodName;
-	std::string functionName;
-	std::string fileName;
+	const char* methodName;
+	const char* functionName;
+	const char* fileName;
 	std::uint64_t lineNumber;
 };
 
 struct TestClassMetadata
 {
-	std::string functionName;
-	std::string fileName;
+	const char* functionName;
+	const char* fileName;
 	std::uint64_t lineNumber;
 	const std::type_info* typeInfo;
 };
@@ -96,7 +100,7 @@ public:
 
 }
 
-#define TEST_CLASS(TestSuiteName) class TestSuiteName : public UnitTestFramework::TestClass<string_test>
+#define TEST_CLASS(TestSuiteName) class TestSuiteName : public UnitTestFramework::TestClass<TestSuiteName>
 
 #define TEST_METHOD(TestName) \
 	static const TestMethodInfo* __GetTestMethod_##TestName() __attribute__((used)) \

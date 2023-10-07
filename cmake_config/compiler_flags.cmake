@@ -3,6 +3,7 @@ if(NOT DEFINED COMPILER_FLAGS)
 set(COMPILER_FLAGS True)
 
 enable_testing()
+enable_language( C CXX ASM )
 
 # C generic compiler/linker flags
 # set(C_STANDARD 11)
@@ -24,13 +25,16 @@ add_library(nostd_options INTERFACE)
 target_link_options(nostd_options INTERFACE -nodefaultlibs -nostdlib -no-pie)
 target_compile_options(nostd_options INTERFACE 
 		$<$<COMPILE_LANGUAGE:C>:-nostdinc>
-		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>)
+		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>
+)
 		
 add_library(nostd_shared_options INTERFACE)
-target_link_options(nostd_shared_options INTERFACE -nodefaultlibs -nostdlib -fPIC)
+target_link_options(nostd_shared_options INTERFACE -nodefaultlibs -fPIC)
 target_compile_options(nostd_shared_options INTERFACE 
-		$<$<COMPILE_LANGUAGE:C>:-nostdinc>
-		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>)
+		$<$<COMPILE_LANGUAGE:C>:-nostdinc -ffreestanding>
+		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++ -ffreestanding>
+		-DIS_SHARED_LIB
+)
 
 add_library(kernel_options INTERFACE)
 target_compile_options(kernel_options INTERFACE -fno-exceptions
@@ -52,3 +56,5 @@ set(${dir_list} ${local_dir_list} PARENT_SCOPE)
 endfunction()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set(CMAKE_CTEST_ARGUMENTS "--verbose")
