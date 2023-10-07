@@ -3,6 +3,7 @@ if(NOT DEFINED COMPILER_FLAGS)
 set(COMPILER_FLAGS True)
 
 enable_testing()
+enable_language( C CXX ASM )
 
 # C generic compiler/linker flags
 # set(C_STANDARD 11)

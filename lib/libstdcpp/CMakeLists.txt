@@ -10,7 +10,7 @@ if (NOT TARGET unwind)
 endif()
 
 file(GLOB_RECURSE libstdcpp_src ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-set(libstdcpp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/../libc/include)
+set(libstdcpp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/../libc/include ${CMAKE_CURRENT_SOURCE_DIR}/debug)
 
 
 # GDB pretty-printer

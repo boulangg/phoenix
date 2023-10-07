@@ -38,6 +38,7 @@ int main()
 	std::optional<B> a1{2};
 	std::optional<B> a2{};
 	bool test = std::is_void<A>::value;
+	(void)test;
 	while (1) {
 
 	}
