@@ -9,7 +9,7 @@ For now it's only possible to run them from the Linux machine.
 
 To debug the unit test, it is doable directly in VS but you can use gdb as well
 - In VS 2022:
-  - Run **_debug_unit_test** target with linux-default-build configuration for WSL
+  - Run **libunittestsuite.so** target with linux-default-build configuration for WSL
 - Alternatively in Ubuntu terminal
   - `gdb ./dependency/UnitTestFramework/unittest_runner`
   - `b main` or `b <unit_test_name>` (might be available only after the first run so the unit test DLL symbol are loaded in GDB)

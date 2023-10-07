@@ -59,12 +59,12 @@ struct hash<T*> : public __hash_base<size_t, T*> {
 	}
 };
 
-#define _default_integral_hash(T)						\
-template<>												\
-struct hash<T> : public __hash_base<size_t, T> {		\
-	size_t operator()(const T& val) const noexcept {    \
-		return (size_t)(val);							\
-	}													\
+#define _default_integral_hash(T)                \
+template<>                                       \
+struct hash<T> : public __hash_base<size_t, T> { \
+	size_t operator()(T val) const noexcept {    \
+		return (size_t)(val);                    \
+	}                                            \
 };
 
 _default_integral_hash(bool)
