@@ -14,9 +14,8 @@ set(libstdcpp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR
 
 
 # GDB pretty-printer
-#file(GLOB gdb_printer_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/*.cpp)
-#message("gdb_printer_src: "${gdb_printer_src})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py ${CMAKE_CURRENT_BINARY_DIR}/debug/ COPYONLY)
+file(GLOB gdb_printer_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/*.py ${CMAKE_CURRENT_SOURCE_DIR}/debug/*.natvis)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py ${CMAKE_CURRENT_BINARY_DIR}/debug/gdb-printers.py COPYONLY)
 
 add_library(stdcpp STATIC ${libstdcpp_src})
 target_include_directories(stdcpp PUBLIC ${libstdcpp_inc})
@@ -25,6 +24,7 @@ set_target_properties(stdcpp PROPERTIES OUTPUT_NAME stdcpp)
 set_target_properties(stdcpp PROPERTIES FOLDER lib)
 
 add_library(stdcpp_shared SHARED ${libstdcpp_src} ${gdb_printer_src})
+#target_sources(stdcpp_shared PRIVATE ${gdb_printer_src})
 target_include_directories(stdcpp_shared PUBLIC ${libstdcpp_inc})
 target_link_libraries(stdcpp_shared unwind_shared nostd_options)
 set_target_properties(stdcpp_shared PROPERTIES OUTPUT_NAME stdcpp)

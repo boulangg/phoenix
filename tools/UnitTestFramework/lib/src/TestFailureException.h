@@ -2,27 +2,39 @@
 
 #include <stdexcept>
 #include <string>
+#include <string.h>
 
 #include "utils.h"
 
-class TestFailureException : public std::runtime_error
+class TestFailureException
 {
 public:
-	TestFailureException(const std::string& expected, const std::string& actual, const std::string& message) :
-		runtime_error(message), _expected(expected), _actual(actual), _message(message)
+	TestFailureException(std::string expected, std::string actual, std::string message)
 	{
-		if (_message.empty()) {
-			_message += "Assert failed. Expected:<" + _expected + "> Actual:<" + _actual + ">";
+		std::string msg = message;
+		if (msg.empty()) {
+			msg += "Assert failed. Expected:<" + expected + "> Actual:<" + actual + ">";
+		}
+
+		_message = new char[msg.size() + 1];
+		strncpy(_message, msg.c_str(), msg.size() + 1);
+	}
+
+	~TestFailureException()
+	{
+		if (_message != nullptr) {
+			delete _message;
+			_message = nullptr;
 		}
 	}
 
 	std::string getMessage() const
 	{
-		return _message;
+		return std::string(_message);
 	}
 
 private:
-	std::string _expected;
-	std::string _actual;
-	std::string _message;
+	// TestFailureException can't store std::string because the string are created in the testuite and then read by the test runner. 
+	// They could have different structure if they are not build with the same stdlib.
+	char* _message = nullptr;
 };

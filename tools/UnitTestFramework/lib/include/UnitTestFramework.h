@@ -13,16 +13,16 @@ namespace UnitTestFramework {
 
 struct TestMethodMetadata
 {
-	std::string methodName;
-	std::string functionName;
-	std::string fileName;
+	const char* methodName;
+	const char* functionName;
+	const char* fileName;
 	std::uint64_t lineNumber;
 };
 
 struct TestClassMetadata
 {
-	std::string functionName;
-	std::string fileName;
+	const char* functionName;
+	const char* fileName;
 	std::uint64_t lineNumber;
 	const std::type_info* typeInfo;
 };

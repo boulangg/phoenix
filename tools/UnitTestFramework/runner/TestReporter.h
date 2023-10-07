@@ -77,7 +77,7 @@ public:
 		_result.testSuites[testSuiteName] = TestSuiteResult();
 		_result.testSuites[testSuiteName].name = testSuiteName;
 
-		printf("\u2500\u252c\u2500 Begin Test Suite %s ###\n", testSuiteName.c_str());
+		printf("\u2500\u252c\u2500 Starting Test Suite %s\n", testSuiteName.c_str());
 	}
 
 	void ReportTestSuiteEnd(const TestSuiteMetadata& testSuiteMetadata, std::chrono::nanoseconds duration)
@@ -90,7 +90,7 @@ public:
 		_result.skippedCount += testSuiteResult.skippedCount;
 		_result.time += duration;
 
-		printf(" \u2514\u2500 End Test Suite %s (%li ns) ###\n", testSuiteName.c_str(), std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
+		printf(" \u2514\u2500 Finished in %li ns\n", std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
 	}
 
 	void ReportSuccess(const TestSuiteMetadata& testSuiteMetadata, const TestClassMetadata* classMetadata, const TestMethodMetadata* methodMetadata, std::chrono::nanoseconds duration)
@@ -101,7 +101,7 @@ public:
 		testSuiteResult.addTestCaseResult(TestCaseResult{ testCaseName, TestCaseStatus::Success, duration, {} });
 
 		(void)classMetadata;
-		printf(" \u251C\u2500 \u2713 Success %-20s (%li ns)\n", testCaseName.c_str(), std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
+		printf(" \u251C\u2500 \u2713 Success %-20s (%li ns)\n", testCaseName, std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
 	}
 
 	void ReportSkipped(const TestSuiteMetadata& testSuiteMetadata, const TestClassMetadata* classMetadata, const TestMethodMetadata* methodMetadata)
@@ -112,7 +112,7 @@ public:
 		testSuiteResult.addTestCaseResult(TestCaseResult{ testCaseName, TestCaseStatus::Skipped, std::chrono::nanoseconds(), {} });
 
 		(void)classMetadata;
-		printf(" \u251C\u2500 ! Skipped %-20s\n", methodMetadata->methodName.c_str());
+		printf(" \u251C\u2500 ! Skipped %-20s\n", testCaseName);
 	}
 
 	void ReportFailure(const TestSuiteMetadata& testSuiteMetadata, const TestClassMetadata* classMetadata, const TestMethodMetadata* methodMetadata, const TestFailureException& exc, std::chrono::nanoseconds duration)
@@ -123,8 +123,8 @@ public:
 		testSuiteResult.addTestCaseResult(TestCaseResult{ testCaseName, TestCaseStatus::Failure, duration, TestCaseErrorInfo{ exc.getMessage() } });
 
 		(void)classMetadata;
-		printf(" \u251C\u2500 \u2715 Failure %-20s (%li ns)\n", methodMetadata->methodName.c_str(), std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
-		printf(" \u2502   - %s\n", exc.getMessage().c_str());
+		printf(" \u251C\u2500 \u2715 Failure %-20s (%li ns)\n", testCaseName, std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
+		printf(" \u2502    - %s\n", exc.getMessage().c_str());
 	}
 
 	bool isSuccess() const

@@ -34,6 +34,8 @@ target_link_libraries(unittestsuite unittest c_shared stdcpp_shared unwind_share
 #target_link_libraries(unittestsuite unittest c_shared stdcpp_shared unwind_shared nostd_shared_options)
 set_target_properties(unittestsuite PROPERTIES FOLDER test)
 
+add_dependencies(unittestsuite unittest_runner)
+
 enable_testing()
 
 add_test(NAME unit_test_framework 

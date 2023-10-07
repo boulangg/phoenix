@@ -26,7 +26,7 @@ template<typename T>
 void Assert::AreEqual(const T& u, const T& v, const std::string& message)
 {
 	if (u != v) {
-		throw TestFailureException("", "", message);// std::to_string(u), std::to_string(v), message);
+		throw TestFailureException(std::to_string(u), std::to_string(v), message);
 	}
 }
 

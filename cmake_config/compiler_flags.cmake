@@ -28,10 +28,10 @@ target_compile_options(nostd_options INTERFACE
 )
 		
 add_library(nostd_shared_options INTERFACE)
-target_link_options(nostd_shared_options INTERFACE -nodefaultlibs -nostdlib -fPIC)
+target_link_options(nostd_shared_options INTERFACE -nodefaultlibs -fPIC)
 target_compile_options(nostd_shared_options INTERFACE 
-		$<$<COMPILE_LANGUAGE:C>:-nostdinc>
-		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>
+		$<$<COMPILE_LANGUAGE:C>:-nostdinc -ffreestanding>
+		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++ -ffreestanding>
 		-DIS_SHARED_LIB
 )
 

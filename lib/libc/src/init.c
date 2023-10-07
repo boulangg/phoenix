@@ -14,6 +14,7 @@ extern func_ptr __preinit_array_start[0], __preinit_array_end[0];
 extern func_ptr __init_array_start[0], __init_array_end[0];
 extern func_ptr __fini_array_start[0], __fini_array_end[0];
 
+//__attribute__((constructor)) 
 void __libc_init_array()
 {
 	size_t count;
@@ -37,6 +38,7 @@ void __libc_init(char* envp[])
 	init_dl();
 }
 
+//__attribute__((destructor)) 
 void __libc_fini_array()
 {
 	size_t count;
