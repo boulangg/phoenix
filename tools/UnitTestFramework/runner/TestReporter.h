@@ -120,11 +120,12 @@ public:
 		auto testSuiteName = testSuiteMetadata.getName();
 		auto& testSuiteResult = _result.testSuites[testSuiteName];
 		auto& testCaseName = methodMetadata->methodName;
-		testSuiteResult.addTestCaseResult(TestCaseResult{ testCaseName, TestCaseStatus::Failure, duration, TestCaseErrorInfo{ exc.getMessage() } });
+		auto errorMessage = exc.getMessage();
+		testSuiteResult.addTestCaseResult(TestCaseResult{ testCaseName, TestCaseStatus::Failure, duration, TestCaseErrorInfo{ errorMessage } });
 
 		(void)classMetadata;
 		printf(" \u251C\u2500 \u2715 Failure %-20s (%li ns)\n", testCaseName, std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
-		printf(" \u2502    - %s\n", exc.getMessage().c_str());
+		printf(" \u2502    - %s\n", errorMessage.c_str());
 	}
 
 	bool isSuccess() const

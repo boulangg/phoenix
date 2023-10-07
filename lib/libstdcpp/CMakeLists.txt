@@ -14,8 +14,9 @@ set(libstdcpp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR
 
 
 # GDB pretty-printer
-file(GLOB gdb_printer_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/*.py ${CMAKE_CURRENT_SOURCE_DIR}/debug/*.natvis)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py ${CMAKE_CURRENT_BINARY_DIR}/debug/gdb-printers.py COPYONLY)
+set(gdb_printer_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.S ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py)
+set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.S APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py)
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py ${CMAKE_CURRENT_BINARY_DIR}/debug/gdb-printers.py COPYONLY)
 
 add_library(stdcpp STATIC ${libstdcpp_src})
 target_include_directories(stdcpp PUBLIC ${libstdcpp_inc})
