@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <iterator>
 #include <list>
 
@@ -14,6 +15,9 @@ struct hashtable_node
 };
 
 template <class Value>
+class hashtable_base;
+
+template <class Value>
 class hashtable_iterator {
 public:
 	using iterator_category = std::forward_iterator_tag;
@@ -25,10 +29,10 @@ public:
 	using node_type = hashtable_node<Value>;
 
 	hashtable_iterator(const hashtable_iterator& it) :
-		_node(it._node), _bucket(it._bucket)
+		_bucket(it._bucket), _node(it._node)
 	{}
-	hashtable_iterator(node_type* node, node_type** bucket) :
-		_node(node), _bucket(bucket)
+	hashtable_iterator(node_type** bucket, node_type* node) :
+		_bucket(bucket), _node(node)
 	{}
 
 	~hashtable_iterator()
@@ -36,8 +40,8 @@ public:
 
 	hashtable_iterator& operator=(const hashtable_iterator& it)
 	{
-		_node = it._node;
 		_bucket = it._bucket;
+		_node = it._node;
 		return *this;
 	}
 
@@ -78,10 +82,11 @@ public:
 	template<class T>
 	friend bool operator!=(const hashtable_iterator<T>&, const hashtable_iterator<T>&);
 
-//private:
-public:
-	node_type* _node;
+	friend class hashtable_base<Value>;
+
+private:
 	node_type** _bucket;
+	node_type* _node;
 };
 
 template <class Value>
@@ -96,9 +101,26 @@ bool operator!=(const hashtable_iterator<Value>& x, const hashtable_iterator<Val
 	return x._node != y._node;
 }
 
+template <class Value>
+class hashtable_base
+{
+protected:
+	using iterator = hashtable_iterator<Value>;
+	using node_type = typename iterator::node_type;
+
+	node_type** get_bucket(iterator it)
+	{
+		return it._bucket;
+	}
+
+	node_type* get_node(iterator it)
+	{
+		return it._node;
+	}
+};
 
 template <class Key, class Value, class Extractor, class Hash, class KeyEqual>
-class hashtable
+class hashtable : private hashtable_base<Value>
 {
 public:
 	using iterator = hashtable_iterator<Value>;
@@ -112,8 +134,9 @@ public:
 	using key_equal = KeyEqual;
 
 private:
-	size_type _node_count;
 	size_type _bucket_count;
+	size_type _node_count;
+	float _max_load_factor;
 	node_type** _buckets;
 	using node_type_ptr = node_type*;
 	node_type_ptr _end;
@@ -124,9 +147,8 @@ private:
 
 public:
 	hashtable(size_type bucket_count, extractor_type extractor, hasher hash, key_equal equal) :
-		_node_count(0), _extractor(extractor), _hash(hash), _key_equal(equal)
+		_bucket_count(bucket_count), _node_count(0), _max_load_factor(1), _extractor(extractor), _hash(hash), _key_equal(equal)
 	{
-		_bucket_count = bucket_count;
 		_buckets = new node_type_ptr[bucket_count + 1];
 
 		_end = new node_type();
@@ -137,18 +159,29 @@ public:
 	~hashtable()
 	{}
 
-	size_type size() const
-	{
-		return _node_count;
-	}
-
+	// Capacity
 	bool empty() const
 	{
 		return size() == 0;
 	}
 
-	// size_type max_size() const noexcept;
+	size_type size() const
+	{
+		return _node_count;
+	}
 
+	// Iterators
+	iterator begin()
+	{
+		return iterator(_buckets, *_buckets);
+	}
+
+	iterator end()
+	{
+		return iterator(_buckets + _bucket_count, _end);
+	}
+
+	// Lookup
 	Value& at(const key_type& key)
 	{
 		iterator it = find(key);
@@ -163,32 +196,20 @@ public:
 	{
 		size_t i = reduce(key);
 		node_type** bucket = _buckets + i;
-		node_type* n = find_node(*bucket, key);
-		if (n == nullptr) {
+		node_type* node = find_node(*bucket, key);
+		if (node == nullptr) {
 			return end();
 		} else {
-			return iterator(n, bucket);
+			return iterator(bucket, node);
 		}
 	}
-	// const_iterator& find(const key_type& key) const noexcept;
 
 	bool contains(const Key& key)
 	{
 		return find(key) != end();
 	}
 
-	iterator begin()
-	{
-		return iterator(*_buckets, _buckets);
-	}
-	// const_iterator& begin()
-
-	iterator end()
-	{
-		return iterator(_end, _buckets + _bucket_count);
-	}
-	// const_iterator& end()
-
+	// Modifiers
 	void clear() noexcept
 	{
 		node_type** bucket = _buckets;
@@ -218,13 +239,18 @@ public:
 		node_type* newNode = new node_type{ value, *bucket };
 		*bucket = newNode;
 		++_node_count;
-		return std::pair<iterator, bool>(iterator(newNode, bucket), true);
+
+		if (load_factor() > max_load_factor()) {
+			rehash(0);
+		}
+
+		return std::pair(find(key), true);
 	}
 
 	iterator erase(iterator pos)
 	{
-		node_type** bucket = pos._bucket;
-		while (*bucket != pos._node) {
+		node_type** bucket = hashtable_base<Value>::get_bucket(pos);
+		while (*bucket != hashtable_base<Value>::get_node(pos)) {
 			bucket = &(*bucket)->next;
 		}
 
@@ -245,6 +271,62 @@ public:
 			erase(it);
 			return 1;
 		}
+	}
+
+	// Bucket Interface
+	size_type bucket_count() const
+	{
+		return _bucket_count;
+	}
+
+	size_type bucket_size(size_type n) const
+	{
+		if (n >= _bucket_count) {
+			return 0;
+		}
+
+		size_type size = 0;
+		node_type* node = *(_buckets + n);
+		while (node != nullptr) {
+			++size;
+			node = node->next;
+		}
+
+		return size;
+	}
+
+	size_type bucket(const Key& key) const
+	{
+		auto it = find(key);
+		auto bucket_ptr = get_bucket(it);
+		size_type bucket_nb = (bucket_ptr - _buckets) / sizeof(node_type*);
+		return bucket_nb;
+	}
+
+	// Hash policy
+	float load_factor() const
+	{
+		return _node_count / (float)_bucket_count;
+	}
+
+	float max_load_factor() const
+	{
+		return _max_load_factor;
+	}
+
+	void max_load_factor(float ml)
+	{
+		_max_load_factor = ml;
+	}
+
+	void rehash(size_type count)
+	{
+		// TODO
+	}
+
+	void reserve(size_type count)
+	{
+		rehash(std::ceil(count / max_load_factor()));
 	}
 
 private:

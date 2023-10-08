@@ -19,9 +19,6 @@ namespace std {
 template <class Key, class T, class Hash = hash<Key>, class KeyEqual = equal_to<Key>>
 class unordered_map
 {
-private:
-	static constexpr size_t _defaultBucketSize = 64;
-
 public:
 	using key_type = Key;
 	using mapped_type = T;
@@ -35,17 +32,38 @@ public:
 	using pointer = value_type*;
 	using const_pointer = const value_type*;
 
+private:
+	static constexpr size_t _defaultBucketSize = 64;
+
+	struct extractor {
+		const key_type& operator()(const value_type& value) const
+		{
+			return value.first;
+		}
+	};
+
+	extractor _extractor;
+	hasher _hasher;
+	key_equal _key_equal;
+
+	using hashtable_type = std::detail::hashtable<key_type, value_type, extractor, hasher, key_equal>;
+	hashtable_type _hashtable;
+
+public:
+	using iterator = typename hashtable_type::iterator;
+
 	unordered_map() : unordered_map(_defaultBucketSize)
 	{}
 
 	explicit unordered_map(size_type bucket_count, const hasher& hash = hasher(), const key_equal& equal = key_equal()) :
-		_bucket_count(bucket_count), _size(0), _extractor(), _hasher(hash), _key_equal(equal),
-		_hashtable(_bucket_count, _extractor, _hasher, _key_equal)
+		_extractor(), _hasher(hash), _key_equal(equal), 
+		_hashtable(bucket_count, _extractor, _hasher, _key_equal)
 	{}
 
 	unordered_map(size_type bucket_count, const Hash& hash) : unordered_map(bucket_count, hash, key_equal())
 	{}
 
+	// Capacity
 	bool empty() const noexcept
 	{
 		return size() == 0;
@@ -56,27 +74,7 @@ public:
 		return _hashtable.size();
 	}
 
-private:
-	struct extractor {
-		const key_type& operator()(const value_type& value) const
-		{
-			return value.first;
-		}
-	};
-
-	size_type _bucket_count;
-	size_type _size;
-	extractor _extractor;
-	hasher _hasher;
-	key_equal _key_equal;
-
-
-	using hashtable_type = std::detail::hashtable<key_type, value_type, extractor, hasher, key_equal>;
-	hashtable_type _hashtable;
-
-public:
-	using iterator = typename hashtable_type::iterator;
-
+	// Iterators
 	iterator begin()
 	{
 		return _hashtable.begin();
@@ -87,9 +85,10 @@ public:
 		return _hashtable.end();
 	}
 
+	// Lookup
 	T& at(const Key& key)
 	{
-		return _hashtable[key];
+		return _hashtable.at(key);
 	}
 
 	T& operator[](const Key& key)
@@ -118,6 +117,7 @@ public:
 		return _hashtable.contains(key);
 	}
 
+	// Modifiers
 	void clear() noexcept
 	{
 		_hashtable.clear();
@@ -136,6 +136,59 @@ public:
 	size_type erase(const Key& key)
 	{
 		return _hashtable.erase(key);
+	}
+
+	// Bucket interface
+	size_type bucket_count() const
+	{
+		return _hashtable.bucket_count();
+	}
+
+	size_type bucket_size(size_type n) const
+	{
+		return _hashtable.bucket_size();
+	}
+
+	size_type bucket(const Key& key) const
+	{
+		return _hashtable.bucket(key);
+	}
+
+	// Hash policy
+	float load_factor() const
+	{
+		return _hashtable.load_factor();
+	}
+
+	float max_load_factor() const
+	{
+		return _hashtable.max_load_factor();
+	}
+
+	void max_load_factor(float ml)
+	{
+		_hashtable.max_load_factor(ml);
+	}
+
+	void rehash(size_type count)
+	{
+		_hashtable.rehash(count);
+	}
+
+	void reserve(size_type count)
+	{
+		_hashtable.reserve(count);
+	}
+
+	// Observers
+	hasher hash_function() const
+	{
+		return _hasher;
+	}
+
+	key_equal key_eq() const
+	{
+		return _key_equal;
 	}
 };
 

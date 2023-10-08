@@ -1,0 +1,10 @@
+#pragma once
+
+namespace std {
+
+// Nearest integer floating-point operations
+float ceil(float num);
+double ceil(double num);
+long double ceil(long double num);
+
+}
