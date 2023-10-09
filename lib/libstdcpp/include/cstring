@@ -7,3 +7,11 @@
 #pragma once
 
 #include <string.h>
+
+#include <cstddef>
+
+namespace std {
+
+void* memcpy(void* dest, const void* src, std::size_t count);
+
+}

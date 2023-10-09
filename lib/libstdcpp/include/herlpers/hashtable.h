@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bit>
 #include <cmath>
 #include <iterator>
 #include <list>
@@ -116,6 +117,24 @@ protected:
 	node_type* get_node(iterator it)
 	{
 		return it._node;
+	}
+};
+
+struct hashtable_rehash_policy
+{
+	using size_type = size_t;
+	static constexpr size_t _default_bucket_count = 16;
+
+	size_type reduce(const size_type bucket_count, const size_type& hash)
+	{
+		return hash % bucket_count;
+	}
+
+	size_type rehash_optimal_bucket_count(const size_type node_count, const float _max_load_factor)
+	{
+		auto min_bucket_count = static_cast<size_type>(std::ceil(node_count / _max_load_factor));
+		auto optimal_bucket_count = std::bit_ceil(min_bucket_count);
+		return optimal_bucket_count;
 	}
 };
 
@@ -317,6 +336,10 @@ public:
 	void max_load_factor(float ml)
 	{
 		_max_load_factor = ml;
+
+		if (load_factor() > max_load_factor()) {
+			rehash(0);
+		}
 	}
 
 	void rehash(size_type count)

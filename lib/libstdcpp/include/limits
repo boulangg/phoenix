@@ -1,10 +1,13 @@
 #pragma once
 
+#include <climits>
+
 namespace std {
 
 template<class T>
 class numeric_limits
 {
+public:
 	static constexpr T min() noexcept
 	{
 		return T();
@@ -16,9 +19,26 @@ class numeric_limits
 	}
 
 	static constexpr bool is_signed = false;
+	static constexpr int digits = 0;
 };
 
-template<> class numeric_limits<bool>;
+template<>
+class numeric_limits<bool>
+{
+public:
+	static constexpr bool min() noexcept
+	{
+		return false;
+	}
+
+	static constexpr bool max() noexcept
+	{
+		return true;
+	}
+
+	static constexpr int digits = 1;
+};
+
 template<> class numeric_limits<char>;
 template<> class numeric_limits<signed char>;
 template<> class numeric_limits<unsigned char>;
@@ -29,11 +49,62 @@ template<> class numeric_limits<char32_t>;
 template<> class numeric_limits<short>;
 template<> class numeric_limits<unsigned short>;
 template<> class numeric_limits<int>;
-template<> class numeric_limits<unsigned int>;
+
+template<>
+class numeric_limits<unsigned int>
+{
+public:
+	static constexpr unsigned int min() noexcept
+	{
+		return 0;
+	}
+
+	static constexpr unsigned int max() noexcept
+	{
+		return UINT_MAX;
+	}
+
+	static constexpr int digits = CHAR_BIT * sizeof(int);
+};
+
 template<> class numeric_limits<long>;
-template<> class numeric_limits<unsigned long>;
+
+template<>
+class numeric_limits<unsigned long>
+{
+public:
+	static constexpr unsigned long min() noexcept
+	{
+		return 0;
+	}
+
+	static constexpr unsigned long max() noexcept
+	{
+		return ULONG_MAX;
+	}
+
+	static constexpr int digits = CHAR_BIT * sizeof(long);
+};
+
 template<> class numeric_limits<long long>;
-template<> class numeric_limits<unsigned long long>;
+
+template<>
+class numeric_limits<unsigned long long>
+{
+public:
+	static constexpr unsigned long long min() noexcept
+	{
+		return 0;
+	}
+
+	static constexpr unsigned long long max() noexcept
+	{
+		return ULLONG_MAX;
+	}
+
+	static constexpr int digits = CHAR_BIT * sizeof(long long);
+};
+
 template<> class numeric_limits<float>;
 template<> class numeric_limits<double>;
 template<> class numeric_limits<long double>;

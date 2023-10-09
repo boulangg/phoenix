@@ -6,7 +6,7 @@ using namespace UnitTestFramework;
 
 namespace libstdcpp {
 
-TEST_CLASS(unordered_map)
+TEST_CLASS(unordered_map_test)
 {
 public:
 	TEST_METHOD(constructor)
