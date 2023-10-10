@@ -50,21 +50,19 @@ struct __hash_base {
 template<class Key>
 struct hash;
 
-template<class T>
-struct hash<T*> : public __hash_base<size_t, T*> {
-	size_t operator()(T* ptr) const noexcept
-	{
-		size_t shift = 3; // TODO : use log2(1+sizeof(T))
-		return (size_t)ptr >> shift;
-	}
-};
+// Multiplicative fibonnaci hashing
+#if __WORDSIZE == 64
+#define _HASH_FIBONNACI_CONSTANT 11400714819323198485ull
+#else
+#define _HASH_FIBONNACI_CONSTANT 2654435769ul
+#endif
 
-#define _default_integral_hash(T)                \
-template<>                                       \
-struct hash<T> : public __hash_base<size_t, T> { \
-	size_t operator()(T val) const noexcept {    \
-		return (size_t)(val);                    \
-	}                                            \
+#define _default_integral_hash(T)                           \
+template<>                                                  \
+struct hash<T> : public __hash_base<size_t, T> {            \
+	size_t operator()(T val) const noexcept {               \
+		return (size_t)(val) * _HASH_FIBONNACI_CONSTANT;    \
+	}                                                       \
 };
 
 _default_integral_hash(bool)
@@ -79,6 +77,16 @@ _default_integral_hash(long)
 _default_integral_hash(unsigned long)
 _default_integral_hash(long long)
 _default_integral_hash(unsigned long long)
+
+#undef _HASH_FIBONNACI_CONSTANT
+
+template<class T>
+struct hash<T*> : public __hash_base<size_t, T*> {
+	size_t operator()(T* ptr) const noexcept
+	{
+		return hash<size_t>()((size_t)ptr);
+	}
+};
 
 #undef _default_integral_hash
 

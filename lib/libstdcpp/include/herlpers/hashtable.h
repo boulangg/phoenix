@@ -1,5 +1,8 @@
 #pragma once
 
+#include <algorithm>
+#include <bit>
+#include <cmath>
 #include <iterator>
 #include <list>
 
@@ -14,6 +17,9 @@ struct hashtable_node
 };
 
 template <class Value>
+class hashtable_base;
+
+template <class Value>
 class hashtable_iterator {
 public:
 	using iterator_category = std::forward_iterator_tag;
@@ -25,10 +31,10 @@ public:
 	using node_type = hashtable_node<Value>;
 
 	hashtable_iterator(const hashtable_iterator& it) :
-		_node(it._node), _bucket(it._bucket)
+		_bucket(it._bucket), _node(it._node)
 	{}
-	hashtable_iterator(node_type* node, node_type** bucket) :
-		_node(node), _bucket(bucket)
+	hashtable_iterator(node_type** bucket, node_type* node) :
+		_bucket(bucket), _node(node)
 	{}
 
 	~hashtable_iterator()
@@ -36,8 +42,8 @@ public:
 
 	hashtable_iterator& operator=(const hashtable_iterator& it)
 	{
-		_node = it._node;
 		_bucket = it._bucket;
+		_node = it._node;
 		return *this;
 	}
 
@@ -78,10 +84,11 @@ public:
 	template<class T>
 	friend bool operator!=(const hashtable_iterator<T>&, const hashtable_iterator<T>&);
 
-//private:
-public:
-	node_type* _node;
+	friend class hashtable_base<Value>;
+
+private:
 	node_type** _bucket;
+	node_type* _node;
 };
 
 template <class Value>
@@ -96,9 +103,47 @@ bool operator!=(const hashtable_iterator<Value>& x, const hashtable_iterator<Val
 	return x._node != y._node;
 }
 
+template <class Value>
+class hashtable_base
+{
+protected:
+	using iterator = hashtable_iterator<Value>;
+	using node_type = typename iterator::node_type;
+
+	node_type** get_bucket(iterator it)
+	{
+		return it._bucket;
+	}
+
+	node_type* get_node(iterator it)
+	{
+		return it._node;
+	}
+};
+
+struct hashtable_rehash_policy
+{
+	using size_type = size_t;
+	static constexpr size_t _default_bucket_count = 16;
+
+	size_type reduce(const size_type bucket_count, const size_type& hash) const
+	{
+		return hash % bucket_count;
+	}
+
+	size_type rehash_optimal_bucket_count(const float min_bucket_count) const
+	{
+		return rehash_optimal_bucket_count(static_cast<size_t>(min_bucket_count));
+	}
+
+	size_type rehash_optimal_bucket_count(const size_type min_bucket_count) const
+	{
+		return std::bit_ceil(min_bucket_count);
+	}
+};
 
 template <class Key, class Value, class Extractor, class Hash, class KeyEqual>
-class hashtable
+class hashtable : private hashtable_base<Value>
 {
 public:
 	using iterator = hashtable_iterator<Value>;
@@ -112,43 +157,61 @@ public:
 	using key_equal = KeyEqual;
 
 private:
-	size_type _node_count;
 	size_type _bucket_count;
-	node_type** _buckets;
+	size_type _node_count;
+	float _max_load_factor;
 	using node_type_ptr = node_type*;
+	node_type_ptr* _buckets;
 	node_type_ptr _end;
 
 	extractor_type _extractor;
 	hasher _hash;
 	key_equal _key_equal;
+	hashtable_rehash_policy _rehash_policy;
 
 public:
 	hashtable(size_type bucket_count, extractor_type extractor, hasher hash, key_equal equal) :
-		_node_count(0), _extractor(extractor), _hash(hash), _key_equal(equal)
+		_node_count(0), _max_load_factor(1), _extractor(extractor), _hash(hash), _key_equal(equal), _rehash_policy()
 	{
-		_bucket_count = bucket_count;
-		_buckets = new node_type_ptr[bucket_count + 1];
+		_bucket_count = _rehash_policy.rehash_optimal_bucket_count(bucket_count);
+
+		_buckets = new node_type_ptr[_bucket_count + 1]();
 
 		_end = new node_type();
 		_end->next = _end;
-		_buckets[bucket_count] = _end;
+		_buckets[_bucket_count] = _end;
 	}
 
 	~hashtable()
-	{}
+	{
+		clear();
+		delete _end;
+		delete _buckets;
+	}
+
+	// Capacity
+	bool empty() const
+	{
+		return size() == 0;
+	}
 
 	size_type size() const
 	{
 		return _node_count;
 	}
 
-	bool empty() const
+	// Iterators
+	iterator begin() const
 	{
-		return size() == 0;
+		return iterator(_buckets, *_buckets);
 	}
 
-	// size_type max_size() const noexcept;
+	iterator end() const
+	{
+		return iterator(_buckets + _bucket_count, _end);
+	}
 
+	// Lookup
 	Value& at(const key_type& key)
 	{
 		iterator it = find(key);
@@ -159,44 +222,32 @@ public:
 		}
 	}
 
-	iterator find(const Key& key)
+	iterator find(const Key& key) const
 	{
-		size_t i = reduce(key);
-		node_type** bucket = _buckets + i;
-		node_type* n = find_node(*bucket, key);
-		if (n == nullptr) {
+		size_t i = _reduce(key);
+		node_type_ptr* bucket = _buckets + i;
+		node_type_ptr node = _find_node(*bucket, key);
+		if (node == nullptr) {
 			return end();
 		} else {
-			return iterator(n, bucket);
+			return iterator(bucket, node);
 		}
 	}
-	// const_iterator& find(const key_type& key) const noexcept;
 
-	bool contains(const Key& key)
+	bool contains(const Key& key) const
 	{
 		return find(key) != end();
 	}
 
-	iterator begin()
-	{
-		return iterator(*_buckets, _buckets);
-	}
-	// const_iterator& begin()
-
-	iterator end()
-	{
-		return iterator(_end, _buckets + _bucket_count);
-	}
-	// const_iterator& end()
-
+	// Modifiers
 	void clear() noexcept
 	{
-		node_type** bucket = _buckets;
+		node_type_ptr* bucket = _buckets;
 		while (*bucket != _end) {
 			if (*bucket == nullptr) {
 				++bucket;
 			} else {
-				node_type* oldNode = *bucket;
+				node_type_ptr oldNode = *bucket;
 				*bucket = (*bucket)->next;
 				--_node_count;
 				delete oldNode;
@@ -206,29 +257,32 @@ public:
 
 	std::pair<iterator, bool> insert(const value_type& value)
 	{
-		const key_type& key = extract(value);
+		const key_type& key = _extract(value);
 
 		iterator it = find(key);
 		if (it != end()) {
 			return std::pair<iterator, bool>(std::move(it), false);
 		}
 
-		size_t i = reduce(key);
-		node_type** bucket = _buckets + i;
-		node_type* newNode = new node_type{ value, *bucket };
-		*bucket = newNode;
+		node_type_ptr newNode = new node_type{ value, nullptr };
+		_insert_node(key, newNode);
 		++_node_count;
-		return std::pair<iterator, bool>(iterator(newNode, bucket), true);
+
+		if (load_factor() > max_load_factor()) {
+			rehash(0);
+		}
+
+		return std::pair(find(key), true);
 	}
 
 	iterator erase(iterator pos)
 	{
-		node_type** bucket = pos._bucket;
-		while (*bucket != pos._node) {
+		node_type_ptr* bucket = hashtable_base<Value>::get_bucket(pos);
+		while (*bucket != hashtable_base<Value>::get_node(pos)) {
 			bucket = &(*bucket)->next;
 		}
 
-		node_type* oldNode = *bucket;
+		node_type_ptr oldNode = *bucket;
 		*bucket = (*bucket)->next;
 		--_node_count;
 		++pos;
@@ -247,26 +301,105 @@ public:
 		}
 	}
 
+	// Bucket Interface
+	size_type bucket_count() const
+	{
+		return _bucket_count;
+	}
+
+	size_type bucket_size(size_type n) const
+	{
+		if (n >= _bucket_count) {
+			return 0;
+		}
+
+		size_type size = 0;
+		node_type_ptr node = *(_buckets + n);
+		while (node != nullptr) {
+			++size;
+			node = node->next;
+		}
+
+		return size;
+	}
+
+	size_type bucket(const Key& key) const
+	{
+		auto it = find(key);
+		auto bucket_ptr = get_bucket(it);
+		size_type bucket_nb = (bucket_ptr - _buckets) / sizeof(node_type*);
+		return bucket_nb;
+	}
+
+	// Hash policy
+	float load_factor() const
+	{
+		return _node_count / (float)_bucket_count;
+	}
+
+	float max_load_factor() const
+	{
+		return _max_load_factor;
+	}
+
+	void max_load_factor(float ml)
+	{
+		_max_load_factor = ml;
+
+		if (load_factor() > max_load_factor()) {
+			rehash(0);
+		}
+	}
+
+	void rehash(size_type count)
+	{
+		size_t min_bucket_count = std::ceil(_node_count / max_load_factor());
+		min_bucket_count = std::max(min_bucket_count, count);
+		_bucket_count = _rehash_policy.rehash_optimal_bucket_count(min_bucket_count);
+
+		node_type_ptr* oldBucketPtr = _buckets;
+		node_type_ptr* currentBbucket = _buckets;
+		_buckets = new node_type_ptr[_bucket_count]();
+
+		while (*currentBbucket != _end) {
+			if (*currentBbucket == nullptr) {
+				++currentBbucket;
+			} else {
+				node_type_ptr node = *currentBbucket;
+				*currentBbucket = (*currentBbucket)->next;
+				_insert_node(_extract(node->value), std::move(node));
+			}
+		}
+		_buckets[_bucket_count] = _end;
+
+		delete oldBucketPtr;
+	}
+
+	void reserve(size_type count)
+	{
+		rehash(std::ceil(count / max_load_factor()));
+	}
+
 private:
-	const key_type& extract(const value_type& value) const
+	const key_type& _extract(const value_type& value) const
 	{
 		return _extractor(value);
 	}
 
-	size_type reduce(const key_type& key)
+	size_type _reduce(const key_type& key) const
 	{
-		return _hash(key) % _bucket_count;
+		return _rehash_policy.reduce(_bucket_count, _hash(key));
 	}
 
-	bool compare(const key_type& key, const value_type& value)
+	bool _compare(const key_type& key, const value_type& value) const
 	{
-		return _key_equal(key, extract(value));
+		return _key_equal(key, _extract(value));
 	}
 
-	node_type* find_node(node_type* node, const key_type& key)
+	node_type_ptr _find_node(node_type_ptr node, const key_type& key) const
 	{
 		while (node != nullptr) {
-			if (compare(key, node->value)) {
+			if (_compare(key, node->value)) {
 				return node;
 			}
 
@@ -274,6 +407,14 @@ private:
 		}
 
 		return nullptr;
+	}
+
+	void _insert_node(const key_type& key, node_type_ptr value)
+	{
+		size_t i = _reduce(key);
+		node_type_ptr* bucket = _buckets + i;
+		value->next = *bucket;
+		*bucket = value;
 	}
 };
 
