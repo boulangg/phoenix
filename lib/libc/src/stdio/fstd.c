@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #include <stdio.h>
 
 #include <errno.h>
@@ -11,58 +17,58 @@ FILE* stderr;
 // Formatted input/output
 int printf(const char* format, ...)
 {
-	va_list v;
-	va_start(v, format);
-	int res = vfprintf(stdout, format, v);
-	va_end(v);
-	return res;
+    va_list v;
+    va_start(v, format);
+    int res = vfprintf(stdout, format, v);
+    va_end(v);
+    return res;
 }
 
 int scanf(const char* format, ...)
 {
-	va_list v;
-	va_start(v, format);
-	int res = vfscanf(stdin, format, v);
-	va_end(v);
-	return res;
+    va_list v;
+    va_start(v, format);
+    int res = vfscanf(stdin, format, v);
+    va_end(v);
+    return res;
 }
 int vprintf(const char* format, va_list arg)
 {
-	return vfprintf(stdout, format, arg);
+    return vfprintf(stdout, format, arg);
 }
 int vscanf(const char* format, va_list arg)
 {
-	return vfscanf(stdin, format, arg);
+    return vfscanf(stdin, format, arg);
 }
 
 // Character input/output
 int getchar()
 {
-	return fgetc(stdin);
+    return fgetc(stdin);
 }
 
 char* gets(char* s)
 {
-	return fgets(s, INT_MAX, stdin);
+    return fgets(s, INT_MAX, stdin);
 }
 
 int puts(const char* s)
 {
-	if (fputs(s, stdout) == EOF) {
-		return EOF;
-	}
-	return fputc('\n', stdout);
+    if (fputs(s, stdout) == EOF) {
+        return EOF;
+    }
+    return fputc('\n', stdout);
 }
 
 int putchar(int c)
 {
-	return fputc(c, stdout);
+    return fputc(c, stdout);
 }
 
 void perror(const char* str)
 {
-	if (str != NULL) {
-		fprintf(stderr, "%s: ");
-	}
-	fprintf(stderr, strerror(errno));
+    if (str != NULL) {
+        fprintf(stderr, "%s: ");
+    }
+    fprintf(stderr, strerror(errno));
 }

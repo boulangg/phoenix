@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -10,15 +10,14 @@
 
 namespace std {
 
-template <class Category, class T, class Distance = ptrdiff_t,
-	class Pointer = T*, class Reference = T&>
+template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
 struct iterator
 {
-	typedef T         value_type;
-	typedef Distance  difference_type;
-	typedef Pointer   pointer;
-	typedef Reference reference;
-	typedef Category  iterator_category;
+    typedef T value_type;
+    typedef Distance difference_type;
+    typedef Pointer pointer;
+    typedef Reference reference;
+    typedef Category iterator_category;
 };
 
 struct input_iterator_tag
@@ -35,81 +34,81 @@ struct random_acess_iterator_tag
 template <class Iterator>
 struct iterator_traits
 {
-	typedef typename Iterator::difference_type   difference_type;
-	typedef typename Iterator::value_type        value_type;
-	typedef typename Iterator::pointer           pointer;
-	typedef typename Iterator::reference         reference;
-	typedef typename Iterator::iterator_category iterator_category;
+    typedef typename Iterator::difference_type difference_type;
+    typedef typename Iterator::value_type value_type;
+    typedef typename Iterator::pointer pointer;
+    typedef typename Iterator::reference reference;
+    typedef typename Iterator::iterator_category iterator_category;
 };
 
 template <class T>
 struct iterator_traits<T*>
 {
-	typedef ptrdiff_t                 difference_type;
-	typedef T                         value_type;
-	typedef T* pointer;
-	typedef T& reference;
-	typedef random_acess_iterator_tag iterator_category;
+    typedef ptrdiff_t difference_type;
+    typedef T value_type;
+    typedef T* pointer;
+    typedef T& reference;
+    typedef random_acess_iterator_tag iterator_category;
 };
 
 template <class T>
 struct iterator_traits<const T*>
 {
-	typedef ptrdiff_t                 difference_type;
-	typedef T                         value_type;
-	typedef const T* pointer;
-	typedef const T& reference;
-	typedef random_acess_iterator_tag iterator_category;
+    typedef ptrdiff_t difference_type;
+    typedef T value_type;
+    typedef const T* pointer;
+    typedef const T& reference;
+    typedef random_acess_iterator_tag iterator_category;
 };
 
 template <class Container>
-auto begin(Container& cont) -> decltype (cont.begin())
+auto begin(Container& cont) -> decltype(cont.begin())
 {
-	return cont.begin();
+    return cont.begin();
 }
 
 template <class Container>
-auto begin(const Container& cont) -> decltype (cont.begin())
+auto begin(const Container& cont) -> decltype(cont.begin())
 {
-	return cont.begin();
+    return cont.begin();
 }
 
 template <class T, size_t N>
-T* begin(T(&arr)[N])
+T* begin(T (&arr)[N])
 {
-	return (T*)arr;
+    return (T*)arr;
 }
 
 template <class Container>
-auto end(Container& cont) -> decltype (cont.end())
+auto end(Container& cont) -> decltype(cont.end())
 {
-	return cont.end();
+    return cont.end();
 }
 
 template <class Container>
-auto end(const Container& cont) -> decltype (cont.end())
+auto end(const Container& cont) -> decltype(cont.end())
 {
-	return cont.end();
+    return cont.end();
 }
 
 template <class T, size_t N>
-T* end(T(&arr)[N])
+T* end(T (&arr)[N])
 {
-	return ((T*)arr) + N;
+    return ((T*)arr) + N;
 }
 
 template <class BidirectionalIterator>
 BidirectionalIterator prev(BidirectionalIterator it)
 {
-	auto prevIt = it;
-	return --prevIt;
+    auto prevIt = it;
+    return --prevIt;
 }
 
 template <class BidirectionalIterator>
 BidirectionalIterator next(BidirectionalIterator it)
 {
-	auto prevIt = it;
-	return ++prevIt;
+    auto prevIt = it;
+    return ++prevIt;
 }
 
 }

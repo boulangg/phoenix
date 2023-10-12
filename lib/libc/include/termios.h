@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -113,21 +113,19 @@
 #define TOSTOP 0x0100
 #define XCASE  0x0200
 
-
 typedef char cc_t;
 typedef size_t speed_t;
 typedef uint32_t tcflag_t;
 
 struct termios
 {
-	tcflag_t c_iflag;    // input modes
-	tcflag_t c_oflag;    // output modes
-	tcflag_t c_cflag;    // control modes
-	tcflag_t c_lflag;    // local modes
-	cc_t     c_cc[NCCS]; // control chars
-	speed_t  c_ispeed;   // input speed
-	speed_t  c_ospeed;   // output speed
-
+    tcflag_t c_iflag; // input modes
+    tcflag_t c_oflag; // output modes
+    tcflag_t c_cflag; // control modes
+    tcflag_t c_lflag; // local modes
+    cc_t c_cc[NCCS];  // control chars
+    speed_t c_ispeed; // input speed
+    speed_t c_ospeed; // output speed
 };
 
 #endif // _TERMIOS_H_

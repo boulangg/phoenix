@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -12,67 +12,66 @@ namespace std {
 
 size_t nearest_power_2(size_t num);
 
-template<class T>
+template <class T>
 constexpr std::remove_reference_t<T>&& move(T&& t) noexcept
 {
-	return static_cast<std::remove_reference_t<T>&&>(t);
+    return static_cast<std::remove_reference_t<T>&&>(t);
 }
 
-template<class T>
+template <class T>
 void swap(T& a, T& b) noexcept
 {
-	T tmp = std::move(a);
-	a = std::move(b);
-	b = std::move(tmp);
+    T tmp = std::move(a);
+    a = std::move(b);
+    b = std::move(tmp);
 }
 
 template <class T>
 constexpr T&& forward(std::remove_reference_t<T>& t) noexcept
 {
-	return static_cast<T&&>(t);
+    return static_cast<T&&>(t);
 }
 
 template <class T>
 constexpr T&& forward(std::remove_reference_t<T>&& t) noexcept
 {
-	return static_cast<T&&>(t);
+    return static_cast<T&&>(t);
 }
 
-template<class T1, class T2>
+template <class T1, class T2>
 struct pair
 {
-	typedef T1 first_type;
-	typedef T2 second_type;
+    typedef T1 first_type;
+    typedef T2 second_type;
 
-	first_type first;
-	second_type second;
+    first_type first;
+    second_type second;
 
-	pair() : first(), second()
-	{}
-	template <class U, class V>
-	pair(const pair<U, V>& pr) :
-		first(pr.first), second(pr.second)
-	{}
-	pair(const first_type& a, const second_type& b) :
-		first(a), second(b)
-	{}
+    pair() : first(), second() {}
+    template <class U, class V>
+    pair(const pair<U, V>& pr) : first(pr.first), second(pr.second)
+    {}
+    pair(const first_type& a, const second_type& b) : first(a), second(b) {}
 };
 
-struct in_place_t {
-	explicit in_place_t() = default;
+struct in_place_t
+{
+    explicit in_place_t() = default;
 };
 inline constexpr in_place_t in_place{};
 
 template <class T>
-struct in_place_type_t {
-	explicit in_place_type_t() = default;
+struct in_place_type_t
+{
+    explicit in_place_type_t() = default;
 };
 template <class T>
 inline constexpr in_place_type_t<T> in_place_type{};
 
 template <std::size_t I>
-struct in_place_index_t {
-	explicit in_place_index_t() = default;
+struct in_place_index_t
+{
+    explicit in_place_index_t() = default;
 };
 template <std::size_t I>
 inline constexpr in_place_index_t<I> in_place_index{};

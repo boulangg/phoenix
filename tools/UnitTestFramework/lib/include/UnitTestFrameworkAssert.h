@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #pragma once
 
 #include "../src/TestFailureException.h"
@@ -24,12 +30,12 @@ struct Assert {
 	static void IsFalse(const bool& u);
 };
 
-template<typename T>
+template <typename T>
 void Assert::AreEqual(const T& u, const T& v, const std::string& message)
 {
-	if (u != v) {
-		throw TestFailureException(std::to_string(u), std::to_string(v), message);
-	}
+    if (u != v) {
+        throw TestFailureException(std::to_string(u), std::to_string(v), message);
+    }
 }
 
 template<typename T>

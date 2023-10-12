@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -11,20 +11,20 @@
 extern "C" {
 #endif
 
-	__inline__ static void cli(void)
-	{
-		__asm__ __volatile__("cli":::"memory");
-	}
+__inline__ static void cli(void)
+{
+    __asm__ __volatile__("cli" ::: "memory");
+}
 
-	__inline__ static void sti(void)
-	{
-		__asm__ __volatile__("sti":::"memory");
-	}
+__inline__ static void sti(void)
+{
+    __asm__ __volatile__("sti" ::: "memory");
+}
 
-	__inline__ static void hlt(void)
-	{
-		__asm__ __volatile__("hlt":::"memory");
-	}
+__inline__ static void hlt(void)
+{
+    __asm__ __volatile__("hlt" ::: "memory");
+}
 
 #ifdef __cplusplus
 }

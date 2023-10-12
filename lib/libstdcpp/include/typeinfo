@@ -1,47 +1,50 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #pragma once
 
-namespace std
-{
+namespace std {
 
 class type_info
 {
 private:
-	const char* tname;
+    const char* tname;
+
 public:
-	 type_info(const type_info&);
-	 explicit type_info(const char*);
+    type_info(const type_info&);
+    explicit type_info(const char*);
 
-	 virtual ~type_info (void);
+    virtual ~type_info(void);
 
-	 const char* name(void) const;
-	 bool operator==(const type_info&) const;
-	 bool operator!=(const type_info&) const;
+    const char* name(void) const;
+    bool operator==(const type_info&) const;
+    bool operator!=(const type_info&) const;
 };
 
 }
 
-namespace __cxxabiv1
-{
-#define ADD_CXX_TYPEINFO_HEADER(t) \
-  class t : public std::type_info \
-  { \
-	 public: \
-		virtual ~t ( void ); \
-		explicit t ( const char* ); \
-  } \
+namespace __cxxabiv1 {
+#define ADD_CXX_TYPEINFO_HEADER(t)                                                                                     \
+    class t : public std::type_info                                                                                    \
+    {                                                                                                                  \
+    public:                                                                                                            \
+        virtual ~t(void);                                                                                              \
+        explicit t(const char*);                                                                                       \
+    }
 
-ADD_CXX_TYPEINFO_HEADER ( __fundamental_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __array_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __function_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __enum_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __pbase_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __pointer_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __pointer_to_member_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __class_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __si_class_type_info );
-ADD_CXX_TYPEINFO_HEADER ( __vmi_class_type_info );
+ADD_CXX_TYPEINFO_HEADER(__fundamental_type_info);
+ADD_CXX_TYPEINFO_HEADER(__array_type_info);
+ADD_CXX_TYPEINFO_HEADER(__function_type_info);
+ADD_CXX_TYPEINFO_HEADER(__enum_type_info);
+ADD_CXX_TYPEINFO_HEADER(__pbase_type_info);
+ADD_CXX_TYPEINFO_HEADER(__pointer_type_info);
+ADD_CXX_TYPEINFO_HEADER(__pointer_to_member_type_info);
+ADD_CXX_TYPEINFO_HEADER(__class_type_info);
+ADD_CXX_TYPEINFO_HEADER(__si_class_type_info);
+ADD_CXX_TYPEINFO_HEADER(__vmi_class_type_info);
 
 #undef ADD_CXX_TYPEINFO_HEADER
 }
-
-
