@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -15,149 +15,153 @@ namespace std {
 class ios_base
 {
 public:
-	// Member types
-	typedef uint64_t fmtflags;
-	typedef int32_t streamsize;
-	typedef uint8_t iostate;
-	typedef uint8_t openmode;
+    // Member types
+    typedef uint64_t fmtflags;
+    typedef int32_t streamsize;
+    typedef uint8_t iostate;
+    typedef uint8_t openmode;
 
-	enum event
-	{
-		erase_event, imbue_event, copyfmt_event
-	};
-	typedef void (*event_callback) (event ev, ios_base& obj, int index);
+    enum event
+    {
+        erase_event,
+        imbue_event,
+        copyfmt_event
+    };
+    typedef void (*event_callback)(event ev, ios_base& obj, int index);
 
-	enum seekdir
-	{
-		beg, cur, end
-	};
+    enum seekdir
+    {
+        beg,
+        cur,
+        end
+    };
 
-	class ios_base::Init
-	{
-		static int init_cnt;
-	public:
-		Init();
-		~Init();
-	};
+    class ios_base::Init
+    {
+        static int init_cnt;
 
-	// Member constants
-	static const fmtflags boolalpha;
-	static const fmtflags showbase;
-	static const fmtflags showpoint;
-	static const fmtflags showpos;
-	static const fmtflags skipws;
-	static const fmtflags unitbuf;
-	static const fmtflags uppercase;
-	static const fmtflags basefield;
-	static const fmtflags dec;
-	static const fmtflags hex;
-	static const fmtflags oct;
-	static const fmtflags floatfield;
-	static const fmtflags fixed;
-	static const fmtflags scientific;
-	static const fmtflags adjustfield;
-	static const fmtflags internal;
-	static const fmtflags left;
-	static const fmtflags right;
+    public:
+        Init();
+        ~Init();
+    };
 
-	static const iostate eofbit;
-	static const iostate failbit;
-	static const iostate badbit;
-	static const iostate goodbit;
+    // Member constants
+    static const fmtflags boolalpha;
+    static const fmtflags showbase;
+    static const fmtflags showpoint;
+    static const fmtflags showpos;
+    static const fmtflags skipws;
+    static const fmtflags unitbuf;
+    static const fmtflags uppercase;
+    static const fmtflags basefield;
+    static const fmtflags dec;
+    static const fmtflags hex;
+    static const fmtflags oct;
+    static const fmtflags floatfield;
+    static const fmtflags fixed;
+    static const fmtflags scientific;
+    static const fmtflags adjustfield;
+    static const fmtflags internal;
+    static const fmtflags left;
+    static const fmtflags right;
 
-	static const openmode app;
-	static const openmode ate;
-	static const openmode binary;
-	static const openmode in;
-	static const openmode out;
-	static const openmode trunc;
+    static const iostate eofbit;
+    static const iostate failbit;
+    static const iostate badbit;
+    static const iostate goodbit;
 
-	// Constructors
+    static const openmode app;
+    static const openmode ate;
+    static const openmode binary;
+    static const openmode in;
+    static const openmode out;
+    static const openmode trunc;
+
+    // Constructors
 protected:
-	ios_base();
-	ios_base(const ios_base&) = delete;
+    ios_base();
+    ios_base(const ios_base&) = delete;
 
 public:
-	// Destructor
-	virtual ~ios_base();
+    // Destructor
+    virtual ~ios_base();
 
-	// Formatting
-	fmtflags flags() const;
-	fmtflags flags(fmtflags fmtfl);
-	fmtflags setf(fmtflags fmtfl);
-	fmtflags setf(fmtflags fmtfl, fmtflags mask);
-	void unsetf(fmtflags mask);
-	streamsize precision() const;
-	streamsize precision(streamsize prec);
-	streamsize width() const;
-	streamsize width(streamsize wide);
+    // Formatting
+    fmtflags flags() const;
+    fmtflags flags(fmtflags fmtfl);
+    fmtflags setf(fmtflags fmtfl);
+    fmtflags setf(fmtflags fmtfl, fmtflags mask);
+    void unsetf(fmtflags mask);
+    streamsize precision() const;
+    streamsize precision(streamsize prec);
+    streamsize width() const;
+    streamsize width(streamsize wide);
 
 private:
-	fmtflags formatFlags;
-	streamsize width;
-	streamsize precision;
+    fmtflags formatFlags;
+    streamsize width;
+    streamsize precision;
 };
 
-
-template <class charT, class traits = char_traits<charT> >
+template <class charT, class traits = char_traits<charT>>
 class basic_ios : public ios_base
 {
 public:
-	// Member types
-	typedef charT char_type;
-	typedef traits traits_type;
-	typedef traits_type::int_type int_type;
-	typedef traits_type::pos_type pos_type;
-	typedef traits_type::off_type off_type;
+    // Member types
+    typedef charT char_type;
+    typedef traits traits_type;
+    typedef traits_type::int_type int_type;
+    typedef traits_type::pos_type pos_type;
+    typedef traits_type::off_type off_type;
 
-	// Constructors
-	explicit basic_ios(basic_streambuf<char_type, traits_type>* sb);
+    // Constructors
+    explicit basic_ios(basic_streambuf<char_type, traits_type>* sb);
+
 protected:
-	basic_ios();
-	basic_ios(const basic_ios&) = delete;
-	basic_ios& operator= (const basic_ios&) = delete;
+    basic_ios();
+    basic_ios(const basic_ios&) = delete;
+    basic_ios& operator=(const basic_ios&) = delete;
 
 public:
-	// Destructor
-	virtual ~basic_ios();
+    // Destructor
+    virtual ~basic_ios();
 
+    // Formatting
+    basic_ios& copyfmt(const basic_ios& rhs);
+    char_type fill() const;
+    char_type fill(char_type fillch);
 
-	// Formatting
-	basic_ios& copyfmt(const basic_ios& rhs);
-	char_type fill() const;
-	char_type fill(char_type fillch);
+    // State flag functions
+    bool good() const;
+    bool eof() const;
+    bool fail() const;
+    bool bad() const;
+    bool operator!() const;
+    explicit operator bool() const;
+    iostate rdstate() const;
+    void setstate(iostate state);
+    void clear(iostate state = goodbit);
 
-	// State flag functions
-	bool good() const;
-	bool eof() const;
-	bool fail() const;
-	bool bad() const;
-	bool operator!() const;
-	explicit operator bool() const;
-	iostate rdstate() const;
-	void setstate(iostate state);
-	void clear(iostate state = goodbit);
-
-	// Misc
-	basic_ostream<char_type, traits_type>* tie() const;
-	basic_ostream<char_type, traits_type>* tie(basic_ostream<char_type, traits_type>* tiestr);
-	iostate exceptions() const;
-	void exceptions(iostate except);
-	basic_streambuf<char_type, traits_type>* rdbuf() const;
-	basic_streambuf<char_type, traits_type>* rdbuf(basic_streambuf<char_type, traits_type>* sb);
-	char narrow(char_type wc, char dfault) const;
-	char_type widen(char c) const;
+    // Misc
+    basic_ostream<char_type, traits_type>* tie() const;
+    basic_ostream<char_type, traits_type>* tie(basic_ostream<char_type, traits_type>* tiestr);
+    iostate exceptions() const;
+    void exceptions(iostate except);
+    basic_streambuf<char_type, traits_type>* rdbuf() const;
+    basic_streambuf<char_type, traits_type>* rdbuf(basic_streambuf<char_type, traits_type>* sb);
+    char narrow(char_type wc, char dfault) const;
+    char_type widen(char c) const;
 
 protected:
-	void init(streambuf* sb);
-	void move(ios& x);
-	void move(ios&& x);
-	void swap(ios& x) noexcept;
-	void set_rdbuf(streambuf* sb);
+    void init(streambuf* sb);
+    void move(ios& x);
+    void move(ios&& x);
+    void swap(ios& x) noexcept;
+    void set_rdbuf(streambuf* sb);
 
 private:
-	char_type fillChar;
-	iostate internErrStateFlags;
+    char_type fillChar;
+    iostate internErrStateFlags;
 };
 
 }

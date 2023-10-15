@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -8,17 +8,16 @@
 #define __WEAK_CALL_H__
 
 #include <fcntl.h>
+#include <linux_syscall.h>
 #include <stddef.h>
 #include <time.h>
-#include <linux_syscall.h>
-
 
 struct linux_dirent
 {
-	unsigned long  d_ino;     /* Inode number */
-	unsigned long  d_off;     /* Offset to next linux_dirent */
-	unsigned short d_reclen;  /* Length of this linux_dirent */
-	char           d_name[1]; /* Filename (null-terminated) */
+    unsigned long d_ino;     /* Inode number */
+    unsigned long d_off;     /* Offset to next linux_dirent */
+    unsigned short d_reclen; /* Length of this linux_dirent */
+    char d_name[1];          /* Filename (null-terminated) */
 };
 
 #define WEAK_SYSCALL __attribute__((weak))

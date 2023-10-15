@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #ifndef _FNCTL_H_
 #define _FNCTL_H_
 
@@ -17,12 +23,10 @@ extern "C" {
 #define F_SETLK
 #define F_SETLKW
 
-
-
-#define O_RDONLY    0x00000000
-#define O_WRONLY    0x00000001
-#define O_RDWR      0x00000002
-#define O_ACCMODE   0x00000003
+#define O_RDONLY  0x00000000
+#define O_WRONLY  0x00000001
+#define O_RDWR    0x00000002
+#define O_ACCMODE 0x00000003
 
 #define O_CREAT     0x00000040
 #define O_EXCL      0x00000080
@@ -44,18 +48,18 @@ extern "C" {
 
 #define O_LARGEFILE 0x00000000
 
-	struct flock_t
-	{
-		short l_type;
-		short l_whence;
-		off_t l_start;
-		off_t l_len;
-		pid_t l_pid;
-	};
+struct flock_t
+{
+    short l_type;
+    short l_whence;
+    off_t l_start;
+    off_t l_len;
+    pid_t l_pid;
+};
 
-	int creat(const char* path, mode_t mode);
-	int fcntl(int fd, int cmd, ...);
-	int open(const char* pathname, int flags, ...);
+int creat(const char* path, mode_t mode);
+int fcntl(int fd, int cmd, ...);
+int open(const char* pathname, int flags, ...);
 
 #ifdef __cplusplus
 }

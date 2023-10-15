@@ -1,0 +1,40 @@
+---
+BasedOnStyle: LLVM
+---
+Language: Cpp
+AccessModifierOffset: -4
+# AlignConsecutiveMacros: Consecutive
+AlignConsecutiveMacros: true
+# AlignConsecutiveBitFields: Consecutive
+AlignConsecutiveBitFields: true
+# AlignEscapedNewlines: Left
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AlwaysBreakTemplateDeclarations: Yes
+BraceWrapping: 
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+  BeforeLambdaBody: true
+BreakBeforeBraces: Custom
+BreakInheritanceList: AfterColon
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 120
+# EmptyLineBeforeAccessModifier: Always
+FixNamespaceComments: false
+IndentExternBlock: NoIndent
+# IndentRequires: true
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: false
+PointerAlignment: Left
+StatementMacros:
+  - TEST_CLASS
+  - TEST_METHOD
+TabWidth: 4

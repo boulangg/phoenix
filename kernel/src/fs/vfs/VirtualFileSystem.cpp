@@ -1,10 +1,16 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #include "VirtualFileSystem.hpp"
 
 #include "DentryCache.hpp"
 #include "SuperBlock.hpp"
 
-#include "fs/kernelfs/KernelFileSystemType.hpp"
 #include "fs/ext2fs/Ext2FileSystemType.hpp"
+#include "fs/kernelfs/KernelFileSystemType.hpp"
 
 Dentry* VirtualFileSystem::root;
 std::vector<File*> VirtualFileSystem::filestable;
@@ -12,132 +18,128 @@ std::list<FileSystemType*> VirtualFileSystem::fileSystemType;
 
 void VirtualFileSystem::initVFS()
 {
-// Create root inode
-	Inode* inode = new Inode(nullptr, 0, 0);
-	root = new Dentry(inode);
-	FileSystemType* fs;
-	fs = new KernelFileSystemType();
-	registerFS(fs);
-	fs = new Ext2FileSystemType();
-	registerFS(fs);
+    // Create root inode
+    Inode* inode = new Inode(nullptr, 0, 0);
+    root = new Dentry(inode);
+    FileSystemType* fs;
+    fs = new KernelFileSystemType();
+    registerFS(fs);
+    fs = new Ext2FileSystemType();
+    registerFS(fs);
 }
 
 std::vector<std::string> VirtualFileSystem::parsePathname(const std::string& pathname)
 {
-// TODO correct error (doesn't handle correctly last '/' even for files)
-	std::vector<std::string> res;
-	size_t i = 0;
-	if (pathname[0] == '/') {
-		i = 1;
-	}
-	size_t start = i;
-	for (; i < pathname.size(); i++) {
-		if (pathname[i] != '/') {
-			continue;
-		}
-		res.push_back(pathname.substr(start, i - start));
-		start = i + 1;
-	}
-	if (i != start) {
-		res.push_back(pathname.substr(start, i - start));
-	}
+    // TODO correct error (doesn't handle correctly last '/' even for files)
+    std::vector<std::string> res;
+    size_t i = 0;
+    if (pathname[0] == '/') {
+        i = 1;
+    }
+    size_t start = i;
+    for (; i < pathname.size(); i++) {
+        if (pathname[i] != '/') {
+            continue;
+        }
+        res.push_back(pathname.substr(start, i - start));
+        start = i + 1;
+    }
+    if (i != start) {
+        res.push_back(pathname.substr(start, i - start));
+    }
 
-	return res;
+    return res;
 }
-
 
 int VirtualFileSystem::open(struct ProcDir* procDir, const std::string& pathname)
 {
-// TODO handle flags and check access right
-	Dentry* dentry = getDentry(procDir, pathname);
+    // TODO handle flags and check access right
+    Dentry* dentry = getDentry(procDir, pathname);
 
-	// File not found
-	if (dentry == nullptr) {
-		return EACCES;
-	}
+    // File not found
+    if (dentry == nullptr) {
+        return EACCES;
+    }
 
-	// Check if file already open
-	/*for (size_t i = 0; i < filestable.size(); i++) {
-		if ((filestable[i] != nullptr)
-				&& (filestable[i]->dentry->inode == dentry->inode)) {
-			return i;
-		}
-	}*/
+    // Check if file already open
+    /*for (size_t i = 0; i < filestable.size(); i++) {
+        if ((filestable[i] != nullptr)
+                && (filestable[i]->dentry->inode == dentry->inode)) {
+            return i;
+        }
+    }*/
 
-	File* file = dentry->getInode()->open();
-	file->setDentry(dentry);
-	// Check for available file descriptor
-	for (size_t i = 0; i < filestable.size(); i++) {
-		if (filestable[i] == nullptr) {
-			filestable[i] = file;
-			return i;
-		}
-	}
+    File* file = dentry->getInode()->open();
+    file->setDentry(dentry);
+    // Check for available file descriptor
+    for (size_t i = 0; i < filestable.size(); i++) {
+        if (filestable[i] == nullptr) {
+            filestable[i] = file;
+            return i;
+        }
+    }
 
-	// Create new file descriptor
-	filestable.push_back(file);
-	return filestable.size() - 1;
+    // Create new file descriptor
+    filestable.push_back(file);
+    return filestable.size() - 1;
 }
 
 Dentry* VirtualFileSystem::getDentry(struct ProcDir* procDir, const std::string& pathname)
 {
-	Dentry* start = procDir->rootDir;
-	if (pathname[0] != '/') {
-		start = procDir->workDir;
-	}
-	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
-	return DentryCache::findDentry(start, pathnameVector, 0);
+    Dentry* start = procDir->rootDir;
+    if (pathname[0] != '/') {
+        start = procDir->workDir;
+    }
+    std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
+    return DentryCache::findDentry(start, pathnameVector, 0);
 }
 
 int VirtualFileSystem::close(int fd)
 {
-	filestable[fd]->count--;
-	if (filestable[fd]->count == 0) {
-		delete filestable[fd];
-	}
-	filestable[fd] = nullptr;
-	return 0;
+    filestable[fd]->count--;
+    if (filestable[fd]->count == 0) {
+        delete filestable[fd];
+    }
+    filestable[fd] = nullptr;
+    return 0;
 }
-
 
 int VirtualFileSystem::stat(const char* pathname, struct stat* stat)
 {
-	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
-	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
-	dentry->inode->stat(stat);
-	return 0;
+    std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
+    Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
+    dentry->inode->stat(stat);
+    return 0;
 }
 
 int VirtualFileSystem::fstat(File* file, struct stat* stat)
 {
-	return file->getInode()->stat(stat);
+    return file->getInode()->stat(stat);
 }
 
 int VirtualFileSystem::lstat(const char* pathname, struct stat* stat)
 {
-	std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
-	Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
-	return dentry->inode->stat(stat);
+    std::vector<std::string> pathnameVector = VirtualFileSystem::parsePathname(pathname);
+    Dentry* dentry = DentryCache::findDentry(root, pathnameVector, 0);
+    return dentry->inode->stat(stat);
 }
 
-int VirtualFileSystem::mount(const char* source, const char* target,
-							 const char* fileSystemType, uint64_t,
-							 const void* data)
+int VirtualFileSystem::mount(const char* source, const char* target, const char* fileSystemType, uint64_t,
+                             const void* data)
 {
+    std::vector<std::string> mountVector = parsePathname(target);
+    Dentry* mount = DentryCache::findDentry(VirtualFileSystem::root, mountVector, 0);
+    if (mount == nullptr) {
+        return 1;
+    }
 
-	std::vector<std::string> mountVector = parsePathname(target);
-	Dentry* mount = DentryCache::findDentry(VirtualFileSystem::root, mountVector, 0);
-	if (mount == nullptr) {
-		return 1;
-	}
+    FileSystemType* type = VirtualFileSystem::findFS(fileSystemType);
 
-	FileSystemType* type = VirtualFileSystem::findFS(fileSystemType);
-
-	SuperBlock* sb = type->readSuperBlock(source, data);
-	if (sb) {
-		mount->mount = sb->getRoot();
-		mount->mount->parent = mount;
-		return 0;
-	}
-	return 1;
+    SuperBlock* sb = type->readSuperBlock(source, data);
+    if (sb) {
+        mount->mount = sb->getRoot();
+        mount->mount->parent = mount;
+        return 0;
+    }
+    return 1;
 }

@@ -1,82 +1,77 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
 #pragma once
 
-#include <cstddef>
 #include <algorithm>
+#include <cstddef>
 #include <functional>
 #include <vector>
 
 namespace std {
 
-template <class T, class Container = vector<T>,
-	class Compare = less<typename Container::value_type>>
-	class priority_queue
+template <class T, class Container = vector<T>, class Compare = less<typename Container::value_type>>
+class priority_queue
 {
 public:
-	typedef T value_type;
-	typedef Container container_type;
-	typedef typename container_type::reference reference;
-	typedef typename container_type::const_reference const_reference;
-	typedef size_t size_type;
+    typedef T value_type;
+    typedef Container container_type;
+    typedef typename container_type::reference reference;
+    typedef typename container_type::const_reference const_reference;
+    typedef size_t size_type;
 
-	priority_queue(const Compare& comp, const Container& ctnr) :
-		_ctnr(ctnr), _cmp(comp)
-	{}
+    priority_queue(const Compare& comp, const Container& ctnr) : _ctnr(ctnr), _cmp(comp) {}
 
-	explicit priority_queue(const Compare& comp = Compare(), Container&& ctnr = Container()) :
-		_ctnr(ctnr), _cmp(comp)
-	{}
+    explicit priority_queue(const Compare& comp = Compare(), Container&& ctnr = Container()) : _ctnr(ctnr), _cmp(comp)
+    {}
 
-	bool empty() const
-	{
-		return _ctnr.empty();
-	}
+    bool empty() const
+    {
+        return _ctnr.empty();
+    }
 
-	size_type size() const
-	{
-		return _ctnr.size();
-	}
+    size_type size() const
+    {
+        return _ctnr.size();
+    }
 
-	const_reference top() const
-	{
-		return _ctnr.front();
-	}
+    const_reference top() const
+    {
+        return _ctnr.front();
+    }
 
-	void push(const value_type& val)
-	{
-		push(value_type(val));
-	}
+    void push(const value_type& val)
+    {
+        push(value_type(val));
+    }
 
-	void push(value_type&& val)
-	{
-		_ctnr.push_back(val);
-		std::push_heap(_ctnr.begin(), _ctnr.end(), _cmp);
-	}
+    void push(value_type&& val)
+    {
+        _ctnr.push_back(val);
+        std::push_heap(_ctnr.begin(), _ctnr.end(), _cmp);
+    }
 
-	void pop()
-	{
-		std::pop_heap(_ctnr.begin(), _ctnr.end(), _cmp);
-		_ctnr.pop_back();
-	}
+    void pop()
+    {
+        std::pop_heap(_ctnr.begin(), _ctnr.end(), _cmp);
+        _ctnr.pop_back();
+    }
 
-	void remove(const value_type& val)
-	{
-		auto it = std::find(_ctnr.begin(), _ctnr.end(), val);
-		if (it != _ctnr.end()) {
-			std::__remove_heap(_ctnr.begin(), it, _ctnr.end(), _cmp);
-			_ctnr.pop_back();
-		}
-	}
+    void remove(const value_type& val)
+    {
+        auto it = std::find(_ctnr.begin(), _ctnr.end(), val);
+        if (it != _ctnr.end()) {
+            std::__remove_heap(_ctnr.begin(), it, _ctnr.end(), _cmp);
+            _ctnr.pop_back();
+        }
+    }
 
 private:
-	container_type _ctnr;
-	Compare _cmp;
+    container_type _ctnr;
+    Compare _cmp;
 };
 
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -15,174 +15,160 @@ namespace std {
 template <class InputIterator, class T>
 InputIterator find(InputIterator first, InputIterator last, const T& val)
 {
-	for (auto it = first; it != last; ++it) {
-		if (*first == val) {
-			return first;
-		}
-	}
-	return last;
+    for (auto it = first; it != last; ++it) {
+        if (*first == val) {
+            return first;
+        }
+    }
+    return last;
 }
 
 // Heap operations
 namespace detail {
 
 template <class RandomAccessIterator, class Distance, class T, class Compare>
-void __moveup_heap(RandomAccessIterator first, Distance holeIndex,
-				   Distance topIndex, T value,
-				   Compare comp)
+void __moveup_heap(RandomAccessIterator first, Distance holeIndex, Distance topIndex, T value, Compare comp)
 {
-	Distance parentIndex = (holeIndex - 1) / 2;
-	while (holeIndex > topIndex && comp(*(first + parentIndex), value)) {
-		*(first + holeIndex) = std::move(*(first + parentIndex));
-		holeIndex = parentIndex;
-		parentIndex = (holeIndex - 1) / 2;
-	}
-	*(first + holeIndex) = std::move(value);
+    Distance parentIndex = (holeIndex - 1) / 2;
+    while (holeIndex > topIndex && comp(*(first + parentIndex), value)) {
+        *(first + holeIndex) = std::move(*(first + parentIndex));
+        holeIndex = parentIndex;
+        parentIndex = (holeIndex - 1) / 2;
+    }
+    *(first + holeIndex) = std::move(value);
 }
 
 template <class RandomAccessIterator, class Distance, class T, class Compare>
-void __update_heap(RandomAccessIterator first, Distance holeIndex,
-				   Distance size, T value,
-				   Compare comp)
+void __update_heap(RandomAccessIterator first, Distance holeIndex, Distance size, T value, Compare comp)
 {
-	const Distance topIndex = holeIndex;
-	Distance leftIndex;
-	Distance rightIndex;
-	Distance largerIndex;
-	while (holeIndex < size) {
-		leftIndex = holeIndex * 2 + 1;
-		rightIndex = holeIndex * 2 + 2;
-		largerIndex = leftIndex;
-		if (rightIndex < size) {
-			if (comp(*(first + leftIndex), *(first + rightIndex))) {
-				largerIndex = rightIndex;
-			}
-		}
+    const Distance topIndex = holeIndex;
+    Distance leftIndex;
+    Distance rightIndex;
+    Distance largerIndex;
+    while (holeIndex < size) {
+        leftIndex = holeIndex * 2 + 1;
+        rightIndex = holeIndex * 2 + 2;
+        largerIndex = leftIndex;
+        if (rightIndex < size) {
+            if (comp(*(first + leftIndex), *(first + rightIndex))) {
+                largerIndex = rightIndex;
+            }
+        }
 
-		if (largerIndex < size) {
-			if (comp(value, *(first + largerIndex))) {
-				*(first + holeIndex) = std::move(*(first + largerIndex));
-				holeIndex = largerIndex;
-			} else {
-				break;
-			}
-		} else {
-			break;
-		}
-		holeIndex = largerIndex;
-	}
+        if (largerIndex < size) {
+            if (comp(value, *(first + largerIndex))) {
+                *(first + holeIndex) = std::move(*(first + largerIndex));
+                holeIndex = largerIndex;
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+        holeIndex = largerIndex;
+    }
 
-	detail::__moveup_heap(first, holeIndex, topIndex, std::move(value), comp);
+    detail::__moveup_heap(first, holeIndex, topIndex, std::move(value), comp);
 }
 
 }
 
 template <class RandomAccessIterator, class Compare>
-void push_heap(RandomAccessIterator first, RandomAccessIterator last,
-			   Compare comp)
+void push_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-	typedef typename iterator_traits<RandomAccessIterator>::value_type value_t;
-	typedef typename iterator_traits<RandomAccessIterator>::difference_type dist_t;
-	value_t value = std::move(*(last - 1));
-	detail::__moveup_heap(first, dist_t((last - first) - 1), dist_t(0),
-				  std::move(value), comp);
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_t;
+    typedef typename iterator_traits<RandomAccessIterator>::difference_type dist_t;
+    value_t value = std::move(*(last - 1));
+    detail::__moveup_heap(first, dist_t((last - first) - 1), dist_t(0), std::move(value), comp);
 }
 
 template <class RandomAccessIterator, class Compare>
-void pop_heap(RandomAccessIterator first, RandomAccessIterator last,
-			  Compare comp)
+void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-	typedef typename iterator_traits<RandomAccessIterator>::value_type value_t;
-	typedef typename iterator_traits<RandomAccessIterator>::difference_type dist_t;
-	if (last - first > 1) {
-		--last;
-		value_t value = std::move(*last);
-		*last = std::move(*first);
-		detail::__update_heap(first, dist_t(0), dist_t(last - first),
-					  std::move(value), comp);
-	}
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_t;
+    typedef typename iterator_traits<RandomAccessIterator>::difference_type dist_t;
+    if (last - first > 1) {
+        --last;
+        value_t value = std::move(*last);
+        *last = std::move(*first);
+        detail::__update_heap(first, dist_t(0), dist_t(last - first), std::move(value), comp);
+    }
 }
 
 template <class RandomAccessIterator, class Compare>
-void make_heap(RandomAccessIterator first, RandomAccessIterator last,
-			   Compare comp)
+void make_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-	RandomAccessIterator current = first + 1;
-	for (RandomAccessIterator current = first + 1; current < last; ++current) {
-		std::push_heap(first, current, comp);
-	}
+    RandomAccessIterator current = first + 1;
+    for (RandomAccessIterator current = first + 1; current < last; ++current) {
+        std::push_heap(first, current, comp);
+    }
 }
 
 template <class RandomAccessIterator, class Compare>
-void sort_heap(RandomAccessIterator first, RandomAccessIterator last,
-			   Compare comp)
+void sort_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-	while ((last - first) > 1) {
-		std::pop_heap(first, last, comp);
-		--last;
-	}
+    while ((last - first) > 1) {
+        std::pop_heap(first, last, comp);
+        --last;
+    }
 }
 
 template <class RandomAccessIterator, class Compare>
-void __remove_heap(RandomAccessIterator first, RandomAccessIterator item,
-				 RandomAccessIterator last, Compare comp)
+void __remove_heap(RandomAccessIterator first, RandomAccessIterator item, RandomAccessIterator last, Compare comp)
 {
-	typedef typename iterator_traits<RandomAccessIterator>::value_type value_t;
-	typedef typename iterator_traits<RandomAccessIterator>::difference_type dist_t;
-	if (last - first > 1) {
-		--last;
-		value_t value = std::move(*last);
-		*last = std::move(*item);
-		detail::__update_heap(first, dist_t(item - first), dist_t(last - first),
-					  std::move(value), comp);
-	}
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_t;
+    typedef typename iterator_traits<RandomAccessIterator>::difference_type dist_t;
+    if (last - first > 1) {
+        --last;
+        value_t value = std::move(*last);
+        *last = std::move(*item);
+        detail::__update_heap(first, dist_t(item - first), dist_t(last - first), std::move(value), comp);
+    }
 }
 
 template <class RandomAccessIterator, class Compare>
-RandomAccessIterator is_heap_until(RandomAccessIterator first,
-								   RandomAccessIterator last, Compare comp)
+RandomAccessIterator is_heap_until(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-	typedef typename iterator_traits<RandomAccessIterator>::difference_type dist_t;
-	dist_t size = last - first;
-	for (dist_t child = 1; child < size; ++child) {
-		dist_t parent = child / 2;
-		if (comp(*(first + parent), *(first + child))) {
-			return first + child;
-		}
-	}
-	return last;
+    typedef typename iterator_traits<RandomAccessIterator>::difference_type dist_t;
+    dist_t size = last - first;
+    for (dist_t child = 1; child < size; ++child) {
+        dist_t parent = child / 2;
+        if (comp(*(first + parent), *(first + child))) {
+            return first + child;
+        }
+    }
+    return last;
 }
 
 template <class RandomAccessIterator, class Compare>
-bool is_heap(RandomAccessIterator first, RandomAccessIterator last,
-			 Compare comp)
+bool is_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-	return std::is_heap_until(first, last, comp) == last;
+    return std::is_heap_until(first, last, comp) == last;
 }
 
 // Minimum/maximum operations
 template <class T>
 const T& min(const T& a, const T& b)
 {
-	return !(b < a) ? a : b;
+    return !(b < a) ? a : b;
 }
 
 template <class T, class Compare>
 const T& min(const T& a, const T& b, Compare comp)
 {
-	return !comp(b, a) ? a : b;
+    return !comp(b, a) ? a : b;
 }
 
 template <class T>
 const T& max(const T& a, const T& b)
 {
-	return (a < b) ? b : a;
+    return (a < b) ? b : a;
 }
 
 template <class T, class Compare>
 const T& max(const T& a, const T& b, Compare comp)
 {
-	return comp(a, b) ? b : a;
+    return comp(a, b) ? b : a;
 }
 
 }

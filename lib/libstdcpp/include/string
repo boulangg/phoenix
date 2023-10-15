@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -14,64 +14,65 @@ template <class charT>
 class char_traits
 {
 public:
-	typedef charT char_type;
-	static size_t length(const char_type* s);
-	static char_type* copy(char_type* dest, const char_type* src, size_t n);
-	static void assign(char_type& r, const char_type& c) noexcept;
+    typedef charT char_type;
+    static size_t length(const char_type* s);
+    static char_type* copy(char_type* dest, const char_type* src, size_t n);
+    static void assign(char_type& r, const char_type& c) noexcept;
 };
 
 template <>
 class char_traits<char>
 {
 public:
-	typedef char char_type;
-	typedef int int_type;
-	static size_t length(const char_type* s);
-	static char_type* copy(char_type* dest, const char_type* src, size_t n);
-	static void assign(char_type& r, const char_type& c) noexcept;
+    typedef char char_type;
+    typedef int int_type;
+    static size_t length(const char_type* s);
+    static char_type* copy(char_type* dest, const char_type* src, size_t n);
+    static void assign(char_type& r, const char_type& c) noexcept;
 };
 
 class string
 {
 public:
-	string();
-	string(const char* s);
-	string(const char* s, size_t n);
-	string(const string& s);
-	string(size_t n, char c);
+    string();
+    string(const char* s);
+    string(const char* s, size_t n);
+    string(const string& s);
+    string(size_t n, char c);
 
-	string(string&& s);
-	~string();
+    string(string&& s);
+    ~string();
 
-	string& operator+=(const string& str);
-	string& operator+=(const char* str);
+    string& operator+=(const string& str);
+    string& operator+=(const char* str);
 
-	string& operator=(const string& str);
-	string& operator=(const char* str);
-	string& operator=(string&& str);
+    string& operator=(const string& str);
+    string& operator=(const char* str);
+    string& operator=(string&& str);
 
-	char& operator[](int pos);
-	const char& operator[](int pos) const;
+    char& operator[](int pos);
+    const char& operator[](int pos) const;
 
-	string& append(const char* s, size_t n);
+    string& append(const char* s, size_t n);
 
-	bool empty() const noexcept;
-	size_t size() const noexcept;
-	size_t length() const;
-	size_t capacity() const;
+    bool empty() const noexcept;
+    size_t size() const noexcept;
+    size_t length() const;
+    size_t capacity() const;
 
-	int compare(const string& str) const;
-	int compare(const char* s) const;
+    int compare(const string& str) const;
+    int compare(const char* s) const;
 
-	const char* c_str() const;
+    const char* c_str() const;
 
-	string substr(size_t pos = 0, size_t len = string::npos) const;
+    string substr(size_t pos = 0, size_t len = string::npos) const;
 
-	static const size_t npos = -1;
+    static const size_t npos = -1;
+
 private:
-	size_t _size;
-	size_t _capacity;
-	char* _data;
+    size_t _size;
+    size_t _capacity;
+    char* _data;
 };
 
 string operator+(const string& lhs, const string& rhs);

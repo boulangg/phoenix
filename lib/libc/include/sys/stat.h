@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -15,60 +15,59 @@
 extern "C" {
 #endif
 
-
 /*struct stat {
-	dev_t     st_dev;
-	ino_t     st_ino;
-	mode_t    st_mode;
-	nlink_t   st_nlink;
-	uid_t     st_uid;
-	gid_t     st_gid;
-	dev_t     st_rdev;
-	off_t     st_size;
-	time_t    st_atime;
-	int32_t   st_spare1;
-	time_t    st_mtime;
-	int32_t   st_spare2;
-	time_t    st_ctime;
-	int32_t   st_spare3;
-	int32_t   st_blksize;
-	int32_t   st_blocks;
-	uint32_t  st_flags;
-	uint32_t  st_gen;
+    dev_t     st_dev;
+    ino_t     st_ino;
+    mode_t    st_mode;
+    nlink_t   st_nlink;
+    uid_t     st_uid;
+    gid_t     st_gid;
+    dev_t     st_rdev;
+    off_t     st_size;
+    time_t    st_atime;
+    int32_t   st_spare1;
+    time_t    st_mtime;
+    int32_t   st_spare2;
+    time_t    st_ctime;
+    int32_t   st_spare3;
+    int32_t   st_blksize;
+    int32_t   st_blocks;
+    uint32_t  st_flags;
+    uint32_t  st_gen;
 };*/
 
-	struct stat
-	{
-		dev_t   st_dev;
-		ino_t   st_ino;
-		nlink_t st_nlink;
+struct stat
+{
+    dev_t st_dev;
+    ino_t st_ino;
+    nlink_t st_nlink;
 
-		mode_t  st_mode;
-		uid_t   st_uid;
-		gid_t   st_gid;
+    mode_t st_mode;
+    uid_t st_uid;
+    gid_t st_gid;
 
-		dev_t   st_rdev;
-		off_t   st_size;
-		size_t  st_blksize;
-		size_t  st_blocks;
+    dev_t st_rdev;
+    off_t st_size;
+    size_t st_blksize;
+    size_t st_blocks;
 
-		struct timespec	st_atime;
+    struct timespec st_atime;
 
-		struct timespec	st_mtime;
+    struct timespec st_mtime;
 
-		struct timespec	st_ctime;
-	};
+    struct timespec st_ctime;
+};
 
-	/* File type */
-#define	S_IFMT   00170000
+/* File type */
+#define S_IFMT 00170000
 
-#define	S_IFIFO  00010000
-#define	S_IFCHR  00020000
-#define	S_IFDIR  00040000
-#define	S_IFBLK  00060000
-#define	S_IFREG  00100000
-#define	S_IFLNK  00120000
-#define	S_IFSOCK 00140000
+#define S_IFIFO  00010000
+#define S_IFCHR  00020000
+#define S_IFDIR  00040000
+#define S_IFBLK  00060000
+#define S_IFREG  00100000
+#define S_IFLNK  00120000
+#define S_IFSOCK 00140000
 
 #define S_ISFIFO(m) ((m & S_IFMT) == S_IFIFO)
 #define S_ISCHR(m)  ((m & S_IFMT) == S_IFCHR)
@@ -94,19 +93,18 @@ extern "C" {
 #define S_IWOTH 00000002
 #define S_IXOTH 00000001
 
-	int chmod(const char*, mode_t);
-	int fchmod(int, mode_t);
-	int fstat(int, struct stat*);
-	int lstat(const char*, struct stat*);
-	int mkdir(const char*, mode_t);
-	int mkfifo(const char*, mode_t);
-	int mknod(const char*, mode_t, dev_t);
-	int stat(const char*, struct stat*);
-	mode_t umask(mode_t);
+int chmod(const char*, mode_t);
+int fchmod(int, mode_t);
+int fstat(int, struct stat*);
+int lstat(const char*, struct stat*);
+int mkdir(const char*, mode_t);
+int mkfifo(const char*, mode_t);
+int mknod(const char*, mode_t, dev_t);
+int stat(const char*, struct stat*);
+mode_t umask(mode_t);
 
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif // __SYS_STAT_H__

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -10,87 +10,86 @@
 
 namespace std {
 
-template <class charT, class traits = char_traits<charT> >
+template <class charT, class traits = char_traits<charT>>
 class basic_istream : public basic_ios<charT, traits>
 {
-
 public:
-	// Member types
-	typedef charT char_type;
-	typedef traits traits_type;
-	typedef traits_type::int_type int_type;
-	typedef traits_type::pos_type pos_type;
-	typedef traits_type::off_type off_type;
+    // Member types
+    typedef charT char_type;
+    typedef traits traits_type;
+    typedef traits_type::int_type int_type;
+    typedef traits_type::pos_type pos_type;
+    typedef traits_type::off_type off_type;
 
-	class sentry
-	{
-	public:
-		explicit sentry(basic_istream& is, bool noskipws = false);
-		~sentry();
-		explicit operator bool() const;
-		sentry(const sentry&) = delete;
-		sentry& operator= (const sentry&) = delete;
-	};
+    class sentry
+    {
+    public:
+        explicit sentry(basic_istream& is, bool noskipws = false);
+        ~sentry();
+        explicit operator bool() const;
+        sentry(const sentry&) = delete;
+        sentry& operator=(const sentry&) = delete;
+    };
 
-	// Constructors
-	explicit basic_istream(basic_streambuf<char_type, traits_type>* sb);
-	basic_istream(const basic_istream&) = delete;
-protected:
-	basic_istream(basic_istream&& x);
-
-public:
-	// Destructor
-	virtual ~basic_istream();
-
-	// Formatted input
-	basic_istream& operator>>(bool& val);
-	basic_istream& operator>>(short& val);
-	basic_istream& operator>>(unsigned short& val);
-	basic_istream& operator>>(int& val);
-	basic_istream& operator>>(unsigned int& val);
-	basic_istream& operator>>(long& val);
-	basic_istream& operator>>(unsigned long& val);
-	basic_istream& operator>>(long long& val);
-	basic_istream& operator>>(unsigned long long& val);
-	basic_istream& operator>>(float& val);
-	basic_istream& operator>>(double& val);
-	basic_istream& operator>>(long double& val);
-	basic_istream& operator>>(void*& val);
-	basic_istream& operator>>(basic_streambuf<char_type, traits_type>* sb);
-	basic_istream& operator>>(basic_istream& (*pf)(basic_istream&));
-	basic_istream& operator>>(
-		basic_ios<char_type, traits_type>& (*pf)(basic_ios<char_type, traits_type>&));
-	basic_istream& operator>>(ios_base& (*pf)(ios_base&));
-
-	// Unformatted input
-	streamsize gcount() const;
-	int_type get();
-	basic_istream& get(char_type& c);
-	basic_istream& get(char_type* s, streamsize n);
-	basic_istream& get(char_type* s, streamsize n, char_type delim);
-	basic_istream& get(basic_streambuf<char_type, traits_type>& sb);
-	basic_istream& get(basic_streambuf<char_type, traits_type>& sb, char_type delim);
-	basic_istream& getline(char_type* s, streamsize n);
-	basic_istream& getline(char_type* s, streamsize n, char_type delim);
-	basic_istream& ignore(streamsize n = 1, int_type delim = traits_type::eof());
-	int_type peek();
-	basic_istream& read(char_type* s, streamsize n);
-	streamsize readsome(char_type* s, streamsize n);
-	basic_istream& putback(char_type c);
-	basic_istream& unget();
-
-	// Positioning
-	pos_type tellg();
-	basic_istream& seekg(pos_type pos);
-	basic_istream& seekg(off_type off, ios_base::seekdir way);
-
-	// Synchronization
-	int sync();
+    // Constructors
+    explicit basic_istream(basic_streambuf<char_type, traits_type>* sb);
+    basic_istream(const basic_istream&) = delete;
 
 protected:
-	basic_istream& operator=(const basic_istream&) = delete;
-	basic_istream& operator=(basic_istream&& rhs);
-	void swap(basic_istream& x);
+    basic_istream(basic_istream&& x);
+
+public:
+    // Destructor
+    virtual ~basic_istream();
+
+    // Formatted input
+    basic_istream& operator>>(bool& val);
+    basic_istream& operator>>(short& val);
+    basic_istream& operator>>(unsigned short& val);
+    basic_istream& operator>>(int& val);
+    basic_istream& operator>>(unsigned int& val);
+    basic_istream& operator>>(long& val);
+    basic_istream& operator>>(unsigned long& val);
+    basic_istream& operator>>(long long& val);
+    basic_istream& operator>>(unsigned long long& val);
+    basic_istream& operator>>(float& val);
+    basic_istream& operator>>(double& val);
+    basic_istream& operator>>(long double& val);
+    basic_istream& operator>>(void*& val);
+    basic_istream& operator>>(basic_streambuf<char_type, traits_type>* sb);
+    basic_istream& operator>>(basic_istream& (*pf)(basic_istream&));
+    basic_istream& operator>>(basic_ios<char_type, traits_type>& (*pf)(basic_ios<char_type, traits_type>&));
+    basic_istream& operator>>(ios_base& (*pf)(ios_base&));
+
+    // Unformatted input
+    streamsize gcount() const;
+    int_type get();
+    basic_istream& get(char_type& c);
+    basic_istream& get(char_type* s, streamsize n);
+    basic_istream& get(char_type* s, streamsize n, char_type delim);
+    basic_istream& get(basic_streambuf<char_type, traits_type>& sb);
+    basic_istream& get(basic_streambuf<char_type, traits_type>& sb, char_type delim);
+    basic_istream& getline(char_type* s, streamsize n);
+    basic_istream& getline(char_type* s, streamsize n, char_type delim);
+    basic_istream& ignore(streamsize n = 1, int_type delim = traits_type::eof());
+    int_type peek();
+    basic_istream& read(char_type* s, streamsize n);
+    streamsize readsome(char_type* s, streamsize n);
+    basic_istream& putback(char_type c);
+    basic_istream& unget();
+
+    // Positioning
+    pos_type tellg();
+    basic_istream& seekg(pos_type pos);
+    basic_istream& seekg(off_type off, ios_base::seekdir way);
+
+    // Synchronization
+    int sync();
+
+protected:
+    basic_istream& operator=(const basic_istream&) = delete;
+    basic_istream& operator=(basic_istream&& rhs);
+    void swap(basic_istream& x);
 };
 
 }

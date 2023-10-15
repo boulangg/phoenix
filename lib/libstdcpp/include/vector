@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -19,53 +19,53 @@ template <class T>
 class vector
 {
 public:
-	typedef T value_type;
-	typedef value_type& reference;
-	typedef const reference const_reference;
-	typedef value_type* pointer;
-	typedef size_t size_type;
+    typedef T value_type;
+    typedef value_type& reference;
+    typedef const reference const_reference;
+    typedef value_type* pointer;
+    typedef size_t size_type;
 
-	typedef generic_iterator<pointer> iterator;
+    typedef generic_iterator<pointer> iterator;
 
-	vector();
-	vector(size_type n, const_reference val);
-	vector(const vector& v);
-	vector(vector&& v);
+    vector();
+    vector(size_type n, const_reference val);
+    vector(const vector& v);
+    vector(vector&& v);
 
-	~vector();
+    ~vector();
 
-	iterator begin() const
-	{
-		return iterator(_data);
-	}
-	iterator end() const
-	{
-		return iterator(_data + _size);
-	}
+    iterator begin() const
+    {
+        return iterator(_data);
+    }
+    iterator end() const
+    {
+        return iterator(_data + _size);
+    }
 
-	reference operator[](int pos) const;
+    reference operator[](int pos) const;
 
-	vector<T>& operator=(const vector<T>& v);
-	vector<T>& operator=(vector<T>&& v);
+    vector<T>& operator=(const vector<T>& v);
+    vector<T>& operator=(vector<T>&& v);
 
-	reference front() const;
-	reference back();
+    reference front() const;
+    reference back();
 
-	void push_back(const_reference val);
-	void push_back(value_type&& val);
-	void pop_back();
+    void push_back(const_reference val);
+    void push_back(value_type&& val);
+    void pop_back();
 
-	size_type size() const;
-	bool empty() const;
+    size_type size() const;
+    bool empty() const;
 
-	void clear();
+    void clear();
 
 private:
-	void resize();
+    void resize();
 
-	size_type _capacity;
-	size_type _size;
-	pointer _data;
+    size_type _capacity;
+    size_type _size;
+    pointer _data;
 };
 template <class T>
 vector<T>::vector() : _capacity(DEFAULT_CAPACITY), _size(0), _data(new T[_capacity])
@@ -74,131 +74,130 @@ vector<T>::vector() : _capacity(DEFAULT_CAPACITY), _size(0), _data(new T[_capaci
 template <class T>
 vector<T>::vector(size_type n, const_reference val) : _capacity(DEFAULT_CAPACITY), _size(0), _data(new T[_capacity])
 {
-	for (int i = 0; i < n; ++i) {
-		this->push_back(val);
-	}
+    for (int i = 0; i < n; ++i) {
+        this->push_back(val);
+    }
 }
 
 template <class T>
 vector<T>::vector(const vector<T>& v) : _capacity(v._capacity), _size(v._size), _data(new T[_capacity])
 {
-	for (size_t i = 0; i < _size; i++)
-		_data[i] = v._data[i];
+    for (size_t i = 0; i < _size; i++)
+        _data[i] = v._data[i];
 }
 
 template <class T>
 vector<T>::vector(vector<T>&& v) : _capacity(v._capacity), _size(v._size), _data(v._data)
 {
-	v._data = nullptr;
-	v._size = 0;
-	v._capacity = 0;
+    v._data = nullptr;
+    v._size = 0;
+    v._capacity = 0;
 }
 
 template <class T>
 vector<T>::~vector()
 {
-	delete[] _data;
+    delete[] _data;
 }
 
 template <class T>
 typename vector<T>::reference vector<T>::operator[](int pos) const
 {
-	return _data[pos];
+    return _data[pos];
 }
 
 template <class T>
 vector<T>& vector<T>::operator=(const vector<T>& v)
 {
-	T* tmp = new T[v._capacity];
-	for (size_t i = 0; i < v._size; i++)
-		tmp[i] = v._data[i];
-	delete[] _data;
-	_data = tmp;
-	_size = v._size;
-	_capacity = v._capacity;
-	return *this;
+    T* tmp = new T[v._capacity];
+    for (size_t i = 0; i < v._size; i++)
+        tmp[i] = v._data[i];
+    delete[] _data;
+    _data = tmp;
+    _size = v._size;
+    _capacity = v._capacity;
+    return *this;
 }
 
 template <class T>
 vector<T>& vector<T>::operator=(vector<T>&& v)
 {
-	delete[] _data;
-	_data = v._data;
-	_size = v._size;
-	_capacity = v._capacity;
+    delete[] _data;
+    _data = v._data;
+    _size = v._size;
+    _capacity = v._capacity;
 
-	v._data = nullptr;
-	v._size = 0;
-	v._capacity = 0;
+    v._data = nullptr;
+    v._size = 0;
+    v._capacity = 0;
 
-	return *this;
+    return *this;
 }
 
 template <class T>
 typename vector<T>::reference vector<T>::front() const
 {
-	return _data[0];
+    return _data[0];
 }
 
 template <class T>
 typename vector<T>::reference vector<T>::back()
 {
-	return _data[_size - 1];
+    return _data[_size - 1];
 }
 
 template <class T>
 void vector<T>::push_back(const_reference val)
 {
-	if (_size == _capacity)
-		resize();
-	_data[_size++] = val;
+    if (_size == _capacity)
+        resize();
+    _data[_size++] = val;
 }
 
 template <class T>
 void vector<T>::push_back(value_type&& val)
 {
-	value_type v = val;
-	push_back(v);
+    value_type v = val;
+    push_back(v);
 }
 
 template <class T>
 void vector<T>::pop_back()
 {
-	if (_size > 0)
-		_size--;
+    if (_size > 0)
+        _size--;
 }
 
 template <class T>
 typename vector<T>::size_type vector<T>::size() const
 {
-	return _size;
+    return _size;
 }
 
 template <class T>
 bool vector<T>::empty() const
 {
-	return _size == 0;
+    return _size == 0;
 }
 
 template <class T>
 void vector<T>::resize()
 {
-	T* tmp = new T[_capacity * 2];
-	for (size_t i = 0; i < _size; i++)
-		tmp[i] = _data[i];
-	delete[] _data;
-	_data = tmp;
-	_capacity *= 2;
+    T* tmp = new T[_capacity * 2];
+    for (size_t i = 0; i < _size; i++)
+        tmp[i] = _data[i];
+    delete[] _data;
+    _data = tmp;
+    _capacity *= 2;
 }
 
 template <class T>
 void vector<T>::clear()
 {
-	delete[] _data;
-	_capacity = DEFAULT_CAPACITY;
-	_size = 0;
-	_data = new T[_capacity];
+    delete[] _data;
+    _capacity = DEFAULT_CAPACITY;
+    _size = 0;
+    _data = new T[_capacity];
 }
 
 }
-

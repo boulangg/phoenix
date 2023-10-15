@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -12,33 +12,40 @@
 namespace std {
 
 template <intmax_t P>
-struct __sign : integral_constant<intmax_t, (P < 0) ? -1 : 1> {};
+struct __sign : integral_constant<intmax_t, (P < 0) ? -1 : 1>
+{};
 
 template <intmax_t P>
-struct __abs : integral_constant<intmax_t, P * __sign<P>::value> {};
+struct __abs : integral_constant<intmax_t, P * __sign<P>::value>
+{};
 
 template <intmax_t P, intmax_t Q>
 struct __gcd;
 template <intmax_t P, intmax_t Q>
-struct __gcd : __gcd<Q, P % Q> {};
+struct __gcd : __gcd<Q, P % Q>
+{};
 template <intmax_t P>
-struct __gcd<P, 0> : integral_constant<intmax_t, __abs<P>::value> {};
+struct __gcd<P, 0> : integral_constant<intmax_t, __abs<P>::value>
+{};
 template <intmax_t Q>
-struct __gcd<0, Q> : integral_constant<intmax_t, __abs<Q>::value> {};
+struct __gcd<0, Q> : integral_constant<intmax_t, __abs<Q>::value>
+{};
 
 template <intmax_t N, intmax_t D = 1>
 struct ratio
 {
-	static constexpr intmax_t num = __sign<D>::value * N / __gcd<N, D>::value;
-	static constexpr intmax_t den = __abs<D> ::value / __gcd<N, D>::value;
+    static constexpr intmax_t num = __sign<D>::value * N / __gcd<N, D>::value;
+    static constexpr intmax_t den = __abs<D>::value / __gcd<N, D>::value;
 
-	typedef ratio<num, den> type;
+    typedef ratio<num, den> type;
 };
 
 template <typename T>
-struct __is_ratio :false_type {};
+struct __is_ratio : false_type
+{};
 template <intmax_t N, intmax_t D>
-struct __is_ratio <ratio<N, D>> : true_type {};
+struct __is_ratio<ratio<N, D>> : true_type
+{};
 
 template <intmax_t N, intmax_t D>
 constexpr intmax_t ratio<N, D>::num;
@@ -63,26 +70,32 @@ template <class R1, class R2>
 using ratio_divide = typename ratio<R1::num * R2::den, R2::num * R1::den>::type;
 
 template <class R1, class R2>
-struct ratio_equal : bool_constant<R1::num == R2::num && R1::den == R2::den> {};
+struct ratio_equal : bool_constant<R1::num == R2::num && R1::den == R2::den>
+{};
 
 template <class R1, class R2>
-struct ratio_not_equal : bool_constant<!ratio_equal<R1, R2>::value > {};
+struct ratio_not_equal : bool_constant<!ratio_equal<R1, R2>::value>
+{};
 
 // TODO Handle intmax_t overflow
 template <class R1, class R2>
-struct ratio_less : bool_constant < R1::num * R2::den < R2::num * R1::den> {};
+    struct ratio_less : bool_constant < R1::num* R2::den<R2::num * R1::den>
+{};
 
 template <class R1, class R2>
-struct ratio_less_equal : bool_constant<!ratio_less<R2, R1>::value> {};
+struct ratio_less_equal : bool_constant<!ratio_less<R2, R1>::value>
+{};
 
 template <class R1, class R2>
-struct ratio_greater : bool_constant<ratio_less<R2, R1>::value> {};
+struct ratio_greater : bool_constant<ratio_less<R2, R1>::value>
+{};
 
 template <class R1, class R2>
-struct ratio_greater_equal : bool_constant<!ratio_less<R1, R2>::value> {};
+struct ratio_greater_equal : bool_constant<!ratio_less<R1, R2>::value>
+{};
 
-//typedef std::ratio<1, 1000000000000000000000000> yocto;
-//typedef std::ratio<1, 1000000000000000000000> zepto;
+// typedef std::ratio<1, 1000000000000000000000000> yocto;
+// typedef std::ratio<1, 1000000000000000000000> zepto;
 typedef ratio<1, 1000000000000000000> atto;
 typedef ratio<1, 1000000000000000> femto;
 typedef ratio<1, 1000000000000> pico;
@@ -99,8 +112,7 @@ typedef ratio<1000000000, 1> giga;
 typedef ratio<1000000000000, 1> tera;
 typedef ratio<1000000000000000, 1> peta;
 typedef ratio<1000000000000000000, 1> exa;
-//typedef std::ratio<1000000000000000000000, 1> zetta;
-//typedef std::ratio<1000000000000000000000000, 1> yotta;
-
+// typedef std::ratio<1000000000000000000000, 1> zetta;
+// typedef std::ratio<1000000000000000000000000, 1> yotta;
 
 }

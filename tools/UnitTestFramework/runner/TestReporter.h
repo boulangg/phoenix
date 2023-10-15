@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+
 #pragma once
 
 #include <chrono>
@@ -6,8 +12,8 @@
 
 #include "UnitTestFramework.h"
 
-#include "type.h"
 #include "Utils.h"
+#include "type.h"
 
 using namespace UnitTestFramework;
 
@@ -15,22 +21,22 @@ namespace UnitTestRunner {
 
 enum TestCaseStatus
 {
-	Success,
-	Failure,
-	Skipped
+    Success,
+    Failure,
+    Skipped
 };
 
 struct TestCaseErrorInfo
 {
-	std::string message;
+    std::string message;
 };
 
 struct TestCaseResult
 {
-	std::string name;
-	TestCaseStatus status;
-	std::chrono::nanoseconds time;
-	std::optional<TestCaseErrorInfo> error;
+    std::string name;
+    TestCaseStatus status;
+    std::chrono::nanoseconds time;
+    std::optional<TestCaseErrorInfo> error;
 };
 
 struct TestSuiteResult

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
@@ -7,9 +7,8 @@
 #ifndef __UNISTD__
 #define __UNISTD__
 
-
-#include <stdint.h>
 #include <def/def_size.h>
+#include <stdint.h>
 #include <sys/types.h>
 
 #define SEEK_SET 0
@@ -27,27 +26,27 @@ extern "C" {
 // TODO
 
 // Filesystem
-	int chdir(const char* path);
-	int fchdir(int fd);
-	int close(int fd);
-	char* getcwd(char* buf, size_t size);
-	off_t lseek(int fd, off_t offset, int whence);
-	ssize_t read(int fd, void* buf, size_t count);
-	ssize_t write(int fd, const void* buf, size_t count);
+int chdir(const char* path);
+int fchdir(int fd);
+int close(int fd);
+char* getcwd(char* buf, size_t size);
+off_t lseek(int fd, off_t offset, int whence);
+ssize_t read(int fd, void* buf, size_t count);
+ssize_t write(int fd, const void* buf, size_t count);
 
-	// Process
-	void _exit(int status);
-	int execve(const char* file, char* const argv[], char* const envp[]);
-	int fork();
-	int getpid();
-	unsigned int sleep(unsigned int seconds);
+// Process
+void _exit(int status);
+int execve(const char* file, char* const argv[], char* const envp[]);
+int fork();
+int getpid();
+unsigned int sleep(unsigned int seconds);
 
-	// User/Group
-	// TODO
+// User/Group
+// TODO
 
-	// Deprecated. Use mmap instead from sys/mman.h
-	int brk(void* addr);
-	void* sbrk(intptr_t increment);
+// Deprecated. Use mmap instead from sys/mman.h
+int brk(void* addr);
+void* sbrk(intptr_t increment);
 
 #ifdef __cplusplus
 }
