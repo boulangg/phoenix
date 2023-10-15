@@ -4,7 +4,7 @@ format_file() {
     file_to_format="${1}"
     if [ -f $file_to_format ]; then
         clang-format -i $file_to_format
-        it add $file_to_format
+        git add $file_to_format
     fi
 }
 

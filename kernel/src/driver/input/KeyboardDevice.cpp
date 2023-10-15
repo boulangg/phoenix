@@ -61,9 +61,9 @@ uint8_t Keyboard::specialKeys = 0;
 TTY* Keyboard::tty = nullptr;
 
 void Keyboard::initKeyboard() {
-    InterruptHandler* handler = new InterruptHandlerFunction<Keyboard::handleInterrupt>("Keyboard", {true, false},
-nullptr); InterruptManager::requestIRQ(1, handler);
-
+    InterruptHandler* handler = new InterruptHandlerFunction<Keyboard::handleInterrupt>("
+        Keyboard", {true, false}, nullptr);
+    InterruptManager::requestIRQ(1, handler);
 }
 
 int Keyboard::handleInterrupt() {

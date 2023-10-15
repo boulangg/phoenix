@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "clock.h"
 #include "duration.h"
 
 namespace std {

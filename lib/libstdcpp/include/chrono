@@ -6,7 +6,6 @@
 
 #pragma once
 
-//#include <compare>
 #include "chrono/calendar.h"
 #include "chrono/clock.h"
 #include "chrono/duration.h"
