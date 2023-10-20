@@ -3,25 +3,21 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
-
-#pragma once
+ 
+ #pragma once
 
 #include <functional>
-#include <stdexcept>
-#include <utility>
-#include <vector>
 
 #include "herlpers/hashtable.h"
 
 namespace std {
 
-template <class Key, class T, class Hash = hash<Key>, class KeyEqual = equal_to<Key>>
-class unordered_map
+template <class Key, class Hash = hash<Key>, class KeyEqual = equal_to<Key>>
+class unordered_set
 {
 public:
     using key_type = Key;
-    using mapped_type = T;
-    using value_type = pair<const key_type, T>;
+    using value_type = Key;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using hasher = Hash;
@@ -31,12 +27,11 @@ public:
     using pointer = value_type*;
     using const_pointer = const value_type*;
 
-private:
     struct extractor
     {
         const key_type& operator()(const value_type& value) const
         {
-            return value.first;
+            return value;
         }
     };
 
@@ -50,15 +45,13 @@ private:
 public:
     using iterator = typename hashtable_type::iterator;
 
-    unordered_map() : unordered_map(0) {}
+    unordered_set() : unordered_set(0) {}
 
-    explicit unordered_map(size_type bucket_count, const hasher& hash = hasher(),
+    explicit unordered_set(size_type bucket_count, const hasher& hash = hasher(),
                            const key_equal& equal = key_equal()) :
         _extractor(),
         _hasher(hash), _key_equal(equal), _hashtable(bucket_count, _extractor, _hasher, _key_equal)
     {}
-
-    unordered_map(size_type bucket_count, const Hash& hash) : unordered_map(bucket_count, hash, key_equal()) {}
 
     // Capacity
     bool empty() const noexcept
@@ -83,22 +76,6 @@ public:
     }
 
     // Lookup
-    mapped_type& at(const Key& key)
-    {
-        return _hashtable.at(key);
-    }
-
-    mapped_type& operator[](const Key& key)
-    {
-        auto it = find(key);
-        if (it == end()) {
-            auto res = insert(value_type(key, mapped_type{}));
-            it = res.first;
-        }
-
-        return *it->second;
-    }
-
     size_type count(const Key& key) const
     {
         return contains(key);
