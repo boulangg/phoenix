@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 copyright="/*
  * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
