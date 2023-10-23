@@ -1,0 +1,133 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+ 
+ #pragma once
+
+#include <functional>
+
+#include "herlpers/red-black-tree.h"
+
+namespace std {
+
+template <class Key, class Compare = std::less<Key>>
+class set
+{
+public:
+    using key_type = Key;
+    using value_type = Key;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using key_compare = Compare;
+    using value_compare = Compare;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+
+private:
+    struct extractor
+    {
+        const key_type& operator()(const value_type& value) const
+        {
+            return value;
+        }
+    };
+
+    extractor _extractor;
+    key_compare _comparator;
+    
+    using red_black_tree_type = std::details::red_black_tree<key_type, value_type, extractor, key_compare>;
+    red_black_tree_type _tree;
+
+public:
+    using iterator = typename red_black_tree_type::iterator;
+
+    set() : set(Compare()) {}
+
+    explicit set(const Compare& comp) : _extractor(), _comparator(comp), _tree() {}
+
+    // Capacity
+    bool empty() const noexcept
+    {
+        return size() == 0;
+    }
+
+    size_type size() noexcept
+    {
+        return _tree.size();
+    }
+
+    // Iterators
+    iterator begin()
+    {
+        return _tree.begin();
+    }
+
+    iterator end()
+    {
+        return _tree.end();
+    }
+
+    // Lookup
+    size_type count(const key_type& key) const
+    {
+        return contains(key);
+    }
+
+    iterator find(const key_type& key)
+    {
+        return _tree.find(key);
+    }
+
+    bool contains(const key_type& key) const
+    {
+        return _tree.contains(key);
+    }
+
+    iterator lower_bound(const key_type& key)
+    {
+        return _tree.lower_bound(key);
+    }
+
+    iterator upper_bound(const key_type& key)
+    {
+        return _tree.upper_bound(key);
+    }
+
+    // Modifiers
+    void clear() noexcept
+    {
+        _tree.clear();
+    }
+
+    std::pair<iterator, bool> insert(const value_type& value)
+    {
+        return _tree.insert(value);
+    }
+
+    iterator erase(iterator pos)
+    {
+        return _tree.erase(pos);
+    }
+
+    size_type erase(const key_type& key)
+    {
+        return _tree.erase(key);
+    }
+
+    // Observers
+    key_compare key_comp() const
+    {
+        return _comparator;
+    }
+
+    key_compare value_comp() const
+    {
+        return _comparator;
+    }
+};
+
+}

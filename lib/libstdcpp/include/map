@@ -1,0 +1,84 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+ 
+ #pragma once
+
+#include <functional>
+
+namespace std {
+
+template <class Key, class T, class Compare = std::less<Key>>
+class map
+{
+public:
+    using key_type = Key;
+    using mapped_type = T;
+    using value_type = pair<const key_type, T>;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using key_compare = Compare;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+
+    class value_compare
+    {
+    public:
+        bool operator()(const value_type& lhs, const value_type& rhs) const
+        {
+            return comp(lhs, rhs);
+        }
+
+    protected:
+        value_compare(Compare c)
+        {
+            comp = c;
+        }
+
+        Compare comp;
+    };
+
+private:
+    struct extractor
+    {
+        const key_type& operator()(const value_type& value) const
+        {
+            return value;
+        }
+    };
+
+    extractor _extractor;
+    key_compare _comparator;
+    value_compare _comp;
+
+    using red_black_tree_type = std::details::red_black_tree<key_type, value_type, extractor, key_compare>;
+    red_black_tree_type _tree;
+
+public:
+    map() : map(Compare()) {}
+
+    explicit map(const Compare& comp) : _comp(comp), _comparator(), _tree() {}
+
+    // Element access
+    value_type& at(const key_type& key)
+    {
+        return _tree.at(key);
+    }
+
+    value_type& operator[](const key_type& key)
+    {
+        auto it = find(key);
+        if (it == end()) {
+            auto res = insert(value_type(key));
+            it = res.first;
+        }
+
+        return *it->second;
+    }
+};
+
+}
