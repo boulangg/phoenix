@@ -24,10 +24,10 @@ struct Assert {
 	static void AreNotEqual(const T& u, const T& v);
 
 	static void IsTrue(const bool& u, const std::string& message);
-	static void IsTrue(const bool& u);
+    static void IsTrue(const bool& u);
 
 	static void IsFalse(const bool& u, const std::string& message);
-	static void IsFalse(const bool& u);
+    static void IsFalse(const bool& u);
 };
 
 template <typename T>

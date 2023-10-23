@@ -7,9 +7,6 @@
 #pragma once
 
 #include <functional>
-#include <stdexcept>
-#include <utility>
-#include <vector>
 
 #include "herlpers/hashtable.h"
 
@@ -83,12 +80,12 @@ public:
     }
 
     // Lookup
-    mapped_type& at(const Key& key)
+    mapped_type& at(const key_type& key)
     {
         return _hashtable.at(key);
     }
 
-    mapped_type& operator[](const Key& key)
+    mapped_type& operator[](const key_type& key)
     {
         auto it = find(key);
         if (it == end()) {
@@ -99,17 +96,17 @@ public:
         return *it->second;
     }
 
-    size_type count(const Key& key) const
+    size_type count(const key_type& key) const
     {
         return contains(key);
     }
 
-    iterator find(const Key& key)
+    iterator find(const key_type& key)
     {
         return _hashtable.find(key);
     }
 
-    bool contains(const Key& key) const
+    bool contains(const key_type& key) const
     {
         return _hashtable.contains(key);
     }
@@ -130,7 +127,7 @@ public:
         return _hashtable.erase(pos);
     }
 
-    size_type erase(const Key& key)
+    size_type erase(const key_type& key)
     {
         return _hashtable.erase(key);
     }
