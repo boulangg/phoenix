@@ -5,6 +5,12 @@ enable_language(C CXX ASM)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake_config/compiler_flags.cmake)
 
+add_subdirectory(kernel)
+add_subdirectory(lib)
+add_subdirectory(tests)
+add_subdirectory(tools/UnitTestFramework)
+add_subdirectory(user)
+
 set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/scripts/terminal.sh)
 
 set(kernel_bin phoenix.bin)
@@ -22,7 +28,6 @@ set(qemu qemu-system-x86_64)
 set(qemu_opts "-boot d -m 256 -cdrom ${disk_name} -hda ${drive_name} -d int,cpu_reset")
 set(qemu_opts_debug "${qemu_opts} -s -S")
 
-add_subdirectory(kernel)
 
 add_custom_command(	OUTPUT ${drive_name}
 					COMMAND ${drive_create_script} CREATE ${drive_name} ${drive_size})
@@ -67,5 +72,3 @@ add_custom_target(	debug
 					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 					DEPENDS ${drive_name} ${disk_name} debug_bin)
 set_target_properties(debug PROPERTIES FOLDER kernel)
-
-add_subdirectory(tests)

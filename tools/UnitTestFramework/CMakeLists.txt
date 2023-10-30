@@ -5,21 +5,6 @@ enable_language(CXX)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake_config/compiler_flags.cmake)
 
-# Include c lib
-if (NOT TARGET c_shared)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libc dependency/libc)
-endif()
-
-# Include unwind lib
-if (NOT TARGET unwind_shared)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libunwind dependency/libunwind)
-endif()
-
-# Include stdcpp lib
-if (NOT TARGET stdcpp_shared)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libstdcpp dependency/libstdcpp)
-endif()
-
 # Target for test lib
 file(GLOB_RECURSE libunittest_src ${CMAKE_CURRENT_SOURCE_DIR}/lib/src/*.cpp)
 set(libunittest_inc ${CMAKE_CURRENT_SOURCE_DIR}/lib/include)

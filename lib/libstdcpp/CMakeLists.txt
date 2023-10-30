@@ -5,13 +5,8 @@ enable_language(CXX)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake_config/compiler_flags.cmake)
 
-if (NOT TARGET unwind)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libunwind dependency/libunwind)
-endif()
-
 file(GLOB_RECURSE libstdcpp_src ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 set(libstdcpp_inc ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/../libc/include ${CMAKE_CURRENT_SOURCE_DIR}/debug)
-
 
 # GDB pretty-printer
 set(gdb_printer_src ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.S ${CMAKE_CURRENT_SOURCE_DIR}/debug/gdb-printers.py)

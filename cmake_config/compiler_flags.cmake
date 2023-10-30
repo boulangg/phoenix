@@ -42,6 +42,10 @@ target_compile_options(kernel_options INTERFACE -fno-exceptions
 
 endif()
 
+if (NOT DEFINED VS_TARGET_FILTER)
+	set(VS_TARGET_FILTER "") 
+endif()
+
 function(list_dir parent_dir dir_list)
 
 file(GLOB app_dirs DIRECTORY ${parent_dir}/*)

@@ -5,10 +5,6 @@ enable_language(C ASM)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake_config/compiler_flags.cmake)
 
-if (NOT TARGET c)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libc dependency/libc)
-endif()
-
 file(GLOB_RECURSE lib_src ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c ${CMAKE_CURRENT_SOURCE_DIR}/src/*.S)
 set(lib_inc ${CMAKE_CURRENT_SOURCE_DIR}/include)
 

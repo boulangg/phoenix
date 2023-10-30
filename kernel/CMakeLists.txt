@@ -19,18 +19,6 @@ set(kernel_app_names init;ls)
 
 set(user_dir ${CMAKE_CURRENT_BINARY_DIR}/dependency/user)
 
-if (NOT TARGET ckernel)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libc dependency/libc)
-endif()
-
-if (NOT TARGET stdcpp)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libstdcpp dependency/libstdcpp)
-endif()
-
-if (NOT TARGET user)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../user dependency/user)
-endif()
-
 set(gen_dir ${CMAKE_CURRENT_BINARY_DIR}/gen)
 file(MAKE_DIRECTORY ${gen_dir})
 

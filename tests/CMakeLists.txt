@@ -5,26 +5,6 @@ enable_language(CXX)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake_config/compiler_flags.cmake)
 
-# Include c lib
-if (NOT TARGET c)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libc dependency/libc)
-endif()
-
-# Include unwind lib
-if (NOT TARGET unwind)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libunwind dependency/libunwind)
-endif()
-
-# Include stdcpp lib
-if (NOT TARGET stdcpp)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../lib/libstdcpp dependency/libstdcpp)
-endif()
-
-# Include unit test framework lib
-if (NOT TARGET unittest_shared)
-	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../tools/UnitTestFramework dependency/UnitTestFramework)
-endif()
-
 # List all tests in current folder
 file(GLOB_RECURSE unittestsuite_src ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
