@@ -11,50 +11,57 @@ add_subdirectory(tests)
 add_subdirectory(tools/UnitTestFramework)
 add_subdirectory(user)
 
-set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/scripts/terminal.sh)
+set(IMAGE_NAME disk)
 
-set(kernel_bin phoenix.bin)
-set(kernel_file ${CMAKE_CURRENT_BINARY_DIR}/kernel/${kernel_bin})
+# Download limine-bootloader
+add_custom_command(
+    OUTPUT limine/limine
+    COMMAND git clone https://github.com/limine-bootloader/limine.git --branch=v5.x-branch-binary --depth=1
+    COMMAND make -C limine
+)
 
-set(disk_name ${CMAKE_CURRENT_BINARY_DIR}/disk.iso)
-set(disk_dir ${CMAKE_CURRENT_SOURCE_DIR}/iso)
-file(MAKE_DIRECTORY ${disk_dir})
+# Create iso file
+add_custom_target(${IMAGE_NAME}.iso
+                    COMMAND rm -rf iso_root
+                    COMMAND mkdir -p iso_root
+                    COMMAND cp -v kernel/kernel ${CMAKE_SOURCE_DIR}/kernel/boot/limine/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin limine/limine-uefi-cd.bin iso_root/
+                    COMMAND mkdir -p mkdir -p iso_root/EFI/BOOT
+                    COMMAND cp -v limine/BOOTX64.EFI iso_root/EFI/BOOT/
+                    COMMAND cp -v limine/BOOTIA32.EFI iso_root/EFI/BOOT/
+                    COMMAND xorriso -as mkisofs -b limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label iso_root -o ${IMAGE_NAME}.iso
+                    COMMAND ./limine/limine bios-install ${IMAGE_NAME}.iso
+                    COMMAND rm -rf iso_root
+                    DEPENDS limine/limine
+)
+add_dependencies(${IMAGE_NAME}.iso kernel)
 
-set(drive_name ${CMAKE_CURRENT_BINARY_DIR}/drive.img)
-set(drive_size 16M)
-set(drive_create_script ${CMAKE_CURRENT_SOURCE_DIR}/scripts/disk.sh)
-
+# QEMU setup
 set(qemu qemu-system-x86_64)
-set(qemu_opts "-boot d -m 256 -cdrom ${disk_name} -hda ${drive_name} -d int,cpu_reset")
+message(${qemu})
+set(qemu_opts "-M q35 -m 2G -cdrom ${IMAGE_NAME}.iso -boot d")
 set(qemu_opts_debug "${qemu_opts} -s -S")
 
+set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/scripts/terminal.sh)
 
-add_custom_command(	OUTPUT ${drive_name}
-					COMMAND ${drive_create_script} CREATE ${drive_name} ${drive_size})
-					
-add_custom_command(	OUTPUT ${disk_name}
-					COMMAND cp ${kernel_file} ${disk_dir}/boot
-					COMMAND grub-mkrescue -o ${disk_name} ${disk_dir}
-					DEPENDS kernel)
+# QEMU run
+## Start QEMU
+add_custom_target(run
+                    COMMAND ${terminal} -e "${qemu} ${qemu_opts}" &
+)
+add_dependencies(run ${IMAGE_NAME}.iso)
 
-add_custom_target(	launch
-					COMMAND ${terminal} -e "${qemu} ${qemu_opts}" &
-					DEPENDS ${drive_name} ${disk_name})
-set_target_properties(launch PROPERTIES FOLDER kernel)
-
-
+# QEMU debug
+## Copy binary into CMAKE_CURRENT_BINARY_DIR
 set(kernel_debug_dir ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 file(MAKE_DIRECTORY ${kernel_debug_dir})
-
 set(kernel_app_debug_dir ${CMAKE_CURRENT_SOURCE_DIR}/bin/kernel)
 file(MAKE_DIRECTORY ${kernel_app_debug_dir})
-
 set(user_app_debug_dir ${CMAKE_CURRENT_SOURCE_DIR}/bin/user)
 file(MAKE_DIRECTORY ${user_app_debug_dir})
 
 add_custom_target( 	debug_bin
 					COMMAND ${CMAKE_COMMAND} -E copy
-                			${kernel_file}
+                			${CMAKE_CURRENT_BINARY_DIR}/kernel/kernel
                 			${kernel_debug_dir}
 					COMMAND ${CMAKE_COMMAND} -E copy
                 			${CMAKE_CURRENT_BINARY_DIR}/kernel/kernel_apps/*
@@ -62,13 +69,19 @@ add_custom_target( 	debug_bin
 					COMMAND ${CMAKE_COMMAND} -E copy
                 			${CMAKE_CURRENT_BINARY_DIR}/kernel/user_apps/*
                 			${user_app_debug_dir}
-                	DEPENDS kernel)
-set_target_properties(debug_bin PROPERTIES FOLDER internal)
+                	DEPENDS kernel
+)
 
+## Start QEMU with GDB
 add_custom_target(	debug
 					COMMAND ${terminal} -e "${qemu} ${qemu_opts_debug}" &
 					COMMAND sleep 1
-					COMMAND ${terminal} -e "gdb ${kernel_file}" &
-					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-					DEPENDS ${drive_name} ${disk_name} debug_bin)
-set_target_properties(debug PROPERTIES FOLDER kernel)
+					COMMAND ${terminal} -e "gdb kernel/kernel" &
+					DEPENDS ${IMAGE_NAME}.iso .gdbinit
+)
+
+add_custom_command(
+        OUTPUT .gdbinit
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/.gdbinit
+                .gdbinit)
