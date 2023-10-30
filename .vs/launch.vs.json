@@ -3,18 +3,40 @@
   "defaults": {},
   "configurations": [
     {
-      "type": "cppgdb",
-      "name": "libunittestsuite.so",
-      "project": "CMakeLists.txt",
-      "projectTarget": "libunittestsuite.so",
-      "comment": "Learn how to configure WSL debugging. For more info, see http://aka.ms/vslinuxdebug",
-      "debuggerConfiguration": "gdb",
-      "args": [
-          "./tests/libunittestsuite.so"
-      ],
-      "env": {},
-      "cwd": "~/.vs/phoenix/build/linux-default",
-      "program": "./tools/UnitTestFramework/unittest_runner"
+        "type": "cppgdb",
+        "name": "libunittestsuite.so",
+        "project": "CMakeLists.txt",
+        "projectTarget": "libunittestsuite.so",
+        "comment": "Learn how to configure WSL debugging. For more info, see http://aka.ms/vslinuxdebug",
+        "debuggerConfiguration": "gdb",
+        "args": [
+            "./tests/libunittestsuite.so"
+        ],
+        "env": {},
+        "cwd": "~/.vs/phoenix/build/linux-default",
+        "program": "./tools/UnitTestFramework/unittest_runner"
+    },
+    {
+        "type": "cppgdb",
+        "name": "run",
+        "project": "CMakeLists.txt",
+        "projectTarget": "kernel",
+        "comment": "Learn how to configure WSL debugging. For more info, see http://aka.ms/vslinuxdebug",
+        "debuggerConfiguration": "gdb",
+        "env": {},
+        "args": [
+            "-M",
+            "q35",
+            "-m",
+            "2G",
+            "-cdrom",
+            "disk.iso",
+            "-boot",
+            "d"
+        ],
+        "cwd": "~/.vs/phoenix/build/linux-default",
+        "preDebugCommand": "make disk.iso",
+        "program": "qemu-system-x86_64"
     }
   ]
 }

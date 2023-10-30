@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 copyright="/*
- * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * Copyright (c) 2016-2024 Boulanger Guillaume, Chathura Namalgamuwa
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */

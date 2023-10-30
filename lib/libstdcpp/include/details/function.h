@@ -109,22 +109,22 @@ private:
 
 namespace detail {
 template <class R, class F, class... Args>
-concept Functor = requires(F f, Args... args)
-{
-    {
-        f.operator()(args...)
+concept Functor = requires(F f, Args... args) 
+                    {
+                       {
+                          f.operator()(args...)
     }
     ->same_as<R>;
-};
+                    };
 
 template <class R, class F, class G, class... Args>
-concept MemberFunction = requires(F fn, G g, Args... args)
-{
-    {
-        (g.*fn)(args...)
+concept MemberFunction = requires(F fn, G g, Args... args) 
+                    {
+                        {
+                             (g.*fn)(args...)
     }
     ->same_as<R>;
-};
+                    };
 }
 
 template <class>
@@ -141,7 +141,7 @@ public:
 
     function(R (*t)(Args...)) : _callable(new callable_function<R, Args...>(t)) {}
 
-    template <class F>
+    template <class F> 
     requires detail::Functor<R, F, Args...> function(F&& f) : _callable(new callable_functor<R, F, Args...>(f))
     {}
 
@@ -149,7 +149,7 @@ public:
     requires detail::Functor<R, F, Args...> function(const F&& f) : _callable(new callable_functor<R, F, Args...>(f))
     {}
 
-    template <class G, class... Args2>
+    template <class G, class... Args2> 
     requires detail::MemberFunction<R, R (G::*)(Args2...), G, Args2...> function(R (G::*f)(Args2...)) :
         _callable(new callable_member<R, G, Args2...>(f))
     {}
@@ -169,7 +169,7 @@ public:
         return *this;
     }
 
-    function& operator=(function&& other)
+    function& operator=(function&& other) 
     {
         _callable.reset(other._callable);
         return *this;

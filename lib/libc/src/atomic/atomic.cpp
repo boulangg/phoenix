@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
-
-#include <atomic>
+ 
+ #include <atomic>
 
 namespace std {
 

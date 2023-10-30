@@ -6294,5 +6294,3 @@ History:
          structure of old version,  but most details differ.)
 
 */
-
-#pragma GCC diagnostic pop

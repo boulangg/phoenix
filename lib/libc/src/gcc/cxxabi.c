@@ -10,7 +10,8 @@
 #include "unistd.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 __extension__ typedef int __guard __attribute__((mode(__DI__)));

@@ -13,7 +13,7 @@ set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 # C++ generic compiler/linker flags
 # set(CXX_STANDARD 17)
 # -Wold-style-cast -Wconversion -Wsign-conversion -Wshadow
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -ffreestanding -fno-stack-protector -fno-builtin-fprintf -Wno-literal-suffix -mno-red-zone -Wno-packed-bitfield-compat -std=c++2a -U__linux__ -D__phoenix__ -g")
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -ffreestanding -fno-stack-protector -fno-builtin-fprintf -Wno-literal-suffix -mno-red-zone -std=c++2a -U__linux__ -D__phoenix__ -g")
 set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # ASM generic compiler/linker flags
