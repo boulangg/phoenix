@@ -17,13 +17,13 @@ foreach(app_name ${app_names})
 				${${app_name}_base_dir}/*.c)
 				
 		# Create a target for the user app build with custom standard lib implementation
-		add_executable(${app_name} ${${app_name}_src})
+		add_executable(${app_name} EXCLUDE_FROM_ALL ${${app_name}_src})
 		target_link_libraries(${app_name} c stdcpp unwind nostd_options)
 		set_target_properties(${app_name} PROPERTIES FOLDER user)
 
 		# Create a target for the user app build with gcc standard lib implementation
 		if (VS_TARGET_FILTER STREQUAL "gnustd")
-			add_executable(${app_name}_gnustd ${${app_name}_src})
+			add_executable(${app_name}_gnustd EXCLUDE_FROM_ALL ${${app_name}_src})
 			set_target_properties(${app_name}_gnustd PROPERTIES FOLDER user_gnu)
 			set_target_properties(${app_name}_gnustd PROPERTIES EXCLUDE_FROM_ALL 1)
 		endif()

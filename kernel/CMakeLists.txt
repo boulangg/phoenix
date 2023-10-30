@@ -12,7 +12,7 @@ set(lib_inc
 set(linker_file
         ${CMAKE_CURRENT_SOURCE_DIR}/boot/limine/linker.ld)
 
-add_executable(kernel ${kernel_src})
+add_executable(kernel EXCLUDE_FROM_ALL ${kernel_src})
 target_include_directories(kernel PUBLIC ${lib_inc})
 target_link_libraries(kernel c_kernel nostd_options kernel_options)
 target_link_options(kernel PUBLIC "-T${linker_file}")
