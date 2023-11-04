@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -13,6 +13,15 @@ namespace kernel::core {
 
 namespace IDT {
 static constexpr std::size_t IDT_ENTRIES = 256;
+
+static constexpr std::uint8_t ACCESS_P = 0x80;
+static constexpr std::uint8_t ACCESS_DPL0 = 0x00;
+static constexpr std::uint8_t ACCESS_DPL1 = 0x20;
+static constexpr std::uint8_t ACCESS_DPL2 = 0x40;
+static constexpr std::uint8_t ACCESS_DPL3 = 0x60;
+
+static constexpr std::uint8_t GATE_TYPE_INTERRUPT = 0b1110;
+static constexpr std::uint8_t GATE_TYPE_TRAP = 0b1111;
 
 // IDT
 struct idt_desc

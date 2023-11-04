@@ -14,6 +14,17 @@ namespace GDT {
 static constexpr std::uint64_t GDT_ENTRIES = 512;
 static constexpr std::uint64_t GDT_SIZE = (GDT_ENTRIES * 8 - 1);
 
+static constexpr std::uint8_t KERNEL_NULL_OFFSET = 0x00;
+static constexpr std::uint8_t KERNEL_CS_16_OFFSET = 0x08;
+static constexpr std::uint8_t KERNEL_DS_16_OFFSET = 0x10;
+static constexpr std::uint8_t KERNEL_CS_32_OFFSET = 0x18;
+static constexpr std::uint8_t KERNEL_DS_32_OFFSET = 0x20;
+static constexpr std::uint8_t KERNEL_CS_64_OFFSET = 0x28;
+static constexpr std::uint8_t KERNEL_DS_64_OFFSET = 0x30;
+static constexpr std::uint8_t USER_CS_64_OFFSET = 0x38;
+static constexpr std::uint8_t USER_DS_64_OFFSET = 0x40;
+static constexpr std::uint8_t TSS_OFFSET = 0x50;
+
 struct gdt_desc
 {
     std::uint16_t limit_0 : 16;
@@ -41,7 +52,6 @@ void setupGDT();
 };
 
 namespace TSS {
-static constexpr std::uint64_t KERNEL_STACK_TOP = 0xFFFF840000010000;
 
 struct tss_desc
 {

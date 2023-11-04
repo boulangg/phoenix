@@ -6,22 +6,5 @@
 
 #pragma once
 
-#include <cstdint>
-
-namespace kernel::core {
-
-class InterruptDispatcher
-{
-public:
-    InterruptDispatcher();
-
-    void init(); // Init idt and PIC
-
-    // void registerHandler();
-
-    static void handleIRQ(std::uint8_t irq);
-
-private:
-};
-
-}
+#define KERNEL_STACK_TOP  0xFFFF840000000000
+#define SYSCALL_STACK_TOP 0xFFFF850000000000
