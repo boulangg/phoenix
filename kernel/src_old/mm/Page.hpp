@@ -4,29 +4,26 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef __PAGE_HPP__
-#define __PAGE_HPP__
+#pragma once
 
 #include <cstdint>
 
-#include <include/constant.h>
 class AddressSpace;
 
-enum PageType
+struct Page
 {
-	UNUSABLE,
-	FREE,
-	ALLOCATED,
-	KERNEL,
-	CACHE
-};
+    enum Type
+    {
+        UNUSABLE,
+        FREE,
+        ALLOCATED,
+        KERNEL,
+        CACHE
+    };
 
-class Page
-{
-public:
 	uint64_t* physAddr;
 	uint64_t* kernelMappAddr;
-	PageType type;
+	Type type;
 	uint64_t offset;
 	AddressSpace* mapping;
 
@@ -38,4 +35,3 @@ public:
 	}
 };
 
-#endif // __PAGE_HPP__

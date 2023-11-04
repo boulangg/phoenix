@@ -16,6 +16,7 @@ set(IMAGE_NAME disk)
 # Download limine-bootloader
 add_custom_command(
     OUTPUT limine/limine
+    COMMAND rm -rf limine
     COMMAND git clone https://github.com/limine-bootloader/limine.git --branch=v5.x-branch-binary --depth=1
     COMMAND make -C limine
 )
@@ -46,7 +47,7 @@ set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/scripts/terminal.sh)
 # QEMU run
 ## Start QEMU
 add_custom_target(run
-                    COMMAND ${terminal} -e "${qemu} ${qemu_opts}" &
+                    COMMAND ${terminal} -e "${qemu} ${qemu_opts} &"
 )
 add_dependencies(run ${IMAGE_NAME}.iso)
 
@@ -74,9 +75,9 @@ add_custom_target( 	debug_bin
 
 ## Start QEMU with GDB
 add_custom_target(	debug
-					COMMAND ${terminal} -e "${qemu} ${qemu_opts_debug}" &
+					COMMAND ${terminal} -e "${qemu} ${qemu_opts_debug} &"
 					COMMAND sleep 1
-					COMMAND ${terminal} -e "gdb kernel/kernel" &
+					COMMAND ${terminal} -e "gdb kernel/kernel &"
 					DEPENDS ${IMAGE_NAME}.iso .gdbinit
 )
 
