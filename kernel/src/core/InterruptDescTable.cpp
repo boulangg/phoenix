@@ -4,22 +4,18 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
  
- #pragma once
+ #include "InterruptDescTable.h"
 
 namespace kernel::core {
 
-class InterruptDispacther
+namespace IDT {
+idt_desc idt[IDT_ENTRIES] __attribute__((aligned(4096)));
+
+void setupIDT()
 {
-public:
-    InterruptDispacther();
-    
-    void init(); // Init idt and PIC
+    set_IDT(IDT_SIZE, idt);
+}
 
-    void registerHandler();
-    //void registerSyscallHandler();
-
-private:
-    //void* _syscallHandlers;
-};
+}
 
 }

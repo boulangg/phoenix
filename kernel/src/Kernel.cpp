@@ -3,10 +3,10 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "Kernel.h"
 
-#include "Segment.h"
+#include "Kernel.h"
+
+#include "GlobalDescTable.h"
 
 namespace kernel {
 
@@ -19,7 +19,7 @@ void Kernel::start(mem::Page* pageArray, std::size_t pageCount)
     GDT::setupGDT();
     TSS::setupTSS();
     _memory.init(pageArray, pageCount);
-    //_interrupt.init();
+    _interrupt.init();
     //_device.init();
     //_scheduler.init();
 }

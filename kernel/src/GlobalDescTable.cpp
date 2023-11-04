@@ -1,43 +1,42 @@
 /*
  * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
- * The file is distributed under the MIT license
- * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ * The file is distributed under the MIT
+ * license
+ * The license is available in the LICENSE file or at
+ * https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
 
-#include <cstdint>
+#include "GlobalDescTable.h"
 
-// GDT Selector
 namespace kernel {
 
+static void fill_segment_descriptor(GDT::gdt_desc gdt[], std::uint8_t index, std::uint64_t base, std::uint32_t limit,
+                                    std::uint8_t flags, std::uint8_t access)
+{
+    gdt[index].limit_0 = limit & 0xffff;
+    gdt[index].base_0 = base & 0xffff;
+    gdt[index].base_1 = (base >> 0x10) & 0xff;
+    gdt[index].access = access & 0xff;
+    gdt[index].limit_1 = (limit >> 0x10) & 0x0f;
+    gdt[index].flags = flags & 0x0f;
+    gdt[index].base_2 = (base >> 0x18) & 0xff;
+}
+
+static void fill_segment_descriptor_64(GDT::gdt_desc gdt[], std::uint8_t index, std::uint64_t base, std::uint32_t limit,
+                                       std::uint8_t flags, std::uint8_t access)
+{
+    GDT::gdt_desc_ext* desc = (GDT::gdt_desc_ext*)&gdt[index];
+    desc->gate_base.limit_0 = limit & 0xffff;
+    desc->gate_base.base_0 = base & 0xffff;
+    desc->gate_base.base_1 = (base >> 0x10) & 0xff;
+    desc->gate_base.access = access & 0xff;
+    desc->gate_base.limit_1 = (limit >> 0x10) & 0x0f;
+    desc->gate_base.flags = flags & 0x0f;
+    desc->gate_base.base_2 = (base >> 0x18) & 0xff;
+    desc->base_3 = (base >> 0x20) & 0xffffffff;
+}
+
 namespace GDT {
-static constexpr std::uint64_t GDT_ENTRIES = 512;
-static constexpr std::uint64_t GDT_SIZE = (GDT_ENTRIES * 8 - 1);
-
-struct gdt_desc
-{
-    std::uint16_t limit_0 : 16;
-    std::uint16_t base_0  : 16;
-    std::uint8_t base_1   : 8;
-    std::uint8_t access   : 8;
-    std::uint8_t limit_1  : 4;
-    std::uint8_t flags    : 4;
-    std::uint8_t base_2   : 8;
-};
-static_assert(sizeof(struct gdt_desc) == 8, "gdt_desc size incorrect");
-
-struct gdt_desc_ext
-{
-    gdt_desc gate_base;
-    std::uint32_t base_3   : 32;
-    std::uint32_t reserved : 32;
-};
-static_assert(sizeof(struct gdt_desc_ext) == 16, "gdt_desc_ext size incorrect");
-
-extern gdt_desc gdt[GDT_ENTRIES];
-
-void setupGDT();
 
 struct Access
 {
@@ -150,53 +149,49 @@ static constexpr std::uint32_t USER_DS_64_LIMIT = 0x00;
 static constexpr std::uint8_t USER_DS_64_FLAGS = Flags::FLAG_SIZE_64;
 static constexpr std::uint8_t USER_DS_64_ACCESS =
     Access::ACCESS_PA | Access::ACCESS_DPL3 | Access::ACCESS_TYPE_DATA | Access::Data::ACCESS_WRITE_ALLOWED;
-};
+
+gdt_desc gdt[GDT_ENTRIES] __attribute__((aligned(4096)));
+
+void setupGDT()
+{
+    fill_segment_descriptor(gdt, KERNEL_NULL_INDEX, 0x0, 0x0, 0x0, 0x0);
+    fill_segment_descriptor(gdt, KERNEL_CS_16_INDEX, KERNEL_CS_16_BASE, KERNEL_CS_16_LIMIT, KERNEL_CS_16_FLAGS,
+                            KERNEL_CS_16_ACCESS);
+    fill_segment_descriptor(gdt, KERNEL_DS_16_INDEX, KERNEL_DS_16_BASE, KERNEL_DS_16_LIMIT, KERNEL_DS_16_FLAGS,
+                            KERNEL_DS_16_ACCESS);
+    fill_segment_descriptor(gdt, KERNEL_CS_32_INDEX, KERNEL_CS_32_BASE, KERNEL_CS_32_LIMIT, KERNEL_CS_32_FLAGS,
+                            KERNEL_CS_32_ACCESS);
+    fill_segment_descriptor(gdt, KERNEL_DS_32_INDEX, KERNEL_DS_32_BASE, KERNEL_DS_32_LIMIT, KERNEL_DS_32_FLAGS,
+                            KERNEL_DS_32_ACCESS);
+    fill_segment_descriptor(gdt, KERNEL_CS_64_INDEX, KERNEL_CS_64_BASE, KERNEL_CS_64_LIMIT, KERNEL_CS_64_FLAGS,
+                            KERNEL_CS_64_ACCESS);
+    fill_segment_descriptor(gdt, KERNEL_DS_64_INDEX, KERNEL_DS_64_BASE, KERNEL_DS_64_LIMIT, KERNEL_DS_64_FLAGS,
+                            KERNEL_DS_64_ACCESS);
+    fill_segment_descriptor(gdt, USER_CS_64_INDEX, USER_CS_64_BASE, USER_CS_64_LIMIT, USER_CS_64_FLAGS,
+                            USER_CS_64_ACCESS);
+    fill_segment_descriptor(gdt, USER_DS_64_INDEX, USER_DS_64_BASE, USER_DS_64_LIMIT, USER_DS_64_FLAGS,
+                            USER_DS_64_ACCESS);
+    set_GDT(GDT_SIZE, gdt);
+}
+
+}
 
 namespace TSS {
-static constexpr std::uint64_t KERNEL_STACK_TOP = 0xFFFF840000010000;
-
-struct tss_desc
-{
-    uint32_t reserved_1 : 32;
-    uint64_t* rsp0; /* stack pointer for ring 0 */
-    uint64_t* rsp1; /* stack pointer for ring 1 */
-    uint64_t* rsp2; /* stack pointer for ring 2 */
-    uint64_t reserved_2;
-    uint64_t* ist1; /* interrupt stack pointer 1 */
-    uint64_t* ist2; /* interrupt stack pointer 2 */
-    uint64_t* ist3; /* interrupt stack pointer 3 */
-    uint64_t* ist4; /* interrupt stack pointer 4 */
-    uint64_t* ist5; /* interrupt stack pointer 5 */
-    uint64_t* ist6; /* interrupt stack pointer 6 */
-    uint64_t* ist7; /* interrupt stack pointer 7 */
-    uint64_t reserved_3;
-    uint16_t reserved_4;
-    uint16_t io_bit_map_offset; /* offset to start of IO permission bit map */
-} __attribute__((packed));
-static_assert(sizeof(struct tss_desc) == 104, "x86_64_tss size incorrect");
-
-extern tss_desc tss;
-
-void setupTSS();
 
 static constexpr std::uint64_t TSS_INDEX = GDT::TSS_OFFSET >> 3;
 static constexpr std::uint32_t TSS_LIMIT = sizeof(tss);
 static constexpr std::uint8_t TSS_FLAGS = 0;
 static constexpr std::uint8_t TSS_ACCESS = (GDT::Access::ACCESS_P | GDT::Access::ACCESS_DPL0 |
                                             GDT::Access::ACCESS_TYPE_SYS | GDT::Access::System::ACCESS_TYPE_64_AVAIL);
-};
 
-}
+tss_desc tss;
 
-// ASM functions
-#ifdef __cplusplus
-extern "C"
+void setupTSS()
 {
-#endif
-
-extern void set_GDT(std::uint16_t size, kernel::GDT::gdt_desc* base);
-extern void set_TSS(std::uint16_t selector);
-
-#ifdef __cplusplus
+    tss.rsp0 = reinterpret_cast<uint64_t*>(KERNEL_STACK_TOP);
+    fill_segment_descriptor_64(GDT::gdt, TSS_INDEX, (uint64_t)(&tss), TSS_LIMIT, TSS_FLAGS, TSS_ACCESS);
+    set_TSS(GDT::TSS_OFFSET);
 }
-#endif
+}
+
+}

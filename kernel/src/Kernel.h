@@ -8,7 +8,7 @@
 
 #include <cstddef>
 
-#include "core/InterruptDispacther.h"
+#include "core/InterruptDispatcher.h"
 #include "dev/DeviceExplorer.h"
 #include "mem/MemoryAllocator.h"
 #include "proc/ProcessScheduler.h"
@@ -25,7 +25,7 @@ public:
 
 private:
     mem::MemoryAllocator _memory;
-    //core::InterruptDispacther _interrupt;
+    core::InterruptDispatcher _interrupt;
     //dev::DeviceExplorer _device;
     //proc::ProcessScheduler _scheduler;
 
