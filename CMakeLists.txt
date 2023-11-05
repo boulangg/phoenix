@@ -32,14 +32,14 @@ add_custom_target(${IMAGE_NAME}.iso
                     COMMAND xorriso -as mkisofs -b limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label iso_root -o ${IMAGE_NAME}.iso
                     COMMAND ./limine/limine bios-install ${IMAGE_NAME}.iso
                     COMMAND rm -rf iso_root
-                    DEPENDS limine/limine
+                    DEPENDS kernel/kernel limine/limine ${CMAKE_SOURCE_DIR}/kernel/boot/limine/limine.cfg
 )
 add_dependencies(${IMAGE_NAME}.iso kernel)
 
 # QEMU setup
 set(qemu qemu-system-x86_64)
 message(${qemu})
-set(qemu_opts "-M q35 -m 2G -cdrom ${IMAGE_NAME}.iso -boot d")
+set(qemu_opts "-M q35 -m 2G -cdrom ${IMAGE_NAME}.iso -boot d -display gtk,zoom-to-fit=off")
 set(qemu_opts_debug "${qemu_opts} -s -S")
 
 set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/scripts/terminal.sh)
