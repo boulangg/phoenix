@@ -1,7 +1,7 @@
-#include "Constant.h"
-
 .section .text
 .code64
+
+#include "Constant.h"
 
 .global enable_syscall
 enable_syscall:

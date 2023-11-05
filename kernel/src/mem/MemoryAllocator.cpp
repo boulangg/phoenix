@@ -83,13 +83,7 @@ Page* MemoryAllocator::allocZeroedPages(std::uint8_t order)
 
     std::size_t size = (1 << order) * PAGE_SIZE;
     std::uint64_t* startAddr = page->getKernelAddr();
-
-    // TODO replace by std::fill
-    for (std::size_t i = 0; i < size; ++i) {
-        startAddr[i] = 0;
-    }
-    //std::uint64_t* endAddr = startAddr + size;
-    //std::fill(startAddr, endAddr, 0);
+    std::fill_n(startAddr, size, 0);
 
     return page;
 }

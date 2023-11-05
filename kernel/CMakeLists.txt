@@ -9,16 +9,40 @@ file(GLOB_RECURSE kernel_src
         ${CMAKE_CURRENT_SOURCE_DIR}/boot/limine/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/boot/limine/*.S
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.S)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.S
+        ${CMAKE_CURRENT_SOURCE_DIR}/fonts/*.S)
 set(lib_inc 
         ${CMAKE_CURRENT_SOURCE_DIR}/boot/limine
-        ${CMAKE_CURRENT_SOURCE_DIR}/src)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/fonts)
 set(linker_file
         ${CMAKE_CURRENT_SOURCE_DIR}/boot/limine/linker.ld)
 
-add_executable(kernel EXCLUDE_FROM_ALL ${kernel_src})
+set(font_file ${CMAKE_CURRENT_SOURCE_DIR}/fonts/font.psf)
+set(font_out_file ${CMAKE_CURRENT_BINARY_DIR}/fonts/font.psf.o)
+
+add_custom_command(
+    OUTPUT ${font_out_file}
+    COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/fonts
+    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/fonts
+    COMMAND "${CMAKE_OBJCOPY}" -O elf64-x86-64 -B i386 -I binary ${font_file} ${font_out_file}
+    DEPENDS ${font_file}
+)
+
+add_custom_target(
+    TARGET font_out
+    DEPENDS ${font_out_file}
+)
+
+SET_SOURCE_FILES_PROPERTIES(
+  ${font_out_file}
+  PROPERTIES
+  EXTERNAL_OBJECT true
+  GENERATED true
+)
+
+add_executable(kernel EXCLUDE_FROM_ALL ${kernel_src} ${font_out_file})
 target_include_directories(kernel PUBLIC ${lib_inc})
 target_link_libraries(kernel c_kernel stdcpp nostd_options kernel_options)
 target_link_options(kernel PUBLIC "-T${linker_file}")
-#target_link_libraries(kernel c_kernel stdcpp nostd_options kernel_options)
 set_target_properties(kernel PROPERTIES FOLDER kernel)

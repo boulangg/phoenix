@@ -30,7 +30,7 @@
 #define MCL_CURRENT 1 /* Lock all currently mapped pages. */
 #define MCL_FUTURE  2 /* Lock all additions to address space. */
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -48,6 +48,6 @@ int msync(void* addr, size_t length, int flags);
 int shm_open(const char* name, int oflag, mode_t mode);
 int shm_unlink(const char* name);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif

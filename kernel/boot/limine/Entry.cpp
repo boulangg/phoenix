@@ -10,6 +10,7 @@
 
 #include "Kernel.h"
 #include "MemoryInit.h"
+#include "console/BasicConsole.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -40,6 +41,18 @@ static void hcf(void)
 // Kernel entry point
 void _start(void)
 {
+    kernel::console::BasicConsole console =
+        kernel::console::BasicConsole(framebuffer_request.response->framebuffers[0]);
+    console.write("Hello World !!!\nLooks like it's working nicely :)");
+    
+    for (std::size_t i = 0; i < 0x1000; ++i) {
+        if (i % 16 == 0) {
+            console.write('\n');
+        }
+        char c = 32 + (i % 96);
+        console.write(c);
+    }
+    
     auto pageArray = kernel::mem::initPageArray(memmap_request);
     kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING = hhdm_request.response->offset;
     kernel::Kernel::kernel.start(pageArray.first, pageArray.second);
@@ -47,15 +60,6 @@ void _start(void)
     // Ensure we got a framebuffer.
     if (framebuffer_request.response == nullptr || framebuffer_request.response->framebuffer_count < 1) {
         hcf();
-    }
-
-    // Fetch the first framebuffer.
-    limine_framebuffer* framebuffer = framebuffer_request.response->framebuffers[0];
-
-    // Note: we assume the framebuffer model is RGB with 32-bit pixels.
-    for (size_t i = 0; i < 100; i++) {
-        volatile uint32_t* fb_ptr = (uint32_t*)framebuffer->address;
-        fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
     }
 
     // We're done, just hang...
