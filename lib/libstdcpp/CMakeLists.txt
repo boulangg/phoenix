@@ -23,3 +23,8 @@ target_include_directories(stdcpp_shared PUBLIC ${libstdcpp_inc})
 target_link_libraries(stdcpp_shared unwind_shared nostd_options)
 set_target_properties(stdcpp_shared PROPERTIES OUTPUT_NAME stdcpp)
 set_target_properties(stdcpp_shared PROPERTIES FOLDER lib)
+
+add_library(stdcpp_kernel STATIC EXCLUDE_FROM_ALL ${libstdcpp_src} ${gdb_printer_src})
+target_include_directories(stdcpp_kernel PUBLIC ${libstdcpp_inc})
+target_link_libraries(stdcpp_kernel unwind_kernel kernel_options)
+set_target_properties(stdcpp_kernel PROPERTIES FOLDER lib_kernel)

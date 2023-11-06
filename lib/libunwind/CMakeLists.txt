@@ -19,3 +19,8 @@ target_include_directories(unwind_shared PUBLIC ${lib_inc})
 target_link_libraries(unwind_shared c_shared nostd_shared_options)
 set_target_properties(unwind_shared PROPERTIES OUTPUT_NAME unwind)
 set_target_properties(unwind_shared PROPERTIES FOLDER lib)
+
+add_library(unwind_kernel STATIC EXCLUDE_FROM_ALL ${lib_src})
+target_include_directories(unwind_kernel PUBLIC ${lib_inc})
+target_link_libraries(unwind_kernel c_kernel kernel_options)
+set_target_properties(unwind_kernel PROPERTIES FOLDER lib_kernel)

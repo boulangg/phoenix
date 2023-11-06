@@ -19,7 +19,7 @@ set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS} "-Wall -Wextra -g -Wno-packed-bitfield-compat -fno-stack-protector -fno-builtin-fprintf -fno-use-cxa-atexit -x assembler-with-cpp")
 
 # Linker flags
-SET(CMAKE_EXE_LINKER_FLAGS  "-g")
+SET(CMAKE_EXE_LINKER_FLAGS  "-g  -Wl,--build-id=none")
 
 add_library(nostd_options INTERFACE)
 target_link_options(nostd_options INTERFACE -nodefaultlibs -nostdlib -no-pie)

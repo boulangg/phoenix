@@ -28,6 +28,5 @@ set_target_properties(c_shared PROPERTIES FOLDER lib)
 
 add_library(c_kernel STATIC EXCLUDE_FROM_ALL ${libc_src} ${libc_glue_kernel_src})
 target_include_directories(c_kernel PUBLIC ${libc_inc} ${libc_glue_kernel_inc})
-set_target_properties(c_kernel PROPERTIES EXCLUDE_FROM_ALL 1) 
 target_link_libraries(c_kernel kernel_options)
 set_target_properties(c_kernel PROPERTIES FOLDER lib_kernel)

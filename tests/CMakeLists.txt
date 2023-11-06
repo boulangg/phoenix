@@ -8,7 +8,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake_config/compiler_flags.cmake)
 # List all tests in current folder
 file(GLOB_RECURSE unittestsuite_src ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
-add_library(unittestsuite SHARED ${unittestsuite_src})
+add_library(unittestsuite SHARED EXCLUDE_FROM_ALL ${unittestsuite_src})
 target_link_libraries(unittestsuite unittest_shared c_shared stdcpp_shared unwind_shared nostd_shared_options)
 set_target_properties(unittestsuite PROPERTIES FOLDER test)
 
