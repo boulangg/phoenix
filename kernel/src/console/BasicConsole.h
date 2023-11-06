@@ -90,10 +90,10 @@ private:
     void scrollUp();
     void putEntryAt(char c, std::size_t column, std::size_t row);
 
-    static constexpr std::size_t OFFSET_TOP = 0x08;
-    static constexpr std::size_t OFFSET_DOWN = 0x08;
-    static constexpr std::size_t OFFSET_LEFT = 0x08;
-    static constexpr std::size_t OFFSET_RIGHT = 0x08;
+    static constexpr std::size_t OFFSET_TOP = 0x04;
+    static constexpr std::size_t OFFSET_DOWN = 0x04;
+    static constexpr std::size_t OFFSET_LEFT = 0x02;
+    static constexpr std::size_t OFFSET_RIGHT = 0x01;
 };
 
 }

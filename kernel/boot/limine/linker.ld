@@ -22,7 +22,7 @@ SECTIONS
     /* Any address in this region will do, but often 0xffffffff80000000 is chosen as */
     /* that is the beginning of the region. */
     . = 0xffffffff80000000;
-
+    
     .text : {
         *(.text .text.*)
     } :text
@@ -33,7 +33,7 @@ SECTIONS
     .rodata : {
         *(.rodata .rodata.*)
     } :rodata
-
+    
     /* Move to the next memory page for .data */
     . += CONSTANT(MAXPAGESIZE);
 
@@ -57,7 +57,6 @@ SECTIONS
 
     /* Discard .note.* and .eh_frame since they may cause issues on some hosts. */
     /DISCARD/ : {
-        *(.eh_frame)
         *(.note .note.*)
     }
 }

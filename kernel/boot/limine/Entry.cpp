@@ -45,13 +45,13 @@ void _start(void)
         kernel::console::BasicConsole(framebuffer_request.response->framebuffers[0]);
     console.write("Hello World !!!\nLooks like it's working nicely :)");
     
-    for (std::size_t i = 0; i < 0x1000; ++i) {
-        if (i % 16 == 0) {
-            console.write('\n');
-        }
-        char c = 32 + (i % 96);
-        console.write(c);
-    }
+    //for (std::size_t i = 0; i < 0x1000; ++i) {
+    //    if (i % 16 == 0) {
+    //        console.write('\n');
+    //    }
+    //    char c = 32 + (i % 96);
+    //    console.write(c);
+    //}
     
     auto pageArray = kernel::mem::initPageArray(memmap_request);
     kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING = hhdm_request.response->offset;

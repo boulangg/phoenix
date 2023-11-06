@@ -128,6 +128,8 @@ public:
     void pop_back();
 
     iterator insert(iterator pos, const_reference val);
+    template <class InputIt>
+    iterator insert(const_iterator pos, InputIt first, InputIt last);
     iterator erase(iterator pos);
     void swap(list& x);
     void clear();
@@ -354,6 +356,7 @@ list<T>& list<T>::operator=(list<T>&& x)
     _begin = x._begin;
     _end = x._end;
     _size = x._size;
+    return *this;
 }
 
 template <class T>
@@ -452,7 +455,7 @@ void list<T>::pop_back()
 }
 
 template <class T>
-typename list<T>::iterator list<T>::insert(iterator pos, list<T>::const_reference val)
+typename list<T>::iterator list<T>::insert(iterator pos, const_reference val)
 {
     if (pos == _begin) {
         _node* curr = new _node(val, nullptr, _begin.node);
@@ -470,6 +473,18 @@ typename list<T>::iterator list<T>::insert(iterator pos, list<T>::const_referenc
         iterator res(curr);
         return res;
     }
+}
+
+template <class T>
+template <class InputIt>
+list<T>::iterator list<T>::insert(const_iterator pos, InputIt first, InputIt last)
+{
+    while (first != last) {
+        pos = insert(pos, *first);
+        ++first;
+    }
+
+    return pos;
 }
 
 template <class T>

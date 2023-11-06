@@ -32,9 +32,14 @@ struct Page
     // Used by the buddy alogrithm in the MemoryAllocator for free pages
     Page* nextFreeBlock;
 
-    std::uint64_t* getKernelAddr()
+    std::uint64_t getKernelAddr()
     {
-        return reinterpret_cast<uint64_t*>(KERNEL_BASE_LINEAR_MAPPING + index * PAGE_SIZE);
+        return KERNEL_BASE_LINEAR_MAPPING + index * PAGE_SIZE;
+    }
+
+    std::uint64_t getPhysicalAddr()
+    {
+        return index * PAGE_SIZE;
     }
 };
 

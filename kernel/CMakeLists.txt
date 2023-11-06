@@ -29,11 +29,6 @@ add_custom_command(
     DEPENDS ${font_file}
 )
 
-add_custom_target(
-    TARGET font_out
-    DEPENDS ${font_out_file}
-)
-
 SET_SOURCE_FILES_PROPERTIES(
   ${font_out_file}
   PROPERTIES
@@ -43,6 +38,7 @@ SET_SOURCE_FILES_PROPERTIES(
 
 add_executable(kernel EXCLUDE_FROM_ALL ${kernel_src} ${font_out_file})
 target_include_directories(kernel PUBLIC ${lib_inc})
+set_target_properties(kernel PROPERTIES LINK_DEPENDS ${linker_file})
 target_link_libraries(kernel c_kernel stdcpp nostd_options kernel_options)
 target_link_options(kernel PUBLIC "-T${linker_file}")
 set_target_properties(kernel PROPERTIES FOLDER kernel)

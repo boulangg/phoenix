@@ -34,7 +34,7 @@ struct gdt_desc
     std::uint8_t limit_1  : 4;
     std::uint8_t flags    : 4;
     std::uint8_t base_2   : 8;
-};
+} __attribute__((packed));
 static_assert(sizeof(struct gdt_desc) == 8, "gdt_desc size incorrect");
 
 struct gdt_desc_ext
@@ -42,7 +42,7 @@ struct gdt_desc_ext
     gdt_desc gate_base;
     std::uint32_t base_3   : 32;
     std::uint32_t reserved : 32;
-};
+} __attribute__((packed));
 static_assert(sizeof(struct gdt_desc_ext) == 16, "gdt_desc_ext size incorrect");
 
 extern gdt_desc gdt[GDT_ENTRIES];
