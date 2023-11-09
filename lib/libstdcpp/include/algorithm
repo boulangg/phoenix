@@ -98,7 +98,6 @@ void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compare com
 template <class RandomAccessIterator, class Compare>
 void make_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-    RandomAccessIterator current = first + 1;
     for (RandomAccessIterator current = first + 1; current < last; ++current) {
         std::push_heap(first, current, comp);
     }
@@ -182,8 +181,9 @@ constexpr void fill(ForwardIt first, ForwardIt last, const T& value)
 template <class OutputIt, class Size, class T>
 constexpr OutputIt fill_n(OutputIt first, Size count, const T& value)
 {
-    for (Size i = 0; i < count; i++)
+    for (Size i = 0; i < count; i++) {
         *first++ = value;
+    }
     return first;
 }
 

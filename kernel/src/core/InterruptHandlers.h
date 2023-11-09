@@ -32,6 +32,7 @@ extern std::uint64_t readCR2();
 
 // Hardware Exception Handlers
 #define EXCEPTION_HANDLER_NAME(num)   EXC_##num##_HANDLER
+#define EXCEPTION_HANDLER_NAME_UINT64(num) reinterpret_cast<std::uint64_t>(EXCEPTION_HANDLER_NAME(num))
 #define DEFINE_EXCEPTION_HANDLER(num) extern "C" void EXCEPTION_HANDLER_NAME(num)();
 
 DEFINE_EXCEPTION_HANDLER(00);
@@ -68,7 +69,8 @@ DEFINE_EXCEPTION_HANDLER(1E);
 DEFINE_EXCEPTION_HANDLER(1F);
 
 // PIC Interrupt Handlers
-#define INTERRUPT_HANDLER_NAME(num)   INT_##num##_HANDLER
+#define INTERRUPT_HANDLER_NAME(num)        INT_##num##_HANDLER
+#define INTERRUPT_HANDLER_NAME_UINT64(num) reinterpret_cast<std::uint64_t>(INTERRUPT_HANDLER_NAME(num))
 #define DEFINE_INTERRUPT_HANDLER(num) extern "C" void INTERRUPT_HANDLER_NAME(num)();
 
 DEFINE_INTERRUPT_HANDLER(00);

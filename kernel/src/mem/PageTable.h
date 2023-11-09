@@ -18,7 +18,7 @@ class PageTable
 public:
     std::uint64_t getPageTablePhysAddr()
     {
-        return (uint64_t)(&pml4t) & ~(kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING);
+        return reinterpret_cast<uint64_t>(&pml4t) - kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
     }
 
     std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t flags,

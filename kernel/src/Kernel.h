@@ -24,6 +24,8 @@ public:
     static Kernel kernel;
 
 private:
+    static void setupGlobalConstructors();
+
     mem::MemoryAllocator _memory;
     core::InterruptDispatcher _interrupt;
     //dev::DeviceExplorer _device;

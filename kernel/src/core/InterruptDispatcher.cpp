@@ -6,7 +6,7 @@
 
 #include "InterruptDispatcher.h"
 
-#include "CpuInstructions.h"
+#include "CpuInstr.h"
 #include "InterruptDescTable.h"
 #include "SyscallHandler.h"
 

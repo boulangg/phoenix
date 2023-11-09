@@ -71,6 +71,20 @@ struct ProgramFlag
     static constexpr std::uint32_t PF_MASKPROC = 0xFF000000; // Processor-specific use
 };
 
+struct Shdr
+{
+    Word sh_name;       /* Section name */
+    Word sh_type;       /* Section type */
+    Xword sh_flags;     /* Section attributes */
+    Addr sh_addr;       /* Virtual address in memory */
+    Off sh_offset;      /* Offset in file */
+    Xword sh_size;      /* Size of section */
+    Word sh_link;       /* Link to other section */
+    Word sh_info;       /* Miscellaneous information */
+    Xword sh_addralign; /* Address alignment boundary */
+    Xword sh_entsize;   /* Size of entries, if section has table */
+};
+
 }
 
 }

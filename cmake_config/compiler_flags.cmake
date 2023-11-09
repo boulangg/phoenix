@@ -12,14 +12,15 @@ set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # C++ generic compiler/linker flags
 # set(CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -g -Wno-packed-bitfield-compat -fno-stack-protector -fno-builtin-fprintf -fno-use-cxa-atexit -std=c++2b -Wno-literal-suffix")
+# -Wold-style-cast -Wconversion -Wsign-conversion -Wshadow
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -Wno-packed-bitfield-compat -Wno-literal-suffix  -g -fno-stack-protector -fno-builtin-fprintf -fno-use-cxa-atexit -std=c++2b")
 set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # ASM generic compiler/linker flags
 set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS} "-Wall -Wextra -g -Wno-packed-bitfield-compat -fno-stack-protector -fno-builtin-fprintf -fno-use-cxa-atexit -x assembler-with-cpp")
 
 # Linker flags
-SET(CMAKE_EXE_LINKER_FLAGS  "-g  -Wl,--build-id=none")
+SET(CMAKE_EXE_LINKER_FLAGS "-g")
 
 add_library(nostd_options INTERFACE)
 target_link_options(nostd_options INTERFACE -nodefaultlibs -nostdlib -no-pie)
@@ -37,6 +38,7 @@ target_compile_options(nostd_shared_options INTERFACE
 )
 
 add_library(kernel_options INTERFACE)
+target_link_options(kernel_options INTERFACE -nostdlib -static -pie -Wl,--no-dynamic-linker -g)
 target_compile_options(kernel_options INTERFACE -fno-exceptions
 		$<$<COMPILE_LANGUAGE:CXX>: -fno-rtti>)
 

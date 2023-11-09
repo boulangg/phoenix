@@ -76,7 +76,7 @@ auto begin(const Container& cont) -> decltype(cont.begin())
 template <class T, size_t N>
 T* begin(T (&arr)[N])
 {
-    return (T*)arr;
+    return static_cast<T*>(arr);
 }
 
 template <class Container>
@@ -94,7 +94,7 @@ auto end(const Container& cont) -> decltype(cont.end())
 template <class T, size_t N>
 T* end(T (&arr)[N])
 {
-    return ((T*)arr) + N;
+    return static_cast<T*>(arr) + N;
 }
 
 template <class BidirectionalIterator>

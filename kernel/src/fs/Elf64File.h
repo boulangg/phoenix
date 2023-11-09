@@ -19,16 +19,18 @@ namespace Elf64 = kernel::utils::Elf64;
 class Elf64File
 {
 private:
-    using phdr_container = kernel::utils::SimpleContainer<Elf64::Phdr>;
 
 public:
-    using phdr_iterator = phdr_container::iterator;
+    using phdr_container = kernel::utils::SimpleContainer<Elf64::Phdr>;
+    using shdr_container = kernel::utils::SimpleContainer<Elf64::Shdr>;
 
     Elf64File(std::uint64_t fileStartAddr)
     {
-        _fileHeader = (Elf64::Ehdr*)fileStartAddr;
+        _fileHeader = reinterpret_cast<Elf64::Ehdr*>(fileStartAddr);
         _programHeaders =
-            phdr_container((Elf64::Phdr*)_fileHeader->e_phoff, _fileHeader->e_phnum, _fileHeader->e_phentsize);
+            phdr_container(reinterpret_cast<Elf64::Phdr*>(_fileHeader->e_phoff), _fileHeader->e_phnum, _fileHeader->e_phentsize);
+        _sectionHeaders =
+            shdr_container(reinterpret_cast<Elf64::Shdr*>(_fileHeader->e_shoff), _fileHeader->e_shnum, _fileHeader->e_shentsize);
     }
 
     phdr_container& getProgramHeaders()
@@ -36,9 +38,15 @@ public:
         return _programHeaders;
     }
 
+    shdr_container& getSectionHeaders()
+    {
+        return _sectionHeaders;
+    }
+
 private:
     Elf64::Ehdr* _fileHeader;
     phdr_container _programHeaders;
+    shdr_container _sectionHeaders;
 };
 
 }

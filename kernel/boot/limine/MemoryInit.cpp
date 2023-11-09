@@ -54,7 +54,7 @@ std::pair<Page*, std::size_t> initPageArray(const limine_memmap_request& memmap_
     std::uint64_t nb_physical_pages = (maxAvailableMemory + PAGE_SIZE - 1) / PAGE_SIZE;
     std::uint64_t nb_required_pages = (nb_physical_pages * sizeof(Page) + PAGE_SIZE - 1) / PAGE_SIZE;
     auto allocPages = base_alloc_pages(nb_required_pages, memmap_request);
-    Page* pageArray = (Page*)(allocPages.first);
+    Page* pageArray = reinterpret_cast<Page*>(allocPages.first);
 
     // Initialize the pageArray
     for (std::uint64_t i = 0; i < nb_physical_pages; ++i) {

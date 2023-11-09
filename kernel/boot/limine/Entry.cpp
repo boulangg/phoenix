@@ -12,6 +12,8 @@
 #include "MemoryInit.h"
 #include "console/BasicConsole.h"
 
+#include "fs/Elf64File.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -56,6 +58,8 @@ void _start(void)
     auto pageArray = kernel::mem::initPageArray(memmap_request);
     kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING = hhdm_request.response->offset;
     kernel::Kernel::kernel.start(pageArray.first, pageArray.second);
+
+    kernel::fs::Elf64File(kernel_address_request.response->virtual_base);
 
     // Ensure we got a framebuffer.
     if (framebuffer_request.response == nullptr || framebuffer_request.response->framebuffer_count < 1) {

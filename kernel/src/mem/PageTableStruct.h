@@ -52,14 +52,14 @@ struct pte_t
         std::uint64_t _raw;
     } __attribute__((packed));
 
-    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t flags, uint64_t physAddr, bool noExec)
+    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t pageFlags, uint64_t physAddr, bool noExec)
     {
         Page* page = nullptr;
         if (physAddr == 0) {
             page = allocator.allocZeroedPage();
-            physAddr = page->getPhysicalAddr() | flags;
+            physAddr = page->getPhysicalAddr();
         }
-        _raw = physAddr | flags;
+        _raw = physAddr | pageFlags;
         nx = noExec;
 
         std::list<Page*> res;
@@ -95,20 +95,20 @@ struct pde_t
     pt_t getPt() const
     {
         std::uint64_t ptr = getPhysicalPtr() | kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
-        return (pt_t)ptr;
+        return reinterpret_cast<pt_t>(ptr);
     }
 
-    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t flags,
+    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t pageFlags,
                              bool noExec, uint64_t physAddr)
     {
         Page* page = nullptr;
         if (_raw == 0) {
             page = allocator.allocZeroedPage();
-            _raw = page->getPhysicalAddr() | flags;
+            _raw = page->getPhysicalAddr() | highLvlFlags;
         }
         uint64_t PDT_index = getIndex(virtAddr);
         pt_t pdt = getPt();
-        auto res = pdt[PDT_index].mapPage(allocator, highLvlFlags, physAddr, noExec);
+        auto res = pdt[PDT_index].mapPage(allocator, pageFlags, physAddr, noExec);
         if (page != nullptr) {
             res.push_back(page);
         }
@@ -149,32 +149,32 @@ struct pdpe_t
     pdt_t getPdt() const
     {
         std::uint64_t ptr = getPhysicalPtr() | kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
-        return (pdt_t)ptr;
+        return reinterpret_cast<pdt_t>(ptr);
     }
 
     pt_t getPt() const
     {
         std::uint64_t ptr = getPhysicalPtr() | kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
-        return (pt_t)ptr;
+        return reinterpret_cast<pt_t>(ptr);
     }
 
-    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t flags,
+    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t pageFlags,
                              bool noExec, page_size pageSize, uint64_t physAddr)
     {
         Page* page = nullptr;
         if (_raw == 0) {
             page = allocator.allocZeroedPage();
-            _raw = page->getPhysicalAddr() | flags;
+            _raw = page->getPhysicalAddr() | highLvlFlags;
         }
 
         std::list<Page*> res; 
         std::uint64_t PDT_index = getIndex(virtAddr);
         if (pageSize == page_size::pt_2MiB) {
             pt_t pt = getPt();
-            res = pt[PDT_index].mapPage(allocator, flags, physAddr, noExec);
+            res = pt[PDT_index].mapPage(allocator, pageFlags, physAddr, noExec);
         } else {
             pdt_t pdt = getPdt();
-            res = pdt[PDT_index].mapPage(allocator, highLvlFlags, virtAddr, flags, noExec, physAddr);
+            res = pdt[PDT_index].mapPage(allocator, highLvlFlags, virtAddr, pageFlags, noExec, physAddr);
         }
 
         if (page != nullptr) {
@@ -217,20 +217,20 @@ struct pml4e_t
     pdpt_t getPdpt() const
     {
         std::uint64_t ptr = getPhysicalPtr() | kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
-        return (pdpt_t)ptr;
+        return reinterpret_cast<pdpt_t>(ptr);
     }
 
-    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t flags,
+    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t pageFlags,
                              bool noExec, page_size pageSize, uint64_t physAddr)
     {
         Page* page = nullptr;
         if (_raw == 0) {
             page = allocator.allocZeroedPage();
-            _raw = page->getPhysicalAddr() | flags;
+            _raw = page->getPhysicalAddr() | highLvlFlags;
         }
         uint64_t PDPT_index = getIndex(virtAddr);
         pdpt_t pdpt = getPdpt();
-        auto res = pdpt[PDPT_index].mapPage(allocator, highLvlFlags, virtAddr, flags, noExec, pageSize, physAddr);
+        auto res = pdpt[PDPT_index].mapPage(allocator, highLvlFlags, virtAddr, pageFlags, noExec, pageSize, physAddr);
         if (page != nullptr) {
             res.push_back(page);
         }
@@ -258,21 +258,21 @@ struct page_table
 {
     union
     {
-        pml4e_t pml4t[512];
+        pml4e_t _pml4t[512];
     };
 
     pml4t_t getPml4t() const
     {
-        std::uint64_t ptr = (uint64_t)this;
-        return (pml4t_t)ptr;
+        std::uint64_t ptr = reinterpret_cast<std::uint64_t>(this);
+        return reinterpret_cast<pml4t_t>(ptr);
     }
 
-    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t flags,
+    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t pageFlags,
                              bool noExec, page_size pageSize, uint64_t physAddr)
     {
         uint64_t PML4T_index = getIndex(virtAddr);
         pml4t_t pml4t = getPml4t();
-        return pml4t[PML4T_index].mapPage(allocator, highLvlFlags, virtAddr, flags, noExec, pageSize, physAddr);
+        return pml4t[PML4T_index].mapPage(allocator, highLvlFlags, virtAddr, pageFlags, noExec, pageSize, physAddr);
     }
 
 private:

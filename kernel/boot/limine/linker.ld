@@ -9,10 +9,12 @@ ENTRY(_start)
 /* MMU permissions */
 PHDRS
 {
-    text    PT_LOAD    FLAGS((1 << 0) | (1 << 2)) ; /* Execute + Read */
-    rodata  PT_LOAD    FLAGS((1 << 2)) ;            /* Read only */
-    data    PT_LOAD    FLAGS((1 << 1) | (1 << 2)) ; /* Write + Read */
-    dynamic PT_DYNAMIC FLAGS((1 << 1) | (1 << 2)) ; /* Dynamic PHDR for relocations */
+  phdr      PT_PHDR     PHDRS ;                         /* Program Headers */
+  hdrs      PT_LOAD     FILEHDR PHDRS ;                 /* Headers */
+  text      PT_LOAD     FLAGS((1 << 0) | (1 << 2)) ;    /* Execute + Read */
+  rodata    PT_LOAD     FLAGS((1 << 2));                /* Read only */
+  data      PT_LOAD     FLAGS((1 << 1) | (1 << 2)) ;    /* Write + Read */
+  dynamic   PT_DYNAMIC  FLAGS((1 << 1) | (1 << 2)) ;    /* Dynamic PHDR for relocations */
 }
 
 SECTIONS
@@ -21,23 +23,34 @@ SECTIONS
     /* and because that is what the Limine spec mandates. */
     /* Any address in this region will do, but often 0xffffffff80000000 is chosen as */
     /* that is the beginning of the region. */
-    . = 0xffffffff80000000;
+    . = 0xffffffff80000000 + SIZEOF_HEADERS;
+    .hdrs : {
+        *(.note .note.*)
+    } :hdrs
     
-    .text : {
+    .text ALIGN(CONSTANT(MAXPAGESIZE)): {
         *(.text .text.*)
     } :text
-
+    
     /* Move to the next memory page for .rodata */
-    . += CONSTANT(MAXPAGESIZE);
-
-    .rodata : {
+    .rodata ALIGN(CONSTANT(MAXPAGESIZE)): {
         *(.rodata .rodata.*)
+    } :rodata
+
+    .init_array : {
+        _init_array_start = .;
+        *(.init_array)
+        _init_array_end = .;
+    } :rodata
+        
+    .fini_array : {
+        _fini_array_start = .;
+        *(.fini_array)
+        _fini_array_end = .;
     } :rodata
     
     /* Move to the next memory page for .data */
-    . += CONSTANT(MAXPAGESIZE);
-
-    .data : {
+    .data ALIGN(CONSTANT(MAXPAGESIZE)): {
         *(.data .data.*)
     } :data
 
@@ -50,13 +63,8 @@ SECTIONS
     /* unnecessary zeros will be written to the binary. */
     /* If you need, for example, .init_array and .fini_array, those should be placed */
     /* above this. */
-    .bss : {
+    .bss ALIGN(CONSTANT(MAXPAGESIZE)): {
         *(.bss .bss.*)
         *(COMMON)
     } :data
-
-    /* Discard .note.* and .eh_frame since they may cause issues on some hosts. */
-    /DISCARD/ : {
-        *(.note .note.*)
-    }
 }

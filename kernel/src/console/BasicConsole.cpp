@@ -14,7 +14,7 @@ namespace kernel::console {
 BasicConsole::BasicConsole(limine_framebuffer* fb) : _fb(fb) 
 {
     setColor(Color::LIGHT_GREY, Color::BLACK);
-    _screen = (uint32_t*)fb->address;
+    _screen = static_cast<uint32_t*>(fb->address);
     _pixelHeight = base_font.height;
     _pixelWidth = base_font.width + 1;
     _maxColumn = (_fb->width - OFFSET_LEFT - OFFSET_RIGHT) / _pixelWidth;

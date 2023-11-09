@@ -193,56 +193,56 @@ void setupHandlers()
 {
     static constexpr std::uint8_t IDT_FLAGS = IDT::ACCESS_P | IDT::ACCESS_DPL3 | IDT::GATE_TYPE_INTERRUPT;
     // Hardaware Exception handlers
-    fill_idt_descriptor_64(IDT::idt, 0, (uint64_t)EXCEPTION_HANDLER_NAME(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 1, (uint64_t)EXCEPTION_HANDLER_NAME(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 2, (uint64_t)EXCEPTION_HANDLER_NAME(02), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 3, (uint64_t)EXCEPTION_HANDLER_NAME(03), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 4, (uint64_t)EXCEPTION_HANDLER_NAME(04), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 5, (uint64_t)EXCEPTION_HANDLER_NAME(05), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 6, (uint64_t)EXCEPTION_HANDLER_NAME(06), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 7, (uint64_t)EXCEPTION_HANDLER_NAME(07), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 8, (uint64_t)EXCEPTION_HANDLER_NAME(08), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 9, (uint64_t)EXCEPTION_HANDLER_NAME(09), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 10, (uint64_t)EXCEPTION_HANDLER_NAME(0A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 11, (uint64_t)EXCEPTION_HANDLER_NAME(0B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 12, (uint64_t)EXCEPTION_HANDLER_NAME(0C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 13, (uint64_t)EXCEPTION_HANDLER_NAME(0D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 14, (uint64_t)EXCEPTION_HANDLER_NAME(0E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 15, (uint64_t)EXCEPTION_HANDLER_NAME(0F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 16, (uint64_t)EXCEPTION_HANDLER_NAME(10), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 17, (uint64_t)EXCEPTION_HANDLER_NAME(10), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 18, (uint64_t)EXCEPTION_HANDLER_NAME(12), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 19, (uint64_t)EXCEPTION_HANDLER_NAME(13), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 20, (uint64_t)EXCEPTION_HANDLER_NAME(14), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 21, (uint64_t)EXCEPTION_HANDLER_NAME(15), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 22, (uint64_t)EXCEPTION_HANDLER_NAME(16), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 23, (uint64_t)EXCEPTION_HANDLER_NAME(17), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 24, (uint64_t)EXCEPTION_HANDLER_NAME(18), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 25, (uint64_t)EXCEPTION_HANDLER_NAME(19), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 26, (uint64_t)EXCEPTION_HANDLER_NAME(1A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 27, (uint64_t)EXCEPTION_HANDLER_NAME(1B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 28, (uint64_t)EXCEPTION_HANDLER_NAME(1C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 29, (uint64_t)EXCEPTION_HANDLER_NAME(1D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 30, (uint64_t)EXCEPTION_HANDLER_NAME(1E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 31, (uint64_t)EXCEPTION_HANDLER_NAME(1F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 0, EXCEPTION_HANDLER_NAME_UINT64(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 1, EXCEPTION_HANDLER_NAME_UINT64(01), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 2, EXCEPTION_HANDLER_NAME_UINT64(02), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 3, EXCEPTION_HANDLER_NAME_UINT64(03), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 4, EXCEPTION_HANDLER_NAME_UINT64(04), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 5, EXCEPTION_HANDLER_NAME_UINT64(05), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 6, EXCEPTION_HANDLER_NAME_UINT64(06), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 7, EXCEPTION_HANDLER_NAME_UINT64(07), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 8, EXCEPTION_HANDLER_NAME_UINT64(08), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 9, EXCEPTION_HANDLER_NAME_UINT64(09), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 10, EXCEPTION_HANDLER_NAME_UINT64(0A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 11, EXCEPTION_HANDLER_NAME_UINT64(0B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 12, EXCEPTION_HANDLER_NAME_UINT64(0C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 13, EXCEPTION_HANDLER_NAME_UINT64(0D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 14, EXCEPTION_HANDLER_NAME_UINT64(0E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 15, EXCEPTION_HANDLER_NAME_UINT64(0F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 16, EXCEPTION_HANDLER_NAME_UINT64(10), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 17, EXCEPTION_HANDLER_NAME_UINT64(10), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 18, EXCEPTION_HANDLER_NAME_UINT64(12), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 19, EXCEPTION_HANDLER_NAME_UINT64(13), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 20, EXCEPTION_HANDLER_NAME_UINT64(14), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 21, EXCEPTION_HANDLER_NAME_UINT64(15), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 22, EXCEPTION_HANDLER_NAME_UINT64(16), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 23, EXCEPTION_HANDLER_NAME_UINT64(17), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 24, EXCEPTION_HANDLER_NAME_UINT64(18), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 25, EXCEPTION_HANDLER_NAME_UINT64(19), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 26, EXCEPTION_HANDLER_NAME_UINT64(1A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 27, EXCEPTION_HANDLER_NAME_UINT64(1B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 28, EXCEPTION_HANDLER_NAME_UINT64(1C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 29, EXCEPTION_HANDLER_NAME_UINT64(1D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 30, EXCEPTION_HANDLER_NAME_UINT64(1E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 31, EXCEPTION_HANDLER_NAME_UINT64(1F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
 
     // PIC interrupt handlers
-    fill_idt_descriptor_64(IDT::idt, 32, (uint64_t)INTERRUPT_HANDLER_NAME(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 33, (uint64_t)INTERRUPT_HANDLER_NAME(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 34, (uint64_t)INTERRUPT_HANDLER_NAME(02), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 35, (uint64_t)INTERRUPT_HANDLER_NAME(03), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 36, (uint64_t)INTERRUPT_HANDLER_NAME(04), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 37, (uint64_t)INTERRUPT_HANDLER_NAME(05), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 38, (uint64_t)INTERRUPT_HANDLER_NAME(06), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 39, (uint64_t)INTERRUPT_HANDLER_NAME(07), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 40, (uint64_t)INTERRUPT_HANDLER_NAME(08), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 41, (uint64_t)INTERRUPT_HANDLER_NAME(09), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 42, (uint64_t)INTERRUPT_HANDLER_NAME(0A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 43, (uint64_t)INTERRUPT_HANDLER_NAME(0B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 44, (uint64_t)INTERRUPT_HANDLER_NAME(0C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 45, (uint64_t)INTERRUPT_HANDLER_NAME(0D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 46, (uint64_t)INTERRUPT_HANDLER_NAME(0E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 47, (uint64_t)INTERRUPT_HANDLER_NAME(0F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 32, INTERRUPT_HANDLER_NAME_UINT64(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 33, INTERRUPT_HANDLER_NAME_UINT64(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 34, INTERRUPT_HANDLER_NAME_UINT64(02), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 35, INTERRUPT_HANDLER_NAME_UINT64(03), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 36, INTERRUPT_HANDLER_NAME_UINT64(04), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 37, INTERRUPT_HANDLER_NAME_UINT64(05), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 38, INTERRUPT_HANDLER_NAME_UINT64(06), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 39, INTERRUPT_HANDLER_NAME_UINT64(07), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 40, INTERRUPT_HANDLER_NAME_UINT64(08), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 41, INTERRUPT_HANDLER_NAME_UINT64(09), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 42, INTERRUPT_HANDLER_NAME_UINT64(0A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 43, INTERRUPT_HANDLER_NAME_UINT64(0B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 44, INTERRUPT_HANDLER_NAME_UINT64(0C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 45, INTERRUPT_HANDLER_NAME_UINT64(0D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 46, INTERRUPT_HANDLER_NAME_UINT64(0E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 47, INTERRUPT_HANDLER_NAME_UINT64(0F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
 }
 
 using exception_handler_t = void (*)(std::uint32_t);
@@ -295,7 +295,7 @@ void generic_exception_handler(std::uint32_t irq, std::uint32_t errocode)
 }
 void generic_interrupt_handler(std::uint32_t irq)
 {
-    kernel::core::InterruptDispatcher::handleIRQ(irq);
+    kernel::core::InterruptDispatcher::handleIRQ(static_cast<uint8_t>(irq));
 }
 
 #ifdef __cplusplus

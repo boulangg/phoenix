@@ -26,14 +26,14 @@ static constexpr std::uint8_t GATE_TYPE_TRAP = 0b1111;
 // IDT
 struct idt_desc
 {
-    std::uint64_t offset_1   : 16;
+    std::uint16_t offset_1   : 16;
     std::uint16_t selector   : 16;
     std::uint8_t ist         : 3;
-    std::uint64_t reserved_1 : 5;
+    std::uint8_t reserved_1 : 5;
     std::uint8_t flags       : 8;
-    std::uint64_t offset_2   : 16;
-    std::uint64_t offset_3   : 32;
-    std::uint64_t reserved_2 : 32;
+    std::uint16_t offset_2   : 16;
+    std::uint32_t offset_3   : 32;
+    std::uint32_t reserved_2 : 32;
 } __attribute__((packed));
 static_assert(sizeof(idt_desc) == 16, "idt_desc size incorrect");
 
