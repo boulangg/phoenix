@@ -7,12 +7,14 @@
 #include "Kernel.h"
 
 #include "GlobalDescTable.h"
+#include "utils/Elf64File.h"
 
 namespace kernel {
 
-Kernel Kernel::kernel;
+core::InterruptDispatcher Kernel::_interrupt;
 
-Kernel::Kernel(){};
+mem::MemoryAllocator Kernel::_memory;
+mem::PageTable Kernel::_kernelPageTable __attribute__((aligned(4096)));
 
 typedef void (*func_ptr)(void);
 extern "C" func_ptr _init_array_start[0], _init_array_end[0];
@@ -24,14 +26,27 @@ void Kernel::setupGlobalConstructors()
     }
 }
 
-
-void Kernel::start(mem::Page* pageArray, std::size_t pageCount)
+void Kernel::start(KernelInfo& info)
 {
+    utils::Elf64File kernelFile(info.kernelFileAddr);
+
+    // Generic CPU struct
     GDT::setupGDT();
     TSS::setupTSS();
-    _memory.init(pageArray, pageCount);
+
+    // Memory related constant
+    kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING = info.hhdm;
+    // Memory Allocator
+    _memory.init(info.pageArray, info.pageCount);
+
+    // Kernel base Page Table
+    mem::PageTable::initKernelPageTable(&_kernelPageTable, info.hhdm, info.hhdmSize, info.kernelPhysBase, kernelFile, _memory);
+
+    // Interrupts
     _interrupt.init();
-    setupGlobalConstructors();
+
+
+
     //_device.init();
     //_scheduler.init();
 }

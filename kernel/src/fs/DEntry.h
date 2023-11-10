@@ -6,16 +6,19 @@
  
  #pragma once
 
-#include <cstddef>
-#include <utility>
+namespace kernel::fs {
 
-#include "mem/Page.h"
+class DEntry
+{
+public:
+    DEntry(Inode* inode);
+    DEntry(DEntry* parent, Inode* inode, std::string name);
+    virtual ~Dentry();
 
-#include "limine.h"
-
-namespace kernel::boot {
-
-std::pair<mem::Page*, std::size_t> initPageArray(const limine_memmap_request& memmap_request);
+private:
+    DEntry* _parent;
+    Inode* _inode;
+    std::string _name;
+};
 
 }
-

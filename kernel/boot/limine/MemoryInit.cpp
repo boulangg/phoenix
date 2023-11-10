@@ -9,9 +9,11 @@
 #include <algorithm>
 #include <cstdint>
 
-#define BASE_PAGE_ARRAY_MAPPING (2ul << 24) // 16 Mo
+#include "utils/Utils.h"
 
-namespace kernel::mem {
+namespace kernel::boot {
+
+static constexpr std::size_t BASE_PAGE_ARRAY_MAPPING = 1ul << 24; // 16 Mo
 
 static std::pair<std::uint64_t, std::uint64_t> base_alloc_pages(std::uint64_t nb_pages, limine_memmap_request memmap_request)
 {
@@ -24,22 +26,22 @@ static std::pair<std::uint64_t, std::uint64_t> base_alloc_pages(std::uint64_t nb
             continue;
         }
         std::uint64_t baseStart = std::max(BASE_PAGE_ARRAY_MAPPING, entry->base);
-        if (entry->base + entry->length > baseStart + nb_pages * PAGE_SIZE) {
-            return {baseStart, baseStart + nb_pages * PAGE_SIZE};
+        if (entry->base + entry->length > baseStart + nb_pages * mem::PAGE_SIZE) {
+            return {baseStart, baseStart + nb_pages * mem::PAGE_SIZE};
         }
     }
 
     return {0ul, 0ul};
 }
 
-static void setPageType(Page* pageArray, std::uint64_t indexStart, std::uint64_t indexEnd, Page::Type type)
+static void setPageType(mem::Page* pageArray, std::uint64_t indexStart, std::uint64_t indexEnd, mem::Page::Type type)
 {
-    for (auto index = indexStart / PAGE_SIZE; index < indexEnd; ++index) {
+    for (auto index = indexStart / mem::PAGE_SIZE; index < indexEnd; ++index) {
         pageArray[index].type = type;
     }
 }
 
-std::pair<Page*, std::size_t> initPageArray(const limine_memmap_request& memmap_request)
+std::pair<mem::Page*, std::size_t> initPageArray(const limine_memmap_request& memmap_request)
 {
     // Find highest available memory
     std::uint64_t maxAvailableMemory = 0;
@@ -51,63 +53,58 @@ std::pair<Page*, std::size_t> initPageArray(const limine_memmap_request& memmap_
     }
 
     // Find enough consecutive available pages to store the pageArray
-    std::uint64_t nb_physical_pages = (maxAvailableMemory + PAGE_SIZE - 1) / PAGE_SIZE;
-    std::uint64_t nb_required_pages = (nb_physical_pages * sizeof(Page) + PAGE_SIZE - 1) / PAGE_SIZE;
-    auto allocPages = base_alloc_pages(nb_required_pages, memmap_request);
-    Page* pageArray = reinterpret_cast<Page*>(allocPages.first);
+    std::uint64_t nbPhysicalPages = utils::divRoundUp(maxAvailableMemory, mem::PAGE_SIZE); 
+    std::uint64_t nbRequiredPages = utils::divRoundUp(nbPhysicalPages * sizeof(mem::Page), mem::PAGE_SIZE);
+    auto allocPages = base_alloc_pages(nbRequiredPages, memmap_request);
+    mem::Page* pageArray = reinterpret_cast<mem::Page*>(allocPages.first);
 
     // Initialize the pageArray
-    for (std::uint64_t i = 0; i < nb_physical_pages; ++i) {
-        pageArray[i].index = i;
-        //pageArray[i].physAddr = (uint64_t*)(i * PAGE_SIZE);
-        //pageArray[i].kernelMappAddr = (uint64_t*)(i * PAGE_SIZE + hhdm_request.response->offset);
-        pageArray[i].type = Page::Type::UNUSABLE;
-    }
+    setPageType(pageArray, 0, nbPhysicalPages, mem::Page::Type::UNUSABLE);
 
     // Use memmap to update the pageArray
-    for (std::uint64_t index = 0; index < memmap_request.response->entry_count; ++index) {
-        auto& entry = memmap_request.response->entries[index];
+    for (std::uint64_t entryIndex = 0; entryIndex < memmap_request.response->entry_count; ++entryIndex) {
+        auto& entry = memmap_request.response->entries[entryIndex];
         if (entry->base > maxAvailableMemory) {
             break;
         }
 
-        auto indexStart = entry->base / PAGE_SIZE;
-        auto indexEnd = (entry->base + entry->length) / PAGE_SIZE;
+        auto indexStart = entry->base / mem::PAGE_SIZE;
+        auto indexEnd = (entry->base + entry->length) / mem::PAGE_SIZE;
 
         switch (entry->type) {
         case LIMINE_MEMMAP_USABLE:
-            setPageType(pageArray, indexStart, indexEnd, Page::Type::FREE);
+            setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::FREE);
             break;
         case LIMINE_MEMMAP_RESERVED:
-            setPageType(pageArray, indexStart, indexEnd, Page::Type::UNUSABLE);
+            setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::UNUSABLE);
             break;
         case LIMINE_MEMMAP_ACPI_RECLAIMABLE:
-            setPageType(pageArray, indexStart, indexEnd, Page::Type::UNUSABLE);
+            setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::UNUSABLE);
             break;
         case LIMINE_MEMMAP_ACPI_NVS:
-            setPageType(pageArray, indexStart, indexEnd, Page::Type::UNUSABLE);
+            setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::UNUSABLE);
             break;
         case LIMINE_MEMMAP_BAD_MEMORY:
-            setPageType(pageArray, indexStart, indexEnd, Page::Type::UNUSABLE);
+            setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::UNUSABLE);
             break;
         case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:
-            setPageType(pageArray, indexStart, indexEnd, Page::Type::ALLOCATED);
+            setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::ALLOCATED);
             break;
         case LIMINE_MEMMAP_KERNEL_AND_MODULES:
-            setPageType(pageArray, indexStart, indexEnd, Page::Type::KERNEL);
+            setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::KERNEL);
             break;
         case LIMINE_MEMMAP_FRAMEBUFFER:
-            setPageType(pageArray, indexStart, indexEnd, Page::Type::UNUSABLE);
+            setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::UNUSABLE);
             break;
         }
     }
 
     // Allocate memory used for the page_array
-    auto indexStart = allocPages.first / PAGE_SIZE;
-    auto indexEnd = allocPages.second / PAGE_SIZE;
-    setPageType(pageArray, indexStart, indexEnd, Page::Type::KERNEL);
+    auto indexStart = allocPages.first / mem::PAGE_SIZE;
+    auto indexEnd = allocPages.second / mem::PAGE_SIZE;
+    setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::KERNEL);
 
-    return {pageArray, nb_physical_pages};
+    return {pageArray, nbPhysicalPages};
 }
 
 }

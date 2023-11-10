@@ -3,23 +3,20 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
- 
- #include <cstddef>
- #include <cstdint>
- 
- #include "utils/Elf64.h"
- #include "utils/Utils.h"
 
-namespace kernel::fs {
+#pragma once
 
-namespace Elf64 = kernel::utils::Elf64;
+#include <cstddef>
+#include <cstdint>
+
+#include "Elf64.h"
+#include "Utils.h"
+
+namespace kernel::utils {
 
 class Elf64File
 {
 private:
-
 public:
     using phdr_container = kernel::utils::SimpleContainer<Elf64::Phdr>;
     using shdr_container = kernel::utils::SimpleContainer<Elf64::Shdr>;
@@ -27,10 +24,10 @@ public:
     Elf64File(std::uint64_t fileStartAddr)
     {
         _fileHeader = reinterpret_cast<Elf64::Ehdr*>(fileStartAddr);
-        _programHeaders =
-            phdr_container(reinterpret_cast<Elf64::Phdr*>(_fileHeader->e_phoff), _fileHeader->e_phnum, _fileHeader->e_phentsize);
-        _sectionHeaders =
-            shdr_container(reinterpret_cast<Elf64::Shdr*>(_fileHeader->e_shoff), _fileHeader->e_shnum, _fileHeader->e_shentsize);
+        Elf64::Phdr* pHdr_ptr = reinterpret_cast<Elf64::Phdr*>(fileStartAddr + _fileHeader->e_phoff);
+        _programHeaders = phdr_container(pHdr_ptr, _fileHeader->e_phnum, _fileHeader->e_phentsize);
+        Elf64::Shdr* sHdr_ptr = reinterpret_cast<Elf64::Shdr*>(fileStartAddr + _fileHeader->e_shoff);
+        _sectionHeaders = shdr_container(sHdr_ptr, _fileHeader->e_shnum, _fileHeader->e_shentsize);
     }
 
     phdr_container& getProgramHeaders()

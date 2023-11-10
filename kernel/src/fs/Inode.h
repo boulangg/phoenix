@@ -3,10 +3,23 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
+ 
+ #pragma once
 
-#pragma once
+#include <list>
 
-#define KERNEL_MMAP_BASE  0xFFFF820000000000
-#define KERNEL_BRK_BASE   0xFFFF830000000000
-#define KERNEL_STACK_TOP  0xFFFF840000000000
-#define SYSCALL_STACK_TOP 0xFFFF850000000000
+#include "fs/DEntry.h"
+
+namespace kernel::fs {
+
+class Inode
+{
+public:
+    Inode() {}
+    virtual ~Inode() {}
+
+private:
+    std::list<DEntry*> dentries;
+};
+
+}

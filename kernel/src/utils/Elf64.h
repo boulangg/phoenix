@@ -6,6 +6,8 @@
  
  #pragma once
 
+ #include <cstdint>
+
 namespace kernel::utils {
 
 namespace Elf64 {

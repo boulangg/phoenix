@@ -11,9 +11,14 @@
 
 namespace kernel::utils {
 
+constexpr std::size_t divRoundUp(std::size_t numerator, std::size_t denominator)
+{
+    return (numerator + denominator - 1) / denominator;
+}
+
 constexpr std::size_t alignUp(std::size_t value, std::size_t align)
 {
-    return ((value + (align - 1)) / align) * align;
+    return divRoundUp(value, align) * align;
 }
 
 constexpr std::size_t alignDown(std::size_t value, std::size_t align)

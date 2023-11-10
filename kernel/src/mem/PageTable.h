@@ -11,6 +11,8 @@
 #include "Page.h"
 #include "PageTableStruct.h"
 
+#include "utils/Elf64File.h"
+
 namespace kernel::mem {
 
 class PageTable
@@ -27,13 +29,11 @@ public:
         return pml4t->mapPage(allocator, highLvlFlags, virtAddr, flags, noExec, pageSize, physAddr);
     }
 
-    static void initKernelPageTable(MemoryAllocator allocator, std::size_t hhdm, std::size_t hhdm_size,
-                                    std::size_t kernel_phys_addr, std::size_t kernel_virt_addr);
+    static void initKernelPageTable(PageTable* table, std::size_t hhdm, std::size_t hhdmSize,
+                                    std::size_t kernelPhysBase, utils::Elf64File& kernelFile, MemoryAllocator allocator);
 
 private:
     pml4e_t pml4t[512];
-
-    static PageTable _kernelPageTable __attribute__((aligned(4096)));
 };
 
 }

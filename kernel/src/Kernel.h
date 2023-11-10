@@ -11,23 +11,36 @@
 #include "core/InterruptDispatcher.h"
 #include "dev/DeviceExplorer.h"
 #include "mem/MemoryAllocator.h"
+#include "mem/Page.h"
+#include "mem/PageTable.h"
 #include "proc/ProcessScheduler.h"
 
 namespace kernel {
+
+struct KernelInfo
+{
+    mem::Page *pageArray;
+    std::size_t pageCount;
+    std::size_t hhdm;
+    std::size_t hhdmSize;
+    std::size_t kernelFileAddr;
+    std::size_t kernelPhysBase;
+    std::size_t kernelVirtBase;
+};
+
 class Kernel
 {
 public:
-    Kernel();
-
-    void start(mem::Page* pageArray, std::size_t pageCount);
-
-    static Kernel kernel;
+    static void start(KernelInfo& info);
 
 private:
     static void setupGlobalConstructors();
 
-    mem::MemoryAllocator _memory;
-    core::InterruptDispatcher _interrupt;
+    static mem::MemoryAllocator _memory;
+    static mem::PageTable _kernelPageTable;
+
+    static core::InterruptDispatcher _interrupt;
+
     //dev::DeviceExplorer _device;
     //proc::ProcessScheduler _scheduler;
 

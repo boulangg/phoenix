@@ -125,7 +125,7 @@ static void Exception_14_PageFault(std::uint32_t errorCode)
 
 static void Exception_16_x87FP(std::uint32_t)
 {
-    // cout << "INT: x87 Floating-Point Excpetion\n";
+    // cout << "INT: x87 Floating-Point Exception\n";
     while (1) {
     }
 }
