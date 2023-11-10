@@ -68,10 +68,9 @@ void _start(void)
     auto pageArray = kernel::boot::initPageArray(memmap_request);
     uint64_t kernelFileAddr = reinterpret_cast<uint64_t>(kernel_file_request.response->kernel_file->address);
     kernel::KernelInfo info = {
-        .pageArray = pageArray.first,
+        .pageArray = pageArray.first + hhdm_request.response->offset,
         .pageCount = pageArray.second,
         .hhdm = hhdm_request.response->offset,
-        .hhdmSize = pageArray.second * kernel::mem::PAGE_SIZE,
         .kernelFileAddr = kernelFileAddr,
         .kernelPhysBase = kernel_address_request.response->physical_base,
         .kernelVirtBase = kernel_address_request.response->virtual_base,

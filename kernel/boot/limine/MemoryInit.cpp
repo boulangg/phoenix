@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "MemoryInit.h"
+
+#include "MemoryInit.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -15,7 +15,8 @@ namespace kernel::boot {
 
 static constexpr std::size_t BASE_PAGE_ARRAY_MAPPING = 1ul << 24; // 16 Mo
 
-static std::pair<std::uint64_t, std::uint64_t> base_alloc_pages(std::uint64_t nb_pages, limine_memmap_request memmap_request)
+static std::pair<std::uint64_t, std::uint64_t> base_alloc_pages(std::uint64_t nb_pages,
+                                                                limine_memmap_request memmap_request)
 {
     for (std::uint64_t index = 0; index < memmap_request.response->entry_count; ++index) {
         auto& entry = memmap_request.response->entries[index];
@@ -34,14 +35,23 @@ static std::pair<std::uint64_t, std::uint64_t> base_alloc_pages(std::uint64_t nb
     return {0ul, 0ul};
 }
 
+static void resetPageArray(mem::Page* pageArray, std::uint64_t indexEnd)
+{
+    for (auto index = 0; index < indexEnd; ++index) {
+        pageArray[index].type = mem::Page::Type::UNUSABLE;
+        pageArray[index].index = index;
+        pageArray[index].nextFreeBlock = nullptr;
+    }
+}
+
 static void setPageType(mem::Page* pageArray, std::uint64_t indexStart, std::uint64_t indexEnd, mem::Page::Type type)
 {
-    for (auto index = indexStart / mem::PAGE_SIZE; index < indexEnd; ++index) {
+    for (auto index = indexStart; index < indexEnd; ++index) {
         pageArray[index].type = type;
     }
 }
 
-std::pair<mem::Page*, std::size_t> initPageArray(const limine_memmap_request& memmap_request)
+std::pair<std::uint64_t, std::size_t> initPageArray(const limine_memmap_request& memmap_request)
 {
     // Find highest available memory
     std::uint64_t maxAvailableMemory = 0;
@@ -53,13 +63,13 @@ std::pair<mem::Page*, std::size_t> initPageArray(const limine_memmap_request& me
     }
 
     // Find enough consecutive available pages to store the pageArray
-    std::uint64_t nbPhysicalPages = utils::divRoundUp(maxAvailableMemory, mem::PAGE_SIZE); 
+    std::uint64_t nbPhysicalPages = utils::divRoundUp(maxAvailableMemory, mem::PAGE_SIZE);
     std::uint64_t nbRequiredPages = utils::divRoundUp(nbPhysicalPages * sizeof(mem::Page), mem::PAGE_SIZE);
     auto allocPages = base_alloc_pages(nbRequiredPages, memmap_request);
     mem::Page* pageArray = reinterpret_cast<mem::Page*>(allocPages.first);
 
     // Initialize the pageArray
-    setPageType(pageArray, 0, nbPhysicalPages, mem::Page::Type::UNUSABLE);
+    resetPageArray(pageArray, nbPhysicalPages);
 
     // Use memmap to update the pageArray
     for (std::uint64_t entryIndex = 0; entryIndex < memmap_request.response->entry_count; ++entryIndex) {
@@ -104,7 +114,7 @@ std::pair<mem::Page*, std::size_t> initPageArray(const limine_memmap_request& me
     auto indexEnd = allocPages.second / mem::PAGE_SIZE;
     setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::KERNEL);
 
-    return {pageArray, nbPhysicalPages};
+    return {allocPages.first, nbPhysicalPages};
 }
 
 }

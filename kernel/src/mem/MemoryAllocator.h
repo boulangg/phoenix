@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstddef>
 
@@ -14,11 +14,11 @@ namespace kernel::mem {
 
 class MemoryAllocator
 {
-    static constexpr std::size_t MAX_ORDER = 16;
+    static constexpr std::int8_t MAX_ORDER = 48;
 
 public:
     MemoryAllocator();
-    void init(Page* pageArray, std::size_t pageCount);
+    void init(std::uint64_t pageArray, std::size_t pageCount);
 
     // Page allocation
     Page* allocPage();
@@ -29,7 +29,8 @@ public:
 
     void freePage(Page* page);
     void freePages(Page* page, std::uint8_t order);
-private:    
+
+private:
     Page* _pageArray;
     std::size_t _pageCount;
     Page* _FBT[MAX_ORDER];
@@ -38,10 +39,6 @@ private:
     std::size_t getBuddyIndex(std::size_t index, std::uint8_t order);
     std::size_t allocPageInternal(std::uint8_t order);
     void freePagesInternal(std::size_t index, std::uint8_t order);
-
-
-
-
 };
 
 }

@@ -8,22 +8,21 @@
 
 #include <list>
 
+#include "Constant.h"
+
 namespace kernel::mem {
 
-void PageTable::initKernelPageTable(PageTable* table, std::size_t hhdm, std::size_t hhdmSize,
+void PageTable::initKernelPageTable(PageTable* table, std::size_t hhdm, std::size_t pageCount,
                                     std::size_t kernelPhysBase, utils::Elf64File& kernelFile,
-                                    MemoryAllocator allocator)
+                                    MemoryAllocator* allocator)
 {
     std::uint16_t hhdmLvlFlags = pt_flag::FLAG_P | pt_flag::FLAG_W;
 
-    std::list<Page*> allPages;
-
     // Set Higher Half Direct Mapping using 2M page size (512 * PAGE_SIZE)
-    for (size_t i = 0; i < hhdmSize; i += 512) {
+    for (size_t i = 0; i < pageCount; i += 512) {
         std::uint64_t physAddr = i * PAGE_SIZE;
         std::uint64_t virtAddr = i * PAGE_SIZE + hhdm;
-        auto pages = table->mapPage(allocator, hhdmLvlFlags, virtAddr, hhdmLvlFlags, false, page_size::pt_2MiB, physAddr);
-        allPages.insert(allPages.begin(), pages.begin(), pages.end());
+        table->mapPage(allocator, hhdmLvlFlags, virtAddr, hhdmLvlFlags, false, page_size::pt_2MB, physAddr);
     }
 
     // Set Kernel Mapping
@@ -48,14 +47,26 @@ void PageTable::initKernelPageTable(PageTable* table, std::size_t hhdm, std::siz
 
         for (std::size_t i = 0; i < pageCount; ++i) {
             std::size_t physAddr = physBase + i * PAGE_SIZE;
-            std::size_t virtAddr = physBase + i * PAGE_SIZE;
-            auto pages = table->mapPage(allocator, hhdmLvlFlags, virtAddr, flags, noExec, page_size::pt_2KiB, physAddr);
-            allPages.insert(allPages.begin(), pages.begin(), pages.end());
+            std::size_t virtAddr = virtBase + i * PAGE_SIZE;
+            table->mapPage(allocator, hhdmLvlFlags, virtAddr, flags, noExec, page_size::pt_2KB, physAddr);
         }
     }
 
-    // Set Base for Kernel Heap
+    // Set Base for Kernel Heap sbrk (2 MB) + mmap (2 MB)
+    Page* brkPage = allocator->allocZeroedPage();
+    std::uint64_t brkPagePhysAddr = brkPage->getPhysicalAddr();
+    table->mapPage(allocator, hhdmLvlFlags, KERNEL_BRK_HEAP_START, hhdmLvlFlags, false, page_size::pt_2MB,
+                   brkPagePhysAddr);
+    Page* mmapPage = allocator->allocZeroedPage();
+    std::uint64_t mmapPagePhysAddr = mmapPage->getPhysicalAddr();
+    table->mapPage(allocator, hhdmLvlFlags, KERNEL_MMAP_HEAP_START, hhdmLvlFlags, false, page_size::pt_2MB,
+                   mmapPagePhysAddr);
 
+    // Set Base for Kernel Stack (2MB)
+    Page* stackPage = allocator->allocZeroedPage();
+    std::uint64_t stackPagePhysAddr = stackPage->getPhysicalAddr();
+    table->mapPage(allocator, hhdmLvlFlags, KERNEL_STACK_BOTTOM, hhdmLvlFlags, false, page_size::pt_2MB,
+                   stackPagePhysAddr);
 }
 
 }

@@ -37,15 +37,16 @@ void Kernel::start(KernelInfo& info)
     // Memory related constant
     kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING = info.hhdm;
     // Memory Allocator
+
     _memory.init(info.pageArray, info.pageCount);
 
     // Kernel base Page Table
-    mem::PageTable::initKernelPageTable(&_kernelPageTable, info.hhdm, info.hhdmSize, info.kernelPhysBase, kernelFile, _memory);
+    mem::PageTable::initKernelPageTable(&_kernelPageTable, info.hhdm, info.pageCount, info.kernelPhysBase, kernelFile,
+                                        &_memory);
+    set_CR3(_kernelPageTable.getPageTablePhysAddr());
 
     // Interrupts
     _interrupt.init();
-
-
 
     //_device.init();
     //_scheduler.init();

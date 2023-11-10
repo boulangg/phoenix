@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "MemoryAllocator.h"
+
+#include "MemoryAllocator.h"
 
 #include <algorithm>
 #include <bit>
@@ -23,12 +23,12 @@ static int test_free_block(Page* page_array, std::size_t start, std::size_t end)
 
 MemoryAllocator::MemoryAllocator() {}
 
-void MemoryAllocator::init(Page* pageArray, std::size_t pageCount)
+void MemoryAllocator::init(std::uint64_t pageArray, std::size_t pageCount)
 {
-    _pageArray = pageArray;
+    _pageArray = reinterpret_cast<Page*>(pageArray);
     _pageCount = pageCount;
 
-    for (std::size_t i = 0; i < MAX_ORDER; i++) {
+    for (std::int8_t i = 0; i < MAX_ORDER; i++) {
         _FBT[i] = 0;
     }
 
@@ -138,8 +138,9 @@ std::size_t MemoryAllocator::allocPageInternal(std::uint8_t order)
     while (_FBT[k0] == 0) {
         k0++;
         /* If we reach the end of the FBT, we can't satisfy the allocation */
-        if (k0 > MAX_ORDER)
+        if (k0 > MAX_ORDER) {
             return 0;
+        }
     }
 
     /* Remove first bloc from FBT */
@@ -156,7 +157,7 @@ std::size_t MemoryAllocator::allocPageInternal(std::uint8_t order)
 
     for (uint64_t i = 0; i < (1ul << order); ++i) {
         _pageArray[index + i].type = Page::Type::ALLOCATED;
-        _pageArray[i].nextFreeBlock = nullptr;
+        _pageArray[index + i].nextFreeBlock = nullptr;
     }
 
     return index;

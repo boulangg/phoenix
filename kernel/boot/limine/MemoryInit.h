@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstddef>
 #include <utility>
@@ -15,7 +15,6 @@
 
 namespace kernel::boot {
 
-std::pair<mem::Page*, std::size_t> initPageArray(const limine_memmap_request& memmap_request);
+std::pair<std::uint64_t, std::size_t> initPageArray(const limine_memmap_request& memmap_request);
 
 }
-

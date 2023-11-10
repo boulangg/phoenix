@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstdint>
 
@@ -20,20 +20,34 @@ class PageTable
 public:
     std::uint64_t getPageTablePhysAddr()
     {
-        return reinterpret_cast<uint64_t>(&pml4t) - kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
+        return _pageTable.getPageTablePhysAddr();
     }
 
-    std::list<Page*> mapPage(MemoryAllocator allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t flags,
-                             bool noExec, page_size pageSize, uint64_t physAddr)
+    std::uint64_t mapPage(MemoryAllocator* allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t flags,
+                          bool noExec, page_size pageSize, std::uint64_t physAddr)
     {
-        return pml4t->mapPage(allocator, highLvlFlags, virtAddr, flags, noExec, pageSize, physAddr);
+        return _pageTable.mapPage(allocator, highLvlFlags, virtAddr, flags, noExec, pageSize, physAddr);
     }
 
     static void initKernelPageTable(PageTable* table, std::size_t hhdm, std::size_t hhdmSize,
-                                    std::size_t kernelPhysBase, utils::Elf64File& kernelFile, MemoryAllocator allocator);
+                                    std::size_t kernelPhysBase, utils::Elf64File& kernelFile,
+                                    MemoryAllocator* allocator);
 
 private:
-    pml4e_t pml4t[512];
+    page_table _pageTable;
 };
 
 }
+
+// ASM functions
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+extern void set_CR3(std::uint64_t pml4t);
+extern std::uint64_t get_CR3();
+
+#ifdef __cplusplus
+}
+#endif
