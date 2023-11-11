@@ -17,9 +17,11 @@
 #define PROT_NONE  0x0 /* Page can not be accessed. */
 
 // Flag options
-#define MAP_SHARED  0x01 /* Share changes. */
-#define MAP_PRIVATE 0x02 /* Changes are private. */
-#define MAP_FIXED   0x10 /* Interpret addr exactly. */
+#define MAP_SHARED    0x01     /* Share changes. */
+#define MAP_PRIVATE   0x02     /* Changes are private. */
+#define MAP_FIXED     0x10     /* Interpret addr exactly. */
+#define MAP_ANON      0x1000   /* allocated from memory, swap space */
+#define MAP_ANONYMOUS MAP_ANON /* alternate POSIX spelling */
 
 // msync optinos
 #define MS_ASYNC      1 /* Sync memory asynchronously. */
@@ -31,7 +33,8 @@
 #define MCL_FUTURE  2 /* Lock all additions to address space. */
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 int mlock(const void* addr, size_t length);

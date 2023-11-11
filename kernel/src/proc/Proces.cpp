@@ -3,11 +3,7 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "Process.h"
 
-namespace kernel::proc {
+#include "Process.h"
 
-Process::Process() : _addressSpace() {}
-
-}
+namespace kernel::proc {}

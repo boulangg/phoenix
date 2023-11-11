@@ -9,11 +9,8 @@
 #include <cstddef>
 
 #include "core/InterruptDispatcher.h"
-#include "dev/DeviceExplorer.h"
+#include "mem/AddressSpace.h"
 #include "mem/MemoryAllocator.h"
-#include "mem/Page.h"
-#include "mem/PageTable.h"
-#include "proc/ProcessScheduler.h"
 
 namespace kernel {
 
@@ -36,7 +33,7 @@ private:
     static void setupGlobalConstructors();
 
     static mem::MemoryAllocator _memory;
-    static mem::PageTable _kernelPageTable;
+    static mem::AddressSpace* _kernelAddressSpace;
     static core::InterruptDispatcher _interrupt;
 
     // dev::DeviceExplorer _device;

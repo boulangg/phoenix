@@ -12,10 +12,9 @@
 
 namespace kernel {
 
-core::InterruptDispatcher Kernel::_interrupt;
-
 mem::MemoryAllocator Kernel::_memory;
-mem::PageTable Kernel::_kernelPageTable __attribute__((aligned(4096)));
+mem::AddressSpace* Kernel::_kernelAddressSpace __attribute__((aligned(4096)));
+core::InterruptDispatcher Kernel::_interrupt;
 
 typedef void (*func_ptr)(void);
 extern "C" func_ptr _init_array_start[0], _init_array_end[0];
@@ -27,17 +26,18 @@ void Kernel::setupGlobalConstructors()
     }
 }
 
-static void initKernelPageTable(mem::PageTable* table, std::size_t hhdm, std::size_t pageCount,
+static mem::AddressSpace* initKernelPageTable(std::size_t hhdm, std::size_t pageCount,
                                 std::size_t kernelPhysBase, utils::Elf64File& kernelFile,
                                 mem::MemoryAllocator* allocator)
 {
+    mem::PageTable table{};
     std::uint16_t hhdmLvlFlags = mem::pt_flag::FLAG_P | mem::pt_flag::FLAG_W;
 
     // Set Higher Half Direct Mapping using 2M page size (512 * PAGE_SIZE)
     for (size_t i = 0; i < pageCount; i += 512) {
         std::uint64_t physAddr = i * PAGE_SIZE;
         std::uint64_t virtAddr = i * PAGE_SIZE + hhdm;
-        table->mapPage(allocator, hhdmLvlFlags, virtAddr, hhdmLvlFlags, false, mem::page_size::pt_2MB, physAddr);
+        table.mapPage(allocator, hhdmLvlFlags, virtAddr, hhdmLvlFlags, false, mem::page_size::pt_2MB, physAddr);
     }
 
     // Set Kernel Mapping
@@ -63,14 +63,14 @@ static void initKernelPageTable(mem::PageTable* table, std::size_t hhdm, std::si
         for (std::size_t i = 0; i < pageCount; ++i) {
             std::size_t physAddr = physBase + i * PAGE_SIZE;
             std::size_t virtAddr = virtBase + i * PAGE_SIZE;
-            table->mapPage(allocator, hhdmLvlFlags, virtAddr, flags, noExec, mem::page_size::pt_2KB, physAddr);
+            table.mapPage(allocator, hhdmLvlFlags, virtAddr, flags, noExec, mem::page_size::pt_2KB, physAddr);
         }
     }
 
     // Set Base for Kernel Heap sbrk (2 MB) + mmap (2 MB)
     mem::Page* brkPage = allocator->allocZeroedPages(9);
     std::uint64_t brkPagePhysAddr = brkPage->getPhysicalAddr();
-    table->mapPage(allocator, hhdmLvlFlags, KERNEL_BRK_HEAP_START, hhdmLvlFlags, false, mem::page_size::pt_2MB,
+    table.mapPage(allocator, hhdmLvlFlags, KERNEL_BRK_HEAP_START, hhdmLvlFlags, false, mem::page_size::pt_2MB,
                    brkPagePhysAddr);
     // mem::Page* mmapPage = allocator->allocZeroedPages(9);
     // std::uint64_t mmapPagePhysAddr = mmapPage->getPhysicalAddr();
@@ -82,6 +82,21 @@ static void initKernelPageTable(mem::PageTable* table, std::size_t hhdm, std::si
     // std::uint64_t stackPagePhysAddr = stackPage->getPhysicalAddr();
     // table->mapPage(allocator, hhdmLvlFlags, KERNEL_STACK_TOP - PAGE_SIZE * 512, hhdmLvlFlags, false,
     // page_size::pt_2MB, stackPagePhysAddr);
+
+    set_CR3(table.getPageTablePhysAddr());
+
+    mem::AddressSpace* kernelAddrSpace = new mem::AddressSpace(table);
+    kernelAddrSpace->load(kernelFile, nullptr);
+
+    // Set Base for Kernel Heap sbrk (2 MB)
+    std::uint32_t kernelHeapProt =
+        mem::MemoryRegion::Prot::READ | mem::MemoryRegion::Prot::WRITE;
+    std::uint32_t kernelHeapFlags = 
+        mem::MemoryRegion::Flags::PRIVATE | mem::MemoryRegion::Flags::ANON;
+    kernelAddrSpace->mmap(KERNEL_BRK_HEAP_START, KERNEL_BRK_HEAP_END - KERNEL_BRK_HEAP_START, kernelHeapProt,
+                          kernelHeapFlags, nullptr, 0);
+
+    return kernelAddrSpace;
 }
 
 void Kernel::init(KernelInfo& info)
@@ -96,8 +111,7 @@ void Kernel::init(KernelInfo& info)
     _memory.init(info.pageArray, info.pageCount);
 
     // Kernel base Page Table
-    initKernelPageTable(&_kernelPageTable, info.hhdm, info.pageCount, info.kernelPhysBase, kernelFile, &_memory);
-    set_CR3(_kernelPageTable.getPageTablePhysAddr());
+    _kernelAddressSpace = initKernelPageTable(info.hhdm, info.pageCount, info.kernelPhysBase, kernelFile, &_memory);
 
     // Interrupts
     _interrupt.init();

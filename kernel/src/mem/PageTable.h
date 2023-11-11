@@ -29,10 +29,6 @@ public:
         return _pageTable.mapPage(allocator, highLvlFlags, virtAddr, flags, noExec, pageSize, physAddr);
     }
 
-    static void initKernelPageTable(PageTable* table, std::size_t hhdm, std::size_t hhdmSize,
-                                    std::size_t kernelPhysBase, utils::Elf64File& kernelFile,
-                                    MemoryAllocator* allocator);
-
 private:
     page_table _pageTable;
 };
