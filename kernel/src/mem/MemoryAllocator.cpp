@@ -35,7 +35,7 @@ void MemoryAllocator::init(std::uint64_t pageArray, std::size_t pageCount)
     std::size_t i = 1; // The page 0 is never available
     while (i < _pageCount) {
         std::size_t tmp = i;
-        std::int8_t max_order = std::bit_width(tmp) - 1;
+        std::int8_t max_order = std::countr_zero(tmp);
         std::int8_t order = -1;
         std::size_t start = i;
         std::size_t end = i + 1;
@@ -81,7 +81,7 @@ Page* MemoryAllocator::allocZeroedPages(std::uint8_t order)
         return nullptr;
     }
 
-    std::size_t size = (1 << order) * PAGE_SIZE;
+    std::size_t size = (1 << order) * PAGE_SIZE / sizeof(std::uint64_t);
     std::uint64_t* startAddr = (uint64_t*)page->getKernelAddr();
     std::fill_n(startAddr, size, 0);
 
@@ -149,8 +149,8 @@ std::size_t MemoryAllocator::allocPageInternal(std::uint8_t order)
 
     /* Fragment bloc until reaching desired size and save buddies in table */
     while (k0 > order) {
-        std::size_t buddyIndex = getBuddyIndex(index, k0 - 1);
         k0--;
+        std::size_t buddyIndex = getBuddyIndex(index, k0);
         _FBT[k0] = _pageArray + buddyIndex;
         _FBT[k0]->nextFreeBlock = nullptr;
     }

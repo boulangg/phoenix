@@ -22,6 +22,7 @@ void PageTable::initKernelPageTable(PageTable* table, std::size_t hhdm, std::siz
     for (size_t i = 0; i < pageCount; i += 512) {
         std::uint64_t physAddr = i * PAGE_SIZE;
         std::uint64_t virtAddr = i * PAGE_SIZE + hhdm;
+        table->mapPage(allocator, hhdmLvlFlags, physAddr, hhdmLvlFlags, false, page_size::pt_2MB, physAddr);
         table->mapPage(allocator, hhdmLvlFlags, virtAddr, hhdmLvlFlags, false, page_size::pt_2MB, physAddr);
     }
 
@@ -34,7 +35,7 @@ void PageTable::initKernelPageTable(PageTable* table, std::size_t hhdm, std::siz
         }
 
         if (pHdr.p_flags & kernel::utils::Elf64::ProgramFlag::PF_W) {
-            flags &= pt_flag::FLAG_W;
+            flags |= pt_flag::FLAG_W;
         }
         if (pHdr.p_flags & kernel::utils::Elf64::ProgramFlag::PF_X) {
             noExec = false;
@@ -52,6 +53,8 @@ void PageTable::initKernelPageTable(PageTable* table, std::size_t hhdm, std::siz
         }
     }
 
+    set_CR3(table->getPageTablePhysAddr());
+
     // Set Base for Kernel Heap sbrk (2 MB) + mmap (2 MB)
     Page* brkPage = allocator->allocZeroedPage();
     std::uint64_t brkPagePhysAddr = brkPage->getPhysicalAddr();
@@ -65,7 +68,7 @@ void PageTable::initKernelPageTable(PageTable* table, std::size_t hhdm, std::siz
     // Set Base for Kernel Stack (2MB)
     Page* stackPage = allocator->allocZeroedPage();
     std::uint64_t stackPagePhysAddr = stackPage->getPhysicalAddr();
-    table->mapPage(allocator, hhdmLvlFlags, KERNEL_STACK_BOTTOM, hhdmLvlFlags, false, page_size::pt_2MB,
+    table->mapPage(allocator, hhdmLvlFlags, KERNEL_STACK_TOP - PAGE_SIZE * 512, hhdmLvlFlags, false, page_size::pt_2MB,
                    stackPagePhysAddr);
 }
 
