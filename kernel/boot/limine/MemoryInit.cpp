@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "Constant.h"
 #include "utils/Utils.h"
 
 namespace kernel::boot {
@@ -27,8 +28,8 @@ static std::pair<std::uint64_t, std::uint64_t> base_alloc_pages(std::uint64_t nb
             continue;
         }
         std::uint64_t baseStart = std::max(BASE_PAGE_ARRAY_MAPPING, entry->base);
-        if (entry->base + entry->length > baseStart + nb_pages * mem::PAGE_SIZE) {
-            return {baseStart, baseStart + nb_pages * mem::PAGE_SIZE};
+        if (entry->base + entry->length > baseStart + nb_pages * PAGE_SIZE) {
+            return {baseStart, baseStart + nb_pages * PAGE_SIZE};
         }
     }
 
@@ -37,7 +38,7 @@ static std::pair<std::uint64_t, std::uint64_t> base_alloc_pages(std::uint64_t nb
 
 static void resetPageArray(mem::Page* pageArray, std::uint64_t indexEnd)
 {
-    for (auto index = 0; index < indexEnd; ++index) {
+    for (std::uint64_t index = 0; index < indexEnd; ++index) {
         pageArray[index].type = mem::Page::Type::UNUSABLE;
         pageArray[index].index = index;
         pageArray[index].nextFreeBlock = nullptr;
@@ -63,8 +64,8 @@ std::pair<std::uint64_t, std::size_t> initPageArray(const limine_memmap_request&
     }
 
     // Find enough consecutive available pages to store the pageArray
-    std::uint64_t nbPhysicalPages = utils::divRoundUp(maxAvailableMemory, mem::PAGE_SIZE);
-    std::uint64_t nbRequiredPages = utils::divRoundUp(nbPhysicalPages * sizeof(mem::Page), mem::PAGE_SIZE);
+    std::uint64_t nbPhysicalPages = utils::divRoundUp(maxAvailableMemory, PAGE_SIZE);
+    std::uint64_t nbRequiredPages = utils::divRoundUp(nbPhysicalPages * sizeof(mem::Page), PAGE_SIZE);
     auto allocPages = base_alloc_pages(nbRequiredPages, memmap_request);
     mem::Page* pageArray = reinterpret_cast<mem::Page*>(allocPages.first);
 
@@ -78,8 +79,8 @@ std::pair<std::uint64_t, std::size_t> initPageArray(const limine_memmap_request&
             break;
         }
 
-        auto indexStart = entry->base / mem::PAGE_SIZE;
-        auto indexEnd = (entry->base + entry->length) / mem::PAGE_SIZE;
+        auto indexStart = entry->base / PAGE_SIZE;
+        auto indexEnd = (entry->base + entry->length) / PAGE_SIZE;
 
         switch (entry->type) {
         case LIMINE_MEMMAP_USABLE:
@@ -110,8 +111,8 @@ std::pair<std::uint64_t, std::size_t> initPageArray(const limine_memmap_request&
     }
 
     // Allocate memory used for the page_array
-    auto indexStart = allocPages.first / mem::PAGE_SIZE;
-    auto indexEnd = allocPages.second / mem::PAGE_SIZE;
+    auto indexStart = allocPages.first / PAGE_SIZE;
+    auto indexEnd = allocPages.second / PAGE_SIZE;
     setPageType(pageArray, indexStart, indexEnd, mem::Page::Type::KERNEL);
 
     return {allocPages.first, nbPhysicalPages};

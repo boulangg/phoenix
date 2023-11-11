@@ -3,11 +3,7 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "Page.h"
 
-namespace kernel::mem {
+#include "Page.h"
 
-std::uint64_t Page::KERNEL_BASE_LINEAR_MAPPING;
-
-}
+namespace kernel::mem {}

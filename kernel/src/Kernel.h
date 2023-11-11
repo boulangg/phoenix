@@ -30,7 +30,7 @@ struct KernelInfo
 class Kernel
 {
 public:
-    static void start(KernelInfo& info);
+    static void init(KernelInfo& info);
 
 private:
     static void setupGlobalConstructors();

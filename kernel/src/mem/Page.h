@@ -3,20 +3,18 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
 
-namespace kernel::mem {
+#include "Constant.h"
 
-static constexpr std::size_t PAGE_SIZE = 0x1000; // 4kB
+namespace kernel::mem {
 
 struct Page
 {
-    static std::uint64_t KERNEL_BASE_LINEAR_MAPPING;
-
     enum Type
     {
         UNUSABLE,

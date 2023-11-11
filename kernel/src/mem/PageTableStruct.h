@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "Constant.h"
 #include "MemoryAllocator.h"
 #include "Page.h"
 
@@ -73,7 +74,7 @@ struct pde_t
 
     pt_t getPt() const
     {
-        std::uint64_t ptr = getPhysicalPtr() | kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
+        std::uint64_t ptr = getPhysicalPtr() | KERNEL_BASE_LINEAR_MAPPING;
         return reinterpret_cast<pt_t>(ptr);
     }
 
@@ -123,7 +124,7 @@ struct pdpe_t
 
     pdt_t getPdt() const
     {
-        std::uint64_t ptr = getPhysicalPtr() | kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
+        std::uint64_t ptr = getPhysicalPtr() | KERNEL_BASE_LINEAR_MAPPING;
         return reinterpret_cast<pdt_t>(ptr);
     }
 
@@ -173,7 +174,7 @@ struct pml4e_t
 
     pdpt_t getPdpt() const
     {
-        std::uint64_t ptr = getPhysicalPtr() | kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
+        std::uint64_t ptr = getPhysicalPtr() | KERNEL_BASE_LINEAR_MAPPING;
         return reinterpret_cast<pdpt_t>(ptr);
     }
 
@@ -214,7 +215,7 @@ struct page_table
 
     pml4t_t getPml4t() const
     {
-        std::uint64_t ptr = getPhysicalPtr() | kernel::mem::Page::KERNEL_BASE_LINEAR_MAPPING;
+        std::uint64_t ptr = getPhysicalPtr() | KERNEL_BASE_LINEAR_MAPPING;
         return reinterpret_cast<pml4t_t>(ptr);
     }
 

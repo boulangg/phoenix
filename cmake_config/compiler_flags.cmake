@@ -25,7 +25,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "-g")
 add_library(nostd_options INTERFACE)
 target_link_options(nostd_options INTERFACE -nodefaultlibs -nostdlib -no-pie)
 target_compile_options(nostd_options INTERFACE 
-		$<$<COMPILE_LANGUAGE:C>:-nostdinc>
+		$<$<COMPILE_LANGUAGE:C>:-nostdinc -DHAVE_MMAP=0>
 		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>
 )
 		

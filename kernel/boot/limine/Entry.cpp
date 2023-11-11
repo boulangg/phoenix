@@ -76,7 +76,7 @@ void _start(void)
         .kernelVirtBase = kernel_address_request.response->virtual_base,
 
     };
-    kernel::Kernel::start(info);
+    kernel::Kernel::init(info);
 
     // We're done, just hang...
     hcf();
