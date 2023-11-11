@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -102,10 +102,12 @@ template <class Value>
 class SimpleContainer
 {
 public:
-    using iterator = SimpleContainerIterator<Value>;
+    using value_type = Value;
+    using reference_type = Value&;
+    using iterator = SimpleContainerIterator<value_type>;
     SimpleContainer() : _ptr(nullptr), _count(0), _entrySize(0) {}
 
-    SimpleContainer(Value* ptr, std::size_t count, std::size_t entrySize = sizeof(Value)) :
+    SimpleContainer(value_type* ptr, std::size_t count, std::size_t entrySize = sizeof(value_type)) :
         _ptr(ptr), _count(count), _entrySize(entrySize)
     {}
     ~SimpleContainer() {}
@@ -118,6 +120,11 @@ public:
     iterator end()
     {
         return iterator(_ptr, _count, _entrySize);
+    }
+
+    reference_type operator[](std::size_t index)
+    {
+        return _ptr[index];
     }
 
     std::size_t size()

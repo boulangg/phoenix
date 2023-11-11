@@ -30,8 +30,6 @@ public:
     static void init(KernelInfo& info);
 
 private:
-    static void setupGlobalConstructors();
-
     static mem::MemoryAllocator _memory;
     static mem::AddressSpace* _kernelAddressSpace;
     static core::InterruptDispatcher _interrupt;

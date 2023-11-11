@@ -10,19 +10,31 @@
 #include "GlobalDescTable.h"
 #include "utils/Elf64File.h"
 
+#include <string.h>
+
 namespace kernel {
 
 mem::MemoryAllocator Kernel::_memory;
-mem::AddressSpace* Kernel::_kernelAddressSpace __attribute__((aligned(4096)));
+mem::AddressSpace* Kernel::_kernelAddressSpace;
 core::InterruptDispatcher Kernel::_interrupt;
 
-typedef void (*func_ptr)(void);
-extern "C" func_ptr _init_array_start[0], _init_array_end[0];
-
-void Kernel::setupGlobalConstructors()
+static void setupGlobalConstructors(utils::Elf64File& kernelFile)
 {
-    for (auto fn = _init_array_start; fn != _init_array_end; fn++) {
-        (*fn)();
+    char* strTable = kernelFile.getStringTable();
+    for (auto& sHdr : kernelFile.getSectionHeaders()) {
+        if (strcmp(".init_array", strTable + sHdr.sh_name) != 0) {
+            continue;
+        }
+
+        using func_ptr = void (*)(void);
+        func_ptr* initArrayStart = reinterpret_cast<func_ptr*>(sHdr.sh_addr);
+        std::size_t initArrayCount = sHdr.sh_size / sHdr.sh_entsize;
+
+        for (std::size_t i = 0; i < initArrayCount; ++i) {
+            initArrayStart[i]();
+        }
+
+        break;
     }
 }
 
@@ -102,6 +114,7 @@ static mem::AddressSpace* initKernelPageTable(std::size_t hhdm, std::size_t page
 void Kernel::init(KernelInfo& info)
 {
     utils::Elf64File kernelFile(info.kernelFileAddr);
+    setupGlobalConstructors(kernelFile);
 
     // Generic CPU struct
     GDT::setupGDT();

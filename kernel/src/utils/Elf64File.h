@@ -23,6 +23,7 @@ public:
 
     Elf64File(std::uint64_t fileStartAddr)
     {
+        _fileStartAddr = fileStartAddr;
         _fileHeader = reinterpret_cast<Elf64::Ehdr*>(fileStartAddr);
         Elf64::Phdr* pHdr_ptr = reinterpret_cast<Elf64::Phdr*>(fileStartAddr + _fileHeader->e_phoff);
         _programHeaders = phdr_container(pHdr_ptr, _fileHeader->e_phnum, _fileHeader->e_phentsize);
@@ -40,7 +41,15 @@ public:
         return _sectionHeaders;
     }
 
+    char* getStringTable()
+    {
+        Elf64::Shdr& hdr = _sectionHeaders[_fileHeader->e_shstrndx];
+        std::uint64_t startSection = _fileStartAddr + hdr.sh_offset;
+        return reinterpret_cast<char*>(startSection);
+    }
+
 private:
+    std::uint64_t _fileStartAddr;
     Elf64::Ehdr* _fileHeader;
     phdr_container _programHeaders;
     shdr_container _sectionHeaders;
