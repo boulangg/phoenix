@@ -3,23 +3,13 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
-
-#pragma once
-
-#include <list>
+ 
+ #include "Inode.h"
 
 namespace kernel::fs {
 
-class DEntry;
+Inode::Inode() {}
 
-class Inode
-{
-public:
-    Inode();
-    virtual ~Inode();
-
-private:
-    std::list<DEntry*> dentries;
-};
+Inode::~Inode() {}
 
 }

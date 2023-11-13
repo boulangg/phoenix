@@ -72,9 +72,9 @@ void _start(void)
         .pageCount = pageArray.second,
         .hhdm = hhdm_request.response->offset,
         .kernelFileAddr = kernelFileAddr,
+        .kernelFileSize = kernel_file_request.response->kernel_file->size,
         .kernelPhysBase = kernel_address_request.response->physical_base,
         .kernelVirtBase = kernel_address_request.response->virtual_base,
-
     };
     kernel::Kernel::init(info);
 

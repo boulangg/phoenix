@@ -3,23 +3,19 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
-
-#pragma once
-
-#include <list>
+ 
+ #pragma once
 
 namespace kernel::fs {
 
-class DEntry;
-
-class Inode
+class SuperBlock
 {
 public:
-    Inode();
-    virtual ~Inode();
+    virtual 
 
-private:
-    std::list<DEntry*> dentries;
+protected:
+    std::uint64_t _blockSize;
+
 };
 
 }

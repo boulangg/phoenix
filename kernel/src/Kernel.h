@@ -9,8 +9,9 @@
 #include <cstddef>
 
 #include "core/InterruptDispatcher.h"
-#include "mem/AddressSpace.h"
 #include "mem/MemoryAllocator.h"
+#include "mem/MemoryDescriptor.h"
+#include "proc/ProcessScheduler.h"
 
 namespace kernel {
 
@@ -20,6 +21,7 @@ struct KernelInfo
     std::size_t pageCount;
     std::size_t hhdm;
     std::size_t kernelFileAddr;
+    std::size_t kernelFileSize;
     std::size_t kernelPhysBase;
     std::size_t kernelVirtBase;
 };
@@ -28,14 +30,16 @@ class Kernel
 {
 public:
     static void init(KernelInfo& info);
+    static void start();
+
+    static mem::MemoryAllocator memory;
+    static proc::ProcessScheduler* scheduler;
 
 private:
-    static mem::MemoryAllocator _memory;
-    static mem::AddressSpace* _kernelAddressSpace;
-    static core::InterruptDispatcher _interrupt;
+    static mem::MemoryDescriptor* _kernelMemDesc;
+    static core::InterruptDispatcher* _interrupt;
 
     // dev::DeviceExplorer _device;
-    // proc::ProcessScheduler _scheduler;
 };
 
 }

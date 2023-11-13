@@ -8,52 +8,65 @@
 
 #include "Constant.h"
 #include "GlobalDescTable.h"
+#include "fs/kernelfs/KernelFile.h"
 #include "utils/Elf64File.h"
 
 #include <string.h>
 
 namespace kernel {
 
-mem::MemoryAllocator Kernel::_memory;
-mem::AddressSpace* Kernel::_kernelAddressSpace;
-core::InterruptDispatcher Kernel::_interrupt;
+mem::MemoryAllocator Kernel::memory;
+mem::MemoryDescriptor* Kernel::_kernelMemDesc;
+core::InterruptDispatcher* Kernel::_interrupt;
+proc::ProcessScheduler* Kernel::scheduler;
 
 static void setupGlobalConstructors(utils::Elf64File& kernelFile)
 {
-    char* strTable = kernelFile.getStringTable();
-    for (auto& sHdr : kernelFile.getSectionHeaders()) {
-        if (strcmp(".init_array", strTable + sHdr.sh_name) != 0) {
-            continue;
+    char sectionName[64];
+    for (std::size_t i = 0; i < kernelFile.getFileHeader().e_shnum; ++i) {
+        auto sHdr = kernelFile.getSectionHeader(i);
+        kernelFile.getString(sHdr.sh_name, sectionName, 64);
+        if (strcmp(".init_array", sectionName) == 0) {
+            using func_ptr = void (*)(void);
+            func_ptr* initArrayStart = reinterpret_cast<func_ptr*>(sHdr.sh_addr);
+            std::size_t initArrayCount = sHdr.sh_size / sHdr.sh_entsize;
+
+            for (std::size_t i = 0; i < initArrayCount; ++i) {
+                initArrayStart[i]();
+            }
+
+            break;
         }
-
-        using func_ptr = void (*)(void);
-        func_ptr* initArrayStart = reinterpret_cast<func_ptr*>(sHdr.sh_addr);
-        std::size_t initArrayCount = sHdr.sh_size / sHdr.sh_entsize;
-
-        for (std::size_t i = 0; i < initArrayCount; ++i) {
-            initArrayStart[i]();
-        }
-
-        break;
     }
 }
 
-static mem::AddressSpace* initKernelPageTable(std::size_t hhdm, std::size_t pageCount,
-                                std::size_t kernelPhysBase, utils::Elf64File& kernelFile,
-                                mem::MemoryAllocator* allocator)
+static mem::MemoryDescriptor* initKernelPageTable(std::size_t hhdm, std::size_t pageCount, std::size_t kernelPhysBase,
+                                                  utils::Elf64File& kernelFile)
 {
     mem::PageTable table{};
+
+    // Init level4 page table for kernel virtual address space
+    for (auto i = 256; i < 512; ++i) {
+        if (i == RESERVED_KERNEL_PAGE_TABLE_LVL4) {
+            // Space for the kernel/syscall stack, not copied from parent
+            continue;
+        }
+        mem::Page* lvl4Page = alloc_zeroed_page();
+        table.initLevel4Page(i, lvl4Page->getPhysicalAddr());
+    }
+
     std::uint16_t hhdmLvlFlags = mem::pt_flag::FLAG_P | mem::pt_flag::FLAG_W;
 
     // Set Higher Half Direct Mapping using 2M page size (512 * PAGE_SIZE)
     for (size_t i = 0; i < pageCount; i += 512) {
         std::uint64_t physAddr = i * PAGE_SIZE;
         std::uint64_t virtAddr = i * PAGE_SIZE + hhdm;
-        table.mapPage(allocator, hhdmLvlFlags, virtAddr, hhdmLvlFlags, false, mem::page_size::pt_2MB, physAddr);
+        table.mapPage(hhdmLvlFlags, virtAddr, hhdmLvlFlags, false, mem::page_size::pt_2MB, physAddr);
     }
 
     // Set Kernel Mapping
-    for (const auto& pHdr : kernelFile.getProgramHeaders()) {
+    for (std::size_t i = 0; i < kernelFile.getFileHeader().e_phnum; ++i) {
+        auto pHdr = kernelFile.getProgramHeader(i);
         bool noExec = true;
         std::uint16_t flags = mem::pt_flag::FLAG_P;
         if (pHdr.p_type != kernel::utils::Elf64::ProgramType::PT_LOAD) {
@@ -75,62 +88,64 @@ static mem::AddressSpace* initKernelPageTable(std::size_t hhdm, std::size_t page
         for (std::size_t i = 0; i < pageCount; ++i) {
             std::size_t physAddr = physBase + i * PAGE_SIZE;
             std::size_t virtAddr = virtBase + i * PAGE_SIZE;
-            table.mapPage(allocator, hhdmLvlFlags, virtAddr, flags, noExec, mem::page_size::pt_2KB, physAddr);
+            table.mapPage(hhdmLvlFlags, virtAddr, flags, noExec, mem::page_size::pt_4KB, physAddr);
         }
     }
 
-    // Set Base for Kernel Heap sbrk (2 MB) + mmap (2 MB)
-    mem::Page* brkPage = allocator->allocZeroedPages(9);
+    // Set Base for Kernel Heap sbrk (2 MB)
+    mem::Page* brkPage = alloc_zeroed_pages(9);
     std::uint64_t brkPagePhysAddr = brkPage->getPhysicalAddr();
-    table.mapPage(allocator, hhdmLvlFlags, KERNEL_BRK_HEAP_START, hhdmLvlFlags, false, mem::page_size::pt_2MB,
-                   brkPagePhysAddr);
-    // mem::Page* mmapPage = allocator->allocZeroedPages(9);
-    // std::uint64_t mmapPagePhysAddr = mmapPage->getPhysicalAddr();
-    // table->mapPage(allocator, hhdmLvlFlags, KERNEL_MMAP_HEAP_START, hhdmLvlFlags, false, mem::page_size::pt_2MB,
-    //                mmapPagePhysAddr);
-
-    // Set Base for Kernel Stack (2MB)
-    // Page* stackPage = allocator->allocZeroedPages(9);
-    // std::uint64_t stackPagePhysAddr = stackPage->getPhysicalAddr();
-    // table->mapPage(allocator, hhdmLvlFlags, KERNEL_STACK_TOP - PAGE_SIZE * 512, hhdmLvlFlags, false,
-    // page_size::pt_2MB, stackPagePhysAddr);
+    table.mapPage(hhdmLvlFlags, KERNEL_BRK_HEAP_START, hhdmLvlFlags, false, mem::page_size::pt_2MB, brkPagePhysAddr);
 
     set_CR3(table.getPageTablePhysAddr());
 
-    mem::AddressSpace* kernelAddrSpace = new mem::AddressSpace(table);
-    kernelAddrSpace->load(kernelFile, nullptr);
+    mem::MemoryDescriptor* kernelMemDesc = new mem::MemoryDescriptor(table);
+    kernelMemDesc->load(kernelFile, nullptr);
 
-    // Set Base for Kernel Heap sbrk (2 MB)
-    std::uint32_t kernelHeapProt =
-        mem::MemoryRegion::Prot::READ | mem::MemoryRegion::Prot::WRITE;
-    std::uint32_t kernelHeapFlags = 
-        mem::MemoryRegion::Flags::PRIVATE | mem::MemoryRegion::Flags::ANON;
-    kernelAddrSpace->mmap(KERNEL_BRK_HEAP_START, KERNEL_BRK_HEAP_END - KERNEL_BRK_HEAP_START, kernelHeapProt,
-                          kernelHeapFlags, nullptr, 0);
-
-    return kernelAddrSpace;
+    return kernelMemDesc;
 }
 
 void Kernel::init(KernelInfo& info)
 {
-    utils::Elf64File kernelFile(info.kernelFileAddr);
-    setupGlobalConstructors(kernelFile);
+    fs::kernelfs::KernelFile file(info.kernelFileAddr, info.kernelFileSize);
+    utils::Elf64File kernelFile(&file);
 
     // Generic CPU struct
     GDT::setupGDT();
     TSS::setupTSS();
 
     // Memory Allocator
-    _memory.init(info.pageArray, info.pageCount);
+    memory.init(info.pageArray, info.pageCount);
 
     // Kernel base Page Table
-    _kernelAddressSpace = initKernelPageTable(info.hhdm, info.pageCount, info.kernelPhysBase, kernelFile, &_memory);
+    _kernelMemDesc = initKernelPageTable(info.hhdm, info.pageCount, info.kernelPhysBase, kernelFile);
+
+    // Global constructors (requires initKernelPageTable for malloc)
+    setupGlobalConstructors(kernelFile);
 
     // Interrupts
-    _interrupt.init();
+    _interrupt = new core::InterruptDispatcher();
+    _interrupt->init();
 
+    scheduler = new proc::ProcessScheduler();
+    scheduler->init(_kernelMemDesc->getPageTable(), Kernel::start);
+}
+
+// Halt and catch fire function.
+static void hcf(void)
+{
+    asm("cli");
+    for (;;) {
+        asm("hlt");
+        asm("nop");
+        schedule();
+    }
+}
+
+void Kernel::start()
+{
     //_device.init();
-    //_scheduler.init();
+    hcf();
 }
 
 }

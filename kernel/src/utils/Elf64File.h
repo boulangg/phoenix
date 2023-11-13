@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "fs/File.h"
+
 #include "Elf64.h"
 #include "Utils.h"
 
@@ -21,38 +23,53 @@ public:
     using phdr_container = kernel::utils::SimpleContainer<Elf64::Phdr>;
     using shdr_container = kernel::utils::SimpleContainer<Elf64::Shdr>;
 
-    Elf64File(std::uint64_t fileStartAddr)
+    Elf64File(fs::File* file) : _file(file)
     {
-        _fileStartAddr = fileStartAddr;
-        _fileHeader = reinterpret_cast<Elf64::Ehdr*>(fileStartAddr);
-        Elf64::Phdr* pHdr_ptr = reinterpret_cast<Elf64::Phdr*>(fileStartAddr + _fileHeader->e_phoff);
-        _programHeaders = phdr_container(pHdr_ptr, _fileHeader->e_phnum, _fileHeader->e_phentsize);
-        Elf64::Shdr* sHdr_ptr = reinterpret_cast<Elf64::Shdr*>(fileStartAddr + _fileHeader->e_shoff);
-        _sectionHeaders = shdr_container(sHdr_ptr, _fileHeader->e_shnum, _fileHeader->e_shentsize);
+        _file->llseek(0, SEEK_SET);
+        _file->read(reinterpret_cast<char*>(&_fileHeader), sizeof(Elf64::Ehdr));
+        _file->llseek(_fileHeader.e_shoff + _fileHeader.e_shstrndx * _fileHeader.e_shentsize, SEEK_SET);
+        _file->read(reinterpret_cast<char*>(&_strTableHdr), sizeof(Elf64::Shdr));
     }
 
-    phdr_container& getProgramHeaders()
+    const Elf64::Ehdr& getFileHeader()
     {
-        return _programHeaders;
+        return _fileHeader;
     }
 
-    shdr_container& getSectionHeaders()
+    Elf64::Phdr getProgramHeader(std::size_t index)
     {
-        return _sectionHeaders;
+        Elf64::Phdr pHdr{};
+        if (index > _fileHeader.e_shnum) {
+            return pHdr;
+        }
+
+        _file->llseek(_fileHeader.e_phoff + index * _fileHeader.e_phentsize, SEEK_SET);
+        _file->read(reinterpret_cast<char*>(&pHdr), sizeof(Elf64::Phdr));
+        return pHdr;
     }
 
-    char* getStringTable()
+    Elf64::Shdr getSectionHeader(std::size_t index)
     {
-        Elf64::Shdr& hdr = _sectionHeaders[_fileHeader->e_shstrndx];
-        std::uint64_t startSection = _fileStartAddr + hdr.sh_offset;
-        return reinterpret_cast<char*>(startSection);
+        Elf64::Shdr sHdr{};
+        if (index > _fileHeader.e_shnum) {
+            return sHdr;
+        }
+
+        _file->llseek(_fileHeader.e_shoff + index * _fileHeader.e_shentsize, SEEK_SET);
+        _file->read(reinterpret_cast<char*>(&sHdr), sizeof(Elf64::Shdr));
+        return sHdr;
+    }
+
+    void getString(std::size_t index, char* buffer, std::size_t bufferSize)
+    {
+        _file->llseek(_strTableHdr.sh_offset + index, SEEK_SET);
+        _file->read(buffer, bufferSize);
     }
 
 private:
-    std::uint64_t _fileStartAddr;
-    Elf64::Ehdr* _fileHeader;
-    phdr_container _programHeaders;
-    shdr_container _sectionHeaders;
+    fs::File* _file;
+    Elf64::Ehdr _fileHeader;
+    Elf64::Shdr _strTableHdr;
 };
 
 }

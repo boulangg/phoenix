@@ -15,23 +15,7 @@
 
 namespace kernel::mem {
 
-class PageTable
-{
-public:
-    std::uint64_t getPageTablePhysAddr()
-    {
-        return _pageTable.getPageTablePhysAddr();
-    }
-
-    std::uint64_t mapPage(MemoryAllocator* allocator, uint16_t highLvlFlags, uint64_t virtAddr, uint16_t flags,
-                          bool noExec, page_size pageSize, std::uint64_t physAddr)
-    {
-        return _pageTable.mapPage(allocator, highLvlFlags, virtAddr, flags, noExec, pageSize, physAddr);
-    }
-
-private:
-    page_table _pageTable;
-};
+using PageTable = page_table;
 
 }
 

@@ -3,28 +3,55 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "AddressSpace.h"
+
+#include "MemoryDescriptor.h"
 
 #include <bit>
 #include <errno.h>
 
 namespace kernel::mem {
 
-AddressSpace::AddressSpace(PageTable pageTable) : _pageTable(pageTable) {}
-
-AddressSpace::AddressSpace(const AddressSpace* kernelAddressSpace)
+static void initKernelStack(PageTable& pageTable, std::uint64_t physAddr)
 {
-    // Copy kernel pagetable
-
     // Define Kernel Stack
-
-    // Define Interrupt Stack
+    std::uint16_t flags = mem::pt_flag::FLAG_P | mem::pt_flag::FLAG_W;
+    pageTable.mapPage(flags, KERNEL_STACK_BOTTOM, flags, false, page_size::pt_2MB, physAddr);
 }
 
-void AddressSpace::load(utils::Elf64File& elf64File, fs::File* file)
+static void initSyscallStack(PageTable& pageTable)
 {
-    for (auto& pHdr : elf64File.getProgramHeaders()) {
+    // Define Syscall Stack
+    std::uint16_t flags = mem::pt_flag::FLAG_P | mem::pt_flag::FLAG_W;
+    mem::Page* syscallStackPage = alloc_zeroed_pages(9);
+    std::uint64_t syscallStackPagePhysAddr = syscallStackPage->getPhysicalAddr();
+    pageTable.mapPage(flags, SYSCALL_STACK_BOTTOM, flags, false, page_size::pt_2MB, syscallStackPagePhysAddr);
+}
+
+MemoryDescriptor::MemoryDescriptor(PageTable pageTable) : _pageTable(pageTable) {}
+
+MemoryDescriptor::MemoryDescriptor(const MemoryDescriptor& kernelMemDesc)
+{
+    // Copy kernel pagetable
+    for (auto i = 256; i < 512; ++i) {
+        if (i == RESERVED_KERNEL_PAGE_TABLE_LVL4) {
+            // Space for the kernel/syscall stack, not copied from parent
+            continue;
+        }
+        _pageTable.copyLevel4Page(kernelMemDesc._pageTable, i);
+    }
+
+    initSyscallStack(_pageTable);
+}
+
+void MemoryDescriptor::setKernelStack(std::uint64_t physAddr)
+{
+    initKernelStack(_pageTable, physAddr);
+}
+
+void MemoryDescriptor::load(utils::Elf64File& elf64File, fs::File* file)
+{
+    for (std::size_t i = 0; i < elf64File.getFileHeader().e_phnum; ++i) {
+        auto pHdr = elf64File.getProgramHeader(i);
         if (pHdr.p_type != utils::Elf64::ProgramType::PT_LOAD) {
             continue;
         }
@@ -54,8 +81,8 @@ void AddressSpace::load(utils::Elf64File& elf64File, fs::File* file)
     }
 }
 
-std::uint64_t AddressSpace::mmap(std::uint64_t addr, std::size_t length, std::uint32_t prot, std::uint32_t flags,
-                                 fs::File* file, off_t offset)
+std::uint64_t MemoryDescriptor::mmap(std::uint64_t addr, std::size_t length, std::uint32_t prot, std::uint32_t flags,
+                                     fs::File* file, off_t offset)
 {
     addr = utils::alignUp(addr, PAGE_SIZE);
 
