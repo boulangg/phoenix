@@ -49,16 +49,16 @@ load_syscall:
 
 .global syscall64_handler
 syscall64_handler:
-	push %r11
+	push %r11						// r11 contains rflags
 	mov %rsp, %r11
-	mov $SYSCALL_STACK_TOP, %rsp
-	push %r11
-	push %rcx						// rcx contain user rip
-	mov %r10, %rcx
+	mov $SYSCALL_STACK_TOP, %rsp	// switch to kernel syscall stack
+	push %r11						// store user stack pointer in kernel syscall stack
+	push %rcx						// rcx contains user rip
+	mov %r10, %rcx					// r10 contains the 3rd arg of the function (should be rcx according to the System V ABI)
 	push %rax						// rax contains the number of the function (7th argument on the stack according to the System V ABI)
 	call syscall64
-	pop %rcx
-	pop %rcx
-	pop %rsp
-	pop %r11
+	add $8, %rsp					// remove the extra arg from the stack
+	pop %rcx						// restore rcx (user rip)
+	pop %rsp						// restore rsp (switch back to user stack)
+	pop %r11						// restore r11 (rflags)
 	sysretq

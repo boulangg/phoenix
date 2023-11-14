@@ -19,6 +19,7 @@ mem::MemoryAllocator Kernel::memory;
 core::InterruptDispatcher Kernel::interrupt;
 proc::ProcessScheduler Kernel::scheduler;
 mem::MemoryDescriptor* Kernel::_kernelMemDesc;
+console::BasicConsole Kernel::_console;
 
 static void setupGlobalConstructors(utils::Elf64File& kernelFile)
 {
@@ -105,7 +106,7 @@ static mem::MemoryDescriptor* initKernelPageTable(std::size_t hhdm, std::size_t 
     return kernelMemDesc;
 }
 
-void Kernel::init(KernelInfo& info)
+void Kernel::init(const KernelInfo& info)
 {
     fs::kernelfs::KernelFile file(info.kernelFileAddr, info.kernelFileSize);
     utils::Elf64File kernelFile(&file);
@@ -122,6 +123,9 @@ void Kernel::init(KernelInfo& info)
 
     // Global constructors (requires initKernelPageTable for malloc)
     setupGlobalConstructors(kernelFile);
+
+    // Logging
+    _console = console::BasicConsole(info.framebuffer);
 
     // Interrupts
     interrupt.init();
@@ -143,6 +147,11 @@ void Kernel::start()
 {
     //_device.init();
     hcf();
+}
+
+void Kernel::write(const char* str)
+{
+    _console.write(str);
 }
 
 }

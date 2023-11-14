@@ -10,8 +10,8 @@
 
 namespace kernel {
 
-#define BUFFER_SIZE 1024
-static char printkBuffer[BUFFER_SIZE];
+#define BUFFER_SIZE 1023
+static char printkBuffer[BUFFER_SIZE + 1];
 
 mem::Page* alloc_page()
 {
@@ -41,8 +41,11 @@ void schedule()
 void printk(const char* format, ...)
 {
     va_list vl;
+    va_start(vl, format);
     vsnprintf(printkBuffer, BUFFER_SIZE, format, vl);
-    // Kernel::Console::write(tmp);
+    printkBuffer[BUFFER_SIZE] = '\0';
+    va_end(vl);
+    Kernel::write(printkBuffer);
 }
 
 }

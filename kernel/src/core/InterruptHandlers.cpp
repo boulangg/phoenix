@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "InterruptHandlers.h"
+
+#include "InterruptHandlers.h"
 
 #include <list>
 #include <vector>
@@ -12,6 +12,7 @@
 #include "GlobalDescTable.h"
 #include "InterruptDescTable.h"
 #include "InterruptDispatcher.h"
+#include "KernelGlobals.h"
 
 namespace kernel::core {
 
@@ -19,55 +20,55 @@ namespace InterruptHandlers {
 
 static void Exception_00_DIVZero(std::uint32_t)
 {
-    // cout << "INT: Divide-by-zero Error\n";
+    printk("INT: Divide-by-zero Error\n");
     while (1) {
     }
 }
 
 static void Exception_01_Debug(std::uint32_t)
 {
-    // cout << "INT: Debug\n";
+    printk("INT: Debug\n");
     while (1) {
     }
 }
 
 static void Exception_02_NMI(std::uint32_t)
 {
-    // cout << "INT: NMI\n";
+    printk("INT: NMI\n");
     while (1) {
     }
 }
 static void Exception_03_Breakpoint(std::uint32_t)
 {
-    // cout << "INT: Breakpoint\n";
+    printk("INT: Breakpoint\n");
     while (1) {
     }
 }
 
 static void Exception_04_Overflow(std::uint32_t)
 {
-    // cout << "INT: Overflow\n";
+    printk("INT: Overflow\n");
     while (1) {
     }
 }
 
 static void Exception_05_BoundRange(std::uint32_t)
 {
-    // cout << "INT: Bound Range\n";
+    printk("INT: Bound Range\n");
     while (1) {
     }
 }
 
 static void Exception_06_InvalidOpcode(std::uint32_t)
 {
-    // cout << "INT: Invalid Opcode\n";
+    printk("INT: Invalid Opcode\n");
     while (1) {
     }
 }
 
 static void Exception_07_DeviceNotAvailable(std::uint32_t)
 {
-    // cout << "INT: Device Not Available\n";
+    printk("INT: Device Not Available\n");
     while (1) {
     }
 }
@@ -75,7 +76,7 @@ static void Exception_07_DeviceNotAvailable(std::uint32_t)
 static void Exception_08_DoubleFault(std::uint32_t errorCode)
 {
     (void)errorCode;
-    // cout << "INT: Double Fault\n";
+    printk("INT (%u): Double Fault\n", errorCode);
     while (1) {
     }
 }
@@ -83,7 +84,7 @@ static void Exception_08_DoubleFault(std::uint32_t errorCode)
 static void Exception_10_InvalidTSS(std::uint32_t errorCode)
 {
     (void)errorCode;
-    // cout << "INT: Invalid TSS\n";
+    printk("INT (%u): Invalid TSS\n", errorCode);
     while (1) {
     }
 }
@@ -91,7 +92,7 @@ static void Exception_10_InvalidTSS(std::uint32_t errorCode)
 static void Exception_11_SegmentNotPresent(std::uint32_t errorCode)
 {
     (void)errorCode;
-    // cout << "INT: Segment not Present\n";
+    printk("INT (%u): Segment not Present\n", errorCode);
     while (1) {
     }
 }
@@ -99,7 +100,7 @@ static void Exception_11_SegmentNotPresent(std::uint32_t errorCode)
 static void Exception_12_StackSegmentFault(std::uint32_t errorCode)
 {
     (void)errorCode;
-    // cout << "INT: Stack Segment Fault\n";
+    printk("INT (%u): Stack Segment Fault\n", errorCode);
     while (1) {
     }
 }
@@ -107,7 +108,7 @@ static void Exception_12_StackSegmentFault(std::uint32_t errorCode)
 static void Exception_13_GPFault(std::uint32_t errorCode)
 {
     (void)errorCode;
-    // cout << "INT: Debug General Protection Fault\n";
+    printk("INT (%u): Debug General Protection Fault\n", errorCode);
     while (1) {
     }
 }
@@ -117,15 +118,15 @@ static void Exception_14_PageFault(std::uint32_t errorCode)
     std::uint64_t pfa = readCR2();
     (void)pfa;
     (void)errorCode;
+    printk("INT (%u): Double Fault on 0x%0.16x\n", errorCode, pfa);
     // ProcessScheduler::pageFault(errorCode, (void*)pfa);
-    // cout << "INT: Page Fault\n";
     while (1) {
     }
 }
 
 static void Exception_16_x87FP(std::uint32_t)
 {
-    // cout << "INT: x87 Floating-Point Exception\n";
+    printk("INT: x87 Floating-Point Exception\n");
     while (1) {
     }
 }
@@ -133,28 +134,28 @@ static void Exception_16_x87FP(std::uint32_t)
 static void Exception_17_AlignmentCheck(std::uint32_t errorCode)
 {
     (void)errorCode;
-    // cout << "INT: Alignment Check\n";
+    printk("INT (%u): Alignment Check\n", errorCode);
     while (1) {
     }
 }
 
 static void Exception_18_MachineCheck(std::uint32_t)
 {
-    // cout << "INT: Machine Check\n";
+    printk("INT: Machine Check\n");
     while (1) {
     }
 }
 
 static void Exception_19_SIMDFP(std::uint32_t)
 {
-    // cout << "INT: SIMDFP\n";
+    printk("INT (%u): SIMDFP\n");
     while (1) {
     }
 }
 
 static void Exception_20_Virtualization(std::uint32_t)
 {
-    // cout << "INT: Virtualization\n";
+    printk("INT: Virtualization\n");
     while (1) {
     }
 }
@@ -162,14 +163,14 @@ static void Exception_20_Virtualization(std::uint32_t)
 static void Exception_30_Security(std::uint32_t errorCode)
 {
     (void)errorCode;
-    // cout << "INT: Security\n";
+    printk("INT (%u): Security\n", errorCode);
     while (1) {
     }
 }
 
 static void Exception_Reserved(std::uint32_t)
 {
-    // cout << "INT: Rserved\n";
+    printk("INT: Rserved\n");
     while (1) {
     }
 }
@@ -193,56 +194,56 @@ void setupHandlers()
 {
     static constexpr std::uint8_t IDT_FLAGS = IDT::ACCESS_P | IDT::ACCESS_DPL3 | IDT::GATE_TYPE_INTERRUPT;
     // Hardaware Exception handlers
-    fill_idt_descriptor_64(IDT::idt, 0, EXCEPTION_HANDLER_NAME_UINT64(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 1, EXCEPTION_HANDLER_NAME_UINT64(01), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 2, EXCEPTION_HANDLER_NAME_UINT64(02), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 3, EXCEPTION_HANDLER_NAME_UINT64(03), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 4, EXCEPTION_HANDLER_NAME_UINT64(04), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 5, EXCEPTION_HANDLER_NAME_UINT64(05), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 6, EXCEPTION_HANDLER_NAME_UINT64(06), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 7, EXCEPTION_HANDLER_NAME_UINT64(07), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 8, EXCEPTION_HANDLER_NAME_UINT64(08), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 9, EXCEPTION_HANDLER_NAME_UINT64(09), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 10, EXCEPTION_HANDLER_NAME_UINT64(0A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 11, EXCEPTION_HANDLER_NAME_UINT64(0B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 12, EXCEPTION_HANDLER_NAME_UINT64(0C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 13, EXCEPTION_HANDLER_NAME_UINT64(0D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 14, EXCEPTION_HANDLER_NAME_UINT64(0E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 15, EXCEPTION_HANDLER_NAME_UINT64(0F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 16, EXCEPTION_HANDLER_NAME_UINT64(10), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 17, EXCEPTION_HANDLER_NAME_UINT64(10), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 18, EXCEPTION_HANDLER_NAME_UINT64(12), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 19, EXCEPTION_HANDLER_NAME_UINT64(13), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 20, EXCEPTION_HANDLER_NAME_UINT64(14), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 21, EXCEPTION_HANDLER_NAME_UINT64(15), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 22, EXCEPTION_HANDLER_NAME_UINT64(16), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 23, EXCEPTION_HANDLER_NAME_UINT64(17), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 24, EXCEPTION_HANDLER_NAME_UINT64(18), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 25, EXCEPTION_HANDLER_NAME_UINT64(19), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 26, EXCEPTION_HANDLER_NAME_UINT64(1A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 27, EXCEPTION_HANDLER_NAME_UINT64(1B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 28, EXCEPTION_HANDLER_NAME_UINT64(1C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 29, EXCEPTION_HANDLER_NAME_UINT64(1D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 30, EXCEPTION_HANDLER_NAME_UINT64(1E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 31, EXCEPTION_HANDLER_NAME_UINT64(1F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 0, EXCEPTION_HANDLER_NAME_UINT64(00), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 1, EXCEPTION_HANDLER_NAME_UINT64(01), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 2, EXCEPTION_HANDLER_NAME_UINT64(02), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 3, EXCEPTION_HANDLER_NAME_UINT64(03), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 4, EXCEPTION_HANDLER_NAME_UINT64(04), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 5, EXCEPTION_HANDLER_NAME_UINT64(05), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 6, EXCEPTION_HANDLER_NAME_UINT64(06), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 7, EXCEPTION_HANDLER_NAME_UINT64(07), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 8, EXCEPTION_HANDLER_NAME_UINT64(08), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 9, EXCEPTION_HANDLER_NAME_UINT64(09), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 10, EXCEPTION_HANDLER_NAME_UINT64(0A), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 11, EXCEPTION_HANDLER_NAME_UINT64(0B), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 12, EXCEPTION_HANDLER_NAME_UINT64(0C), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 13, EXCEPTION_HANDLER_NAME_UINT64(0D), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 14, EXCEPTION_HANDLER_NAME_UINT64(0E), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 15, EXCEPTION_HANDLER_NAME_UINT64(0F), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 16, EXCEPTION_HANDLER_NAME_UINT64(10), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 17, EXCEPTION_HANDLER_NAME_UINT64(10), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 18, EXCEPTION_HANDLER_NAME_UINT64(12), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 19, EXCEPTION_HANDLER_NAME_UINT64(13), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 20, EXCEPTION_HANDLER_NAME_UINT64(14), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 21, EXCEPTION_HANDLER_NAME_UINT64(15), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 22, EXCEPTION_HANDLER_NAME_UINT64(16), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 23, EXCEPTION_HANDLER_NAME_UINT64(17), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 24, EXCEPTION_HANDLER_NAME_UINT64(18), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 25, EXCEPTION_HANDLER_NAME_UINT64(19), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 26, EXCEPTION_HANDLER_NAME_UINT64(1A), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 27, EXCEPTION_HANDLER_NAME_UINT64(1B), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 28, EXCEPTION_HANDLER_NAME_UINT64(1C), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 29, EXCEPTION_HANDLER_NAME_UINT64(1D), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 30, EXCEPTION_HANDLER_NAME_UINT64(1E), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 31, EXCEPTION_HANDLER_NAME_UINT64(1F), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
 
     // PIC interrupt handlers
-    fill_idt_descriptor_64(IDT::idt, 32, INTERRUPT_HANDLER_NAME_UINT64(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 33, INTERRUPT_HANDLER_NAME_UINT64(00), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 34, INTERRUPT_HANDLER_NAME_UINT64(02), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 35, INTERRUPT_HANDLER_NAME_UINT64(03), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 36, INTERRUPT_HANDLER_NAME_UINT64(04), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 37, INTERRUPT_HANDLER_NAME_UINT64(05), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 38, INTERRUPT_HANDLER_NAME_UINT64(06), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 39, INTERRUPT_HANDLER_NAME_UINT64(07), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 40, INTERRUPT_HANDLER_NAME_UINT64(08), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 41, INTERRUPT_HANDLER_NAME_UINT64(09), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 42, INTERRUPT_HANDLER_NAME_UINT64(0A), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 43, INTERRUPT_HANDLER_NAME_UINT64(0B), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 44, INTERRUPT_HANDLER_NAME_UINT64(0C), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 45, INTERRUPT_HANDLER_NAME_UINT64(0D), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 46, INTERRUPT_HANDLER_NAME_UINT64(0E), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 47, INTERRUPT_HANDLER_NAME_UINT64(0F), GDT::USER_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 32, INTERRUPT_HANDLER_NAME_UINT64(00), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 33, INTERRUPT_HANDLER_NAME_UINT64(00), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 34, INTERRUPT_HANDLER_NAME_UINT64(02), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 35, INTERRUPT_HANDLER_NAME_UINT64(03), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 36, INTERRUPT_HANDLER_NAME_UINT64(04), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 37, INTERRUPT_HANDLER_NAME_UINT64(05), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 38, INTERRUPT_HANDLER_NAME_UINT64(06), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 39, INTERRUPT_HANDLER_NAME_UINT64(07), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 40, INTERRUPT_HANDLER_NAME_UINT64(08), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 41, INTERRUPT_HANDLER_NAME_UINT64(09), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 42, INTERRUPT_HANDLER_NAME_UINT64(0A), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 43, INTERRUPT_HANDLER_NAME_UINT64(0B), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 44, INTERRUPT_HANDLER_NAME_UINT64(0C), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 45, INTERRUPT_HANDLER_NAME_UINT64(0D), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 46, INTERRUPT_HANDLER_NAME_UINT64(0E), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 47, INTERRUPT_HANDLER_NAME_UINT64(0F), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
 }
 
 using exception_handler_t = void (*)(std::uint32_t);

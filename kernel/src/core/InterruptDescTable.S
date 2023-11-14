@@ -4,7 +4,7 @@
 .global set_IDT
 set_IDT:
 	mov %edi, idtr
-	mov %esi, idtr+2
+	mov %rsi, idtr+2
 	lidt idtr
 	ret
 

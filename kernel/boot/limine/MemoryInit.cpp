@@ -58,9 +58,7 @@ std::pair<std::uint64_t, std::size_t> initPageArray(const limine_memmap_request&
     std::uint64_t maxAvailableMemory = 0;
     for (std::uint64_t index = 0; index < memmap_request.response->entry_count; ++index) {
         auto& entry = memmap_request.response->entries[index];
-        if (entry->type == LIMINE_MEMMAP_USABLE || entry->type == LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE) {
-            maxAvailableMemory = std::max(maxAvailableMemory, entry->base + entry->length);
-        }
+        maxAvailableMemory = std::max(maxAvailableMemory, entry->base + entry->length);
     }
 
     // Find enough consecutive available pages to store the pageArray

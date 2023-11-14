@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -38,6 +38,13 @@ extern psf2 base_font;
 
 namespace kernel::console {
 
+struct Framebuffer
+{
+    uint32_t* address;
+    uint64_t width;
+    uint64_t height;
+};
+
 struct Color
 {
     static constexpr std::uint32_t BLACK = 0x000000;
@@ -61,7 +68,8 @@ struct Color
 class BasicConsole
 {
 public:
-    BasicConsole(limine_framebuffer* fb);
+    BasicConsole() = default;
+    BasicConsole(const Framebuffer& fb);
 
     void setColor(std::uint32_t fg, std::uint32_t bg);
     void clear();
@@ -71,22 +79,22 @@ public:
     void write(std::string&& str);
 
 private:
-    std::size_t _currentRow;
-    std::size_t _currentColumn;
+    std::size_t _currentRow = 0;
+    std::size_t _currentColumn = 0;
 
-    std::size_t _pixelHeight;
-    std::size_t _pixelWidth;
-    std::size_t _maxRow;
-    std::size_t _maxColumn;
+    std::size_t _pixelHeight = 0;
+    std::size_t _pixelWidth = 0;
+    std::size_t _maxRow = 0;
+    std::size_t _maxColumn = 0;
 
-    std::uint32_t _fgColor;
-    std::uint32_t _bgColor;
+    std::uint32_t _fgColor = 0;
+    std::uint32_t _bgColor = 0;
 
-    limine_framebuffer* _fb;
+    Framebuffer _fb = {};
 
-    uint32_t* _screen;
+    uint32_t* _screen = nullptr;
 
-	void processChar(char c);
+    void processChar(char c);
     void scrollUp();
     void putEntryAt(char c, std::size_t column, std::size_t row);
 

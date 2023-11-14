@@ -8,6 +8,8 @@
 
 #include "CpuInstr.h"
 #include "InterruptDescTable.h"
+#include "InterruptHandlers.h"
+#include "KernelGlobals.h"
 #include "SyscallHandler.h"
 
 namespace kernel::core {
@@ -39,8 +41,9 @@ InterruptDispatcher::InterruptDispatcher() {}
 
 void InterruptDispatcher::init()
 {
-    IDT::setupIDT();
     setupPIC();
+    InterruptHandlers::setupHandlers();
+    IDT::setupIDT();
     syscall::setupSyscall();
 }
 
@@ -48,6 +51,7 @@ void InterruptDispatcher::handleIRQ(std::uint8_t irq)
 {
     (void)irq;
     while (1) {
+        printk("Received an IRQ: %u\n", irq);
     }
 }
 

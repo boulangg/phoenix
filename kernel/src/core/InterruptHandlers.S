@@ -20,17 +20,9 @@ readCR2:
 	push %r9
 	push %r10
 	push %r11
-	push %r12
-	push %r13
-	push %r14
-	push %r15
 .endm
 
 .macro popaq
-	pop %r15
-	pop %r14
-	pop %r13
-	pop %r12
 	pop %r11
 	pop %r10
 	pop %r9
@@ -70,19 +62,14 @@ readCR2:
 .macro interrupt_handler num
     push %rbp
     mov %rsp, %rbp
-    push %rdi
+	pushaq
     mov \num, %rdi
-    call interrupt_handler
+	call generic_interrupt_handler
+	popaq
 	pop %rdi
     pop %rbp
     iretq
 .endm
-
-interrupt_handler:
-	pushaq
-	call generic_interrupt_handler
-	popaq
-	ret
 
 // Hardware Exception Handlers
 #define EXCEPTION_HANDLER(num) \

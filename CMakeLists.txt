@@ -40,7 +40,7 @@ add_dependencies(${IMAGE_NAME}.iso kernel)
 set(qemu qemu-system-x86_64)
 message(${qemu})
 set(qemu_opts "-M q35 -m 2G -cdrom ${IMAGE_NAME}.iso -boot d -display gtk,zoom-to-fit=off")
-set(qemu_opts_debug "${qemu_opts} -s -S")
+set(qemu_opts_debug "${qemu_opts} -s -S -d int -no-shutdown -no-reboot")
 
 set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/scripts/terminal.sh)
 

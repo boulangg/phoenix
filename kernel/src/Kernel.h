@@ -8,6 +8,7 @@
 
 #include <cstddef>
 
+#include "console/BasicConsole.h"
 #include "core/InterruptDispatcher.h"
 #include "mem/MemoryAllocator.h"
 #include "mem/MemoryDescriptor.h"
@@ -24,13 +25,15 @@ struct KernelInfo
     std::size_t kernelFileSize;
     std::size_t kernelPhysBase;
     std::size_t kernelVirtBase;
+    console::Framebuffer framebuffer;
 };
 
 class Kernel
 {
 public:
-    static void init(KernelInfo& info);
+    static void init(const KernelInfo& info);
     static void start();
+    static void write(const char* str);
 
     static mem::MemoryAllocator memory;
     static proc::ProcessScheduler scheduler;
@@ -38,6 +41,7 @@ public:
 
 private:
     static mem::MemoryDescriptor* _kernelMemDesc;
+    static console::BasicConsole _console;
 
     // dev::DeviceExplorer _device;
 };
