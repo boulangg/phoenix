@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "KernelFile.h"
+
+#include "KernelFile.h"
 
 #include <algorithm>
 #include <cstring>
@@ -21,8 +21,11 @@ ssize_t KernelFile::read(char* buffer, size_t size)
     std::memcpy(buffer, (char*)(_startAddr + _pos), nr);
     return nr;
 }
+
 ssize_t KernelFile::write(char* buffer, size_t size)
 {
+    (void)buffer;
+    (void)size;
     return 0;
 }
 
@@ -37,7 +40,7 @@ loff_t KernelFile::llseek(loff_t offset, std::int32_t origin)
         offset += _pos;
     }
     retval = -EINVAL;
-    if (offset >= 0 && offset <= _fileSize) {
+    if (offset >= 0 && static_cast<std::size_t>(offset) <= _fileSize) {
         if (offset != _pos) {
             _pos = offset;
         }

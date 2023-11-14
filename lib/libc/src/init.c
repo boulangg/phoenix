@@ -64,3 +64,8 @@ void __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, 
     __libc_init(envp);
     exit(main(argc, argv, envp));
 }
+
+void __stack_chk_fail()
+{
+    abort();
+}

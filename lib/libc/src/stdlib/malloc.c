@@ -1,3 +1,6 @@
+#pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 #define LACKS_SYS_PARAM_H
 
 
