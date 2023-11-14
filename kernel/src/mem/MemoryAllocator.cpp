@@ -21,6 +21,8 @@ static int test_free_block(Page* page_array, std::size_t start, std::size_t end)
     return 1;
 }
 
+// Never initialize members of MemoryAllocator. The constructor is called in SetupGlobalConstructors but we have already called init
+// to initialize it in the kernel startup sequence before
 MemoryAllocator::MemoryAllocator() {}
 
 void MemoryAllocator::init(std::uint64_t pageArray, std::size_t pageCount)

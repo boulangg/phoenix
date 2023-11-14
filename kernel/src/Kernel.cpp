@@ -16,9 +16,9 @@
 namespace kernel {
 
 mem::MemoryAllocator Kernel::memory;
+core::InterruptDispatcher Kernel::interrupt;
+proc::ProcessScheduler Kernel::scheduler;
 mem::MemoryDescriptor* Kernel::_kernelMemDesc;
-core::InterruptDispatcher* Kernel::_interrupt;
-proc::ProcessScheduler* Kernel::scheduler;
 
 static void setupGlobalConstructors(utils::Elf64File& kernelFile)
 {
@@ -99,7 +99,7 @@ static mem::MemoryDescriptor* initKernelPageTable(std::size_t hhdm, std::size_t 
 
     set_CR3(table.getPageTablePhysAddr());
 
-    mem::MemoryDescriptor* kernelMemDesc = new mem::MemoryDescriptor(table);
+    mem::MemoryDescriptor* kernelMemDesc = new mem::MemoryDescriptor{table};
     kernelMemDesc->load(kernelFile, nullptr);
 
     return kernelMemDesc;
@@ -124,11 +124,8 @@ void Kernel::init(KernelInfo& info)
     setupGlobalConstructors(kernelFile);
 
     // Interrupts
-    _interrupt = new core::InterruptDispatcher();
-    _interrupt->init();
-
-    scheduler = new proc::ProcessScheduler();
-    scheduler->init(_kernelMemDesc->getPageTable(), Kernel::start);
+    interrupt.init();
+    scheduler.init(_kernelMemDesc->getPageTable(), Kernel::start);
 }
 
 // Halt and catch fire function.

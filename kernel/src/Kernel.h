@@ -33,11 +33,11 @@ public:
     static void start();
 
     static mem::MemoryAllocator memory;
-    static proc::ProcessScheduler* scheduler;
+    static proc::ProcessScheduler scheduler;
+    static core::InterruptDispatcher interrupt;
 
 private:
     static mem::MemoryDescriptor* _kernelMemDesc;
-    static core::InterruptDispatcher* _interrupt;
 
     // dev::DeviceExplorer _device;
 };

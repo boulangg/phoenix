@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "KernelGlobals.h"
+
+#include "KernelGlobals.h"
 
 #include "Kernel.h"
 
@@ -35,7 +35,7 @@ mem::Page* alloc_zeroed_pages(std::size_t order)
 
 void schedule()
 {
-    Kernel::scheduler->schedule();
+    Kernel::scheduler.schedule();
 }
 
 void printk(const char* format, ...)

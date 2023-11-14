@@ -349,6 +349,8 @@ list<T>& list<T>::operator=(const list<T>& x)
     for (auto it = x.cbegin(); it < x.cend(); ++it) {
         push_back(*it);
     }
+
+    return this;
 }
 
 template <class T>
