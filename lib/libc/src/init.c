@@ -10,9 +10,12 @@
 #include "sys/sys.h"
 
 typedef void (*func_ptr)();
-extern func_ptr __preinit_array_start[0], __preinit_array_end[0];
-extern func_ptr __init_array_start[0], __init_array_end[0];
-extern func_ptr __fini_array_start[0], __fini_array_end[0];
+extern func_ptr __preinit_array_start[0] __attribute__((weak));
+extern func_ptr __preinit_array_end[0] __attribute__((weak));
+extern func_ptr __init_array_start[0] __attribute__((weak));
+extern func_ptr __init_array_end[0] __attribute__((weak));
+extern func_ptr __fini_array_start[0] __attribute__((weak));
+extern func_ptr __fini_array_end[0] __attribute__((weak));
 
 void __libc_init_array()
 {

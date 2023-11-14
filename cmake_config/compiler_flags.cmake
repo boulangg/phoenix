@@ -23,18 +23,17 @@ set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS} "-Wall -Wextra -g -Wno-packed-bitfield-co
 SET(CMAKE_EXE_LINKER_FLAGS "-g")
 
 add_library(nostd_options INTERFACE)
-target_link_options(nostd_options INTERFACE -nodefaultlibs -nostdlib -no-pie)
+target_link_options(nostd_options INTERFACE -nostdlib -no-pie)
 target_compile_options(nostd_options INTERFACE 
 		$<$<COMPILE_LANGUAGE:C>:-nostdinc -DHAVE_MMAP=0>
 		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++>
 )
 		
 add_library(nostd_shared_options INTERFACE)
-target_link_options(nostd_shared_options INTERFACE -nodefaultlibs -fPIC)
+target_link_options(nostd_shared_options INTERFACE -nostdlib -fPIC)
 target_compile_options(nostd_shared_options INTERFACE 
 		$<$<COMPILE_LANGUAGE:C>:-nostdinc -ffreestanding>
 		$<$<COMPILE_LANGUAGE:CXX>:-nostdinc -nostdinc++ -ffreestanding>
-		-DIS_SHARED_LIB
 )
 
 add_library(kernel_options INTERFACE)
