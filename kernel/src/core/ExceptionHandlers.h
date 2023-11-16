@@ -10,7 +10,7 @@
 
 namespace kernel::core {
 
-namespace InterruptHandlers {
+namespace ExceptionHandlers {
 
 void setupHandlers();
 

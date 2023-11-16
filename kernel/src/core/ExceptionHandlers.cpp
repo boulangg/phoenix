@@ -4,7 +4,7 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#include "InterruptHandlers.h"
+#include "ExceptionHandlers.h"
 
 #include <list>
 #include <vector>
@@ -13,10 +13,11 @@
 #include "InterruptDescTable.h"
 #include "InterruptDispatcher.h"
 #include "KernelGlobals.h"
+#include "Kernel.h"
 
 namespace kernel::core {
 
-namespace InterruptHandlers {
+namespace ExceptionHandlers {
 
 static void Exception_00_DIVZero(std::uint32_t)
 {
@@ -81,7 +82,7 @@ static void Exception_08_DoubleFault(std::uint32_t errorCode)
     }
 }
 
-static void Exception_10_InvalidTSS(std::uint32_t errorCode)
+static void Exception_0A_InvalidTSS(std::uint32_t errorCode)
 {
     (void)errorCode;
     printk("INT (%u): Invalid TSS\n", errorCode);
@@ -89,7 +90,7 @@ static void Exception_10_InvalidTSS(std::uint32_t errorCode)
     }
 }
 
-static void Exception_11_SegmentNotPresent(std::uint32_t errorCode)
+static void Exception_0B_SegmentNotPresent(std::uint32_t errorCode)
 {
     (void)errorCode;
     printk("INT (%u): Segment not Present\n", errorCode);
@@ -97,7 +98,7 @@ static void Exception_11_SegmentNotPresent(std::uint32_t errorCode)
     }
 }
 
-static void Exception_12_StackSegmentFault(std::uint32_t errorCode)
+static void Exception_0C_StackSegmentFault(std::uint32_t errorCode)
 {
     (void)errorCode;
     printk("INT (%u): Stack Segment Fault\n", errorCode);
@@ -105,7 +106,7 @@ static void Exception_12_StackSegmentFault(std::uint32_t errorCode)
     }
 }
 
-static void Exception_13_GPFault(std::uint32_t errorCode)
+static void Exception_0D_GPFault(std::uint32_t errorCode)
 {
     (void)errorCode;
     printk("INT (%u): Debug General Protection Fault\n", errorCode);
@@ -113,7 +114,7 @@ static void Exception_13_GPFault(std::uint32_t errorCode)
     }
 }
 
-static void Exception_14_PageFault(std::uint32_t errorCode)
+static void Exception_0E_PageFault(std::uint32_t errorCode)
 {
     std::uint64_t pfa = readCR2();
     (void)pfa;
@@ -124,14 +125,14 @@ static void Exception_14_PageFault(std::uint32_t errorCode)
     }
 }
 
-static void Exception_16_x87FP(std::uint32_t)
+static void Exception_10_x87FP(std::uint32_t)
 {
     printk("INT: x87 Floating-Point Exception\n");
     while (1) {
     }
 }
 
-static void Exception_17_AlignmentCheck(std::uint32_t errorCode)
+static void Exception_11_AlignmentCheck(std::uint32_t errorCode)
 {
     (void)errorCode;
     printk("INT (%u): Alignment Check\n", errorCode);
@@ -139,28 +140,28 @@ static void Exception_17_AlignmentCheck(std::uint32_t errorCode)
     }
 }
 
-static void Exception_18_MachineCheck(std::uint32_t)
+static void Exception_12_MachineCheck(std::uint32_t)
 {
     printk("INT: Machine Check\n");
     while (1) {
     }
 }
 
-static void Exception_19_SIMDFP(std::uint32_t)
+static void Exception_13_SIMDFP(std::uint32_t)
 {
     printk("INT (%u): SIMDFP\n");
     while (1) {
     }
 }
 
-static void Exception_20_Virtualization(std::uint32_t)
+static void Exception_14_Virtualization(std::uint32_t)
 {
     printk("INT: Virtualization\n");
     while (1) {
     }
 }
 
-static void Exception_30_Security(std::uint32_t errorCode)
+static void Exception_1E_Security(std::uint32_t errorCode)
 {
     (void)errorCode;
     printk("INT (%u): Security\n", errorCode);
@@ -258,19 +259,17 @@ static exception_handler_t exception_handlers[32] = {Exception_00_DIVZero,
                                                      Exception_07_DeviceNotAvailable,
                                                      Exception_08_DoubleFault,
                                                      Exception_Reserved,
-                                                     Exception_10_InvalidTSS,
-                                                     Exception_11_SegmentNotPresent,
-                                                     Exception_12_StackSegmentFault,
-                                                     Exception_13_GPFault,
-                                                     Exception_14_PageFault,
+                                                     Exception_0A_InvalidTSS,
+                                                     Exception_0B_SegmentNotPresent,
+                                                     Exception_0C_StackSegmentFault,
+                                                     Exception_0D_GPFault,
+                                                     Exception_0E_PageFault,
                                                      Exception_Reserved,
-                                                     Exception_16_x87FP,
-                                                     Exception_17_AlignmentCheck,
-                                                     Exception_18_MachineCheck,
-                                                     Exception_19_SIMDFP,
-                                                     Exception_20_Virtualization,
-                                                     Exception_Reserved,
-                                                     Exception_Reserved,
+                                                     Exception_10_x87FP,
+                                                     Exception_11_AlignmentCheck,
+                                                     Exception_12_MachineCheck,
+                                                     Exception_13_SIMDFP,
+                                                     Exception_14_Virtualization,
                                                      Exception_Reserved,
                                                      Exception_Reserved,
                                                      Exception_Reserved,
@@ -278,7 +277,9 @@ static exception_handler_t exception_handlers[32] = {Exception_00_DIVZero,
                                                      Exception_Reserved,
                                                      Exception_Reserved,
                                                      Exception_Reserved,
-                                                     Exception_30_Security,
+                                                     Exception_Reserved,
+                                                     Exception_Reserved,
+                                                     Exception_1E_Security,
                                                      Exception_Reserved};
 }
 
@@ -292,11 +293,11 @@ extern "C"
 // C functions
 void generic_exception_handler(std::uint32_t irq, std::uint32_t errocode)
 {
-    kernel::core::InterruptHandlers::exception_handlers[irq](errocode);
+    kernel::core::ExceptionHandlers::exception_handlers[irq](errocode);
 }
 void generic_interrupt_handler(std::uint32_t irq)
 {
-    kernel::core::InterruptDispatcher::handleIRQ(static_cast<uint8_t>(irq));
+    kernel::Kernel::interrupt.handleIRQ(static_cast<uint8_t>(irq));
 }
 
 #ifdef __cplusplus

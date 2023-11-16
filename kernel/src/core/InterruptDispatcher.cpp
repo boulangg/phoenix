@@ -6,11 +6,14 @@
 
 #include "InterruptDispatcher.h"
 
+#include <errno.h>
+
 #include "CpuInstr.h"
+#include "ExceptionHandlers.h"
 #include "InterruptDescTable.h"
-#include "InterruptHandlers.h"
 #include "KernelGlobals.h"
 #include "SyscallHandler.h"
+
 
 namespace kernel::core {
 
@@ -42,16 +45,57 @@ InterruptDispatcher::InterruptDispatcher() {}
 void InterruptDispatcher::init()
 {
     setupPIC();
-    InterruptHandlers::setupHandlers();
+    ExceptionHandlers::setupHandlers();
     IDT::setupIDT();
     syscall::setupSyscall();
 }
 
 void InterruptDispatcher::handleIRQ(std::uint8_t irq)
 {
-    (void)irq;
-    while (1) {
-        printk("Received an IRQ: %u\n", irq);
+    printk("Received an IRQ: %u\n", irq);
+    // Is it PIC interrupt
+    if (irq < 16) {
+        // Does it come from slave PIC
+        if (irq >= 8) {
+            outb(0xA0, 0x20);
+        }
+        outb(0x20, 0x20);
+    }
+
+    if (!_handlers.contains(irq)) {
+        return;
+    }
+
+    for (auto& handler : _handlers[irq]) {
+        (*handler)(irq);
+    }
+}
+
+int InterruptDispatcher::registerHandler(std::uint8_t irq, InterruptHandler* handler)
+{
+    if (irq >= 16) {
+        printk("Unsupported IRQ requested: %u\n", irq);
+    }
+
+    if (!handler->getFlags().SHARED && _handlers.contains(irq)) {
+        return -EBUSY;
+    }
+
+    _handlers[irq].push_back(handler);
+
+    return 0;
+}
+
+void InterruptDispatcher::unregisterHandler(std::uint8_t irq, InterruptHandler* handler)
+{
+    if (!_handlers.contains(irq)) {
+        return;
+    }
+
+    _handlers[irq].remove(handler);
+
+    if (_handlers[irq].empty()) {
+        _handlers.erase(irq);
     }
 }
 
