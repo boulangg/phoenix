@@ -14,6 +14,7 @@
 #include "KernelGlobals.h"
 #include "SyscallHandler.h"
 
+#include "dev/input/KeyboardDevice.h"
 
 namespace kernel::core {
 
@@ -40,6 +41,36 @@ static void setupPIC()
     outb(0xa0, 0x20);
 }
 
+static void enableIRQ(std::uint8_t irq)
+{
+    uint16_t port;
+    uint8_t value;
+
+    if (irq < 8) {
+        port = 0x21;
+    } else {
+        port = 0xa1;
+        irq -= 8;
+    }
+    value = inb(port) & ~(1 << irq);
+    outb(port, value);
+}
+
+static void disableIRQ(std::uint8_t irq)
+{
+    uint16_t port;
+    uint8_t value;
+
+    if (irq < 8) {
+        port = 0x21;
+    } else {
+        port = 0xa1;
+        irq -= 8;
+    }
+    value = inb(port) | (1 << irq);
+    outb(port, value);
+}
+
 InterruptDispatcher::InterruptDispatcher() {}
 
 void InterruptDispatcher::init()
@@ -48,6 +79,8 @@ void InterruptDispatcher::init()
     ExceptionHandlers::setupHandlers();
     IDT::setupIDT();
     syscall::setupSyscall();
+
+    dev::input::KeyboardDevice::initKeyboard();
 }
 
 void InterruptDispatcher::handleIRQ(std::uint8_t irq)
@@ -67,7 +100,7 @@ void InterruptDispatcher::handleIRQ(std::uint8_t irq)
     }
 
     for (auto& handler : _handlers[irq]) {
-        (*handler)(irq);
+        handler->operator()(irq);
     }
 }
 
@@ -82,6 +115,10 @@ int InterruptDispatcher::registerHandler(std::uint8_t irq, InterruptHandler* han
     }
 
     _handlers[irq].push_back(handler);
+    enableIRQ(irq);
+    if (irq > 7) {
+        enableIRQ(2);
+    }
 
     return 0;
 }
@@ -96,6 +133,7 @@ void InterruptDispatcher::unregisterHandler(std::uint8_t irq, InterruptHandler* 
 
     if (_handlers[irq].empty()) {
         _handlers.erase(irq);
+        disableIRQ(irq);
     }
 }
 

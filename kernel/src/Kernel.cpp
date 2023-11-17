@@ -6,12 +6,16 @@
 
 #include "Kernel.h"
 
+#include <cstring>
+
 #include "Constant.h"
+#include "CpuCapabilities.h"
 #include "GlobalDescTable.h"
 #include "fs/kernelfs/KernelFile.h"
 #include "utils/Elf64File.h"
 
-#include <string.h>
+// Tests
+#include "dev/input/InputManager.h"
 
 namespace kernel {
 
@@ -114,6 +118,7 @@ void Kernel::init(const KernelInfo& info)
     // Generic CPU struct
     GDT::setupGDT();
     TSS::setupTSS();
+    enable_SSE();
 
     // Memory Allocator
     memory.init(info.pageArray, info.pageCount);
@@ -135,7 +140,7 @@ void Kernel::init(const KernelInfo& info)
 // Halt and catch fire function.
 static void hcf(void)
 {
-    asm("cli");
+    asm("sti");
     for (;;) {
         asm("hlt");
         asm("nop");
@@ -143,9 +148,24 @@ static void hcf(void)
     }
 }
 
+class TestHandler : public dev::input::InputHandler
+{
+public:
+    void handleEvents(const std::vector<dev::input::InputEvent>& vals)
+    {
+        for (auto& val : vals) {
+            if (val.type == EV_SYN) continue;
+            printk("%.2x - %.2x - %.2x\n", val.type, val.code, val.value);
+        }
+    }
+};
+
 void Kernel::start()
 {
-    //_device.init();
+    // Tests
+    TestHandler handler;
+    dev::input::InputManager::registerHandler(&handler);
+
     hcf();
 }
 

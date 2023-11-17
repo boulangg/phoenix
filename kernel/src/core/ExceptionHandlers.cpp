@@ -12,8 +12,8 @@
 #include "GlobalDescTable.h"
 #include "InterruptDescTable.h"
 #include "InterruptDispatcher.h"
-#include "KernelGlobals.h"
 #include "Kernel.h"
+#include "KernelGlobals.h"
 
 namespace kernel::core {
 
@@ -116,10 +116,10 @@ static void Exception_0D_GPFault(std::uint32_t errorCode)
 
 static void Exception_0E_PageFault(std::uint32_t errorCode)
 {
-    std::uint64_t pfa = readCR2();
+    std::uint64_t pfa = read_CR2();
     (void)pfa;
     (void)errorCode;
-    printk("INT (%u): Double Fault on 0x%0.16x\n", errorCode, pfa);
+    printk("INT (%u): Page Fault on 0x%0.16x\n", errorCode, pfa);
     // ProcessScheduler::pageFault(errorCode, (void*)pfa);
     while (1) {
     }
@@ -230,7 +230,7 @@ void setupHandlers()
 
     // PIC interrupt handlers
     fill_idt_descriptor_64(IDT::idt, 32, INTERRUPT_HANDLER_NAME_UINT64(00), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
-    fill_idt_descriptor_64(IDT::idt, 33, INTERRUPT_HANDLER_NAME_UINT64(00), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
+    fill_idt_descriptor_64(IDT::idt, 33, INTERRUPT_HANDLER_NAME_UINT64(01), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
     fill_idt_descriptor_64(IDT::idt, 34, INTERRUPT_HANDLER_NAME_UINT64(02), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
     fill_idt_descriptor_64(IDT::idt, 35, INTERRUPT_HANDLER_NAME_UINT64(03), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);
     fill_idt_descriptor_64(IDT::idt, 36, INTERRUPT_HANDLER_NAME_UINT64(04), GDT::KERNEL_CS_64_OFFSET, IDT_FLAGS, 0);

@@ -79,12 +79,12 @@ void setupTSS();
 };
 }
 
-// ASM functions
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+// ASM functions
 extern void set_GDT(std::uint16_t size, kernel::GDT::gdt_desc* base);
 extern void set_TSS(std::uint16_t selector);
 

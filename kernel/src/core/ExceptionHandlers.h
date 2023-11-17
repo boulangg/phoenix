@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstdint>
 
@@ -28,12 +28,12 @@ void generic_exception_handler(std::uint32_t irq, std::uint32_t errocode);
 void generic_interrupt_handler(std::uint32_t irq);
 
 // ASM functions
-extern std::uint64_t readCR2();
+extern std::uint64_t read_CR2();
 
 // Hardware Exception Handlers
-#define EXCEPTION_HANDLER_NAME(num)   EXC_##num##_HANDLER
+#define EXCEPTION_HANDLER_NAME(num)        EXC_##num##_HANDLER
 #define EXCEPTION_HANDLER_NAME_UINT64(num) reinterpret_cast<std::uint64_t>(EXCEPTION_HANDLER_NAME(num))
-#define DEFINE_EXCEPTION_HANDLER(num) extern "C" void EXCEPTION_HANDLER_NAME(num)();
+#define DEFINE_EXCEPTION_HANDLER(num)      extern "C" void EXCEPTION_HANDLER_NAME(num)();
 
 DEFINE_EXCEPTION_HANDLER(00);
 DEFINE_EXCEPTION_HANDLER(01);
@@ -71,7 +71,7 @@ DEFINE_EXCEPTION_HANDLER(1F);
 // PIC Interrupt Handlers
 #define INTERRUPT_HANDLER_NAME(num)        INT_##num##_HANDLER
 #define INTERRUPT_HANDLER_NAME_UINT64(num) reinterpret_cast<std::uint64_t>(INTERRUPT_HANDLER_NAME(num))
-#define DEFINE_INTERRUPT_HANDLER(num) extern "C" void INTERRUPT_HANDLER_NAME(num)();
+#define DEFINE_INTERRUPT_HANDLER(num)      extern "C" void INTERRUPT_HANDLER_NAME(num)();
 
 DEFINE_INTERRUPT_HANDLER(00);
 DEFINE_INTERRUPT_HANDLER(01);

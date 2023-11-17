@@ -19,7 +19,6 @@ struct InterruptFlags
     bool SHARED : 1;
 };
 
-
 class InterruptHandler
 {
 public:
@@ -50,7 +49,7 @@ class InterruptHandlerClass : public InterruptHandler
 {
 public:
     // typedef typename Obj::handler_function handler_type;
-    InterruptHandlerClass(std::string name, InterruptFlags flags, void* dedatavID, Obj* obj) :
+    InterruptHandlerClass(std::string name, InterruptFlags flags, void* data, Obj* obj) :
         InterruptHandler(name, flags, data), _obj(obj)
     {}
 
@@ -63,7 +62,6 @@ public:
 
     Obj* _obj;
 };
-
 
 template <int (*handler_function)(std::uint8_t, void*)>
 class InterruptHandlerFunction : public InterruptHandler
@@ -95,7 +93,7 @@ public:
     void unregisterHandler(std::uint8_t irq, InterruptHandler* handler);
 
 private:
-    std::unordered_map < std::uint8_t, std::list<InterruptHandler*>> _handlers;
+    std::unordered_map<std::uint8_t, std::list<InterruptHandler*>> _handlers;
 };
 
 }

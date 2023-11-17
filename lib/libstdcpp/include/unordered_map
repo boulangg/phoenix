@@ -93,7 +93,7 @@ public:
             it = res.first;
         }
 
-        return *it->second;
+        return it->second;
     }
 
     size_type count(const key_type& key) const

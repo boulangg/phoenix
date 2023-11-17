@@ -1,11 +1,11 @@
 .section .text
 .code64
 
-.global readCR2
+.global read_CR2
 .global generic_exception_handler
 .global generic_interrupt_handler
 
-readCR2:
+read_CR2:
 	mov %cr2, %rax
 	ret
 
@@ -62,14 +62,19 @@ readCR2:
 .macro interrupt_handler num
     push %rbp
     mov %rsp, %rbp
-	pushaq
+    push %rdi
     mov \num, %rdi
-	call generic_interrupt_handler
-	popaq
+    call interrupt_handler
 	pop %rdi
     pop %rbp
     iretq
 .endm
+
+interrupt_handler:
+	pushaq
+	call generic_interrupt_handler
+	popaq
+	ret
 
 // Hardware Exception Handlers
 #define EXCEPTION_HANDLER(num) \
