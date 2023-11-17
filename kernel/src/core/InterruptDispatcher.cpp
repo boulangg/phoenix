@@ -85,7 +85,6 @@ void InterruptDispatcher::init()
 
 void InterruptDispatcher::handleIRQ(std::uint8_t irq)
 {
-    printk("Received an IRQ: %u\n", irq);
     // Is it PIC interrupt
     if (irq < 16) {
         // Does it come from slave PIC

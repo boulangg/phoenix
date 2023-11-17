@@ -13,6 +13,7 @@
 #include "mem/MemoryAllocator.h"
 #include "mem/MemoryDescriptor.h"
 #include "proc/ProcessScheduler.h"
+#include "core/rtc/RTCDevice.h"
 
 namespace kernel {
 
@@ -34,6 +35,7 @@ public:
     static void init(const KernelInfo& info);
     static void start();
     static void write(const char* str);
+    static core::rtc::DateTime getDateTime();
 
     static mem::MemoryAllocator memory;
     static proc::ProcessScheduler scheduler;
@@ -42,6 +44,7 @@ public:
 private:
     static mem::MemoryDescriptor* _kernelMemDesc;
     static console::BasicConsole _console;
+    static core::rtc::RTCDevice* _rtc;
 
     // dev::DeviceExplorer _device;
 };

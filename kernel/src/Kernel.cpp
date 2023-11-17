@@ -24,6 +24,7 @@ core::InterruptDispatcher Kernel::interrupt;
 proc::ProcessScheduler Kernel::scheduler;
 mem::MemoryDescriptor* Kernel::_kernelMemDesc;
 console::BasicConsole Kernel::_console;
+core::rtc::RTCDevice* Kernel::_rtc;
 
 static void setupGlobalConstructors(utils::Elf64File& kernelFile)
 {
@@ -134,7 +135,10 @@ void Kernel::init(const KernelInfo& info)
 
     // Interrupts
     interrupt.init();
+    
+    // Start the first Kernel thread
     scheduler.init(_kernelMemDesc->getPageTable(), Kernel::start);
+    /// UNREACHABLE ///
 }
 
 // Halt and catch fire function.
@@ -155,13 +159,18 @@ public:
     {
         for (auto& val : vals) {
             if (val.type == EV_SYN) continue;
-            printk("%.2x - %.2x - %.2x\n", val.type, val.code, val.value);
+            printk("%.2x - %.2x - %.2x", val.type, val.code, val.value);
+            core::rtc::DateTime dt = Kernel::getDateTime(); 
+            printk(" (%0.4u-%0.2u-%0.2u %0.2u:%0.2u:%0.2u)\n", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
         }
     }
 };
 
 void Kernel::start()
 {
+    // Date and Time
+    _rtc = core::rtc::RTCDevice::initRTC();
+
     // Tests
     TestHandler handler;
     dev::input::InputManager::registerHandler(&handler);
@@ -172,6 +181,11 @@ void Kernel::start()
 void Kernel::write(const char* str)
 {
     _console.write(str);
+}
+
+core::rtc::DateTime Kernel::getDateTime() 
+{
+    return _rtc->getCurrentDateTime();
 }
 
 }
