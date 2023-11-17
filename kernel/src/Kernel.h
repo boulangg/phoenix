@@ -10,10 +10,10 @@
 
 #include "console/BasicConsole.h"
 #include "core/InterruptDispatcher.h"
+#include "core/rtc/RTCDevice.h"
 #include "mem/MemoryAllocator.h"
 #include "mem/MemoryDescriptor.h"
 #include "proc/ProcessScheduler.h"
-#include "core/rtc/RTCDevice.h"
 
 namespace kernel {
 

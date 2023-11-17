@@ -7,7 +7,7 @@ enable_language( C CXX ASM )
 
 # C generic compiler/linker flags
 # set(C_STANDARD 11)
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -fno-stack-protector -fno-builtin-fprintf -mno-red-zone -g -std=c11")
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -fno-stack-protector -fno-builtin-fprintf -mno-red-zone -g -std=c11 -U__linux__ -D__phoenix__")
 set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # C++ generic compiler/linker flags

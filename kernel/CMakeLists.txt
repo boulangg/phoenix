@@ -10,10 +10,12 @@ file(GLOB_RECURSE kernel_src
         ${CMAKE_CURRENT_SOURCE_DIR}/boot/limine/*.S
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.S
+        ${CMAKE_CURRENT_SOURCE_DIR}/acpica/src/*.c
         ${CMAKE_CURRENT_SOURCE_DIR}/fonts/*.S)
 set(lib_inc 
         ${CMAKE_CURRENT_SOURCE_DIR}/boot/limine
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/acpica/include
         ${CMAKE_CURRENT_SOURCE_DIR}/fonts)
 set(linker_file
         ${CMAKE_CURRENT_SOURCE_DIR}/boot/limine/linker.ld)
@@ -39,7 +41,7 @@ SET_SOURCE_FILES_PROPERTIES(
 add_executable(kernel EXCLUDE_FROM_ALL ${kernel_src} ${font_out_file})
 target_include_directories(kernel PUBLIC ${lib_inc})
 set_target_properties(kernel PROPERTIES LINK_DEPENDS ${linker_file})
-target_link_libraries(kernel c_kernel stdcpp_kernel nostd_options kernel_options)
+target_link_libraries(kernel c_kernel stdcpp_kernel acpica nostd_options kernel_options)
 target_link_options(kernel PUBLIC -nostdlib -static -pie -Wl,--no-dynamic-linker -T${linker_file} -g)
 #target_link_options(kernel PUBLIC -T${linker_file})
 set_target_properties(kernel PROPERTIES FOLDER kernel)

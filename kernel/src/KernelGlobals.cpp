@@ -42,10 +42,14 @@ void printk(const char* format, ...)
 {
     va_list vl;
     va_start(vl, format);
-    vsnprintf(printkBuffer, BUFFER_SIZE, format, vl);
-    printkBuffer[BUFFER_SIZE] = '\0';
+    printk(format, vl);
     va_end(vl);
-    Kernel::write(printkBuffer);
+}
+
+void printk(const char* format, va_list args)
+{
+    vsnprintf(printkBuffer, BUFFER_SIZE, format, args);
+    printkBuffer[BUFFER_SIZE] = '\0';
 }
 
 }

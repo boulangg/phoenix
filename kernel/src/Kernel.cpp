@@ -11,6 +11,7 @@
 #include "Constant.h"
 #include "CpuCapabilities.h"
 #include "GlobalDescTable.h"
+#include "dev/Acpica.h"
 #include "fs/kernelfs/KernelFile.h"
 #include "utils/Elf64File.h"
 
@@ -135,7 +136,7 @@ void Kernel::init(const KernelInfo& info)
 
     // Interrupts
     interrupt.init();
-    
+
     // Start the first Kernel thread
     scheduler.init(_kernelMemDesc->getPageTable(), Kernel::start);
     /// UNREACHABLE ///
@@ -158,10 +159,12 @@ public:
     void handleEvents(const std::vector<dev::input::InputEvent>& vals)
     {
         for (auto& val : vals) {
-            if (val.type == EV_SYN) continue;
+            if (val.type == EV_SYN)
+                continue;
             printk("%.2x - %.2x - %.2x", val.type, val.code, val.value);
-            core::rtc::DateTime dt = Kernel::getDateTime(); 
-            printk(" (%0.4u-%0.2u-%0.2u %0.2u:%0.2u:%0.2u)\n", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second);
+            core::rtc::DateTime dt = Kernel::getDateTime();
+            printk(" (%0.4u-%0.2u-%0.2u %0.2u:%0.2u:%0.2u)\n", dt.year, dt.month, dt.day, dt.hour, dt.minute,
+                   dt.second);
         }
     }
 };
@@ -170,6 +173,9 @@ void Kernel::start()
 {
     // Date and Time
     _rtc = core::rtc::RTCDevice::initRTC();
+
+    // ACPICA
+    // dev::Acpica::initAcpi();
 
     // Tests
     TestHandler handler;
@@ -183,7 +189,7 @@ void Kernel::write(const char* str)
     _console.write(str);
 }
 
-core::rtc::DateTime Kernel::getDateTime() 
+core::rtc::DateTime Kernel::getDateTime()
 {
     return _rtc->getCurrentDateTime();
 }

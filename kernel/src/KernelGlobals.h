@@ -3,11 +3,13 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include "Constant.h"
 #include "mem/Page.h"
+
+#include <cstdarg>
 
 namespace kernel {
 
@@ -19,5 +21,6 @@ mem::Page* alloc_zeroed_pages(std::size_t order);
 void schedule();
 
 void printk(const char* format, ...);
+void printk(const char* format, va_list args);
 
 }
