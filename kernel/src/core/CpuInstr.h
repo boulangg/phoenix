@@ -10,39 +10,39 @@
 
 namespace kernel::core {
 
-inline static void outb(uint16_t port, uint8_t value)
+inline static void outb(std::uint16_t port, std::uint8_t value)
 {
     asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
 }
 
-inline static void outw(uint16_t port, uint16_t value)
+inline static void outw(std::uint16_t port, std::uint16_t value)
 {
     asm volatile("outw %0, %1" : : "a"(value), "Nd"(port));
 }
 
-inline static void outl(uint16_t port, uint32_t value)
+inline static void outl(std::uint16_t port, std::uint32_t value)
 {
     asm volatile("outl %0, %1" : : "a"(value), "Nd"(port));
 }
 
-inline static void outsw(uint16_t port, const void* buf, int size)
+inline static void outsw(std::uint16_t port, const void* buf, int size)
 {
     asm volatile("cld; rep outsw" : "=S"(buf), "=c"(size) : "d"(port), "0"(buf), "1"(size) : "cc");
 }
 
-inline static void outsl(uint16_t port, const void* buf, int size)
+inline static void outsl(std::uint16_t port, const void* buf, int size)
 {
     asm volatile("cld; rep outsl" : "=S"(buf), "=c"(size) : "d"(port), "0"(buf), "1"(size) : "cc");
 }
 
-inline static uint8_t inb(uint16_t port)
+inline static uint8_t inb(std::uint16_t port)
 {
     uint8_t rega;
     asm volatile("inb %1,%0" : "=a"(rega) : "Nd"(port));
     return rega;
 }
 
-inline static uint16_t inw(uint16_t port)
+inline static uint16_t inw(std::uint16_t port)
 {
     uint16_t rega;
     asm volatile("inw %1,%0" : "=a"(rega) : "Nd"(port));
@@ -56,12 +56,12 @@ inline static uint32_t inl(unsigned short port)
     return rega;
 }
 
-inline static void insw(uint16_t port, void* buf, uint16_t size)
+inline static void insw(std::uint16_t port, void* buf, std::uint16_t size)
 {
     asm volatile("cld; rep insw" : "=D"(buf), "=c"(size) : "d"(port), "0"(buf), "1"(size) : "memory", "cc");
 }
 
-inline static void insl(uint16_t port, void* buf, uint16_t size)
+inline static void insl(std::uint16_t port, void* buf, std::uint16_t size)
 {
     asm volatile("cld; rep insl" : "=D"(buf), "=c"(size) : "d"(port), "0"(buf), "1"(size) : "memory", "cc");
 }
@@ -79,6 +79,13 @@ inline static void sti(void)
 inline static void hlt(void)
 {
     asm volatile("hlt" ::: "memory");
+}
+
+inline static std::uint64_t rdtsc()
+{
+    std::uint32_t low, high;
+    asm volatile("rdtsc" : "=a"(low), "=d"(high));
+    return std::uint64_t(high) << 32 | low;
 }
 
 }

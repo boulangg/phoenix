@@ -50,6 +50,7 @@ void printk(const char* format, va_list args)
 {
     vsnprintf(printkBuffer, BUFFER_SIZE, format, args);
     printkBuffer[BUFFER_SIZE] = '\0';
+    Kernel::write(printkBuffer);
 }
 
 }

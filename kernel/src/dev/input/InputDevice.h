@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <list>
 #include <string>
@@ -13,6 +13,7 @@
 #include "InputEvent.h"
 #include "InputEventCode.h"
 #include "InputHandler.h"
+#include "Kernel.h"
 
 namespace kernel::dev::input {
 
@@ -29,7 +30,7 @@ public:
 
     int handleIncomingEvent(uint16_t type, uint16_t code, int32_t value)
     {
-        InputEvent val = {{0, 0}, type, code, value};
+        InputEvent val = {Kernel::getDateTime(), type, code, value};
         return handleIncomingEvent(val);
     }
 

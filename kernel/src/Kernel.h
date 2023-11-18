@@ -10,7 +10,9 @@
 
 #include "console/BasicConsole.h"
 #include "core/InterruptDispatcher.h"
-#include "core/rtc/RTCDevice.h"
+#include "core/clock/Clock.h"
+#include "core/clock/PITDevice.h"
+#include "core/clock/RTCDevice.h"
 #include "mem/MemoryAllocator.h"
 #include "mem/MemoryDescriptor.h"
 #include "proc/ProcessScheduler.h"
@@ -35,16 +37,18 @@ public:
     static void init(const KernelInfo& info);
     static void start();
     static void write(const char* str);
-    static core::rtc::DateTime getDateTime();
+    static timespec getDateTime();
 
     static mem::MemoryAllocator memory;
     static proc::ProcessScheduler scheduler;
     static core::InterruptDispatcher interrupt;
+    static core::clock::Clock* clock;
 
 private:
     static mem::MemoryDescriptor* _kernelMemDesc;
     static console::BasicConsole _console;
-    static core::rtc::RTCDevice* _rtc;
+    static core::clock::RTCDevice* _rtc;
+    static core::clock::PITDevice* _pit;
 
     // dev::DeviceExplorer _device;
 };
