@@ -3,12 +3,15 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
-
-#pragma once
+ 
+ #pragma once
 
 #include <cstdint>
 
-namespace kernel::core {
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 inline static void outb(std::uint16_t port, std::uint8_t value)
 {
@@ -88,4 +91,9 @@ inline static std::uint64_t rdtsc()
     return std::uint64_t(high) << 32 | low;
 }
 
+// ASM functions
+extern void enable_SSE();
+
+#ifdef __cplusplus
 }
+#endif

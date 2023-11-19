@@ -8,7 +8,7 @@
 
 #include <errno.h>
 
-#include "CpuInstr.h"
+#include "asm/cpu.h"
 #include "ExceptionHandlers.h"
 #include "InterruptDescTable.h"
 #include "KernelGlobals.h"

@@ -12,6 +12,7 @@
 #include "Kernel.h"
 #include "MemoryInit.h"
 #include "console/BasicConsole.h"
+#include "asm/cpu.h"
 
 #include "utils/Elf64File.h"
 
@@ -47,6 +48,7 @@ static void hcf(void)
 // Kernel entry point
 void _start(void)
 {
+    enable_SSE();
     limine_framebuffer* framebuffer = framebuffer_request.response->framebuffers[0];
 
     auto pageArray = kernel::boot::initPageArray(memmap_request);

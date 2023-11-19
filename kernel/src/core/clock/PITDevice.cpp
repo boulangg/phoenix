@@ -7,7 +7,7 @@
  #include "PITDevice.h"
 
 #include "Kernel.h"
-#include "core/CpuInstr.h"
+#include "asm/cpu.h"
 
 #include "Clock.h"
 

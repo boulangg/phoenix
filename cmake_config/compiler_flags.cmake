@@ -7,17 +7,17 @@ enable_language( C CXX ASM )
 
 # C generic compiler/linker flags
 # set(C_STANDARD 11)
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -fno-stack-protector -fno-builtin-fprintf -mno-red-zone -g -std=c11 -U__linux__ -D__phoenix__")
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -ffreestanding -fno-stack-protector -fno-builtin-fprintf -mno-red-zone -std=c11 -U__linux__ -D__phoenix__ -g -O3")
 set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # C++ generic compiler/linker flags
 # set(CXX_STANDARD 17)
 # -Wold-style-cast -Wconversion -Wsign-conversion -Wshadow
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -Wno-literal-suffix -fno-stack-protector -fno-builtin-fprintf -mno-red-zone -g -std=c++2b")
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra -ffreestanding -Wno-literal-suffix -fno-stack-protector -fno-builtin-fprintf -mno-red-zone -std=c++2b -g -O3")
 set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # ASM generic compiler/linker flags
-set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS} "-Wall -Wextra -g -fno-stack-protector -fno-builtin-fprintf -x assembler-with-cpp")
+set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS} "-Wall -Wextra -ffreestanding -fno-stack-protector -fno-builtin-fprintf -x assembler-with-cpp -g -O3")
 
 # Linker flags
 SET(CMAKE_EXE_LINKER_FLAGS "-g")

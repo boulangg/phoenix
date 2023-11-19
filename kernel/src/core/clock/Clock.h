@@ -8,7 +8,7 @@
 
 #include <ctime>
 
-#include "core/CpuInstr.h"
+#include "asm/cpu.h"
 
 namespace kernel::core::clock {
 

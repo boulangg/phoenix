@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "core/CpuInstr.h"
+#include "asm/cpu.h"
 
 #include "InputDevice.h"
 #include "InputManager.h"

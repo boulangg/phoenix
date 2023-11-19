@@ -9,12 +9,11 @@
 #include <cstring>
 
 #include "Constant.h"
-#include "CpuCapabilities.h"
 #include "GlobalDescTable.h"
-#include "core/CpuInstr.h"
 #include "dev/Acpica.h"
 #include "fs/kernelfs/KernelFile.h"
 #include "utils/Elf64File.h"
+#include "asm/cpu.h"
 
 // Tests
 #include "dev/input/InputManager.h"
@@ -123,7 +122,6 @@ void Kernel::init(const KernelInfo& info)
     // Generic CPU struct
     GDT::setupGDT();
     TSS::setupTSS();
-    enable_SSE();
 
     // Memory Allocator
     memory.init(info.pageArray, info.pageCount);
@@ -148,9 +146,9 @@ void Kernel::init(const KernelInfo& info)
 // Halt and catch fire function.
 static void hcf(void)
 {
-    core::sti();
+    sti();
     for (;;) {
-        core::hlt();
+        hlt();
         schedule();
     }
 }
@@ -176,11 +174,11 @@ void Kernel::start()
     _rtc = core::clock::RTCDevice::initRTC();
     _pit = core::clock::PITDevice::initPIT();
 
-    core::sti();
+    sti();
     while (!clock->isClockInitialized()) {
-        core::hlt();
+        hlt();
     }
-    core::cli();
+    cli();
 
     // Switch PIT to scheduler mode
     _pit->switchHandler();

@@ -10,13 +10,13 @@
 #include "core/InterruptDispatcher.h"
 
 // Tests
-#include "core/CpuInstr.h"
+#include "asm/cpu.h"
 
 namespace kernel::dev::input {
 
 void KeyboardDevice::processScancode()
 {
-    std::uint8_t scancode = core::inb(0x60);
+    std::uint8_t scancode = inb(0x60);
     if (_previousScancode == char(0xE0)) {
         _previousScancode = 0;
         bool keyPressed = !(scancode & 0x80);
