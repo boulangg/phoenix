@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma GCC diagnostic ignored "-Wunused-parameter"
+
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #include "Acpica.h"
 
@@ -20,6 +20,7 @@ extern "C"
 #endif
 
 #include "KernelGlobals.h"
+#include "proc/Semaphore.h"
 
 // Environmental and ACPI Tables
 ACPI_STATUS AcpiOsInitialize()
@@ -119,49 +120,57 @@ void AcpiOsWaitEventsComplete()
 // Mutual Exclusion and Synchronization
 ACPI_STATUS AcpiOsCreateSemaphore(UINT32 MaxUnits, UINT32 InitialUnits, ACPI_SEMAPHORE* OutHandle)
 {
-    // TODO
-    return AE_ERROR;
+    kernel::proc::Semaphore* sem = new kernel::proc::Semaphore(MaxUnits, InitialUnits);
+    *OutHandle = reinterpret_cast<void*>(sem);
+    return AE_OK;
 }
 
 ACPI_STATUS AcpiOsDeleteSemaphore(ACPI_SEMAPHORE Handle)
 {
-    // TODO
-    return AE_ERROR;
+    kernel::proc::Semaphore* sem = reinterpret_cast<kernel::proc::Semaphore*>(Handle);
+    delete sem;
+    return AE_OK;
 }
 
 ACPI_STATUS AcpiOsWaitSemaphore(ACPI_SEMAPHORE Handle, UINT32 Units, UINT16 Timeout)
 {
-    // TODO
-    return AE_ERROR;
+    kernel::proc::Semaphore* sem = reinterpret_cast<kernel::proc::Semaphore*>(Handle);
+    sem->wait(Units);
+    return AE_OK;
 }
 
 ACPI_STATUS AcpiOsSignalSemaphore(ACPI_SEMAPHORE Handle, UINT32 Units)
 {
-    // TODO
-    return AE_ERROR;
+    kernel::proc::Semaphore* sem = reinterpret_cast<kernel::proc::Semaphore*>(Handle);
+    sem->signal(Units);
+    return AE_OK;
 }
 
 ACPI_STATUS AcpiOsCreateLock(ACPI_SPINLOCK* OutHandle)
 {
-    // TODO
+    kernel::spinlock* lock = new kernel::spinlock();
+    *OutHandle = reinterpret_cast<void*>(lock);
     return AE_ERROR;
 }
 
 void AcpiOsDeleteLock(ACPI_HANDLE Handle)
 {
-    // TODO
+    kernel::spinlock* lock = reinterpret_cast<kernel::spinlock*>(Handle);
+    delete lock;
     return;
 }
 
 ACPI_CPU_FLAGS AcpiOsAcquireLock(ACPI_SPINLOCK Handle)
 {
-    // TODO
+    kernel::spinlock* lock = reinterpret_cast<kernel::spinlock*>(Handle);
+    lock->lock();
     return 0;
 }
 
 void AcpiOsReleaseLock(ACPI_SPINLOCK Handle, ACPI_CPU_FLAGS Flags)
 {
-    // TODO
+    kernel::spinlock* lock = reinterpret_cast<kernel::spinlock*>(Handle);
+    lock->unlock();
     return;
 }
 

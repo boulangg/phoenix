@@ -22,6 +22,16 @@ Process::Process(mem::PageTable pageTable, std::uint64_t entryPoint) : _memDesc(
     initKernelProcess(entryPoint);
 }
 
+Process::State Process::getState()
+{
+    return _state;
+}
+
+void Process::setState(Process::State state)
+{
+    _state = state;
+}
+
 void Process::initKernelProcess(std::uint64_t entryPoint)
 {
     mem::Page* kernelStackpage = Kernel::memory.allocPages(9);

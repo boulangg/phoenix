@@ -42,8 +42,8 @@ public:
     // Kernel process
     Process(mem::PageTable pageTable, std::uint64_t entryPoint);
 
-    void setState(State state);
     State getState();
+    void setState(State state);
 
     CpuState* getCpuState()
     {

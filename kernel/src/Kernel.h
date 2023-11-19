@@ -17,6 +17,8 @@
 #include "mem/MemoryDescriptor.h"
 #include "proc/ProcessScheduler.h"
 
+#include "asm/spinlock.h"
+
 namespace kernel {
 
 struct KernelInfo

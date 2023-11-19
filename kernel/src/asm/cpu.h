@@ -1,10 +1,12 @@
 /*
  * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
- * The file is distributed under the MIT license
- * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ * The file is distributed under the MIT
+ * license
+ * The license is available in the LICENSE file or at
+ * https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstdint>
 
@@ -69,11 +71,13 @@ inline static void insl(std::uint16_t port, void* buf, std::uint16_t size)
     asm volatile("cld; rep insl" : "=D"(buf), "=c"(size) : "d"(port), "0"(buf), "1"(size) : "memory", "cc");
 }
 
+// Enable interrupts
 inline static void cli(void)
 {
     asm volatile("cli" ::: "memory");
 }
 
+// Disable interrupts
 inline static void sti(void)
 {
     asm volatile("sti" ::: "memory");
@@ -89,6 +93,23 @@ inline static std::uint64_t rdtsc()
     std::uint32_t low, high;
     asm volatile("rdtsc" : "=a"(low), "=d"(high));
     return std::uint64_t(high) << 32 | low;
+}
+
+inline static void pause()
+{
+    asm volatile("pause" ::: "memory");
+}
+
+inline static std::uint64_t rflag()
+{
+    uint64_t rega;
+    asm volatile("pushfq; popq %%rax;" : "=a"(rega));
+    return rega;
+}
+
+inline static bool isInterruptEnabled()
+{
+    return (rflag() & (1<<9)) == 0;
 }
 
 // ASM functions

@@ -17,10 +17,15 @@ public:
     ProcessScheduler();
     void init(mem::PageTable pgTable, void (*fn)());
     void schedule();
+    void changeState(Process* proc, Process::State state);
+
+    Process* getCurrent();
 
 private:
     std::list<Process*> _processes;
-    Process* _currentProcess;
+    std::list<Process*> _runningProcesses;
+    std::list<Process*> _sleepingProcesses;
+    Process* _current;
 };
 
 }
