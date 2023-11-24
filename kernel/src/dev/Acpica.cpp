@@ -21,6 +21,7 @@ extern "C"
 
 #include "KernelGlobals.h"
 #include "proc/Semaphore.h"
+#include <climits>
 
 // Environmental and ACPI Tables
 ACPI_STATUS AcpiOsInitialize()
@@ -257,11 +258,39 @@ ACPI_STATUS AcpiOsSignal(UINT32 Function, void* Info)
 
 namespace kernel::dev {
 
+//ACPI_STATUS DisplayOneDevice(ACPI_HANDLE ObjHandle, UINT32 Level, void* Context, void** ReturnResult)
+//{
+//    ACPI_STATUS Status;
+//    ACPI_DEVICE_INFO Info;
+//    ACPI_BUFFER Path;
+//    char Buffer[256];
+//    Path.Length = sizeof(Buffer);
+//    Path.Pointer = Buffer;
+//    /* Get the full path of this device and print it */
+//    Status = AcpiHandleToPathname(ObjHandle, &Path);
+//    if (ACPI_SUCCESS(Status)) {
+//        printk("%s\n", Path.Pointer));
+//    }
+//    /* Get the device info for this device and print it */
+//    Status = AcpiGetDeviceInfo(ObjHandle, &Info);
+//    if (ACPI_SUCCESS(Status)) {
+//        printk(" HID: %.8X, ADR: %.8X, Status: %x\n", Info.HardwareId, Info.Address, Info.CurrentStatus));
+//    }
+//    ReturnResult = NULL;
+//    return AE_OK;
+//}
+
 void Acpica::initAcpi()
 {
     ACPI_STATUS status;
     status = AcpiInitializeSubsystem();
     status = AcpiInitializeTables(nullptr, 16, false);
+
+    //ACPI_HANDLE SysBusHandle;
+    //AcpiNameToHandle(0, NS_SYSTEM_BUS, &SysBusHandle);
+    //printk("Display of all devices in the namespace:\n");
+    //AcpiWalkNamespace(ACPI_TYPE_DEVICE, SysBusHandle, INT_MAX, DisplayOneDevice, NULL, NULL);
+
     status = AcpiLoadTables();
     status = AcpiEnableSubsystem(ACPI_FULL_INITIALIZATION);
     status = AcpiInitializeObjects(ACPI_FULL_INITIALIZATION);
