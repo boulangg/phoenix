@@ -16,6 +16,7 @@
 #include "mem/MemoryAllocator.h"
 #include "mem/MemoryDescriptor.h"
 #include "proc/ProcessScheduler.h"
+#include "dev/DeviceExplorer.h"
 
 #include "asm/spinlock.h"
 
@@ -44,6 +45,7 @@ public:
     static mem::MemoryAllocator memory;
     static proc::ProcessScheduler scheduler;
     static core::InterruptDispatcher interrupt;
+    static dev::DeviceExplorer deviceExplorer;
     static core::clock::Clock* clock;
 
 private:
@@ -51,8 +53,6 @@ private:
     static console::BasicConsole _console;
     static core::clock::RTCDevice* _rtc;
     static core::clock::PITDevice* _pit;
-
-    // dev::DeviceExplorer _device;
 };
 
 }

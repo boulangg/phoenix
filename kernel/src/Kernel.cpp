@@ -24,6 +24,7 @@ mem::MemoryAllocator Kernel::memory;
 core::InterruptDispatcher Kernel::interrupt;
 proc::ProcessScheduler Kernel::scheduler;
 core::clock::Clock* Kernel::clock;
+dev::DeviceExplorer Kernel::deviceExplorer;
 mem::MemoryDescriptor* Kernel::_kernelMemDesc;
 console::BasicConsole Kernel::_console;
 core::clock::RTCDevice* Kernel::_rtc;
@@ -185,6 +186,8 @@ void Kernel::start()
 
     // ACPICA
     // dev::Acpica::initAcpi();
+
+    deviceExplorer.init();
 
     // Tests
     TestHandler handler;
