@@ -6,10 +6,12 @@ enable_language(CXX)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake_config/compiler_flags.cmake)
 
 # List all user apps in 'apps'' folder
-list_dir(${CMAKE_CURRENT_SOURCE_DIR}/apps app_names)
+list_dir(${CMAKE_CURRENT_SOURCE_DIR}/apps user_app_names)
+
+add_custom_target(user_apps)
 
 # Create target for all user apps in 'apps'' folder
-foreach(app_name ${app_names})
+foreach(app_name ${user_app_names})
 	if (NOT TARGET ${app_name})
 		set(${app_name}_base_dir ${CMAKE_CURRENT_SOURCE_DIR}/apps/${app_name})
 		file(GLOB_RECURSE ${app_name}_src 
@@ -26,6 +28,9 @@ foreach(app_name ${app_names})
 			add_executable(${app_name}_gnustd EXCLUDE_FROM_ALL ${${app_name}_src})
 			set_target_properties(${app_name}_gnustd PROPERTIES FOLDER user_gnu)
 		endif()
+
+		# Add to global target
+		add_dependencies(user_apps ${app_name})
 	endif()
 endforeach()
 
