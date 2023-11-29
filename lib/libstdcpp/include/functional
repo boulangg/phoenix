@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "details/function.h"
+
 namespace std {
 
 template <class T>
