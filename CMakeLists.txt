@@ -94,7 +94,6 @@ add_custom_target(
     ${DISK_NAME}
     COMMAND rm -rf ${DISK_NAME}
     COMMAND dd if=/dev/zero of="${DISK_NAME}" bs=${BLOCK_SIZE} count=${DISK_BLOCK_COUNT}
-    #COMMAND mke2fs -L '' -N 0 -O ^64bit -d ${PART1_DIR} -m 5 -r 1 -t ext2 -E offset=${PART1_OFFSET} "${DISK_NAME}" "${PART1_SIZE_MEGS}M"
     DEPENDS partition_1
 )
 
@@ -120,7 +119,7 @@ add_custom_command(	OUTPUT ${drive2_name}
 
 # QEMU setup
 set(qemu qemu-system-x86_64)
-set(qemu_opts "-M q35 -m 2G -cdrom ${IMAGE_NAME} -hda ${DISK_NAME} -hdb ${drive2_name} -boot d -display gtk,zoom-to-fit=off")
+set(qemu_opts "-M q35 -m 2G -cdrom ${IMAGE_NAME} -drive id=disk,file=${DISK_NAME},if=none,format=raw -device piix3-ide,id=ide -device ide-hd,drive=disk,bus=ide.0 -boot d -display gtk,zoom-to-fit=off")
 set(qemu_opts_debug "${qemu_opts} -s -S -d int -no-shutdown -no-reboot")
 
 set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/scripts/terminal.sh)

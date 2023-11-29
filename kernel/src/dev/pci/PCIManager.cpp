@@ -20,29 +20,35 @@ static void printDeviceInfo(const PCIConfigSpace& configSpace)
     uint32_t deviceType = configSpace.deviceType;
     const char* deviceName;
     switch (deviceType >> 8) {
-    case 0x10180:
-        deviceName = "IDE Controller";
+    case 0x010180:
+        deviceName = "Storage - IDE Controller - ISA Compatibility mode-only, supports bus mastering";
         break;
-    case 0x20000:
-        deviceName = "Ethernet Controller";
+    case 0x010601:
+        deviceName = "Storage - Serial ATA Controller - AHCI 1.0";
         break;
-    case 0x30000:
-        deviceName = "VGA-Compatible Controller";
+    case 0x020000:
+        deviceName = "Network - Ethernet Controller";
         break;
-    case 0x40100:
-        deviceName = "Multimedia Audio Controller";
+    case 0x030000:
+        deviceName = "Display - VGA-Compatible Controller - VGA Controller";
         break;
-    case 0x40300:
-        deviceName = "Audio Device";
+    case 0x040100:
+        deviceName = "Multimedia - Multimedia Audio Controller";
         break;
-    case 0x60000:
-        deviceName = "Host Bridge";
+    case 0x040300:
+        deviceName = "Multimedia - Audio Device";
         break;
-    case 0x60100:
-        deviceName = "ISA Bridge";
+    case 0x060000:
+        deviceName = "Bridge - Host Bridge";
         break;
-    case 0x68000:
-        deviceName = "Other bridge device";
+    case 0x060100:
+        deviceName = "Bridge - ISA Bridge";
+        break;
+    case 0x068000:
+        deviceName = "Bridge - Other";
+        break;
+    case 0x0C0500:
+        deviceName = "Serial Bus - SMBus Controller";
         break;
     default:
         deviceName = "Unknwon";
@@ -77,7 +83,7 @@ static void checkDevice(std::uint8_t bus, std::uint8_t dev)
     PCIConfigSpace configSpace = checkFunc(bus, dev, 0);
 
     // Check if multifunc device
-    if ((configSpace.headerType & 0x80) != 0) {
+    //if ((configSpace.headerType & 0x80) != 0) {
         for (std::uint8_t func = 1; func < 8; func++) {
             std::uint32_t vendorID_fn = PCIConfigSpace::getVendorID(bus, dev, func);
             if ((vendorID_fn & 0xFFFF) == 0xFFFF) {
@@ -85,7 +91,7 @@ static void checkDevice(std::uint8_t bus, std::uint8_t dev)
             }
             checkFunc(bus, dev, func);
         }
-    }
+    //}
 }
 
 static void checkBus(std::uint8_t bus)
