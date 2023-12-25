@@ -119,7 +119,7 @@ add_custom_command(	OUTPUT ${drive2_name}
 
 # QEMU setup
 set(qemu qemu-system-x86_64)
-set(qemu_opts "-M q35 -m 2G -cdrom ${IMAGE_NAME} -drive id=disk,file=${DISK_NAME},if=none,format=raw -device piix3-ide,id=ide -device ide-hd,drive=disk,bus=ide.0 -boot d -display gtk,zoom-to-fit=off")
+set(qemu_opts "-M q35 -m 2G -cdrom ${IMAGE_NAME} -device piix3-ide,id=ide -drive id=disk,file=${DISK_NAME},format=raw,if=none -device ide-hd,drive=disk,bus=ide.0 -boot d -display gtk,zoom-to-fit=off")
 set(qemu_opts_debug "${qemu_opts} -s -S -d int -no-shutdown -no-reboot")
 
 set(terminal ${CMAKE_CURRENT_SOURCE_DIR}/scripts/terminal.sh)
@@ -161,7 +161,7 @@ add_custom_target(
 	COMMAND ${terminal} -e "${qemu} ${qemu_opts_debug} &"
 	COMMAND sleep 1
 	COMMAND ${terminal} -e "gdb kernel/kernel &"
-	DEPENDS ${IMAGE_NAME} ${DISK_NAME} .gdbinit
+	DEPENDS ${IMAGE_NAME} partition_copy .gdbinit
 )
 
 add_custom_command(

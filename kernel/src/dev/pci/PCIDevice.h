@@ -17,6 +17,11 @@ class PCIDevice
 public:
     PCIDevice(std::uint8_t bus, std::uint8_t slot, std::uint8_t function);
 
+    const PCIConfigSpace& getConfigSpace() const
+    {
+        return _configSpace;
+    }
+
 private:
     std::uint8_t _bus;
     std::uint8_t _slot;

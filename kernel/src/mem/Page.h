@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <atomic>
 
 #include "Constant.h"
 
@@ -39,6 +40,12 @@ struct Page
     {
         return index * PAGE_SIZE;
     }
+
+    void lock();
+    void unlock();
+
+private:
+    std::atomic_flag _locked;
 };
 
 }

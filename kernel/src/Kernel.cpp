@@ -140,12 +140,12 @@ void Kernel::init(const KernelInfo& info)
     interrupt.init();
 
     // Start the first Kernel thread
-    scheduler.init(_kernelMemDesc->getPageTable(), Kernel::start);
+    scheduler.init(_kernelMemDesc->getPageTable(), Kernel::startIdleService);
     /// UNREACHABLE ///
 }
 
 // Halt and catch fire function.
-static void hcf(void)
+static void idle(void)
 {
     sti();
     for (;;) {
@@ -168,7 +168,7 @@ public:
     }
 };
 
-void Kernel::start()
+void Kernel::startIdleService()
 {
     // Initialize Clock
     clock = new core::clock::Clock();
@@ -184,16 +184,42 @@ void Kernel::start()
     // Switch PIT to scheduler mode
     _pit->switchHandler();
 
+    // Start main kernel process
+    proc::Process* proc =
+        new proc::Process(_kernelMemDesc->getPageTable(), reinterpret_cast<std::uint64_t>(Kernel::startInitService));
+    scheduler.addProcess(proc);
+
+    // Go to idle
+    idle();
+}
+
+void Kernel::startInitService()
+{
     // ACPICA
     // dev::Acpica::initAcpi();
-
-    deviceExplorer.init();
 
     // Tests
     TestHandler handler;
     dev::input::InputManager::registerHandler(&handler);
 
-    hcf();
+    // Init block device service
+    proc::Process* proc =
+        new proc::Process(_kernelMemDesc->getPageTable(), reinterpret_cast<std::uint64_t>(Kernel::startBlockDeviceService));
+    scheduler.addProcess(proc);
+
+    // Init devices
+    deviceExplorer.init();
+
+    // Go to idle
+    idle();
+}
+
+void Kernel::startBlockDeviceService()
+{
+    deviceExplorer.blockDeviceService();
+
+    // Go to idle
+    idle();
 }
 
 void Kernel::write(const char* str)

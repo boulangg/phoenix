@@ -3,25 +3,18 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
+ 
+ #pragma once
 
-#pragma once
+#include "dev/Disk.h"
 
-#include <list>
+namespace kernel::dev::pci::ide {
 
-#include "Disk.h"
-
-namespace kernel::dev {
-
-class DeviceExplorer
+class IDEDisk : public Disk
 {
 public:
-    DeviceExplorer();
-
-    void init();
-    void addDisk(Disk* disk);
-    void blockDeviceService();
-
-private:
-    std::list<BlockDevice*> _blkDevs;
+    IDEDisk();
+    virtual ~IDEDisk() {}
 };
+
 }

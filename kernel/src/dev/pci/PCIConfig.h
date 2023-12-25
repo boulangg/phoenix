@@ -7,6 +7,7 @@
  #pragma once
 
 #include <cstdint>
+#include <optional>
 
 namespace kernel::dev::pci {
 
@@ -47,10 +48,10 @@ struct PCIConfigSpace
         std::uint32_t PCIConfigSpace3;
         struct
         {
-            std::uint8_t BIST;
-            std::uint8_t headerType;
-            std::uint8_t latencyTimer;
             std::uint8_t cacheLineSize;
+            std::uint8_t latencyTimer;
+            std::uint8_t headerType;
+            std::uint8_t BIST;
         };
     };
     union
@@ -69,10 +70,10 @@ struct PCIConfigSpace
         std::uint32_t BAR2;
         struct
         {
-            std::uint8_t secondaryLatencyTimer;
-            std::uint8_t subordinateBusNumber;
-            std::uint8_t secondaryBusNumber;
             std::uint8_t primaryBusNumber;
+            std::uint8_t secondaryBusNumber;
+            std::uint8_t subordinateBusNumber;
+            std::uint8_t secondaryLatencyTimer;
         };
     };
     union
@@ -81,9 +82,9 @@ struct PCIConfigSpace
         std::uint32_t BAR3;
         struct
         {
-            std::uint16_t secondaryStatus;
-            std::uint8_t IOLimit;
             std::uint8_t IOBase;
+            std::uint8_t IOLimit;
+            std::uint16_t secondaryStatus;
         };
     };
     union
@@ -92,8 +93,8 @@ struct PCIConfigSpace
         std::uint32_t BAR4;
         struct
         {
-            std::uint16_t memoryLimit;
             std::uint16_t memoryBase;
+            std::uint16_t memoryLimit;
         };
     };
     union
@@ -111,8 +112,8 @@ struct PCIConfigSpace
         std::uint32_t PCIConfigSpace11;
         struct
         {
-            std::uint16_t subDeviceID;
             std::uint16_t subVendorID;
+            std::uint16_t subDeviceID;
         };
     };
     union
@@ -125,8 +126,8 @@ struct PCIConfigSpace
         std::uint32_t PCIConfigSpace13;
         union
         {
-            char reserved_0[3];
             std::uint8_t capabilitiesPointer;
+            char reserved_0[3];
         };
     };
     union
@@ -139,10 +140,10 @@ struct PCIConfigSpace
         std::uint32_t PCIConfigSpace15;
         struct
         {
-            std::uint8_t maxLatency;
-            std::uint8_t minGrant;
-            std::uint8_t interruptPIN;
             std::uint8_t interruptLine;
+            std::uint8_t interruptPIN;
+            std::uint8_t minGrant;
+            std::uint8_t maxLatency;
         };
     };
 
@@ -154,6 +155,9 @@ struct PCIConfigSpace
 
     static std::uint16_t getVendorID(std::uint8_t bus, std::uint8_t dev, std::uint8_t func);
     static std::uint8_t getHeaderType(std::uint8_t bus, std::uint8_t dev, std::uint8_t func);
+
+    bool checkClass(std::optional<std::uint8_t> classCode, std::optional<std::uint8_t> subClass,
+                    std::optional<std::uint8_t> progIf) const;
 };
 
 

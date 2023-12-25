@@ -38,7 +38,6 @@ class Kernel
 {
 public:
     static void init(const KernelInfo& info);
-    static void start();
     static void write(const char* str);
     static timespec getDateTime();
 
@@ -49,6 +48,10 @@ public:
     static core::clock::Clock* clock;
 
 private:
+    static void startIdleService();
+    static void startInitService();
+    static void startBlockDeviceService();
+
     static mem::MemoryDescriptor* _kernelMemDesc;
     static console::BasicConsole _console;
     static core::clock::RTCDevice* _rtc;

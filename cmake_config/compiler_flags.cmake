@@ -38,8 +38,8 @@ target_compile_options(nostd_shared_options INTERFACE
 
 add_library(kernel_options INTERFACE)
 target_link_options(kernel_options INTERFACE -nostdlib -static -pie -Wl,--no-dynamic-linker -g)
-target_compile_options(kernel_options INTERFACE -fno-exceptions
-		$<$<COMPILE_LANGUAGE:CXX>: -fno-rtti>)
+#target_compile_options(kernel_options INTERFACE -fno-exceptions
+#		$<$<COMPILE_LANGUAGE:CXX>: -fno-rtti>)
 
 endif()
 

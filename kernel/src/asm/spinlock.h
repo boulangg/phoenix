@@ -19,7 +19,7 @@ public:
     {
         _interruptEnabled = isInterruptEnabled();
         cli();
-        while (!_state.test_and_set()) {
+        while (_state.test_and_set()) {
             do {
                 pause();
             } while (_state.test());

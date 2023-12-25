@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <list>
 
@@ -31,7 +31,7 @@ private:
 };
 
 #define wait_event(wq, condition)                                                                                      \
-    WaitQueueEntry* entry = wq.queue(false);                                                                           \
+    kernel::proc::WaitQueueEntry* entry = wq.queue(false);                                                             \
     for (;;) {                                                                                                         \
         wq.refreshState(entry);                                                                                        \
         if (condition) {                                                                                               \
@@ -42,7 +42,7 @@ private:
     wq.dequeue(entry);
 
 #define wait_event_exclusive(wq, condition)                                                                            \
-    WaitQueueEntry* entry = wq.queue(true);                                                                            \
+    kernel::proc::WaitQueueEntry* entry = wq.queue(true);                                                              \
     for (;;) {                                                                                                         \
         wq.refreshState(entry);                                                                                        \
         if (condition) {                                                                                               \

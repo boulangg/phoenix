@@ -3,25 +3,23 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
-
-#pragma once
+ 
+ #pragma once
 
 #include <list>
 
-#include "Disk.h"
+#include "IDEDevice.h"
 
-namespace kernel::dev {
+#include "dev/pci/PCIDriver.h"
 
-class DeviceExplorer
+namespace kernel::dev::pci::ide {
+
+class IDEDriver : public PCIDriver
 {
 public:
-    DeviceExplorer();
+    bool registerDevice(PCIDevice* device) override;
 
-    void init();
-    void addDisk(Disk* disk);
-    void blockDeviceService();
-
-private:
-    std::list<BlockDevice*> _blkDevs;
+    std::list<IDEDevice*> _devices;
 };
+
 }

@@ -18,6 +18,7 @@ public:
     void init(mem::PageTable pgTable, void (*fn)());
     void schedule();
     void changeState(Process* proc, Process::State state);
+    void addProcess(Process* proc);
 
     Process* getCurrent();
 

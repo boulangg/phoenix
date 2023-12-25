@@ -64,5 +64,23 @@ std::uint8_t PCIConfigSpace::getHeaderType(std::uint8_t bus, std::uint8_t dev, s
     return (readPCIConfigLine(bus, dev, func, 0x0C) >> 16) & 0xFF;
 }
 
+bool PCIConfigSpace::checkClass(std::optional<std::uint8_t> classCode, std::optional<std::uint8_t> subClass,
+                std::optional<std::uint8_t> progIf) const
+{
+    if (classCode.has_value() && this->classCode != classCode.value()) {
+        return false;
+    }
+
+    if (subClass.has_value() && this->subclassCode != subClass.value()) {
+        return false;
+    }
+
+    if (progIf.has_value() && this->progIF != progIf.value()) {
+        return false;
+    }
+
+    return true;
+}
+
 
 }

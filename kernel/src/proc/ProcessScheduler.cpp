@@ -15,6 +15,7 @@ ProcessScheduler::ProcessScheduler() {}
 void ProcessScheduler::init(mem::PageTable pgTable, void (*fn)())
 {
     _current = new Process(pgTable, reinterpret_cast<std::uint64_t>(fn));
+    _processes.push_back(_current);
 
     load_new_task(_current->getCpuState());
 }
@@ -22,9 +23,9 @@ void ProcessScheduler::init(mem::PageTable pgTable, void (*fn)())
 void ProcessScheduler::schedule()
 {
     Process* oldProcess = _current;
-    _processes.push_back(_current);
-    _current = _processes.front();
-    _processes.pop_front();
+    _runningProcesses.push_back(_current);
+    _current = _runningProcesses.front();
+    _runningProcesses.pop_front();
     if (_current == oldProcess) {
         return;
     }
@@ -61,6 +62,12 @@ void ProcessScheduler::changeState(Process* proc, Process::State state)
     default:
         break;
     }
+}
+
+void ProcessScheduler::addProcess(Process* proc) 
+{
+    _processes.push_back(proc);
+    _runningProcesses.push_back(proc);
 }
 
 Process* ProcessScheduler::getCurrent()

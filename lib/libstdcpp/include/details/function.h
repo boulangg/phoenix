@@ -69,15 +69,14 @@ public:
 
     // copy constructor
     function(function const& rhs) :
-        invoke_f(rhs.invoke_f), construct_f(rhs.construct_f), destroy_f(rhs.destroy_f), data_size(rhs.data_size)
+        invoke_f(rhs.invoke_f), construct_f(rhs.construct_f), destroy_f(rhs.destroy_f), data_ptr(nullptr),
+        data_size(0)
     {
         if (this->invoke_f) {
             // when the source is not a null function, copy its internal functor
-            if (this->data_ptr != nullptr) {
-                delete this->data_ptr;
-            }
             this->data_ptr = new char[this->data_size];
             this->construct_f(this->data_ptr, rhs.data_ptr);
+            this->data_size = rhs.data_size;
         }
     }
 
