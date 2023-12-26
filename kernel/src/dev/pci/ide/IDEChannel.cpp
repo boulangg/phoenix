@@ -17,50 +17,45 @@ namespace ATA {
 
 struct Status
 {
-    static constexpr std::uint8_t ATA_SR_BSY = 0x80;  // Busy
-    static constexpr std::uint8_t ATA_SR_DRDY = 0x40; // Drive ready
-    static constexpr std::uint8_t ATA_SR_DF = 0x20;   // Drive write fault
-    static constexpr std::uint8_t ATA_SR_DSC = 0x10;  // Drive seek complete
-    static constexpr std::uint8_t ATA_SR_DRQ = 0x08;  // Data request ready
-    static constexpr std::uint8_t ATA_SR_CORR = 0x04; // Corrected data
-    static constexpr std::uint8_t ATA_SR_IDX = 0x02;  // Index
-    static constexpr std::uint8_t ATA_SR_ERR = 0x01;  // Error
+    static constexpr std::uint8_t BSY = 0x80;  // Busy
+    static constexpr std::uint8_t DRDY = 0x40; // Drive ready
+    static constexpr std::uint8_t DF = 0x20;   // Drive write fault
+    static constexpr std::uint8_t DSC = 0x10;  // Drive seek complete
+    static constexpr std::uint8_t DRQ = 0x08;  // Data request ready
+    static constexpr std::uint8_t CORR = 0x04; // Corrected data
+    static constexpr std::uint8_t IDX = 0x02;  // Index
+    static constexpr std::uint8_t ERR = 0x01;  // Error
 };
 
 struct Error
 {
-    static constexpr std::uint8_t ATA_ER_BBK = 0x80;   // Bad sector
-    static constexpr std::uint8_t ATA_ER_UNC = 0x40;   // Uncorrectable data
-    static constexpr std::uint8_t ATA_ER_MC = 0x20;    // No media
-    static constexpr std::uint8_t ATA_ER_IDNF = 0x10;  // ID mark not found
-    static constexpr std::uint8_t ATA_ER_MCR = 0x08;   // No media
-    static constexpr std::uint8_t ATA_ER_ABRT = 0x04;  // Command aborted
-    static constexpr std::uint8_t ATA_ER_TK0NF = 0x02; // Track 0 not found
-    static constexpr std::uint8_t ATA_ER_AMNF = 0x01;  // No address mark
+    static constexpr std::uint8_t BBK = 0x80;   // Bad sector
+    static constexpr std::uint8_t UNC = 0x40;   // Uncorrectable data
+    static constexpr std::uint8_t MC = 0x20;    // No media
+    static constexpr std::uint8_t IDNF = 0x10;  // ID mark not found
+    static constexpr std::uint8_t MCR = 0x08;   // No media
+    static constexpr std::uint8_t ABRT = 0x04;  // Command aborted
+    static constexpr std::uint8_t TK0NF = 0x02; // Track 0 not found
+    static constexpr std::uint8_t AMNF = 0x01;  // No address mark
 };
 
 struct Command
 {
-    static constexpr std::uint8_t ATA_CMD_READ_PIO = 0x20;
-    static constexpr std::uint8_t ATA_CMD_READ_PIO_EXT = 0x24;
-    static constexpr std::uint8_t ATA_CMD_READ_DMA = 0xC8;
-    static constexpr std::uint8_t ATA_CMD_READ_DMA_EXT = 0x25;
-    static constexpr std::uint8_t ATA_CMD_WRITE_PIO = 0x30;
-    static constexpr std::uint8_t ATA_CMD_WRITE_PIO_EXT = 0x34;
-    static constexpr std::uint8_t ATA_CMD_WRITE_DMA = 0xCA;
-    static constexpr std::uint8_t ATA_CMD_WRITE_DMA_EXT = 0x35;
-    static constexpr std::uint8_t ATA_CMD_CACHE_FLUSH = 0xE7;
-    static constexpr std::uint8_t ATA_CMD_CACHE_FLUSH_EXT = 0xEA;
-    static constexpr std::uint8_t ATA_CMD_PACKET = 0xA0;
-    static constexpr std::uint8_t ATA_CMD_IDENTIFY_PACKET = 0xA1;
-    static constexpr std::uint8_t ATA_CMD_IDENTIFY = 0xEC;
-
-    // ATAPI only commands
-    static constexpr std::uint8_t ATAPI_CMD_READ = 0xA8;
-    static constexpr std::uint8_t ATAPI_CMD_EJECT = 0x1B;
+    static constexpr std::uint8_t READ_PIO = 0x20;
+    static constexpr std::uint8_t READ_PIO_EXT = 0x24;
+    static constexpr std::uint8_t READ_DMA = 0xC8;
+    static constexpr std::uint8_t READ_DMA_EXT = 0x25;
+    static constexpr std::uint8_t WRITE_PIO = 0x30;
+    static constexpr std::uint8_t WRITE_PIO_EXT = 0x34;
+    static constexpr std::uint8_t WRITE_DMA = 0xCA;
+    static constexpr std::uint8_t WRITE_DMA_EXT = 0x35;
+    static constexpr std::uint8_t CACHE_FLUSH = 0xE7;
+    static constexpr std::uint8_t CACHE_FLUSH_EXT = 0xEA;
+    static constexpr std::uint8_t PACKET = 0xA0;
+    static constexpr std::uint8_t IDENTIFY_PACKET = 0xA1;
+    static constexpr std::uint8_t IDENTIFY = 0xEC;
 };
 
-// Drive type
 struct DriveType
 {
     static constexpr std::uint8_t IDE_ATA = 0x00;
@@ -68,14 +63,6 @@ struct DriveType
     static constexpr std::uint8_t IDE_UNKNOWN = 0x02;
 };
 
-// Drive master/slave
-struct DriveMasterSlave
-{
-    static constexpr std::uint8_t ATA_MASTER = 0x00;
-    static constexpr std::uint8_t ATA_SLAVE = 0x01;
-};
-
-// Registers offset
 struct RegisterOffset
 {
     static constexpr std::uint8_t BASE_DATA = 0x00;      // Read-Write
@@ -101,19 +88,17 @@ struct RegisterOffset
     static constexpr std::uint8_t BMIDE_PRDT = 0x10 + 0x04;
 };
 
-// Channels
-struct Channel
+}
+
+namespace ATAPI {
+
+struct Command
 {
-    static constexpr std::uint8_t ATA_PRIMARY = 0x00;
-    static constexpr std::uint8_t ATA_SECONDARY = 0x01;
+    // ATAPI only commands
+    static constexpr std::uint8_t READ = 0xA8;
+    static constexpr std::uint8_t EJECT = 0x1B;
 };
 
-// Directions
-struct Direction
-{
-    static constexpr std::uint8_t ATA_READ = 0x00;
-    static constexpr std::uint8_t ATA_WRITE = 0x01;
-};
 }
 
 IDEChannel::IDEChannel(IDEDevice* parent, IDEChannelRegisters regs, std::uint8_t irqNum) :
@@ -135,7 +120,7 @@ void IDEChannel::initDrives()
         // Detect is device exist;
         selectDrive(i);
 
-        writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::ATA_CMD_IDENTIFY);
+        writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::IDENTIFY);
         nanosleep(1000);
 
         if (readReg(ATA::RegisterOffset::BASE_STATUS) == 0) {
@@ -150,12 +135,12 @@ void IDEChannel::initDrives()
         bool err = false;
         while (1) {
             std::uint8_t status = readReg(ATA::RegisterOffset::BASE_STATUS);
-            if ((status & ATA::Status::ATA_SR_ERR)) {
+            if ((status & ATA::Status::ERR)) {
                 err = true;
                 break;
             } // If Err, Device is not ATA.
 
-            if (!(status & ATA::Status::ATA_SR_BSY) && (status & ATA::Status::ATA_SR_DRQ))
+            if (!(status & ATA::Status::BSY) && (status & ATA::Status::DRQ))
                 break; // Everything is right.
         }
         std::uint8_t type = ATA::DriveType::IDE_ATA;
@@ -172,7 +157,7 @@ void IDEChannel::initDrives()
             else
                 continue; // Unknown Type (may not be a device).
 
-            writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::ATA_CMD_IDENTIFY_PACKET);
+            writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::IDENTIFY_PACKET);
             sleep(1);
         }
 
@@ -249,9 +234,9 @@ void IDEChannel::executePIORequest(const BlockIORequest& request, std::uint8_t b
         }
         // Cache flush
         if (request.start >= 0x10000000) {
-            writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::ATA_CMD_CACHE_FLUSH_EXT);
+            writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::CACHE_FLUSH_EXT);
         } else {
-            writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::ATA_CMD_CACHE_FLUSH);
+            writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::CACHE_FLUSH);
         }
     } else {
         // PIO Read
@@ -293,7 +278,7 @@ void IDEChannel::sendRWCommand(bool isSlave, bool write, std::uint64_t lba, std:
     }
 
     // (II) Wait if the drive is busy;
-    while (readReg(ATA::RegisterOffset::BASE_STATUS) & ATA::Status::ATA_SR_BSY)
+    while (readReg(ATA::RegisterOffset::BASE_STATUS) & ATA::Status::BSY)
         ; // Wait if busy.
 
     // (III) Select drive + (IV) Write Parameters
@@ -315,29 +300,29 @@ void IDEChannel::sendRWCommand(bool isSlave, bool write, std::uint64_t lba, std:
     if (isDma) {
         if (lba_48_mode) {
             if (write) {
-                cmd = ATA::Command::ATA_CMD_WRITE_DMA_EXT;
+                cmd = ATA::Command::WRITE_DMA_EXT;
             } else {
-                cmd = ATA::Command::ATA_CMD_READ_DMA_EXT;
+                cmd = ATA::Command::READ_DMA_EXT;
             }
         } else {
             if (write) {
-                cmd = ATA::Command::ATA_CMD_WRITE_DMA;
+                cmd = ATA::Command::WRITE_DMA;
             } else {
-                cmd = ATA::Command::ATA_CMD_READ_DMA;
+                cmd = ATA::Command::READ_DMA;
             }
         }
     } else {
         if (lba_48_mode) {
             if (write) {
-                cmd = ATA::Command::ATA_CMD_WRITE_PIO_EXT;
+                cmd = ATA::Command::WRITE_PIO_EXT;
             } else {
-                cmd = ATA::Command::ATA_CMD_READ_PIO_EXT;
+                cmd = ATA::Command::READ_PIO_EXT;
             }
         } else {
             if (write) {
-                cmd = ATA::Command::ATA_CMD_WRITE_PIO;
+                cmd = ATA::Command::WRITE_PIO;
             } else {
-                cmd = ATA::Command::ATA_CMD_READ_PIO;
+                cmd = ATA::Command::READ_PIO;
             }
         }
     }
@@ -352,7 +337,7 @@ void IDEChannel::poll()
         readReg(ATA::RegisterOffset::CTRL_ALTSTATUS);
     }
 
-    while (readReg(ATA::RegisterOffset::BASE_STATUS) & ATA::Status::ATA_SR_BSY)
+    while (readReg(ATA::RegisterOffset::BASE_STATUS) & ATA::Status::BSY)
         ;
 }
 
@@ -378,7 +363,7 @@ bool IDEChannel::validateDMATransfer()
     //     return false;
     // }
 
-    while (readReg(ATA::RegisterOffset::BASE_STATUS) & (ATA::Status::ATA_SR_BSY | ATA::Status::ATA_SR_DRQ))
+    while (readReg(ATA::RegisterOffset::BASE_STATUS) & (ATA::Status::BSY | ATA::Status::DRQ))
         ;
 
     // stop DMA
