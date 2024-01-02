@@ -116,6 +116,7 @@ IDEChannel::~IDEChannel()
 
 void IDEChannel::initDrives()
 {
+    // TODO: fix disk detection
     for (int i = 0; i < IDE_DISK_PAR_CHANNEL; i++) {
         // Detect is device exist;
         selectDrive(i);

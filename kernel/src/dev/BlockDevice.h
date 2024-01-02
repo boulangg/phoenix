@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <functional>
 
 #include "mem/Page.h"
 
@@ -21,7 +22,7 @@ struct BlockIORequestEntry
     mem::Page* page;
     std::size_t len;
     std::size_t offset;
-    // std::function<void()> end;
+    std::function<void()> end;
 };
 
 struct BlockIORequest

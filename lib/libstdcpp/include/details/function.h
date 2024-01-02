@@ -134,6 +134,9 @@ class function<R(Args...)>
 public:
     using result_type = R;
 
+    function() noexcept : _callable() {}
+    function(std::nullptr_t) noexcept : _callable() {}
+
     function(R (*t)(Args...)) : _callable(new callable_function<R, Args...>(t)) {}
 
     template <class F> 
@@ -159,6 +162,24 @@ public:
     function(const function& other) : _callable(other._callable ? other._callable->clone() : nullptr) {}
 
     function(function&& other) = default;
+
+    function& operator=(const function& other)
+    {
+        _callable = other._callable->clone();
+        return *this;
+    }
+
+    function& operator=(function&& other) 
+    {
+        _callable.reset(other._callable);
+        return *this;
+    }
+
+    function& operator=(std::nullptr_t) noexcept
+    {
+        _callable.release();
+        return *this;
+    }
 
     R operator()(Args... args)
     {

@@ -48,7 +48,7 @@ void DeviceExplorer::addDisk(Disk* disk)
     request.start = 0;
     request.write = false;
     request.entries.push_back(
-        BlockIORequestEntry{.page = p, .len = PAGE_SIZE, .offset = 0}); //, .end = [p]() { p->unlock(); }});
+        BlockIORequestEntry{.page = p, .len = PAGE_SIZE, .offset = 0, .end = [p]() { p->unlock(); }});
     disk->submitRequest(request);
     p->lock();
 

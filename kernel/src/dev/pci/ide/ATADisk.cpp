@@ -40,6 +40,7 @@ using IDEPrdt = IDEPrd*;
 
 ProcessRequestState ATADisk::processRequest(BlockIORequest& request)
 {
+    // TODO: Fix DMA
 #ifdef ENABLED_DMA
     IDEPrdt prdt = reinterpret_cast<IDEPrdt>(_prdt->getKernelAddr());
     std::size_t totalSize = 0;
@@ -61,8 +62,7 @@ ProcessRequestState ATADisk::processRequest(BlockIORequest& request)
 #else
     _parent->executePIORequest(request, getBlockShift(), _isSlave);
     for (auto& entry : request.entries) {
-        // entry.end();
-        entry.page->unlock();
+        entry.end();
     }
     dequeueFirstRequest();
     return ProcessRequestState::Pending;
@@ -71,13 +71,11 @@ ProcessRequestState ATADisk::processRequest(BlockIORequest& request)
 
 int ATADisk::IRQHandler(std::uint8_t, void*)
 {
-    // TODO verify if it's this device that trigger the IRQ
     bool status = _parent->validateDMATransfer();
     if (status) {
         BlockIORequest& request = getFirstRequest();
         for (auto& entry : request.entries) {
-            // entry.end();
-            entry.page->unlock();
+            entry.end();
         }
         dequeueFirstRequest();
     }
