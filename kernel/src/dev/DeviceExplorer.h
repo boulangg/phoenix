@@ -19,6 +19,7 @@ public:
 
     void init();
     void addDisk(Disk* disk);
+    void addDrive(BlockDevice* disk);
     void blockDeviceService();
 
 private:

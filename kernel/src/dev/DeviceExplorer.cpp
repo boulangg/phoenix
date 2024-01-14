@@ -42,17 +42,9 @@ void DeviceExplorer::addDisk(Disk* disk)
 {
     _blkDevs.push_back(disk);
 
-    mem::Page* p = alloc_page();
-    p->lock();
-    kernel::dev::BlockIORequest request;
-    request.start = 0;
-    request.write = false;
-    request.entries.push_back(
-        BlockIORequestEntry{.page = p, .len = PAGE_SIZE, .offset = 0, .end = [p]() { p->unlock(); }});
-    disk->submitRequest(request);
-    p->lock();
-
-    MBR* mbr = (MBR*)(p->getKernelAddr());
+    auto blk = disk->getBlock(0);
+    
+    MBR* mbr = (MBR*)(blk.getKernelAddr());
     if (mbr->signature == MBR::SIGNATURE_MAGIC) {
         printk("MBR found\n");
         for (int partNum = 0; partNum < 4; partNum++) {
@@ -62,13 +54,16 @@ void DeviceExplorer::addDisk(Disk* disk)
             }
             printk("Partition found - 0x%x\n", entry.partitionType);
             Partition* part = new Partition(disk, entry.startSector, entry.nbSectors);
-            _blkDevs.push_back(part);
+            addDrive(part);
         }
     } else {
         printk("No MBR found\n");
     }
+}
 
-    p->unlock();
+void DeviceExplorer::addDrive(BlockDevice* disk) 
+{
+    _blkDevs.push_back(disk);
 }
 
 void DeviceExplorer::blockDeviceService()

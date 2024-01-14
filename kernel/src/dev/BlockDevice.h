@@ -39,6 +39,22 @@ enum ProcessRequestState
     InProgress
 };
 
+class BlockDevice;
+
+struct BlockDescriptor
+{
+    BlockDevice* blkDev;
+    std::uint64_t blkNum;
+    std::uint64_t blkSize;
+    mem::Page* page;
+    std::uint64_t offset;
+
+    std::uint64_t getKernelAddr()
+    {
+        return page->getKernelAddr() + offset;
+    }
+};
+
 class BlockDevice : public Device
 {
 public:
@@ -54,6 +70,7 @@ public:
 
     virtual void submitRequest(BlockIORequest entry) = 0;
     virtual bool hasPendingRequest() = 0;
+    virtual BlockDescriptor getBlock(std::uint64_t blkNum) = 0;
 
 protected:
     static constexpr std::uint64_t DEFAULT_BLOCK_SIZE = 1 << 9;

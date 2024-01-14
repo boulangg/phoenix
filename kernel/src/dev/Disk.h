@@ -13,6 +13,7 @@
 
 #include "BlockDevice.h"
 #include "Partition.h"
+#include "BlockCache.h"
 
 #include "mem/Page.h"
 
@@ -28,6 +29,8 @@ public:
     ProcessRequestState processRequests() override;
     bool hasPendingRequest() override;
 
+    BlockDescriptor getBlock(std::uint64_t blkNum);
+
 protected:
     void dequeueFirstRequest();
     BlockIORequest& getFirstRequest();
@@ -38,6 +41,7 @@ private:
     std::list<BlockIORequest> _requests;
     std::size_t _capacity; // sector count
     std::vector<Partition> _partitions;
+    BlockCache _blkCache;
 };
 
 }

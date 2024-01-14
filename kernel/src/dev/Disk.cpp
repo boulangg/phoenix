@@ -8,7 +8,7 @@
 
 namespace kernel::dev {
 
-Disk::Disk() : BlockDevice() {}
+Disk::Disk() : BlockDevice(), _blkCache(this) {}
 
 Disk::~Disk(){};
 
@@ -52,6 +52,11 @@ void Disk::dequeueFirstRequest()
 BlockIORequest& Disk::getFirstRequest()
 {
     return _requests.front();
+}
+
+BlockDescriptor Disk::getBlock(std::uint64_t blkNum)
+{
+    return _blkCache.getBlock(blkNum);
 }
 
 }

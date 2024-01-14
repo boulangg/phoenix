@@ -41,6 +41,11 @@ public:
         return false;
     }
 
+    BlockDescriptor getBlock(std::uint64_t blkNum)
+    {
+        return _parent->getBlock(_startSector + blkNum);
+    }
+
 private:
     BlockDevice* _parent;
     std::size_t _startSector;

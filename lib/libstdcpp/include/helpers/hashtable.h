@@ -218,7 +218,7 @@ public:
     {
         iterator it = find(key);
         if (it == end()) {
-            throw std::out_of_range();
+            throw std::out_of_range("hashtable out_of_range");
         } else {
             return *it;
         }
