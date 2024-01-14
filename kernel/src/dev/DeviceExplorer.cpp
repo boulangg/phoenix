@@ -40,6 +40,7 @@ void DeviceExplorer::init()
 
 void DeviceExplorer::addDisk(Disk* disk)
 {
+    printk("Disk found - %lld bytes\n", disk->getBlockCount() * disk->getBlockSize());
     _blkDevs.push_back(disk);
 
     auto blk = disk->getBlock(0);

@@ -67,6 +67,7 @@ public:
     void setProcessState(ProcessRequestState state);
     std::uint64_t getBlockSize();
     std::uint8_t getBlockShift();
+    std::uint64_t getBlockCount();
 
     virtual void submitRequest(BlockIORequest entry) = 0;
     virtual bool hasPendingRequest() = 0;

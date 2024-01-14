@@ -37,6 +37,11 @@ std::uint8_t BlockDevice::getBlockShift()
     return _blockSizeShift;
 }
 
+std::uint64_t BlockDevice::getBlockCount()
+{
+    return _blockCount;
+}
+
 void BlockDevice::setBlockSize(std::uint64_t blockSize)
 {
     _blockSize = blockSize;

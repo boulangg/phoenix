@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "IDEChannel.h"
+
+#include "IDEChannel.h"
 
 #include "Kernel.h"
 #include "asm/cpu.h"
@@ -118,25 +118,23 @@ void IDEChannel::initDrives()
 {
     // TODO: fix disk detection
     for (int i = 0; i < IDE_DISK_PAR_CHANNEL; i++) {
-        // Detect is device exist;
+        // (II) Select Disk:
         selectDrive(i);
 
+        // (II) Identify Disk:
         writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::IDENTIFY);
         nanosleep(1000);
-
-        if (readReg(ATA::RegisterOffset::BASE_STATUS) == 0) {
-            // No device
-            continue;
-        }
 
         // (III) Polling:
         if (readReg(ATA::RegisterOffset::BASE_STATUS) == 0)
             continue; // If Status = 0, No Device.
 
+        std::uint8_t devSel = readReg(ATA::RegisterOffset::BASE_DEVSEL);
+        (void)devSel;
         bool err = false;
         while (1) {
             std::uint8_t status = readReg(ATA::RegisterOffset::BASE_STATUS);
-            if ((status & ATA::Status::ERR)) {
+            if ((status & ATA::Status::ERR) || (status & ATA::Status::DF)) {
                 err = true;
                 break;
             } // If Err, Device is not ATA.
@@ -159,16 +157,21 @@ void IDEChannel::initDrives()
                 continue; // Unknown Type (may not be a device).
 
             writeReg(ATA::RegisterOffset::BASE_COMMAND, ATA::Command::IDENTIFY_PACKET);
-            sleep(1);
+            nanosleep(1000);
         }
 
         IDEDisk* drive = nullptr;
         switch (type) {
         case ATA::DriveType::IDE_ATA:
+        {
             IDEIdentifyData data;
             readBuffer(ATA::RegisterOffset::BASE_DATA, (void*)&data, 128);
+            std::uint8_t status = readReg(ATA::RegisterOffset::BASE_STATUS);
+            if (status & ATA::Status::DRQ)
+                break; // TODO: Something is wrong: fix disk detection
             drive = new ATADisk(this, _irqNum, i, data);
             break;
+        }
         default:
             continue;
         }
@@ -182,15 +185,25 @@ void IDEChannel::initDrives()
 
 void IDEChannel::selectDrive(bool slave)
 {
-    writeReg(ATA::RegisterOffset::BASE_DEVSEL, 0xA0 | slave << 4);
-    nanosleep(1000);
+    writeReg(ATA::RegisterOffset::BASE_DEVSEL, 0xA0 | (slave << 4));
+    nanosleep(400);
 }
 
 void IDEChannel::nanosleep(std::uint64_t nsec)
 {
-    for (std::uint64_t i = 0; i < (nsec / 100); i++) {
-        readReg(ATA::RegisterOffset::CTRL_ALTSTATUS);
+    // TODO Make the process sleep properly instead ?
+    auto limit = Kernel::getDateTime();
+    limit.tv_nsec += nsec;
+    if (limit.tv_nsec >= core::clock::NSEC_PER_SEC) {
+        limit.tv_nsec -= core::clock::NSEC_PER_SEC;
+        limit.tv_sec += 1;
     }
+    struct timespec current;
+    do {
+        readReg(ATA::RegisterOffset::CTRL_ALTSTATUS);
+        current = Kernel::getDateTime();
+    } while ((limit.tv_sec > current.tv_sec) ||
+             ((limit.tv_sec == current.tv_sec) && (limit.tv_nsec > current.tv_nsec)));
 }
 
 void IDEChannel::executeDMARequest(bool slave, mem::Page* prdt, std::uint64_t lba, std::uint32_t numSec, bool write)
