@@ -37,7 +37,7 @@ void __cxa_pure_virtual()
     // Do nothing or print an error message.
 }
 
-// void *__dso_handle = 0;
+void* __dso_handle = (void*)&__dso_handle;
 
 atexit_func_entry_t __atexit_funcs[ATEXIT_MAX_FUNCS];
 int64_t __atexit_func_count = 0;

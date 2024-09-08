@@ -20,14 +20,14 @@ void free(void* ptr);
 void* malloc(size_t size);
 void* realloc(void* ptr, size_t size);
 int atexit(void (*func)());
-void exit(int exit_code);
+void exit(int exit_code) __attribute__((noreturn));
 
 // Misc
 int abs(int value);
 
 // Other
 #define EXIT_FAILURE -1
-	void abort(void) __attribute__((__noreturn__));
+void abort(void) __attribute__((__noreturn__));
 
 /// Linux methods
 // Environment variables
