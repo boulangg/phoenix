@@ -43,7 +43,3 @@ if(NOT TARGET gnustd AND VS_TARGET_FILTER STREQUAL "gnustd")
 		add_dependencies(gnustd ${app_name}_gnustd)
 	endforeach()
 endif()
-
-# Basic tests
-set(CTEST_OUTPUT_ON_FAILURE 1)
-add_test(test_ls ls)
