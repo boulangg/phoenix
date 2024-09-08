@@ -18,11 +18,22 @@ public:
     TEST_METHOD(memset_test)
     {
 #define BUFFER_SIZE 1024
-		char buffer[BUFFER_SIZE];
-		buffer[5] = '1';
-		memset(buffer, '2', BUFFER_SIZE);
-		Assert::AreEqual('2', buffer[5]);
-	}
+        char buffer[BUFFER_SIZE];
+        buffer[5] = '1';
+        memset(buffer, '2', BUFFER_SIZE);
+        Assert::AreEqual('2', buffer[5]);
+    }
+
+    TEST_METHOD(memcpy_test)
+    {
+#define BUFFER_SIZE 1024
+        char buffer[BUFFER_SIZE];
+        memset(buffer, '2', BUFFER_SIZE);
+        char buffer_cpy[BUFFER_SIZE];
+        buffer_cpy[5] = '1';
+        memcpy(buffer_cpy, buffer, BUFFER_SIZE);
+        Assert::AreEqual('2', buffer[5]);
+    }
 };
 
 }
