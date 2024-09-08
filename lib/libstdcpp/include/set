@@ -3,12 +3,12 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <functional>
 
-#include "herlpers/red-black-tree.h"
+#include "helpers/red-black-tree.h"
 
 namespace std {
 
@@ -38,7 +38,7 @@ private:
 
     extractor _extractor;
     key_compare _comparator;
-    
+
     using red_black_tree_type = std::details::red_black_tree<key_type, value_type, extractor, key_compare>;
     red_black_tree_type _tree;
 

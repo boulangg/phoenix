@@ -70,6 +70,11 @@ string::string(size_t n, char c) : string()
     append(tmp, n);
 }
 
+string::~string()
+{
+    delete[] _data;
+}
+
 string& string::operator+=(const string& str)
 {
     return append(str._data, str._size);
@@ -129,11 +134,6 @@ bool string::empty() const noexcept
     return _size == 0;
 }
 
-size_t string::size() const noexcept
-{
-    return _size;
-}
-
 size_t string::length() const
 {
     return _size;
@@ -159,6 +159,11 @@ string& string::append(const char* str, size_t len)
     return *this;
 }
 
+void string::push_back(char c)
+{
+    this->append(&c, 1);
+}
+
 int string::compare(const string& str) const
 {
     size_t i = 0;
@@ -176,6 +181,35 @@ int string::compare(const char* s) const
     return compare(std::string(s));
 }
 
+bool string::starts_with(std::string sv) const noexcept
+{
+    return starts_with(sv.c_str());
+}
+
+bool string::starts_with(char ch) const noexcept
+{
+    if (empty()) {
+        return false;
+    }
+
+    return _data[0] == ch;
+}
+
+bool string::starts_with(const char* s) const
+{
+    if (empty()) {
+        return false;
+    }
+
+    for (std::size_t i = 0; s[i] != '\0'; i++) {
+        if (s[i] != _data[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 const char* string::c_str() const
 {
     return _data;
@@ -186,11 +220,6 @@ string string::substr(size_t pos, size_t len) const
     string res(this->c_str() + pos, len);
     res._data[len] = '\0';
     return res;
-}
-
-string::~string()
-{
-    delete[] _data;
 }
 
 string operator+(const string& lhs, const string& rhs)

@@ -8,7 +8,7 @@
 
 #include <functional>
 
-#include "herlpers/hashtable.h"
+#include "helpers/hashtable.h"
 
 namespace std {
 
@@ -82,7 +82,7 @@ public:
     // Lookup
     mapped_type& at(const key_type& key)
     {
-        return _hashtable.at(key);
+        return _hashtable.at(key).second;
     }
 
     mapped_type& operator[](const key_type& key)
@@ -93,7 +93,7 @@ public:
             it = res.first;
         }
 
-        return *it->second;
+        return it->second;
     }
 
     size_type count(const key_type& key) const

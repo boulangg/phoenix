@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <details/function.h>
+#include <details/hash.h>
+
 namespace std {
 
 template <class T>
@@ -39,58 +42,5 @@ struct equal_to
         return x == y;
     }
 };
-
-// hash
-template <class K, class Arg>
-struct __hash_base
-{
-    typedef K result_type;
-    typedef Arg argument_type;
-};
-
-template <class Key>
-struct hash;
-
-// Multiplicative fibonnaci hashing
-#if __WORDSIZE == 64
-#define _HASH_FIBONNACI_CONSTANT 11400714819323198485ull
-#else
-#define _HASH_FIBONNACI_CONSTANT 2654435769ul
-#endif
-
-#define _default_integral_hash(T)                                                                                      \
-    template <>                                                                                                        \
-    struct hash<T> : public __hash_base<size_t, T>                                                                     \
-    {                                                                                                                  \
-        size_t operator()(T val) const noexcept                                                                        \
-        {                                                                                                              \
-            return (size_t)(val)*_HASH_FIBONNACI_CONSTANT;                                                             \
-        }                                                                                                              \
-    };
-
-_default_integral_hash(bool);
-_default_integral_hash(char);
-_default_integral_hash(unsigned char);
-_default_integral_hash(short);
-_default_integral_hash(unsigned short);
-_default_integral_hash(int);
-_default_integral_hash(unsigned int);
-_default_integral_hash(long);
-_default_integral_hash(unsigned long);
-_default_integral_hash(long long);
-_default_integral_hash(unsigned long long);
-
-#undef _HASH_FIBONNACI_CONSTANT
-
-template <class T>
-struct hash<T*> : public __hash_base<size_t, T*>
-{
-    size_t operator()(T* ptr) const noexcept
-    {
-        return hash<size_t>()((size_t)ptr);
-    }
-};
-
-#undef _default_integral_hash
 
 }

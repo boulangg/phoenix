@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#include <new>
 #include <typeinfo>
 
 #include <arch/x86_64/cpu_context.h>
@@ -90,9 +91,9 @@ void __cxa_free_exception(__cxa_exception* thrown_exception)
     free(thrown_exception);
 }
 
-void __cxa_eception_cleanup(_Unwind_Reason_Code code, _Unwind_Exception* exc)
+void __cxa_exception_cleanup(_Unwind_Reason_Code code, _Unwind_Exception* exc)
 {
-    DEBUG_LOG("__cxa_eception_cleanup\n");
+    DEBUG_LOG("__cxa_exception_cleanup\n");
     if (code != _URC_FOREIGN_EXCEPTION_CAUGHT) {
         std::terminate();
     }
@@ -109,7 +110,7 @@ __cxa_exception* __cxa_init_exception(void* exceptionObject, std::type_info* tin
     cxaException->exceptionDestructor = dest;
     cxaException->unwindHeader.exception_class = EXCEPTION_CLASS;
     cxaException->terminateHandler = &std::terminate;
-    cxaException->unwindHeader.exception_cleanup = &__cxa_eception_cleanup;
+    cxaException->unwindHeader.exception_cleanup = &__cxa_exception_cleanup;
 
     return cxaException;
 }

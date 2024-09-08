@@ -15,25 +15,26 @@ template <class T>
 class _list_node
 {
 public:
-    typedef _list_node<T> _self;
-    _list_node(T data, _self* prev, _self* next);
-    T data;
-    _self* prev;
-    _self* next;
+    using value_type = T;
+    using self_t = _list_node<value_type>;
+    _list_node(value_type data, self_t* prev, self_t* next);
+    value_type _data;
+    self_t* _prev;
+    self_t* _next;
 };
 
 template <class T>
 class _list_iterator
 {
 public:
-    typedef T value_type;
-    typedef value_type& reference;
-    typedef value_type* pointer;
-    typedef _list_node<T> _node;
+    using value_type = T;
+    using reference = value_type&;
+    using pointer = value_type*;
+    using node_t = _list_node<T>;
 
     _list_iterator();
     _list_iterator(const _list_iterator& b);
-    _list_iterator(_node* node);
+    _list_iterator(node_t* node);
     virtual ~_list_iterator();
 
     _list_iterator& operator=(const _list_iterator& b);
@@ -51,18 +52,18 @@ public:
 
     void swap(_list_iterator& b);
 
-    _node* node;
+    node_t* _node;
 };
 
 template <class T>
 class _list_const_iterator : public _list_iterator<T>
 {
 public:
-    typedef const T value_type;
-    typedef value_type& reference;
-    typedef value_type* pointer;
-    typedef const _list_node<T> _node;
-    typedef _list_iterator<T> iterator;
+    using value_type = const T;
+    using reference = value_type&;
+    using pointer = value_type*;
+    using node_t = const _list_node<T>;
+    using iterator = _list_iterator<T>;
 
     //_list_const_iterator();
     _list_const_iterator(const iterator& b);
@@ -91,14 +92,14 @@ template <class T>
 class list
 {
 public:
-    typedef T value_type;
-    typedef value_type& reference;
-    typedef const reference const_reference;
-    typedef value_type* pointer;
-    typedef _list_iterator<T> iterator;
-    typedef _list_const_iterator<T> const_iterator;
-    typedef size_t size_type;
-    typedef typename iterator::_node _node;
+    using value_type = T;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using iterator = _list_iterator<T>;
+    using const_iterator = _list_const_iterator<T>;
+    using size_type = size_t;
+    using node_t = typename iterator::node_t;
 
     list();
     list(const list& x);
@@ -128,6 +129,8 @@ public:
     void pop_back();
 
     iterator insert(iterator pos, const_reference val);
+    template <class InputIt>
+    iterator insert(const_iterator pos, InputIt first, InputIt last);
     iterator erase(iterator pos);
     void swap(list& x);
     void clear();
@@ -141,26 +144,27 @@ private:
 };
 
 template <class T>
-_list_node<T>::_list_node(T data, _list_node::_self* prev, _list_node::_self* next) : data(data), prev(prev), next(next)
+_list_node<T>::_list_node(_list_node::value_type data, _list_node::self_t* prev, _list_node::self_t* next) :
+    _data(data), _prev(prev), _next(next)
 {
-    if (prev == nullptr) {
-        prev = this;
+    if (_prev == nullptr) {
+        _prev = this;
     }
-    if (next == nullptr) {
-        next = this;
+    if (_next == nullptr) {
+        _next = this;
     }
 }
 
 template <class T>
-_list_iterator<T>::_list_iterator() : node()
+_list_iterator<T>::_list_iterator() : _node()
 {}
 
 template <class T>
-_list_iterator<T>::_list_iterator(const _list_iterator& b) : node(b.node)
+_list_iterator<T>::_list_iterator(const _list_iterator& b) : _node(b._node)
 {}
 
 template <class T>
-_list_iterator<T>::_list_iterator(_node* node) : node(node)
+_list_iterator<T>::_list_iterator(node_t* node) : _node(node)
 {}
 
 template <class T>
@@ -170,26 +174,26 @@ _list_iterator<T>::~_list_iterator()
 template <class T>
 _list_iterator<T>& _list_iterator<T>::operator=(const _list_iterator<T>& b)
 {
-    node = b.node;
+    _node = b._node;
     return *this;
 }
 
 template <class T>
 bool _list_iterator<T>::operator==(const _list_iterator<T>& b)
 {
-    return node == b.node;
+    return _node == b._node;
 }
 
 template <class T>
 bool _list_iterator<T>::operator!=(const _list_iterator<T>& b)
 {
-    return node != b.node;
+    return _node != b._node;
 }
 
 template <class T>
 typename _list_iterator<T>::value_type& _list_iterator<T>::operator*()
 {
-    return node->data;
+    return _node->_data;
 }
 
 template <class T>
@@ -201,14 +205,14 @@ typename _list_iterator<T>::value_type& _list_iterator<T>::operator->()
 template <class T>
 _list_iterator<T>& _list_iterator<T>::operator++()
 {
-    node = node->next;
+    _node = _node->_next;
     return *this;
 }
 
 template <class T>
 _list_iterator<T>& _list_iterator<T>::operator--()
 {
-    node = node->prev;
+    _node = _node->_prev;
     return *this;
 }
 
@@ -231,7 +235,7 @@ _list_iterator<T> _list_iterator<T>::operator--(int)
 template <class T>
 void _list_iterator<T>::swap(_list_iterator<T>& b)
 {
-    swap(node, b.node);
+    swap(_node, b._node);
 }
 
 template <class T>
@@ -319,9 +323,9 @@ void _list_const_iterator<T>::swap(_list_const_iterator<T>& b) {
 template <class T>
 list<T>::list() : _begin(), _end(), _size(0)
 {
-    _node* node = new _node(T(), 0, 0);
-    _begin.node = node;
-    _end.node = node;
+    node_t* node = new node_t(T(), 0, 0);
+    _begin._node = node;
+    _end._node = node;
 }
 
 template <class T>
@@ -345,6 +349,8 @@ list<T>& list<T>::operator=(const list<T>& x)
     for (auto it = x.cbegin(); it < x.cend(); ++it) {
         push_back(*it);
     }
+
+    return this;
 }
 
 template <class T>
@@ -354,6 +360,7 @@ list<T>& list<T>::operator=(list<T>&& x)
     _begin = x._begin;
     _end = x._end;
     _size = x._size;
+    return *this;
 }
 
 template <class T>
@@ -452,24 +459,36 @@ void list<T>::pop_back()
 }
 
 template <class T>
-typename list<T>::iterator list<T>::insert(iterator pos, list<T>::const_reference val)
+typename list<T>::iterator list<T>::insert(iterator pos, const_reference val)
 {
     if (pos == _begin) {
-        _node* curr = new _node(val, nullptr, _begin.node);
-        _begin.node->prev = curr;
-        _begin.node = curr;
+        node_t* curr = new node_t(val, nullptr, _begin._node);
+        _begin._node->_prev = curr;
+        _begin._node = curr;
         ++_size;
         return _begin;
     } else {
-        _node* prev = pos.node->prev;
-        _node* next = pos.node;
-        _node* curr = new _node(val, prev, next);
-        prev->next = curr;
-        next->prev = curr;
+        node_t* prev = pos._node->_prev;
+        node_t* next = pos._node;
+        node_t* curr = new node_t(val, prev, next);
+        prev->_next = curr;
+        next->_prev = curr;
         ++_size;
         iterator res(curr);
         return res;
     }
+}
+
+template <class T>
+template <class InputIt>
+list<T>::iterator list<T>::insert(const_iterator pos, InputIt first, InputIt last)
+{
+    while (first != last) {
+        pos = insert(pos, *first);
+        ++first;
+    }
+
+    return pos;
 }
 
 template <class T>
@@ -482,19 +501,19 @@ typename list<T>::iterator list<T>::erase(iterator pos)
         return _end;
     }
     if (pos == _begin) {
-        _node* curr = pos.node;
-        _node* next = pos.node->next;
-        next->prev = next;
+        node_t* curr = pos._node;
+        node_t* next = pos._node->_next;
+        next->_prev = next;
         _begin = next;
         --_size;
         delete curr;
         return _begin;
     } else {
-        _node* prev = pos.node->prev;
-        _node* curr = pos.node;
-        _node* next = pos.node->next;
-        prev->next = next;
-        next->prev = prev;
+        node_t* prev = pos._node->_prev;
+        node_t* curr = pos._node;
+        node_t* next = pos._node->_next;
+        prev->_next = next;
+        next->_prev = prev;
         --_size;
         delete curr;
         iterator res(next);

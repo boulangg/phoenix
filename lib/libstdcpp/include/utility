@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <details/hash.h>
 #include <type_traits>
 
 namespace std {
@@ -54,6 +55,18 @@ struct pair
     pair(const first_type& a, const second_type& b) : first(a), second(b) {}
 };
 
+template <class T1, class T2, class U1, class U2>
+constexpr bool operator==(const std::pair<T1, T2>& lhs, const std::pair<U1, U2>& rhs)
+{
+    return (lhs.first == rhs.first) && (lhs.second == rhs.second);
+}
+
+template <class T1, class T2, class V1 = std::decay<T1>::type, class V2 = std::decay<T2>::type>
+constexpr std::pair<V1, V2> make_pair(T1&& t, T2&& u)
+{
+    return pair<V1, V2>(t, u);
+}
+
 struct in_place_t
 {
     explicit in_place_t() = default;
@@ -75,5 +88,25 @@ struct in_place_index_t
 };
 template <std::size_t I>
 inline constexpr in_place_index_t<I> in_place_index{};
+
+template <typename T, typename... Rest>
+inline void hashCombine(std::size_t& seed, const T& v, Rest&&... rest)
+{
+    hash<T> hasher;
+    seed ^= hasher(v) + (seed << 6) + (seed >> 2);
+    // hashCombine(seed, std::forward<Rest>(rest)...);
+    (int[]){0, (hashCombine(seed, std::forward<Rest>(rest)), 0)...};
+}
+
+template <class U, class V>
+struct hash<pair<U, V>> : public __hash_base<size_t, pair<U, V>>
+{
+    size_t operator()(const pair<U, V>& val) const noexcept
+    {
+        std::size_t seed = 0;
+        hashCombine(seed, val.first, val.second);
+        return seed;
+    }
+};
 
 }
