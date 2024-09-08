@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstddef>
+#include <details/hash.h>
 
 namespace std {
 
@@ -53,21 +54,44 @@ public:
     char& operator[](int pos);
     const char& operator[](int pos) const;
 
-    string& append(const char* s, size_t n);
+    const char* c_str() const;
 
     bool empty() const noexcept;
-    size_t size() const noexcept;
+
+    constexpr size_t size() const noexcept
+    {
+        return _size;
+    }
+
     size_t length() const;
     size_t capacity() const;
+
+    string& append(const char* s, size_t n);
+    void push_back(char c);
+
+    constexpr size_t find(const string& str, size_t pos = 0) const noexcept;
+
+    constexpr size_t find(char ch, size_t pos) const noexcept
+    {
+        while (pos < size()) {
+            if (_data[pos] == ch) {
+                return pos;
+            }
+            ++pos;
+        }
+        return npos;
+    }
 
     int compare(const string& str) const;
     int compare(const char* s) const;
 
-    const char* c_str() const;
+    bool starts_with(std::string sv) const noexcept;
+    bool starts_with(char ch) const noexcept;
+    bool starts_with(const char* s) const;
 
     string substr(size_t pos = 0, size_t len = string::npos) const;
 
-    static const size_t npos = -1;
+    static const size_t npos = static_cast<size_t>(-1);
 
 private:
     size_t _size;
@@ -87,5 +111,20 @@ std::string to_string(unsigned long long value);
 std::string to_string(float value);
 std::string to_string(double value);
 std::string to_string(long double value);
+
+template <>
+struct hash<string> : public __hash_base<size_t, string>
+{
+    size_t operator()(const string& val) const noexcept
+    {
+        hash<char> hasher;
+        size_t seed = hasher(0);
+        for (size_t i = 0; i < val.size(); ++i) {
+            seed += hasher(val[i]);
+            seed = (seed << 8) - seed;
+        }
+        return seed;
+    }
+};
 
 }

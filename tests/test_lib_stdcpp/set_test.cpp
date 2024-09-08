@@ -95,7 +95,6 @@ public:
             Assert::IsTrue(*prev < *it, std::to_string(*it) + " <= " + std::to_string(*prev));
         }
     }
-
 };
 
 }

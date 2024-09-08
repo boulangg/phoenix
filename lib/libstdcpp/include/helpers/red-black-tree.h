@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <iterator>
 #include <stdexcept>
@@ -253,7 +253,7 @@ public:
     void clear() noexcept
     {
         if (_node_count == 0) {
-            return;        
+            return;
         }
 
         node_type_ptr node = _get_root();

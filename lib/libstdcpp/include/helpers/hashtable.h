@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <algorithm>
 #include <bit>
@@ -218,7 +218,7 @@ public:
     {
         iterator it = find(key);
         if (it == end()) {
-            throw std::out_of_range();
+            throw std::out_of_range("hashtable out_of_range");
         } else {
             return *it;
         }
