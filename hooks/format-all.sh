@@ -11,10 +11,10 @@ format_file() {
 }
 
 for file in $(find ${folders} -name '*.c' -or -name '*.cpp' -or -name '*.h' -or -wholename "*/libstdcpp/include/*"); do
-    if [[ "$file" =~ "malloc" ]] || [[ "$file" =~ "build" ]]; then
+    if [[ "$file" =~ "malloc" ]] || [[ "$file" =~ "build" || [[ "$file" =~ "lib/acpica" ]]; then
         echo "Ignore ${file}"
     else
-        echo "Format file: ${file}" 
+        echo "Format ${file}" 
         format_file "${file}"
     fi
 done

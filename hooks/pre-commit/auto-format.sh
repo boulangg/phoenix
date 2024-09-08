@@ -9,7 +9,7 @@ format_file() {
 }
 
 for file in `git diff-index --cached --name-only HEAD`; do
-    if [[ "$file" =~ "malloc" ]] || [[ "$file" =~ "build" ]]; then
+    if [[ "$file" =~ "malloc" ]] || [[ "$file" =~ "build" || [[ "$file" =~ "lib/acpica" ]]]]; then
         echo "Ignore ${file}";
     elif [[ $file =~ \.(c|cpp|h|cc)$ ]] || [[ $file =~ .*"libstdcpp/include".* ]]; then
         echo "Format ${file}";
