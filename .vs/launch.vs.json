@@ -10,11 +10,11 @@
       "comment": "Learn how to configure WSL debugging. For more info, see http://aka.ms/vslinuxdebug",
       "debuggerConfiguration": "gdb",
       "args": [
-        "./libunittestsuite.so"
+          "./tests/libunittestsuite.so"
       ],
       "env": {},
-      "cwd ": "cd ~/.vs/phoenix/build/linux-default/test;",
-      "program": "./dependency/UnitTestFramework/unittest_runner"
+      "cwd": "~/.vs/phoenix/build/linux-default",
+      "program": "./tools/UnitTestFramework/unittest_runner"
     }
   ]
 }
