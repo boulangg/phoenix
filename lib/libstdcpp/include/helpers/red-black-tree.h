@@ -175,10 +175,42 @@ public:
         _begin = _end;
     }
 
+    red_black_tree(const red_black_tree& other) :
+        _node_count(0), _end(new node_type()), _extractor(other._extractor), _comparator(other._comparator)
+    {
+        _begin = _end;
+        for (auto& val : other) {
+            this->insert(val);
+        }
+    }
+
+    red_black_tree(red_black_tree&& other) : red_black_tree()
+    {
+        swap(*this, other);
+    }
+
     ~red_black_tree()
     {
         clear();
         delete _end;
+    }
+
+    red_black_tree& operator=(red_black_tree other)
+    {
+        swap(*this, other);
+        return *this;
+    }
+
+    friend void swap(red_black_tree& first, red_black_tree& second)
+    {
+        // enable ADL
+        using std::swap;
+
+        swap(first._node_count, second._node_count);
+        swap(first._begin, second._begin);
+        swap(first._end, second._end);
+        swap(first._extractor, second._extractor);
+        swap(first._comparator, second._comparator);
     }
 
     // Capacity

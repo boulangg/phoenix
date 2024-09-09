@@ -102,11 +102,14 @@ public:
     using node_t = typename iterator::node_t;
 
     list();
-    list(const list& x);
+    list(const list& other);
+    list(list&& other);
+
     ~list();
 
-    list& operator=(const list& x);
-    list& operator=(list&& x);
+    list& operator=(list other);
+
+    friend void swap<>(list& first, list& second);
 
     iterator begin() noexcept;
     const_iterator begin() const noexcept;
@@ -329,38 +332,41 @@ list<T>::list() : _begin(), _end(), _size(0)
 }
 
 template <class T>
+list<T>::list(const list& other) : list<T>()
+{
+    for (auto item : other) {
+        push_back(item);
+    }
+}
+
+template <class T>
+list<T>::list(list&& other) : list<T>()
+{
+    swap(*this, other);
+}
+
+template <class T>
 list<T>::~list()
 {
     clear();
 }
 
 template <class T>
-list<T>::list(const list& x) : list<T>()
+list<T>& list<T>::operator=(list<T> other)
 {
-    for (auto item : x) {
-        push_back(item);
-    }
-}
-
-template <class T>
-list<T>& list<T>::operator=(const list<T>& x)
-{
-    clear();
-    for (auto it = x.cbegin(); it < x.cend(); ++it) {
-        push_back(*it);
-    }
-
-    return this;
-}
-
-template <class T>
-list<T>& list<T>::operator=(list<T>&& x)
-{
-    clear();
-    _begin = x._begin;
-    _end = x._end;
-    _size = x._size;
+    swap(*this, other);
     return *this;
+}
+
+template <class T>
+void swap(list<T> first, list<T> second)
+{
+    // enable ADL
+    using std::swap;
+
+    swap(first._begin, second._begin);
+    swap(first._end, second._end);
+    swap(first._size, second._size);
 }
 
 template <class T>
