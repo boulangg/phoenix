@@ -56,6 +56,27 @@ class FieldIterator:
             raise StopIteration
 
     next = __next__
+    
+
+class ArrayIterator:
+    """
+    Iterator that display all the fields in the object in order
+    """
+    def __init__ (self, obj):
+        self.count = 0
+        self.obj = obj;
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.count < 3:
+            self.count += 1
+            return "[" + str(self.count) + "]", self.obj[self.count]
+        else:
+            raise StopIteration
+
+    next = __next__
 
 class StdStringPrinter(object):
     "Print a std::string"
@@ -69,15 +90,15 @@ class StdStringPrinter(object):
         #return iter(FieldIterator())
         #self.val))
 
-    def children(self):
-        return SummaryAndFieldIterator(self.val, [self.get_string_field, self.get_size_field, self.get_capacity_field])
+    #def children(self):
+    #    return SummaryAndFieldIterator(self.val, [self.get_string_field, self.get_size_field, self.get_capacity_field])
 
-    def get_string_field(self):
-        return "string", self.val["_data"]
-    def get_size_field(self):
-        return "size", self.val["_size"]
-    def get_capacity_field(self):
-        return "capacity", self.val["_capacity"]
+    #def get_string_field(self):
+    #    return "string", self.val["_data"]
+    #def get_size_field(self):
+    #    return "size", self.val["_size"]
+    #def get_capacity_field(self):
+    #    return "capacity", self.val["_capacity"]
         
     def to_string(self):
         return self.val["_data"]
@@ -85,10 +106,41 @@ class StdStringPrinter(object):
     def display_hint(self):
         return 'string'
 
+
+class StdVectorPrinter(object):
+    "Print a std::vector"
+
+    def __init__(self, val):
+        self.val = val
+        
+    #def children(self):
+        #value = (("test", "test"), ("test2", "test"))
+        #return iter(value)
+        #return iter(FieldIterator())
+        #self.val))
+
+    def children(self):
+        return ArrayIterator(self.val["_data"])
+
+    #def get_string_field(self):
+    #    return "string", self.val["_data"]
+    #def get_size_field(self):
+    #    return "size", self.val["_size"]
+    #def get_capacity_field(self):
+    #    return "capacity", self.val["_capacity"]
+        
+    def to_string(self):
+        return self.val["_data"]
+
+    def display_hint(self):
+        return 'array'
+
 # Register printers
 def build_pretty_printer():
     pp = gdb.printing.RegexpCollectionPrettyPrinter("libstdcpp")
-    pp.add_printer('custom::string', '^std::string$', StdStringPrinter)
+    #pp.add_printer('custom::string', '^std::string&', StdStringPrinter)
+    #pp.add_printer('custom::string_vector', '^std::vector<std::string>::value_type&', StdStringPrinter)
+    #pp.add_printer('custom::vector', '^std::vector', StdVectorPrinter)
     return pp
 
 # Autoload

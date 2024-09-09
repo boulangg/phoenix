@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
+#include <utility>
 
 #include <extension/generic_iterator.hpp>
 
@@ -38,7 +39,15 @@ public:
 
     vector<T>& operator=(vector<T> other);
 
-    friend void swap<>(vector& first, vector& second);
+    friend void swap(vector& first, vector& second)
+    {
+        // enable ADL
+        using std::swap;
+
+        swap(first._capacity, second._capacity);
+        swap(first._size, second._size);
+        swap(first._data, second._data);
+    }
 
     iterator begin() const
     {
@@ -116,17 +125,6 @@ vector<T>& vector<T>::operator=(vector<T> other)
 {
     swap(*this, other);
     return *this;
-}
-
-template <class T>
-void swap(vector<T>& first, vector<T>& second)
-{
-    // enable ADL
-    using std::swap;
-
-    swap(first._capacity, second._capacity);
-    swap(first._size, second._size);
-    swap(first._data, second._data);
 }
 
 template <class T>

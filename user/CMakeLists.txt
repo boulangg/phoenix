@@ -21,7 +21,7 @@ foreach(app_name ${user_app_names})
 				
 		# Create a target for the user app build with custom standard lib implementation
 		add_executable(${app_name} EXCLUDE_FROM_ALL ${${app_name}_src})
-		target_link_libraries(${app_name} c stdcpp stdcpp_debug unwind utils nostd_options)
+		target_link_libraries(${app_name} c stdcpp unwind utils nostd_options)
 		set_target_properties(${app_name} PROPERTIES FOLDER user)
 
 		# Create a target for the user app build with gcc standard lib implementation

@@ -27,7 +27,7 @@ public:
 		_dev = DeviceManager::getBlockDevice("initrd");
 		Block* blk = _dev->getBlock(1024 / _dev->getSectorSize());
 		ext2_superblock_t* sb = new ext2_superblock_t();
-		memcpy((void*)sb, (void*)(((char*)(blk->page->kernelMappAddr)) + blk->offset), 512);
+		std::memcpy((void*)sb, (void*)(((char*)(blk->page->kernelMappAddr)) + blk->offset), 512);
 		if (sb->signature == EXT2_SIGNATURE) {
 			printk("Found ext2 superblock\n");
 			_superBlock = sb;
@@ -79,7 +79,7 @@ public:
 				if (size == 0) {
 					break;
 				}
-				memcpy(destination, source, size);
+                std::memcpy(destination, source, size);
 				offset += size;
 			}
 		}
@@ -116,7 +116,7 @@ public:
 		void* source = ((char*)b->page->kernelMappAddr) + b->offset + sectorOffset;
 		void* destination = inodeData;
 		std::size_t size = _inodeStructSize;
-		memcpy(destination, source, size);
+        std::memcpy(destination, source, size);
 		Ext2Inode* inode = new Ext2Inode(this, ino, inodeData);
 		return inode;
 	}

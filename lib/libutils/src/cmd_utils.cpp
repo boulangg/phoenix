@@ -44,7 +44,7 @@ Config::Config(std::string name, Version version, std::string usage, std::string
     version(version), usage(usage), helpDescription(helpDescription), options(options)
 {
     static Option helpOption{'\0', "help", true, false, false, "display this help and exit"};
-    static Option versionOption('\0', "version", false, false, false, "output version information and exit");
+    static Option versionOption('\0', "version", true, false, false, "output version information and exit");
     this->options.insert(helpOption);
     this->options.insert(versionOption);
 }

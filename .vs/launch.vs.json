@@ -4,13 +4,13 @@
   "configurations": [
     {
       "type": "cppgdb",
-      "name": "libunittestsuite.so",
+      "name": "unit test",
       "project": "CMakeLists.txt",
       "projectTarget": "libunittestsuite.so",
       "comment": "Learn how to configure WSL debugging. For more info, see http://aka.ms/vslinuxdebug",
       "debuggerConfiguration": "gdb",
       "args": [
-          "./tests/libunittestsuite.so"
+        "./tests/libunittestsuite.so"
       ],
       "env": {},
       "cwd": "~/.vs/phoenix/build/linux-default",

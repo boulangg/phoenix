@@ -3,13 +3,14 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include <cmd_utils.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include <cstdio>
 #include <numeric>
 
-
+#include <cmd_utils.h>
 
 std::string join(const std::vector<std::string>& input, const std::string& delim)
 {
@@ -17,15 +18,8 @@ std::string join(const std::vector<std::string>& input, const std::string& delim
         return std::string();
     }
 
-    return std::accumulate(
-        std::next(std::begin(input)), 
-        std::end(input), 
-        input[0], 
-        [&delim](const std::string& a, const std::string& b)
-            {
-                return a + delim + b;
-            }
-    );
+    return std::accumulate(std::next(std::begin(input)), std::end(input), input[0],
+                           [&delim](const std::string& a, const std::string& b) { return a + delim + b; });
 }
 
 int main(int argc, char** argv)
@@ -45,8 +39,7 @@ int main(int argc, char** argv)
     }
 
     while (true) {
-        printf("%s", str.c_str());
-        printf("\n");
+        printf("%s\n", str.c_str());
         //std::cout << str << std::endl;
     }
 }

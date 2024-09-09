@@ -21,3 +21,11 @@ It seems this is not required anymore in GDB 12.0.90
 # Resources
 
 * [Memory mapping](doc/memory_map.md)
+
+# Helpers
+
+For VS 2022, the debug output is configured with the *.natvis files. To debug the natvis, you need to:
+- View -> Other Windows -> Command Windows
+- Debug.MIDebugLog /On /OutputWindow
+
+You can take inspiration from %VS_Install_Folder%\Common7\IDE\CommonExtensions\Microsoft\Linux\Linux\stl.natvis

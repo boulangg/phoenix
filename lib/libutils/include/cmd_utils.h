@@ -29,16 +29,6 @@ struct Option
     bool hasArgument = false;
     bool multiOccurences = false;
     std::string description = "";
-    std::string baseName = "";
-
-    //Option() {};
-
-    //Option(char shortName, std::string longName, bool isOptional, bool hasArgument, bool multiOccurences, std::string description) :
-    //    shortName(shortName), longName(longName), isOptional(isOptional),
-    //    hasArgument(hasArgument), multiOccurences(multiOccurences), description(description)
-    //{
-    //    baseName = getBaseName();
-    //}
 
     friend std::strong_ordering operator<=>(const Option& l, const Option& r)
     {

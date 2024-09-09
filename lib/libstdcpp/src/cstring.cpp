@@ -15,6 +15,16 @@ int strcmp(const char* lhs, const char* rhs)
     return ::strcmp(lhs, rhs);
 }
 
+char* strcpy(char* dest, const char* src)
+{
+    return ::strcpy(dest, src);
+}
+
+std::size_t strlen(const char* str)
+{
+    return ::strlen(str);
+}
+
 void* memcpy(void* dest, const void* src, std::size_t count)
 {
 	return ::memcpy(dest, src, count);

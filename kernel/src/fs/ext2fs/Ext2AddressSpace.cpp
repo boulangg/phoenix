@@ -23,7 +23,7 @@ int Ext2AddressSpace::readPage_internal(Page* p)
             if (size == 0) {
                 break;
             }
-            memcpy(destination, source, size);
+            std::memcpy(destination, source, size);
             offset += size;
         }
     }
