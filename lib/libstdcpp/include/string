@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <compare>
 #include <cstddef>
 #include <details/hash.h>
 
@@ -101,7 +102,12 @@ private:
 };
 
 string operator+(const string& lhs, const string& rhs);
+
 bool operator==(const string& lhs, const string& rhs);
+bool operator==(const string& lhs, const char* rhs);
+
+std::strong_ordering operator<=>(const string& lhs, const string& rhs);
+std::strong_ordering operator<=>(const string& lhs, const char* rhs);
 
 std::string to_string(int value);
 std::string to_string(long value);

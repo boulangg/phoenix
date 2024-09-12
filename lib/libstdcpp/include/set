@@ -7,6 +7,7 @@
 #pragma once
 
 #include <functional>
+#include <initializer_list>
 
 #include "helpers/red-black-tree.h"
 
@@ -46,6 +47,14 @@ public:
     using iterator = typename red_black_tree_type::iterator;
 
     set() : set(Compare()) {}
+
+    template <class T>
+    set(std::initializer_list<T> init) : set()
+    {
+        for (auto it : init) {
+            this->insert(it);
+        }
+    }
 
     explicit set(const Compare& comp) : _extractor(), _comparator(comp), _tree() {}
 

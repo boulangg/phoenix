@@ -3,15 +3,12 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
+ 
+ #include <cstdio>
 
-#pragma once
-
-#include <cstddef>
+#include <stdio.h>
 
 namespace std {
 
-int strcmp(const char* lhs, const char* rhs);
-
-void* memcpy(void* dest, const void* src, std::size_t count);
 
 }

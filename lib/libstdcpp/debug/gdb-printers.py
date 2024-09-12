@@ -16,8 +16,8 @@ class SummaryAndFieldIterator:
 
     def __next__(self):
 
-        if (self.count >= len(self.keys) + len(self.summaries)):
-        #if (self.count >=len(self.summaries)):
+        #if (self.count >= len(self.keys) + len(self.summaries)):
+        if (self.count >=len(self.summaries)):
             raise StopIteration
         elif self.count < len(self.summaries):
 
@@ -35,17 +35,49 @@ class SummaryAndFieldIterator:
 
     next = __next__
 
+
+class FieldIterator:
+    """
+    Iterator that display all the fields in the object in order
+    """
+    def __init__ (self, obj):
+        self.count = 0
+        self.obj = obj;
+        #self.keys = sorted(obj.type.iterkeys())
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.count < 3:
+            self.count += 1
+            return "test" + str(self.count), "test"
+        else:
+            raise StopIteration
+
+    next = __next__
+
 class StdStringPrinter(object):
     "Print a std::string"
 
     def __init__(self, val):
         self.val = val
-
+        
     #def children(self):
-    #    return SummaryAndFieldIterator(self.val, [self.get_data_field])
+        #value = (("test", "test"), ("test2", "test"))
+        #return iter(value)
+        #return iter(FieldIterator())
+        #self.val))
 
-    #def get_data_field(self):
-    #    return "data", self.val["_data"]
+    def children(self):
+        return SummaryAndFieldIterator(self.val, [self.get_string_field, self.get_size_field, self.get_capacity_field])
+
+    def get_string_field(self):
+        return "string", self.val["_data"]
+    def get_size_field(self):
+        return "size", self.val["_size"]
+    def get_capacity_field(self):
+        return "capacity", self.val["_capacity"]
         
     def to_string(self):
         return self.val["_data"]
@@ -61,4 +93,3 @@ def build_pretty_printer():
 
 # Autoload
 gdb.printing.register_pretty_printer(gdb.current_objfile(), build_pretty_printer())
-

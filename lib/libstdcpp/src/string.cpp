@@ -224,4 +224,33 @@ bool operator==(const string& lhs, const string& rhs)
 {
     return lhs.compare(rhs) == 0;
 }
+
+bool operator==(const string& lhs, const char* rhs)
+{
+    return lhs.compare(string(rhs)) == 0;
+}
+
+std::strong_ordering operator<=>(const string& lhs, const string& rhs)
+{
+    auto compare = lhs.compare(rhs);
+    if (compare > 0) {
+        return std::strong_ordering::greater;
+    } else if (compare < 0) {
+        return std::strong_ordering::less;
+    } else {
+        return std::strong_ordering::equal;
+    }
+}
+
+std::strong_ordering operator<=>(const string& lhs, const char* rhs)
+{
+    auto compare = lhs.compare(string(rhs));
+    if (compare > 0) {
+        return std::strong_ordering::greater;
+    } else if (compare < 0) {
+        return std::strong_ordering::less;
+    } else {
+        return std::strong_ordering::equal;
+    }
+}
 }

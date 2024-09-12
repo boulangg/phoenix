@@ -6,4 +6,12 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <stdio.h>
+
+namespace std {
+
+using ::snprintf;
+
+}

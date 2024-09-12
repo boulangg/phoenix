@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+ 
+ #pragma once
+
+#include <utility>
+
+namespace std {
+
+template <class InputIt, class T>
+T accumulate(InputIt first, InputIt last, T init)
+{
+    for (; first != last; ++first) {
+        init = std::move(init) + *first;
+    }
+    return init;
+}
+
+template <class InputIt, class T, class BinaryOp>
+T accumulate(InputIt first, InputIt last, T init, BinaryOp op)
+{
+    for (; first != last; ++first) {
+        init = op(std::move(init), *first);
+    }
+    return init;
+}
+
+}

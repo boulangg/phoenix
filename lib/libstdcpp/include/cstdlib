@@ -6,4 +6,13 @@
 
 #pragma once
 
-#include <stdlib.h>
+#include <cstddef>
+
+namespace std {
+
+void exit(int exit_code);
+
+void* malloc(std::size_t size);
+void free(void* ptr);
+
+}

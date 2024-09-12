@@ -1,0 +1,208 @@
+/*
+ * Copyright (c) 2016-2023 Boulanger Guillaume, Chathura Namalgamuwa
+ * The file is distributed under the MIT license
+ * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
+ */
+ 
+ #pragma once
+
+#include <cstdint>
+#include <type_traits>
+
+namespace std {
+
+class partial_ordering
+{
+private:
+    std::int8_t _val;
+    constexpr explicit partial_ordering(std::int8_t val) : _val(val) {}
+
+    friend class weak_ordering;
+    friend class strong_ordering;
+
+public:
+    static const std::partial_ordering less;
+    static const std::partial_ordering equivalent;
+    static const std::partial_ordering greater;
+    static const std::partial_ordering unordered;
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator==(partial_ordering v, Zero) noexcept
+    {
+        return v == equivalent;
+    }
+    friend constexpr bool operator==(partial_ordering v, partial_ordering w) noexcept = default;
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+        friend constexpr bool operator<(partial_ordering v, Zero) noexcept
+    {
+        return v == less;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator<(Zero, partial_ordering v) noexcept
+    {
+        return v == greater;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator<=(partial_ordering v, Zero) noexcept
+    {
+        return v == less || v == equivalent;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator<=(Zero, partial_ordering v) noexcept
+    {
+        return v == greater || v == equivalent;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator>(partial_ordering v, Zero) noexcept
+    {
+        return v == greater;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator>(Zero, partial_ordering v) noexcept
+    {
+        return v == less;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator>=(partial_ordering v, Zero) noexcept
+    {
+        return v == greater || v == equivalent;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator>=(Zero, partial_ordering v) noexcept
+    {
+        return v == less || v == equivalent;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr partial_ordering operator<=>(partial_ordering v, Zero) noexcept
+    {
+        return v;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr partial_ordering operator<=>(Zero, partial_ordering v) noexcept
+    {
+        if (v == less) {
+            return greater;
+        } else if (v == greater) {
+            return less;
+        } else {
+            return v;
+        }
+    }
+};
+
+inline constexpr partial_ordering partial_ordering::less{-1};
+inline constexpr partial_ordering partial_ordering::equivalent{1};
+inline constexpr partial_ordering partial_ordering::greater{1};
+inline constexpr partial_ordering partial_ordering::unordered{2};
+
+class weak_ordering;
+
+class strong_ordering
+{
+private:
+    std::int8_t _val;
+    constexpr explicit strong_ordering(std::int8_t val) : _val(val) {}
+
+public:
+    static const strong_ordering less;
+    static const strong_ordering equivalent;
+    static const strong_ordering equal;
+    static const strong_ordering greater;
+
+    constexpr operator partial_ordering() const noexcept
+    {
+        return partial_ordering(_val);
+    }
+
+    constexpr operator weak_ordering() const noexcept;
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator==(strong_ordering v, Zero) noexcept
+    {
+        return v == equivalent || v == equal;
+    }
+    friend constexpr bool operator==(strong_ordering v, strong_ordering w) noexcept = default;
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator<(strong_ordering v, Zero) noexcept
+    {
+        return v == less;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator<(Zero, strong_ordering v) noexcept
+    {
+        return v == greater;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator<=(strong_ordering v, Zero) noexcept
+    {
+        return v != greater;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator<=(Zero, strong_ordering v) noexcept
+    {
+        return v != less;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator>(strong_ordering v, Zero) noexcept
+    {
+        return v == greater;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator>(Zero, strong_ordering v) noexcept
+    {
+        return v == less;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator>=(strong_ordering v, Zero) noexcept
+    {
+        return v != less;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr bool operator>=(Zero, strong_ordering v) noexcept
+    {
+        return v != greater;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr strong_ordering operator<=>(strong_ordering v, Zero) noexcept
+    {
+        return v;
+    }
+
+    template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
+    friend constexpr strong_ordering operator<=>(Zero, strong_ordering v) noexcept
+    {
+        if (v == less) {
+            return greater;
+        } else if (v == greater) {
+            return less;
+        } else {
+            return v;
+        }
+    }
+};
+
+inline constexpr strong_ordering strong_ordering::less{-1};
+inline constexpr strong_ordering strong_ordering::equivalent{0};
+inline constexpr strong_ordering strong_ordering::equal{0};
+inline constexpr strong_ordering strong_ordering::greater{1};
+
+}
