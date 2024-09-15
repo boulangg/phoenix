@@ -29,7 +29,7 @@
             <Item Name="[size]">_tree._node_count</Item>
             <TreeItems>
                 <Size>_tree._node_count</Size>
-                <HeadPointer>_tree._begin</HeadPointer>
+                <HeadPointer>_tree._root</HeadPointer>
                 <LeftPointer>left</LeftPointer>
                 <RightPointer>right</RightPointer>
                 <ValueNode>value</ValueNode>

@@ -27,15 +27,12 @@ int main(int argc, char* argv[])
             cmd::Option{'t', "", true, false, false, "equivalent to -vT"},
             cmd::Option{'T', "show-tabs", true, false, false, "display TAB characters as ^I"},
             cmd::Option{'u', "", true, false, false, "(ignored)"},
-            cmd::Option{'v', "show-nonprinting", true, false, false,
-                        "use ^ and M- notation, except for LFD and TAB"}}};
+            cmd::Option{'v', "show-nonprinting", true, false, false, "use ^ and M- notation, except for LFD and TAB"}}};
 
-    FILE* fd;
+    FILE* fd = stdin;
     if (argc > 1) {
         std::string filename = argv[1];
         fd = fopen(filename.c_str(), "r");
-    } else {
-        fd = stdin;
     }
 
     char buffer[BUFFER_SIZE];

@@ -160,7 +160,7 @@ int string::compare(const string& str) const
     size_t i = 0;
     while ((str._data[i] != '\0') && (_data[i] != '\0')) {
         if (str._data[i] != _data[i]) {
-            return (str._data[i] - _data[i]);
+            return (_data[i] - str._data[i]);
         }
         ++i;
     }
