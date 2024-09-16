@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
     static cmd::Config config = {
         "cat", cmd::Version{1, 0, 0}, "[OPTION]... [FILE]...",
         "Concatenate FILE(s) to standard output.\n\nWith no FILE, or when FILE is -, read standard input.",
-        std::set<cmd::Option>{
+        std::vector<cmd::Option>{
             cmd::Option{'a', "show-all", true, false, false, " quivalent to -vET"},
             cmd::Option{'b', "number-nonblank", true, false, false, "number nonempty output lines, overrides -n"},
             cmd::Option{'e', "", true, false, false, "equivalent to -vE"},

@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #include "cmd_utils.h"
+
+#include "cmd_utils.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -38,17 +38,6 @@ std::string string_format(const std::string& format, Args... args)
 
 namespace cmd {
 
-Config::Config(std::string name, Version version, std::string usage, std::string helpDescription,
-               std::set<Option> options) :
-    name(name),
-    version(version), usage(usage), helpDescription(helpDescription), options(options)
-{
-    static Option helpOption{'\0', "help", true, false, false, "display this help and exit"};
-    static Option versionOption('\0', "version", true, false, false, "output version information and exit");
-    this->options.insert(helpOption);
-    this->options.insert(versionOption);
-}
-
 Parser::Parser(const Config& config) : _config(config) {}
 
 void Parser::parse(int argc, char** argv)
@@ -76,6 +65,30 @@ std::vector<std::string> Parser::operands()
     return _operands;
 }
 
+const Option Parser::HELP_OPTION{'\0', "help", true, false, false, "display this help and exit"};
+const Option Parser::VERSION_OPTION('\0', "version", true, false, false, "output version information and exit");
+
+void Parser::displayOption(Option option)
+{
+    std::string shortOption = "  ";
+    if (option.shortName != '\0') {
+        shortOption = string_format("-%c", option.shortName);
+    }
+    std::string delim = "  ";
+    if (option.shortName != '\0' && option.longName != "") {
+        delim = ", ";
+    }
+    std::string longOption = "                        ";
+    if (option.longName != "") {
+        longOption = string_format("--%-23s", option.longName.c_str());
+    }
+    printf("  %s%s%s ", shortOption.c_str(), delim.c_str(), longOption.c_str());
+    if (longOption.size() > 25) {
+        printf("\n                               ");
+    }
+    printf(" %s\n", option.description.c_str());
+}
+
 void Parser::helpAndExit()
 {
     printf("Usage: %s %s\n", _arg0.c_str(), _config.usage.c_str());
@@ -84,24 +97,11 @@ void Parser::helpAndExit()
     printf("Options:\n");
 
     for (auto& option : _config.options) {
-        std::string shortOption = "  ";
-        if (option.shortName != '\0') {
-            shortOption = string_format("-%c", option.shortName);
-        }
-        std::string delim = "  ";
-        if (option.shortName != '\0' && option.longName != "") {
-            delim = ", ";
-        }
-        std::string longOption = "                        ";
-        if (option.longName != "") {
-            longOption = string_format("--%-23s", option.longName.c_str());
-        }
-        printf("  %s%s%s ", shortOption.c_str(), delim.c_str(), longOption.c_str());
-        if (longOption.size() > 25) {
-            printf("\n                               ");
-        }
-        printf(" %s\n", option.description.c_str());
+        displayOption(option);
     }
+
+    displayOption(HELP_OPTION);
+    displayOption(VERSION_OPTION);
 
     std::exit(0);
 }

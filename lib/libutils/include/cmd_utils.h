@@ -3,11 +3,10 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstdint>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -52,10 +51,7 @@ struct Config
     Version version;
     std::string usage;
     std::string helpDescription;
-    std::set<Option> options;
-
-    Config(std::string name, Version version, std::string usage, std::string helpDescription,
-           std::set<Option> options);
+    std::vector<Option> options;
 };
 
 class UtilityArgumentsConfig
@@ -80,6 +76,10 @@ public:
     std::vector<std::string> operands();
 
 private:
+    static const Option HELP_OPTION;
+    static const Option VERSION_OPTION;
+
+    void displayOption(Option option);
     void helpAndExit();
     void versionAndExit();
 
