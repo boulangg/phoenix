@@ -85,6 +85,11 @@ public:
         return _hashtable.at(key).second;
     }
 
+    const mapped_type& at(const key_type& key) const
+    {
+        return _hashtable.at(key).second;
+    }
+
     mapped_type& operator[](const key_type& key)
     {
         auto it = find(key);

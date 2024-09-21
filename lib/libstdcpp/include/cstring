@@ -12,6 +12,7 @@ namespace std {
 
 int strcmp(const char* lhs, const char* rhs);
 char* strcpy(char* dest, const char* src);
+char* strncpy(char* dest, const char* src, std::size_t num);
 std::size_t strlen(const char* str);
 
 void* memcpy(void* dest, const void* src, std::size_t count);

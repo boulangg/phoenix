@@ -7,7 +7,7 @@
 #pragma once
 
 #include <exception>
-//#include <initializer_list>
+// #include <initializer_list>
 #include <functional>
 #include <memory>
 #include <type_traits>
@@ -32,7 +32,7 @@ struct nullopt_t
     explicit constexpr nullopt_t(int) {}
 };
 
-// inline constexpr nullopt_t nullopt{};
+inline constexpr nullopt_t nullopt{0};
 
 template <class T>
 class optional
@@ -150,8 +150,8 @@ public:
     }
 
     template <typename = Requires<is_move_constructible<T>, is_move_assignable<T>>>
-    constexpr optional&
-    operator=(optional&& other) noexcept(std::is_nothrow_move_assignable_v<T>&& std::is_nothrow_move_constructible_v<T>)
+    constexpr optional& operator=(optional&& other) noexcept(std::is_nothrow_move_assignable_v<T> &&
+                                                             std::is_nothrow_move_constructible_v<T>)
     {
         if (other._has_value) {
             if (_has_value) {
@@ -316,8 +316,8 @@ public:
         }
     }
 
-    constexpr void
-    swap(optional& other) noexcept(std::is_nothrow_move_constructible_v<T>&& std::is_nothrow_swappable_v<T>)
+    constexpr void swap(optional& other) noexcept(std::is_nothrow_move_constructible_v<T> &&
+                                                  std::is_nothrow_swappable_v<T>)
     {
         if (_has_value && other._has_value) {
             std::swap(_value, other._value);
@@ -542,8 +542,8 @@ constexpr optional<T> make_optional(Args&&... args)
 //}
 
 template <class T, typename = enable_if_t<is_move_constructible_v<T> && is_swappable_v<T>>>
-constexpr void swap(optional<T>& lhs,
-                    optional<T>& rhs) noexcept(std::is_nothrow_move_constructible_v<T>&& std::is_nothrow_swappable_v<T>)
+constexpr void swap(optional<T>& lhs, optional<T>& rhs) noexcept(std::is_nothrow_move_constructible_v<T> &&
+                                                                 std::is_nothrow_swappable_v<T>)
 {
     lhs.swap(rhs);
 }

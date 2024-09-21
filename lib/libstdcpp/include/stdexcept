@@ -6,20 +6,42 @@
 
 #pragma once
 
+#include <cstddef>
 #include <exception>
 #include <string>
 
 namespace std {
+
+namespace {
+
+class RefCountedString
+{
+    char* _data;
+    std::size_t _count;
+
+public:
+    RefCountedString(const char* data);
+    ~RefCountedString();
+
+    std::size_t decrement();
+    void increment();
+
+    const char* what() const noexcept;
+};
+
+}
+
 class logic_error : public exception
 {
+    RefCountedString* _msg;
+
 public:
     explicit logic_error(const string& what_arg);
     explicit logic_error(const char* what_arg);
+    explicit logic_error(const logic_error& other);
+    virtual ~logic_error();
 
     const char* what() const noexcept override;
-
-private:
-    std::string _msg;
 };
 
 class domain_error : public logic_error
@@ -27,6 +49,8 @@ class domain_error : public logic_error
 public:
     explicit domain_error(const string& what_arg);
     explicit domain_error(const char* what_arg);
+    explicit domain_error(const domain_error& other) = default;
+    virtual ~domain_error() = default;
 };
 
 class invalid_argument : public logic_error
@@ -34,6 +58,8 @@ class invalid_argument : public logic_error
 public:
     explicit invalid_argument(const string& what_arg);
     explicit invalid_argument(const char* what_arg);
+    explicit invalid_argument(const invalid_argument& other) = default;
+    virtual ~invalid_argument() = default;
 };
 
 class length_error : public logic_error
@@ -41,6 +67,8 @@ class length_error : public logic_error
 public:
     explicit length_error(const string& what_arg);
     explicit length_error(const char* what_arg);
+    explicit length_error(const length_error& other) = default;
+    virtual ~length_error() = default;
 };
 
 class out_of_range : public logic_error
@@ -48,18 +76,21 @@ class out_of_range : public logic_error
 public:
     explicit out_of_range(const string& what_arg);
     explicit out_of_range(const char* what_arg);
+    explicit out_of_range(const out_of_range& other) = default;
+    virtual ~out_of_range() = default;
 };
 
 class runtime_error : public exception
 {
+    RefCountedString* _msg;
+
 public:
     explicit runtime_error(const string& what_arg);
     explicit runtime_error(const char* what_arg);
+    explicit runtime_error(const runtime_error& other);
+    virtual ~runtime_error();
 
     const char* what() const noexcept override;
-
-private:
-    std::string _msg;
 };
 
 class range_error : public runtime_error
@@ -67,6 +98,8 @@ class range_error : public runtime_error
 public:
     explicit range_error(const string& what_arg);
     explicit range_error(const char* what_arg);
+    explicit range_error(const range_error& other) = default;
+    virtual ~range_error() = default;
 };
 
 class overflow_error : public runtime_error
@@ -74,6 +107,8 @@ class overflow_error : public runtime_error
 public:
     explicit overflow_error(const string& what_arg);
     explicit overflow_error(const char* what_arg);
+    explicit overflow_error(const overflow_error& other) = default;
+    virtual ~overflow_error() = default;
 };
 
 class underflow_error : public runtime_error
@@ -81,5 +116,7 @@ class underflow_error : public runtime_error
 public:
     explicit underflow_error(const string& what_arg);
     explicit underflow_error(const char* what_arg);
+    explicit underflow_error(const underflow_error& other) = default;
+    virtual ~underflow_error() = default;
 };
 }

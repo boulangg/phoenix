@@ -7,7 +7,9 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -22,27 +24,10 @@ struct Version
 
 struct Option
 {
-    char shortName = '\0';
-    std::string longName = "";
-    bool isOptional = false;
+    std::optional<char> shortName = std::nullopt;
+    std::optional<std::string> longName = std::nullopt;
     bool hasArgument = false;
-    bool multiOccurences = false;
     std::string description = "";
-
-    friend std::strong_ordering operator<=>(const Option& l, const Option& r)
-    {
-        return l.getBaseName() <=> r.getBaseName();
-    }
-
-private:
-    std::string getBaseName() const
-    {
-        if (shortName != '\0') {
-            return std::string(1, shortName);
-        } else {
-            return longName;
-        }
-    }
 };
 
 struct Config
@@ -54,14 +39,6 @@ struct Config
     std::vector<Option> options;
 };
 
-class UtilityArgumentsConfig
-{
-public:
-    UtilityArgumentsConfig(const std::string& programName, Version version, const std::string& description);
-
-    void addOption(const Option& option);
-};
-
 class Parser
 {
 public:
@@ -69,9 +46,12 @@ public:
 
     void parse(int argc, char** argv);
 
-    bool isEnabled(std::string optionName);
-    std::size_t count(std::string optionName);
-    std::vector<std::string> values(std::string optionName);
+    bool isEnabled(std::string optionName) const;
+    std::size_t count(std::string optionName) const;
+    std::vector<std::string> values(std::string optionName) const;
+
+    void enable(std::string optionName);
+    void disable(std::string optionName);
 
     std::vector<std::string> operands();
 
@@ -82,9 +62,13 @@ private:
     void displayOption(Option option);
     void helpAndExit();
     void versionAndExit();
+    void unrecognizedOptionAndExit(std::string optionName);
 
     Config _config;
+    std::unordered_map<std::string, std::uint64_t> _optionArgId;
+
     std::string _arg0;
+    std::unordered_map<std::uint64_t, std::vector<std::string>> _arguments;
     std::vector<std::string> _operands;
 };
 

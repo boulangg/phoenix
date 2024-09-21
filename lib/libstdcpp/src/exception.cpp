@@ -8,15 +8,61 @@
 
 #include <stdlib.h>
 
-using namespace std;
+namespace std {
 
-exception::exception() noexcept : _msg("") {}
+void terminate() noexcept
+{
+    abort();
+}
 
-exception::exception(const exception& exc) noexcept : _msg(exc._msg) {}
+exception_ptr::exception_ptr(const exception_ptr& other) noexcept : _ptr(other._ptr)
+{
+    __cxa_increment_exception_refcount(_ptr);
+}
+exception_ptr& exception_ptr::operator=(const exception_ptr&)
+{
+    if (_ptr != other._ptr) {
+        __cxa_increment_exception_refcount(other._ptr);
+        __cxa_decrement_exception_refcount(_ptr);
+        _ptr = other._ptr;
+    }
+    return *this;
+}
+
+exception_ptr::~exception_ptr()
+{
+    __cxa_decrement_exception_refcount(_ptr);
+}
+
+exception_ptr::operator bool() const
+{
+    return _ptr != nullptr;
+}
+
+bool operator==(const exception_ptr& x, const exception_ptr& y)
+{
+    return x._ptr == y._ptr;
+}
+
+exception_ptr current_exception() noexcept
+{
+    return exception_ptr(__cxa_current_primary_exception());
+}
+
+void rethrow_exception(exception_ptr p)
+{
+    if (p == nullptr) {
+        terminate();
+    }
+    __cxa_rethrow_primary_exception(p._ptr);
+}
+
+exception::exception() noexcept {}
+
+exception::exception(const exception&) noexcept {}
 
 exception& exception::operator=(const exception& exc) noexcept
 {
-    _msg = exc._msg;
     return *this;
 }
 
@@ -24,10 +70,27 @@ exception::~exception() {}
 
 const char* exception::what() const noexcept
 {
-    return _msg;
+    return "std::exception";
 }
 
-void std::terminate() noexcept
+const char* bad_exception::what() const noexcept
 {
-    abort();
+    return "std::bad_exception";
+}
+
+nested_exception::nested_exception() noexcept : _ptr(std::current_exception()) {}
+
+void nested_exception::rethrow_nested() const
+{
+    if (_ptr == nullptr) {
+        terminate();
+    }
+    rethrow_exception(_ptr);
+}
+
+exception_ptr nested_exception::nested_ptr() const noexcept
+{
+    return _ptr;
+}
+
 }

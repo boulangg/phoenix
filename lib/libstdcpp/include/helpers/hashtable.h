@@ -276,6 +276,16 @@ public:
         }
     }
 
+    const value_type& at(const key_type& key) const
+    {
+        iterator it = find(key);
+        if (it == end()) {
+            throw std::out_of_range("hashtable out_of_range");
+        } else {
+            return *it;
+        }
+    }
+
     iterator find(const key_type& key) const
     {
         size_t i = _reduce(key);
