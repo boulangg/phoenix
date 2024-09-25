@@ -28,6 +28,42 @@ struct Option
     std::optional<std::string> longName = std::nullopt;
     bool hasArgument = false;
     std::string description = "";
+
+    Option() {}
+    Option(std::optional<char> shortName, std::optional<std::string> longName, bool hasArgument,
+           std::string description) :
+        shortName(shortName),
+        longName(longName), hasArgument(hasArgument), description(description)
+    {}
+
+    Option(const Option& other) :
+        shortName(other.shortName), longName(other.longName), hasArgument(other.hasArgument),
+        description(other.description)
+    {}
+
+    Option(Option&& other) : Option()
+    {
+        swap(*this, other);
+    }
+
+    Option& operator=(Option other)
+    {
+        swap(*this, other);
+        return *this;
+    }
+
+    ~Option() {}
+
+    friend void swap(Option& first, Option& second)
+    {
+        // enable ADL
+        using std::swap;
+
+        swap(first.shortName, second.shortName);
+        swap(first.longName, second.longName);
+        swap(first.hasArgument, second.hasArgument);
+        swap(first.description, second.description);
+    }
 };
 
 struct Config

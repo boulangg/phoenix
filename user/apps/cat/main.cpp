@@ -12,7 +12,8 @@
 
 #define BUFFER_SIZE 32
 
-enum NumberLines {
+enum NumberLines
+{
     All,
     NonBlank,
     None
@@ -23,11 +24,11 @@ int cat(FILE* fd, bool showEnd, bool showTab, bool showNonPrinting, bool squeeze
     char buffer[BUFFER_SIZE];
     while (fgets(buffer, BUFFER_SIZE - 1, fd) != nullptr) {
         if (showEnd) {
-        
         }
 
         printf("%s", buffer);
     }
+    return 0;
 }
 
 int main(int argc, char* argv[])
@@ -47,7 +48,7 @@ int main(int argc, char* argv[])
             cmd::Option{'T', "show-tabs", false, "display TAB characters as ^I"},
             cmd::Option{'u', {}, false, "(ignored)"},
             cmd::Option{'v', "show-nonprinting", false, "use ^ and M- notation, except for LFD and TAB"}}};
-    
+
     cmd::Parser parser{config};
 
     parser.parse(argc, argv);

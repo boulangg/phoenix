@@ -12,7 +12,7 @@
 
 namespace std {
 
-namespace {
+namespace details {
 
 class RefCountedString
 {
@@ -33,7 +33,7 @@ public:
 
 class logic_error : public exception
 {
-    RefCountedString* _msg;
+    details::RefCountedString* _msg;
 
 public:
     explicit logic_error(const string& what_arg);
@@ -82,7 +82,7 @@ public:
 
 class runtime_error : public exception
 {
-    RefCountedString* _msg;
+    details::RefCountedString* _msg;
 
 public:
     explicit runtime_error(const string& what_arg);

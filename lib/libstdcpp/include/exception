@@ -26,7 +26,7 @@ public:
     exception_ptr(nullptr_t) noexcept : _ptr() {}
     exception_ptr(const exception_ptr& other) noexcept;
     exception_ptr& operator=(const exception_ptr&);
-    ~exception_ptr() {}
+    ~exception_ptr();
 
     operator bool() const;
     friend bool operator==(const exception_ptr& x, const exception_ptr& y);

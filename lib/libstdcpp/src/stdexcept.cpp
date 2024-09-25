@@ -11,7 +11,7 @@
 
 namespace std {
 
-namespace {
+namespace details {
 RefCountedString::RefCountedString(const char* data) : _data(), _count(1)
 {
     _data = (char*)(std::malloc(strlen(data) + 1));
@@ -39,11 +39,11 @@ const char* RefCountedString::what() const noexcept
 
 }
 
-logic_error::logic_error(const string& what_arg) : _msg(new RefCountedString{what_arg.c_str()}) {}
+logic_error::logic_error(const string& what_arg) : exception(), _msg(new details::RefCountedString{what_arg.c_str()}) {}
 
-logic_error::logic_error(const char* what_arg) : _msg(new RefCountedString{what_arg}) {}
+logic_error::logic_error(const char* what_arg) : exception(), _msg(new details::RefCountedString{what_arg}) {}
 
-logic_error::logic_error(const logic_error& other) : _msg(other._msg)
+logic_error::logic_error(const logic_error& other) : exception(), _msg(other._msg)
 {
     _msg->increment();
 }
@@ -76,11 +76,13 @@ out_of_range::out_of_range(const string& what_arg) : logic_error(what_arg) {}
 
 out_of_range::out_of_range(const char* what_arg) : logic_error(what_arg) {}
 
-runtime_error::runtime_error(const string& what_arg) : _msg(new RefCountedString{what_arg.c_str()}) {}
+runtime_error::runtime_error(const string& what_arg) :
+    exception(), _msg(new details::RefCountedString{what_arg.c_str()})
+{}
 
-runtime_error::runtime_error(const char* what_arg) : _msg(new RefCountedString{what_arg}) {}
+runtime_error::runtime_error(const char* what_arg) : exception(), _msg(new details::RefCountedString{what_arg}) {}
 
-runtime_error::runtime_error(const runtime_error& other) : _msg(other._msg)
+runtime_error::runtime_error(const runtime_error& other) : exception(), _msg(other._msg)
 {
     _msg->increment();
 }

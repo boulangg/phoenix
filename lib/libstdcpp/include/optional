@@ -322,10 +322,12 @@ public:
         if (_has_value && other._has_value) {
             std::swap(_value, other._value);
         } else if (_has_value) {
-            std::construct_at(&_value, std::move(other._value));
-            _value.reset();
+            std::construct_at(&other._value, std::move(_value));
+            other._has_value = true;
+            this->reset();
         } else if (other._has_value) {
             std::construct_at(&_value, std::move(other._value));
+            this->_has_value = true;
             other.reset();
         }
     }
