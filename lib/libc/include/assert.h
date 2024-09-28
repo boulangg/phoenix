@@ -10,6 +10,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// General
+#define __STDC_VERSION_ASSERT_H__ 202311L
+
+// Program diagnostics
 #ifdef NDEBUG
 #define assert(ignore) ((void)0)
 #else
@@ -20,7 +24,7 @@ extern "C" {
 
 #define assert(expression)                                                                                             \
     if ((expression) == false) {                                                                                       \
-        fprintf(stderr, "%s:%i %s: Assertion `%s' failed.\n", __FILE__, __LINE__, __FUNCTION__, #expression);          \
+        fprintf(stderr, "%s:%i %s: Assertion `%s' failed.\n", __FILE__, __LINE__, __func__, #expression);          \
         exit(EXIT_FAILURE);                                                                                            \
     }
 

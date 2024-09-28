@@ -4,41 +4,41 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef __STDATOMIC_H
-#define __STDATOMIC_H
+#pragma once
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
-
-#include <stdbool.h>
-
+extern "C"
+{
 #endif
 
-#define _Atomic(X) X
+// General
+#define __STDC_VERSION_STDATOMIC_H__ 202311L
 
-/* 7.17.1 Introduction */
+// Introduction
+#define ATOMIC_BOOL_LOCK_FREE     __GCC_ATOMIC_BOOL_LOCK_FREE
+#define ATOMIC_CHAR_LOCK_FREE     __GCC_ATOMIC_CHAR_LOCK_FREE
+#define ATOMIC_CHAR16_T_LOCK_FREE __GCC_ATOMIC_CHAR16_T_LOCK_FREE
+#define ATOMIC_CHAR32_T_LOCK_FREE __GCC_ATOMIC_CHAR32_T_LOCK_FREE
+#define ATOMIC_WCHAR_T_LOCK_FREE  __GCC_ATOMIC_WCHAR_T_LOCK_FREE
+#define ATOMIC_SHORT_LOCK_FREE    __GCC_ATOMIC_SHORT_LOCK_FREE
+#define ATOMIC_INT_LOCK_FREE      __GCC_ATOMIC_INT_LOCK_FREE
+#define ATOMIC_LONG_LOCK_FREE     __GCC_ATOMIC_LONG_LOCK_FREE
+#define ATOMIC_LLONG_LOCK_FREE    __GCC_ATOMIC_LLONG_LOCK_FREE
+#define ATOMIC_POINTER_LOCK_FREE  __GCC_ATOMIC_POINTER_LOCK_FREE
 
-#define ATOMIC_BOOL_LOCK_FREE     /* implementation-defined */
-#define ATOMIC_CHAR_LOCK_FREE     /* implementation-defined */
-#define ATOMIC_CHAR16_T_LOCK_FREE /* implementation-defined */
-#define ATOMIC_CHAR32_T_LOCK_FREE /* implementation-defined */
-#define ATOMIC_WCHAR_T_LOCK_FREE  /* implementation-defined */
-#define ATOMIC_SHORT_LOCK_FREE    /* implementation-defined */
-#define ATOMIC_INT_LOCK_FREE      /* implementation-defined */
-#define ATOMIC_LONG_LOCK_FREE     /* implementation-defined */
-#define ATOMIC_LLONG_LOCK_FREE    /* implementation-defined */
-#define ATOMIC_POINTER_LOCK_FREE  /* implementation-defined */
+// Initialization
+#define _Atomic(X) volatile X
 
-/* 7.17.2 Initialization */
+#define atomic_init(obj, value)                                                                                        \
+    {                                                                                                                  \
+        *obj = value;                                                                                                  \
+    }
 
-#define ATOMIC_VAR_INIT(value) (value)
-#define atomic_init            (void)
-
-/* 7.17.3 Order and consistency */
-
+// Order and consistency
 enum memory_order
 {
     memory_order_relaxed = __ATOMIC_RELAXED,
@@ -51,17 +51,14 @@ enum memory_order
 
 #define kill_dependency(y) (y)
 
-/* 7.17.4 Fences */
-
+// Fences
 #define atomic_thread_fence(order) __atomic_thread_fence(order)
 #define atomic_signal_fence(order) __atomic_signal_fence(order)
 
-/* 7.17.5 Lock-free property */
-
+// Lock-free property
 #define atomic_is_lock_free(obj) __atomic_is_lock_free(obj)
 
-/* 7.17.6 Atomic integer types */
-
+// Atomic integer types
 typedef _Atomic(_Bool) atomic_bool;
 typedef _Atomic(char) atomic_char;
 typedef _Atomic(signed char) atomic_schar;
@@ -76,7 +73,7 @@ typedef _Atomic(long long) atomic_llong;
 typedef _Atomic(unsigned long long) atomic_ullong;
 typedef _Atomic(uint_least16_t) atomic_char16_t;
 typedef _Atomic(uint_least32_t) atomic_char32_t;
-typedef _Atomic(wchar_t) atomic_wchar_t;
+// typedef _Atomic(wchar_t) atomic_wchar_t;
 typedef _Atomic(int_least8_t) atomic_int_least8_t;
 typedef _Atomic(uint_least8_t) atomic_uint_least8_t;
 typedef _Atomic(int_least16_t) atomic_int_least16_t;
@@ -100,8 +97,7 @@ typedef _Atomic(ptrdiff_t) atomic_ptrdiff_t;
 typedef _Atomic(intmax_t) atomic_intmax_t;
 typedef _Atomic(uintmax_t) atomic_uintmax_t;
 
-/* 7.17.7 Operations on atomic types */
-
+// Operations on atomic types
 #define atomic_store(object, desired)                 __atomic_store(object, desired, memory_order_seq_cst)
 #define atomic_store_explicit(object, desired, order) __ATOMIC_store(object, desired, order)
 
@@ -135,8 +131,7 @@ typedef _Atomic(uintmax_t) atomic_uintmax_t;
 #define atomic_fetch_and(object, operand)                 __atomic_fetch_and(object, operand, memory_order_seq_cst)
 #define atomic_fetch_and_explicit(object, operand, order) __atomic_fetch_and(object, operand, order)
 
-/* 7.17.8 Atomic flag type and operations */
-
+// Atomic flag type and operations
 struct atomic_flag
 {
     bool state;
@@ -155,6 +150,4 @@ struct atomic_flag
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

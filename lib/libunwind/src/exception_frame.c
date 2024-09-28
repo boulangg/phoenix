@@ -45,12 +45,12 @@ uint64_t unwind_find_frame_description_entry(uint64_t ip)
 {
     struct link_map* obj = _dl_find_dso_for_object(ip);
     if (obj == NULL) {
-        return NULL;
+        return 0;
     }
 
     Elf64_Phdr* programHeader = getEhFrameHeader(obj);
     if (programHeader == NULL) {
-        return NULL;
+        return 0;
     }
 
     EF_EHF_Hdr* ehFrameHeader = (EF_EHF_Hdr*)programHeader->p_vaddr;
@@ -66,7 +66,7 @@ uint64_t unwind_find_frame_description_entry(uint64_t ip)
     }
 
     if (i > fde_count || i == 0) {
-        return NULL;
+        return 0;
     }
 
     uint64_t fde_ptr = (uint64_t)ehFrameHeader + lookupTable[i - 1].fdePtr;

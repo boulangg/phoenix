@@ -4,29 +4,29 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef __INTTYPES_H__
-#define __INTTYPES_H__
+#pragma once
 
 #include <bits/wordsize.h>
 
-typedef signed char int8_t;
-typedef signed short int16_t;
-typedef signed int int32_t;
+#include <stdint.h>
 
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-
-#if __WORDSIZE == 64
-typedef signed long int64_t;
-typedef unsigned long uint64_t;
-typedef int64_t intptr_t;
-typedef uint64_t uintptr_t;
-#else
-typedef signed long long int64_t;
-typedef unsigned long long uint64_t;
-typedef int32_t intptr_t;
-typedef uint32_t uintptr_t;
+#ifdef __cplusplus
+extern "C"
+{
 #endif
 
-#endif // __INTTYPES_H__
+// General
+//#define __STDC_VERSION_INTTYPES_H__ 202311L
+
+struct imaxdiv_t
+{
+    intmax_t quot;
+    intmax_t rem;
+};
+
+intmax_t imaxabs(intmax_t j);
+
+#ifdef __cplusplus
+}
+#endif
+
