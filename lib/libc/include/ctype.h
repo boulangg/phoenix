@@ -4,13 +4,13 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef __CTYPE_H__
-#define __CTYPE_H__
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// Character classification functions
 int isalnum(int c);
 int isalpha(int c);
 int isblank(int c);
@@ -24,6 +24,7 @@ int isspace(int c);
 int isupper(int c);
 int isxdigit(int c);
 
+// Character case mapping functions
 int tolower(int c);
 int toupper(int c);
 
@@ -31,4 +32,3 @@ int toupper(int c);
 }
 #endif
 
-#endif // __CTYPE_H__

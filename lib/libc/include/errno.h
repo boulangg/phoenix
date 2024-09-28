@@ -4,8 +4,7 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef _ERRNO_H_
-#define _ERRNO_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -167,5 +166,3 @@ extern int errno;
 #define ERFKILL 132 /* Operation not possible due to RF-kill */
 
 #define EHWPOISON 133 /* Memory page has hardware error */
-
-#endif // _ERRNO_H_

@@ -26,6 +26,7 @@ void exit(int exit_code) __attribute__((noreturn));
 int abs(int value);
 
 // Other
+#define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1
 void abort(void) __attribute__((__noreturn__));
 

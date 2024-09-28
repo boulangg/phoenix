@@ -4,9 +4,10 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef _STDDEF_DEF_NULL_H_
-#define _STDDEF_DEF_NULL_H_
+#pragma once
 
-#define NULL (0)
-
-#endif /* _STDDEF_DEF_NULL_H_ */
+#ifdef __cplusplus
+#define NULL 0
+#else
+#define NULL ((void*)0)
+#endif

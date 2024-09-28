@@ -4,14 +4,26 @@
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
 
-#ifndef _LIMITS_H_
-#define _LIMITS_H_
+#pragma once
 
-// 7.10 Sizes of integer types <limits.h>
 #include "bits/wordsize.h"
 
-// 5.2.4.2.1 Sizes of integer types <limits.h>
-#define CHAR_BIT  8
+// General
+#define __STDC_VERSION_LIMITS_H__ 202311L
+
+// Characteristics of integer types
+#define BOOL_WIDTH      (sizeof(bool) * 8)
+#define CHAR_BIT        (sizeof(char) * 8)
+#define USHRT_WIDTH     (sizeof(unsigned short) * 8)
+#define UINT_WIDTH      (sizeof(unsigned int) * 8)
+#define ULONG_WIDTH     (sizeof(unsigned long) * 8)
+#define ULLONG_WIDTH    (sizeof(unsigned long long) * 8)
+#define BITINT_MAXWIDTH ULLONG_WIDTH
+
+#define MB_LEN_MAX 16
+
+#define BOOL_MAX 1
+
 #define SCHAR_MIN (-128)
 #define SCHAR_MAX (+127)
 #define UCHAR_MAX 255
@@ -23,8 +35,6 @@
 #define CHAR_MIN SCHAR_MIN
 #define CHAR_MAX SCHAR_MAX
 #endif // __CHAR_UNSIGNED__
-
-#define MB_LEN_MAX 16
 
 #define SHRT_MIN  (-32768)
 #define SHRT_MAX  (+32767)
@@ -47,5 +57,3 @@
 #define LONG_MAX  INT_MAX
 #define ULONG_MAX UINT_MAX
 #endif // __WORDSIZE == 64
-
-#endif // _LIMITS_H_

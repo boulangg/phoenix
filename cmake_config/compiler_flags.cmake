@@ -3,11 +3,11 @@ if(NOT DEFINED COMPILER_FLAGS)
 set(COMPILER_FLAGS True)
 
 enable_testing()
-enable_language(C CXX ASM )
+enable_language( C CXX ASM )
 
 # C generic compiler/linker flags
 # set(C_STANDARD 11)
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -fno-stack-protector -fno-builtin-fprintf -mno-red-zone -std=c11 -U__linux__ -D__phoenix__ -g")
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-Wall -Wextra -fno-stack-protector -fno-builtin-fprintf -mno-red-zone -std=c2x -U__linux__ -D__phoenix__ -g")
 set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> rc <TARGET> <LINK_FLAGS> <OBJECTS>")
 
 # C++ generic compiler/linker flags
