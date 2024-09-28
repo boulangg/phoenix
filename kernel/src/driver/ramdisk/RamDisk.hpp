@@ -44,7 +44,7 @@ public:
 			return;
 		} else {
 			for (std::uint32_t i = 0; i < numSec; i++) {
-				memcpy((void*)buffer, (void*)(start + (lba + i) * sectorSize), sectorSize);
+				std::memcpy((void*)buffer, (void*)(start + (lba + i) * sectorSize), sectorSize);
 			}
 		}
 	}

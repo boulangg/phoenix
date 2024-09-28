@@ -164,6 +164,7 @@ private:
     float _max_load_factor;
     using node_type_ptr = node_type*;
     node_type_ptr* _buckets;
+    node_type_ptr _begin;
     node_type_ptr _end;
 
     extractor_type _extractor;
@@ -179,16 +180,67 @@ public:
 
         _buckets = new node_type_ptr[_bucket_count + 1]();
 
+        _begin = new node_type();
+        _begin->next = nullptr;
+
         _end = new node_type();
         _end->next = _end;
         _buckets[_bucket_count] = _end;
     }
 
+    hashtable(const hashtable& other) :
+        _bucket_count(other._bucket_count), _node_count(0), _max_load_factor(other._max_load_factor),
+        _extractor(other._extractor), _hash(other._hash), _key_equal(other._key_equal),
+        _rehash_policy(other._rehash_policy)
+    {
+        _buckets = new node_type_ptr[_bucket_count + 1]();
+
+        _begin = new node_type();
+        _begin->next = nullptr;
+
+        _end = new node_type();
+        _end->next = _end;
+        _buckets[_bucket_count] = _end;
+
+        for (auto& val : other) {
+            insert(val);
+        }
+    }
+
+    hashtable(hashtable&& other) : hashtable(other._bucket_count, other._extractor, other._hash, other._key_equal)
+    {
+        swap(*this, other);
+    }
+
     ~hashtable()
     {
         clear();
+        delete _begin;
         delete _end;
         delete _buckets;
+    }
+
+    hashtable& operator=(hashtable other)
+    {
+        swap(*this, other);
+        return *this;
+    }
+
+    friend void swap(hashtable& first, hashtable& second)
+    {
+        // enable ADL
+        using std::swap;
+
+        swap(first._bucket_count, second._bucket_count);
+        swap(first._node_count, second._node_count);
+        swap(first._max_load_factor, second._max_load_factor);
+        swap(first._extractor, second._extractor);
+        swap(first._hash, second._hash);
+        swap(first._key_equal, second._key_equal);
+        swap(first._rehash_policy, second._rehash_policy);
+        swap(first._buckets, second._buckets);
+        swap(first._begin, second._begin);
+        swap(first._end, second._end);
     }
 
     // Capacity
@@ -205,7 +257,7 @@ public:
     // Iterators
     iterator begin() const
     {
-        return iterator(_buckets, *_buckets);
+        return ++iterator(_buckets - 1, _begin);
     }
 
     iterator end() const
@@ -215,6 +267,16 @@ public:
 
     // Lookup
     value_type& at(const key_type& key)
+    {
+        iterator it = find(key);
+        if (it == end()) {
+            throw std::out_of_range("hashtable out_of_range");
+        } else {
+            return *it;
+        }
+    }
+
+    const value_type& at(const key_type& key) const
     {
         iterator it = find(key);
         if (it == end()) {

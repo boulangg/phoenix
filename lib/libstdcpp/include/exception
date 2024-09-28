@@ -6,7 +6,54 @@
 
 #pragma once
 
+#include <cstddef>
+
 namespace std {
+
+// using terminate_handler = void (*)();
+// terminate_handler get_terminate() noexcept;
+// terminate_handler set_terminate(terminate_handler f) noexcept;
+void terminate() noexcept;
+
+// int uncaught_exceptions() noexcept;
+
+class exception_ptr
+{
+    void* _ptr;
+
+public:
+    exception_ptr() noexcept : _ptr() {}
+    exception_ptr(nullptr_t) noexcept : _ptr() {}
+    exception_ptr(const exception_ptr& other) noexcept;
+    exception_ptr& operator=(const exception_ptr&);
+    ~exception_ptr();
+
+    operator bool() const;
+    friend bool operator==(const exception_ptr& x, const exception_ptr& y);
+
+    friend void rethrow_exception(exception_ptr p);
+    friend exception_ptr current_exception() noexcept;
+
+private:
+    exception_ptr(void* ptr) noexcept : _ptr(ptr) {}
+};
+
+exception_ptr current_exception() noexcept;
+
+template <class E>
+exception_ptr make_exception_ptr(E e) noexcept
+{
+    try {
+        throw e;
+    } catch (...) {
+        return current_exception();
+    }
+}
+
+template <class T>
+void throw_with_nested(T&& t);
+template <class E>
+void rethrow_if_nested(const E& e);
 
 class exception
 {
@@ -16,17 +63,26 @@ public:
     exception& operator=(const exception&) noexcept;
     virtual ~exception();
     virtual const char* what() const noexcept;
-
-private:
-    const char* _msg;
 };
 
-class bad_exception;
-class nested_exception;
+class bad_exception : public exception
+{
+public:
+    const char* what() const noexcept override;
+};
 
-typedef void (*terminate_handler)();
-void terminate() noexcept;
+class nested_exception
+{
+    exception_ptr _ptr;
 
-typedef void (*unexpected_handler)();
+public:
+    nested_exception() noexcept;
+    nested_exception(const nested_exception&) noexcept = default;
+    nested_exception& operator=(const nested_exception&) noexcept = default;
+    virtual ~nested_exception() = default;
+
+    void rethrow_nested() const;
+    exception_ptr nested_ptr() const noexcept;
+};
 
 }

@@ -217,7 +217,7 @@ char* ProcessScheduler::getcwd(char* buffer, size_t size)
     struct ProcDir* runningProcDir = running->getProcDir();
     std::string pathname = runningProcDir->workDir->getPathName();
     std::size_t pathSize = std::min(pathname.size(), size - 1);
-    memcpy(buffer, pathname.c_str(), pathSize);
+    std::memcpy(buffer, pathname.c_str(), pathSize);
     buffer[pathSize] = '\0';
     return buffer;
 }

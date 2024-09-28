@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
-
-#pragma once
+ 
+ #pragma once
 
 #include <iterator>
 #include <stdexcept>
@@ -44,14 +44,18 @@ public:
 
     using node_type = red_black_node<Value>;
 
-    red_black_tree_iterator(const red_black_tree_iterator& it) : _node(it._node) {}
-    red_black_tree_iterator(node_type* node) : _node(node) {}
+private:
+    node_type* _node;
 
-    red_black_tree_iterator& operator=(const red_black_tree_iterator& it)
-    {
-        _node = it._node;
-        return *this;
-    }
+public:
+    red_black_tree_iterator(node_type* node) : _node(node) {}
+    // red_black_tree_iterator(const red_black_tree_iterator& it) : _node(it._node) {}
+
+    // red_black_tree_iterator& operator=(const red_black_tree_iterator& it)
+    //{
+    //     _node = it._node;
+    //     return *this;
+    // }
 
     red_black_tree_iterator& operator++()
     {
@@ -119,9 +123,6 @@ public:
 
     template <class, class, class, class>
     friend class red_black_tree;
-
-private:
-    node_type* _node;
 };
 
 template <class Value>
@@ -135,7 +136,6 @@ bool operator!=(const red_black_tree_iterator<Value>& x, const red_black_tree_it
 {
     return x._node != y._node;
 }
-
 template <class Key, class Value, class Extractor, class Comparator>
 class red_black_tree
 {
@@ -152,33 +152,48 @@ public:
 private:
     size_type _node_count;
     using node_type_ptr = node_type*;
-    node_type_ptr _begin;
-    node_type_ptr _end;
-
-    node_type_ptr _get_root() const
-    {
-        return _end->left;
-    }
-
-    void _set_root(node_type_ptr x) const
-    {
-        _end->left = x;
-        x->parent = _end;
-    }
+    node_type_ptr _root;
 
     extractor_type _extractor;
     compare _comparator;
 
 public:
-    red_black_tree() : _node_count(0), _end(new node_type()), _extractor(), _comparator()
+    red_black_tree() : _node_count(0), _root(nullptr), _extractor(), _comparator() {}
+
+    red_black_tree(const red_black_tree& other) :
+        _node_count(0), _root(nullptr), _extractor(other._extractor), _comparator(other._comparator)
     {
-        _begin = _end;
+        for (auto& val : other) {
+            this->insert(val);
+        }
+    }
+
+    red_black_tree(red_black_tree&& other) : red_black_tree()
+    {
+        swap(*this, other);
     }
 
     ~red_black_tree()
     {
         clear();
-        delete _end;
+    }
+
+    red_black_tree& operator=(red_black_tree other)
+    {
+        swap(*this, other);
+        return *this;
+    }
+
+    friend void swap(red_black_tree& first, red_black_tree& second)
+    {
+        // enable ADL
+        using std::swap;
+
+        swap(first._node_count, second._node_count);
+        swap(first._begin, second._begin);
+        swap(first._end, second._end);
+        swap(first._extractor, second._extractor);
+        swap(first._comparator, second._comparator);
     }
 
     // Capacity
@@ -195,12 +210,12 @@ public:
     // Iterators
     iterator begin() const
     {
-        return _begin;
+        return iterator(_minimum(_root));
     }
 
     iterator end() const
     {
-        return _end;
+        return iterator(nullptr);
     }
 
     // Lookup
@@ -217,21 +232,34 @@ public:
     iterator find(const key_type& key) const
     {
         if (_node_count == 0) {
-            return _end;
+            return end();
         }
 
-        node_type_ptr node = _get_root();
+        node_type_ptr node = _root;
+
         while (node != nullptr) {
-            if (_compare_key(node->value, key)) {
+            auto currentNodeKey = _extract(node->value);
+            if (_compare_key(currentNodeKey, key)) {
                 node = node->left;
-            } else if (_compare_key(key, _extract(node->value))) {
+            } else if (_compare_key(key, currentNodeKey)) {
                 node = node->right;
             } else {
                 return iterator(node);
             }
         }
 
-        return _end;
+        // node_type_ptr node = _get_root();
+        // while (node != nullptr) {
+        //     if (_compare_key(node->value, key)) {
+        //         node = node->left;
+        //     } else if (_compare_key(key, _extract(node->value))) {
+        //         node = node->right;
+        //     } else {
+        //         return iterator(node);
+        //     }
+        // }
+
+        return end();
     }
 
     bool contains(const key_type& key) const
@@ -256,38 +284,55 @@ public:
             return;
         }
 
-        node_type_ptr node = _get_root();
-        while (node != _get_root()) {
+        node_type_ptr node = _root;
+        while (node != nullptr) {
             if (node->left != nullptr) {
                 node = node->left;
             } else if (node->right != nullptr) {
                 node = node->right;
             } else {
                 node_type_ptr parent = node->parent;
+                if (parent != nullptr && node == parent->left) {
+                    parent->left = nullptr;
+                } else if (parent != nullptr && node == parent->right) {
+                    parent->right = nullptr;
+                }
                 delete node;
                 node = parent;
             }
         }
 
+        // node_type_ptr node = _get_root();
+        // while (node != _get_root()) {
+        //     if (node->left != nullptr) {
+        //         node = node->left;
+        //     } else if (node->right != nullptr) {
+        //         node = node->right;
+        //     } else {
+        //         node_type_ptr parent = node->parent;
+        //         delete node;
+        //         node = parent;
+        //     }
+        // }
+
         _node_count = 0;
+        _root = nullptr;
     }
 
     std::pair<iterator, bool> insert(const value_type& value)
     {
-        auto it = find(_extract(value));
-        if (it != end()) {
-            return std::pair<iterator, bool>(std::move(it), false);
-        } else {
-            auto node = new node_type{red_black_color::BLACK, value, nullptr, nullptr, nullptr};
-            _insert(node);
-            return std::pair<iterator, bool>(iterator(node), true);
-        }
+        auto node = _insert(value);
+        return std::pair<iterator, bool>(iterator(node.first), node.second);
     }
 
     iterator erase(iterator pos)
     {
-        auto node = _erase(pos._node);
-        return iterator(node);
+        if (pos == end()) {
+            return end();
+        }
+        auto next = std::next(pos);
+        _erase(pos._node);
+        return next;
     }
 
     size_type erase(const key_type& key)
@@ -320,80 +365,50 @@ private:
         return (y->parent->right == y);
     }
 
-    void _left_rotate(node_type_ptr y)
+    void _left_rotate(node_type_ptr x)
     {
-        if (y == nullptr) {
-            throw std::runtime_error("left_rotate: can't rotate NULL node");
-        }
-
-        node_type_ptr x = y->parent;
-        if (x == nullptr) {
-            throw std::runtime_error("left_rotate: can't rotate a node with a NULL parent");
-        }
-
-        if (_is_left_child(y)) {
-            throw std::runtime_error("left_rotate: can't rotate a node which is not a left child");
-        }
-
+        node_type_ptr y = x->right;
+        x->right = y->left;
         if (y->left != nullptr) {
             y->left->parent = x;
         }
-        x->left = y->left;
-
-        if (x->parent == _end) {
-            _set_root(y);
+        y->parent = x->parent;
+        if (x->parent == nullptr) {
+            _root = y;
+        } else if (_is_left_child(x)) {
+            x->parent->left = y;
         } else {
-            if (_is_left_child(x)) {
-                x->parent->left = y;
-            } else {
-                x->parent->right = y;
-            }
-            y->parent = x->parent;
+            x->parent->right = y;
         }
 
-        x->parent = y;
         y->left = x;
+        x->parent = y;
     }
 
     void _right_rotate(node_type_ptr x)
     {
-        if (x == nullptr) {
-            throw std::runtime_error("right_rotate: can't rotate NULL node");
+        node_type_ptr y = x->left;
+        x->left = y->right;
+        if (y->right != nullptr) {
+            y->right->parent = x;
         }
-
-        node_type_ptr y = x->parent;
-        if (y == nullptr) {
-            throw std::runtime_error("right_rotate: can't rotate a node with a NULL parent");
-        }
-
-        if (_is_right_child(y)) {
-            throw std::runtime_error("right_rotate: can't rotate a node which is not a right child");
-        }
-
-        if (x->right != nullptr) {
-            x->right->parent = x;
-        }
-        y->right = x->right;
-
-        if (y->parent == _end) {
-            _set_root(x);
+        y->parent = x->parent;
+        if (x->parent == nullptr) {
+            _root = y;
+        } else if (_is_right_child(x)) {
+            x->parent->right = y;
         } else {
-            if (_is_right_child(y)) {
-                y->parent->right = x;
-            } else {
-                y->parent->left = x;
-            }
-            x->parent = y->parent;
+            x->parent->left = y;
         }
 
-        y->parent = x;
-        x->right = y;
+        y->right = x;
+        x->parent = y;
     }
 
     void _transplant(node_type_ptr x, node_type_ptr y)
     {
-        if (x == _get_root()) {
-            _set_root(y);
+        if (x == _root) {
+            _root = y;
         } else if (_is_left_child(x)) {
             x->parent->left = y;
         } else {
@@ -403,7 +418,7 @@ private:
         y->parent = x->parent;
     }
 
-    node_type_ptr _minimum(node_type_ptr node)
+    node_type_ptr _minimum(node_type_ptr node) const
     {
         while (node->left != nullptr) {
             node = node->left;
@@ -412,7 +427,7 @@ private:
         return node;
     }
 
-    node_type_ptr _maximum(node_type_ptr node)
+    node_type_ptr _maximum(node_type_ptr node) const
     {
         while (node->right != nullptr) {
             node = node->right;
@@ -421,106 +436,94 @@ private:
         return node;
     }
 
-    node_type_ptr _insert(node_type_ptr node)
+    std::pair<node_type_ptr, bool> _insert(value_type value)
     {
-        node->left = nullptr;
-        node->right = nullptr;
-
-        ++_node_count;
-
-        if (_get_root() == nullptr) {
-            _set_root(node);
-            node->color = red_black_color::BLACK;
-            return node;
-        }
-
         node_type_ptr parent = nullptr;
-        node_type_ptr child = _get_root();
+        node_type_ptr child = _root;
         while (child != nullptr) {
             parent = child;
-            child = _compare_value(node->value, parent->value) ? parent->left : parent->right;
+            if (_compare_value(value, parent->value)) {
+                child = parent->left;
+            } else if (_compare_value(parent->value, value)) {
+                child = parent->right;
+            } else {
+                return std::make_pair(parent, false);
+            }
+        }
+
+        auto node = new node_type{red_black_color::RED, value, nullptr, nullptr, nullptr};
+        ++_node_count;
+
+        if (parent == nullptr) {
+            _root = node;
+            node->color = red_black_color::BLACK;
+            return std::make_pair(node, true);
         }
 
         node->parent = parent;
 
-        if (_compare_value(node->value, parent->value)) {
+        if (_compare_value(value, parent->value)) {
             parent->left = node;
         } else {
             parent->right = node;
         }
 
-        node->color = red_black_color::RED;
-
-        if (_begin->left != nullptr) {
-            _begin = _begin->left;
-        }
-
         _rebalance_after_insert(node);
 
-        return node;
+        return std::make_pair(node, true);
     }
 
     void _rebalance_after_insert(node_type_ptr node)
     {
         node_type_ptr x = node;
         while (x->parent->color == red_black_color::RED) {
-            node_type_ptr p = node->parent;
-            node_type_ptr gp = p->parent;
+            node_type_ptr p = x->parent;  // parent
+            node_type_ptr gp = p->parent; // grandparent
             if (_is_left_child(p)) {
-                if (gp->right != nullptr && gp->right->color == red_black_color::RED) {
-                    gp->left->color = red_black_color::BLACK;
-                    gp->right->color = red_black_color::BLACK;
+                node_type_ptr u = gp->right; // uncle
+                if (u != nullptr && u->color == red_black_color::RED) {
+                    p->color = red_black_color::BLACK;
+                    u->color = red_black_color::BLACK;
                     x = gp;
                 } else {
-                    if (_is_right_child(p)) {
+                    if (_is_right_child(x)) {
                         x = p;
-                        p = gp;
-                        gp = p->parent;
                         _left_rotate(x);
                     }
-                    p->color = red_black_color::BLACK;
-                    gp->color = red_black_color::RED;
-                    _right_rotate(gp);
+                    x->parent->color = red_black_color::BLACK;
+                    x->parent->parent->color = red_black_color::RED;
+                    _right_rotate(x->parent->parent);
                 }
             } else {
-                if (gp->left != nullptr && gp->left->color == red_black_color::RED) {
-                    gp->left->color = red_black_color::BLACK;
-                    gp->right->color = red_black_color::BLACK;
+                node_type_ptr u = gp->left; // uncle
+                if (u != nullptr && u->color == red_black_color::RED) {
+                    u->color = red_black_color::BLACK;
+                    p->color = red_black_color::BLACK;
                     x = gp;
                 } else {
-                    if (_is_left_child(p)) {
+                    if (_is_left_child(x)) {
                         x = p;
-                        p = gp;
-                        gp = p->parent;
                         _right_rotate(x);
                     }
-                    p->color = red_black_color::BLACK;
-                    gp->color = red_black_color::RED;
-                    _left_rotate(gp);
+                    x->parent->color = red_black_color::BLACK;
+                    x->parent->parent->color = red_black_color::RED;
+                    _left_rotate(x->parent->parent);
                 }
             }
 
-            if (x == _get_root()) {
+            if (x == _root) {
                 break;
             }
         }
 
-        _get_root()->color = red_black_color::BLACK;
+        _root->color = red_black_color::BLACK;
     }
 
-    node_type_ptr _erase(node_type_ptr node)
+    void _erase(node_type_ptr node)
     {
         --_node_count;
 
         red_black_color originalColor = node->color;
-
-        if (node == _begin) {
-            if (node->right != nullptr) {
-                _begin = node->right;
-            } else {
-                _begin = node->parent;
-            }
-        }
 
         node_type_ptr x, y;
         if (node->left == nullptr) {
@@ -534,29 +537,33 @@ private:
             originalColor = y->color;
             x = y->right;
             if (y->parent == node) {
-                x->parent = y; // weird
+                // x->parent = y; useless ??
             } else {
                 _transplant(y, y->right);
+                y->right = node->right;
+                y->right->parent = y;
             }
 
             _transplant(node, y);
-            y->color = originalColor;
+            y->left = node->left;
+            y->left->parent = y;
+
+            y->color = node->color;
         }
+
+        delete node;
 
         if (originalColor == red_black_color::BLACK) {
             _rebalance_after_erase(x);
         }
-
-        return x;
     }
 
     void _rebalance_after_erase(node_type_ptr node)
     {
         node_type_ptr x = node;
-        node_type_ptr w;
-        while (x != _get_root() && x->color == red_black_color::BLACK) {
+        while (x != _root && x->color == red_black_color::BLACK) {
             if (_is_left_child(x)) {
-                w = x->parent->right;
+                node_type_ptr w = x->parent->right;
                 if (w->color == red_black_color::RED) {
                     w->color = red_black_color::BLACK;
                     x->parent->color = red_black_color::RED;
@@ -579,10 +586,10 @@ private:
                     x->parent->color = red_black_color::BLACK;
                     w->right->color = red_black_color::BLACK;
                     _left_rotate(x);
-                    x = _get_root();
+                    x = _root;
                 }
             } else {
-                w = x->parent->left;
+                node_type_ptr w = x->parent->left;
                 if (w->color == red_black_color::RED) {
                     w->color = red_black_color::BLACK;
                     x->parent->color = red_black_color::RED;
@@ -605,7 +612,7 @@ private:
                     x->parent->color = red_black_color::BLACK;
                     w->left->color = red_black_color::BLACK;
                     _right_rotate(x);
-                    x = _get_root();
+                    x = _root;
                 }
             }
         }
