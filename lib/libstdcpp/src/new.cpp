@@ -13,7 +13,7 @@ void* operator new(std::size_t size)
         size = 1;
     }
 
-    auto res = malloc(size);
+    auto res = std::malloc(size);
     if (res == nullptr) {
         throw std::bad_alloc();
     }
@@ -26,7 +26,7 @@ void* operator new[](std::size_t size)
         size = 1;
     }
 
-    auto res = malloc(size);
+    auto res = std::malloc(size);
     if (res == nullptr) {
         throw std::bad_alloc();
     }
@@ -45,22 +45,22 @@ void* operator new[](std::size_t, void* ptr) noexcept
 
 void operator delete(void* ptr) noexcept
 {
-    free(ptr);
+    std::free(ptr);
 }
 
 void operator delete[](void* ptr) noexcept
 {
-    free(ptr);
+    std::free(ptr);
 }
 
 void operator delete(void* ptr, std::size_t) noexcept
 {
-    free(ptr);
+    std::free(ptr);
 }
 
 void operator delete[](void* ptr, std::size_t) noexcept
 {
-    free(ptr);
+    std::free(ptr);
 }
 
 extern "C" void __cxa_throw_bad_array_new_length()

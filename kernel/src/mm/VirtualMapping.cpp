@@ -126,14 +126,14 @@ void VirtualMapping::initMainArgs(const char* argv[], const char* envp[])
     size_t argc = 0;
     size_t argSize = 0;
     while (argv[argc] != nullptr) {
-        argSize += strlen(argv[argc]) + 1;
+        argSize += std::strlen(argv[argc]) + 1;
         ++argc;
     }
 
     size_t envc = 0;
     size_t envSize = 0;
     while (envp[envc]) {
-        envSize += strlen(envp[envc]) + 1;
+        envSize += std::strlen(envp[envc]) + 1;
         ++envc;
     }
 
@@ -153,16 +153,16 @@ void VirtualMapping::initMainArgs(const char* argv[], const char* envp[])
     char* stackInfoStart = (char*)(startStack + 4 + argc + envc + 2);
     for (size_t i = 0; i < argc; ++i) {
         tmp[3 + i] = (uint64_t)stackInfoStart;
-        strcpy(infoStart, argv[i]);
-        stackInfoStart += strlen(argv[i]) + 1;
-        infoStart += strlen(argv[i]) + 1;
+        std::strcpy(infoStart, argv[i]);
+        stackInfoStart += std::strlen(argv[i]) + 1;
+        infoStart += std::strlen(argv[i]) + 1;
     }
     tmp[3 + argc] = 0; // Null pointer to end argv
     for (size_t i = 0; i < envc; ++i) {
         tmp[4 + argc + i] = (uint64_t)stackInfoStart;
-        strcpy(infoStart, envp[i]);
-        stackInfoStart += strlen(argv[i]) + 1;
-        infoStart += strlen(argv[i]) + 1;
+        std::strcpy(infoStart, envp[i]);
+        stackInfoStart += std::strlen(argv[i]) + 1;
+        infoStart += std::strlen(argv[i]) + 1;
     }
     tmp[4 + argc + envc] = 0; // Null pointer to end envp
     tmp[5 + argc + envc] = 0; // Null auxiliary vector

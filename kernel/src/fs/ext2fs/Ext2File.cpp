@@ -24,7 +24,7 @@ ssize_t Ext2File::read_internal(char* buffer, size_t size, loff_t offset)
         void* source = ((char*)p->kernelMappAddr) + i % PAGE_SIZE;
         std::uint64_t length = std::min<std::uint64_t>(_inode->size - i, offset + size - i);
         length = std::min(length, (pageNo + 1) * PAGE_SIZE - i);
-        memcpy(destination, source, length);
+        std::memcpy(destination, source, length);
         i += length;
     }
     return i - offset;
@@ -55,7 +55,7 @@ int Ext2File::getdents64_internal(struct linux_dirent64* dirp, size_t size)
         newdirp->d_reclen = header.name_length + sizeof(struct linux_dirent64);
         i += newdirp->d_reclen;
         newdirp->d_off = i;
-        memcpy((char*)newdirp->d_name, buffer, header.name_length);
+        std::memcpy((char*)newdirp->d_name, buffer, header.name_length);
         newdirp->d_name[header.name_length] = '\0';
         newdirp->d_type = header.type_indicator;
     }

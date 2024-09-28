@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+    <Type Name="std::vector&lt;*&gt;">
+        <DisplayString>{{size={_size}}}</DisplayString>
+        <Expand>
+            <Item Name="[size]" ExcludeView="simple">_size</Item>
+            <Item Name="[capacity]" ExcludeView="simple">_capacity</Item>
+            <ArrayItems>
+                <Size>_size</Size>
+                <ValuePointer>($T1*)_data</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <Type Name="std::string">
+        <DisplayString>{_data}</DisplayString>
+        <Expand>
+            <Item Name="[string]" ExcludeView="simple">_data</Item>
+            <Item Name="[size]">_size</Item>
+            <Item Name="[capacity]">_capacity</Item>
+        </Expand>
+    </Type>
+
+    <Type Name="std::set&lt;*&gt;">
+        <DisplayString>{{size={_tree._node_count}}}</DisplayString>
+        <Expand>
+            <Item Name="[size]">_tree._node_count</Item>
+            <TreeItems>
+                <Size>_tree._node_count</Size>
+                <HeadPointer>_tree._root</HeadPointer>
+                <LeftPointer>left</LeftPointer>
+                <RightPointer>right</RightPointer>
+                <ValueNode>value</ValueNode>
+            </TreeItems>
+        </Expand>
+    </Type>
+
+</AutoVisualizer>

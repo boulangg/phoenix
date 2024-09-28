@@ -7,6 +7,7 @@
 #include "UnitTestFramework.h"
 
 #include <set>
+#include <vector>
 
 using namespace UnitTestFramework;
 
@@ -93,6 +94,25 @@ public:
         for (auto it = std::next(set.begin()); it != set.end(); it++) {
             auto prev = std::prev(it);
             Assert::IsTrue(*prev < *it, std::to_string(*it) + " <= " + std::to_string(*prev));
+        }
+    }
+
+    TEST_METHOD(sort_string)
+    {
+        std::string test = "audaizudhna";
+
+        std::vector<std::string> res = {"a", "b", "e"};
+        std::set<std::string> set{};
+
+        set.insert("a");
+        set.insert("b");
+        set.insert("e");
+
+
+        std::size_t count = 0;
+        for (auto& val: set) { 
+            Assert::AreEqual(res[count], val);
+            count++;
         }
     }
 };

@@ -16,16 +16,18 @@ foreach(app_name ${user_app_names})
 		set(${app_name}_base_dir ${CMAKE_CURRENT_SOURCE_DIR}/apps/${app_name})
 		file(GLOB_RECURSE ${app_name}_src 
 				${${app_name}_base_dir}/*.cpp 
-				${${app_name}_base_dir}/*.c)
+				${${app_name}_base_dir}/*.c 
+				${${app_name}_base_dir}/*.S)
 				
 		# Create a target for the user app build with custom standard lib implementation
 		add_executable(${app_name} EXCLUDE_FROM_ALL ${${app_name}_src})
-		target_link_libraries(${app_name} c stdcpp unwind nostd_options)
+		target_link_libraries(${app_name} c stdcpp unwind utils nostd_options)
 		set_target_properties(${app_name} PROPERTIES FOLDER user)
 
 		# Create a target for the user app build with gcc standard lib implementation
 		if (VS_TARGET_FILTER STREQUAL "gnustd")
 			add_executable(${app_name}_gnustd EXCLUDE_FROM_ALL ${${app_name}_src})
+			target_link_libraries(${app_name}_gnustd utils_gnu)
 			set_target_properties(${app_name}_gnustd PROPERTIES FOLDER user_gnu)
 		endif()
 

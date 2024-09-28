@@ -6,5 +6,54 @@
 
 #pragma once
 
+namespace std {
+
 template <class T>
-class initializer_list;
+class initializer_list
+{
+public:
+    using value_type = T;
+    using reference = const T&;
+    using const_reference = const T&;
+    using size_type = std::size_t;
+    using iterator = const T*;
+    using const_iterator = const T*;
+
+private:
+    iterator _array;
+    size_type _size;
+
+    constexpr initializer_list(const_iterator array, size_type size) : _array(array), _size(size) {}
+
+public:
+    constexpr initializer_list() noexcept : _array(nullptr), _size(0) {}
+
+    constexpr size_type size() const noexcept
+    {
+        return _size;
+    }
+
+    constexpr const T* begin() const noexcept
+    {
+        return _array;
+    }
+
+    constexpr const T* end() const noexcept
+    {
+        return begin() + size();
+    }
+};
+
+template <class E>
+constexpr const E* begin(std::initializer_list<E> il) noexcept
+{
+    return il.begin();
+}
+
+template <class E>
+constexpr const E* end(std::initializer_list<E> il) noexcept
+{
+    return il.end();
+}
+
+}

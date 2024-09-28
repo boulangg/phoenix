@@ -40,6 +40,16 @@ string::string() : _size(0), _capacity(DEFAULT_CAPACITY), _data(new char[_capaci
     _data[0] = '\0';
 }
 
+string::string(const string& s) : _size(s._size), _capacity(s._capacity), _data(new char[_capacity])
+{
+    char_traits<char>::copy(_data, s._data, _size + 1);
+}
+
+string::string(string&& other) : string()
+{
+    swap(*this, other);
+}
+
 string::string(const char* s) : string(s, char_traits<char>::length(s)) {}
 
 string::string(const char* s, size_t n) :
@@ -47,18 +57,6 @@ string::string(const char* s, size_t n) :
 {
     char_traits<char>::copy(_data, s, _size);
     _data[_size] = '\0';
-}
-
-string::string(const string& s) : _size(s._size), _capacity(s._capacity), _data(new char[_capacity])
-{
-    char_traits<char>::copy(_data, s._data, _size + 1);
-}
-
-string::string(string&& s) : _size(s._size), _capacity(s._capacity), _data(s._data)
-{
-    s._data = nullptr;
-    s._size = 0;
-    s._capacity = 0;
 }
 
 string::string(size_t n, char c) : string()
@@ -73,6 +71,32 @@ string::string(size_t n, char c) : string()
 string::~string()
 {
     delete[] _data;
+}
+
+string& string::operator=(string other)
+{
+    swap(*this, other);
+    return *this;
+}
+
+string& string::operator=(const char* str)
+{
+    _size = char_traits<char>::length(str);
+    _capacity = utils::nearest_power_2(_size + 1);
+    delete[] _data;
+    _data = new char[_capacity];
+    char_traits<char>::copy(_data, str, _size + 1);
+    return *this;
+}
+
+void swap(string& first, string& second)
+{
+    // enable ADL
+    using std::swap;
+
+    swap(first._size, second._size);
+    swap(first._capacity, second._capacity);
+    swap(first._data, second._data);
 }
 
 string& string::operator+=(const string& str)
@@ -94,39 +118,6 @@ char& string::operator[](int pos)
 const char& string::operator[](int pos) const
 {
     return _data[pos];
-}
-
-string& string::operator=(const string& str)
-{
-    _size = str._size;
-    _capacity = str._capacity;
-    delete[] _data;
-    _data = new char[str._capacity];
-    char_traits<char>::copy(_data, str._data, _size + 1);
-    return *this;
-}
-
-string& string::operator=(const char* str)
-{
-    _size = char_traits<char>::length(str);
-    _capacity = utils::nearest_power_2(_size + 1);
-    delete[] _data;
-    _data = new char[_capacity];
-    char_traits<char>::copy(_data, str, _size + 1);
-    return *this;
-}
-string& string::operator=(string&& str)
-{
-    delete[] _data;
-    _data = str._data;
-    _size = str._size;
-    _capacity = str._capacity;
-
-    _data = nullptr;
-    _size = 0;
-    _capacity = 0;
-
-    return *this;
 }
 
 bool string::empty() const noexcept
@@ -169,7 +160,7 @@ int string::compare(const string& str) const
     size_t i = 0;
     while ((str._data[i] != '\0') && (_data[i] != '\0')) {
         if (str._data[i] != _data[i]) {
-            return (str._data[i] - _data[i]);
+            return (_data[i] - str._data[i]);
         }
         ++i;
     }
@@ -232,5 +223,34 @@ string operator+(const string& lhs, const string& rhs)
 bool operator==(const string& lhs, const string& rhs)
 {
     return lhs.compare(rhs) == 0;
+}
+
+bool operator==(const string& lhs, const char* rhs)
+{
+    return lhs.compare(string(rhs)) == 0;
+}
+
+std::strong_ordering operator<=>(const string& lhs, const string& rhs)
+{
+    auto compare = lhs.compare(rhs);
+    if (compare > 0) {
+        return std::strong_ordering::greater;
+    } else if (compare < 0) {
+        return std::strong_ordering::less;
+    } else {
+        return std::strong_ordering::equal;
+    }
+}
+
+std::strong_ordering operator<=>(const string& lhs, const char* rhs)
+{
+    auto compare = lhs.compare(string(rhs));
+    if (compare > 0) {
+        return std::strong_ordering::greater;
+    } else if (compare < 0) {
+        return std::strong_ordering::less;
+    } else {
+        return std::strong_ordering::equal;
+    }
 }
 }
