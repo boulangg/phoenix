@@ -32,6 +32,10 @@ public:
     friend bool operator==(const exception_ptr& x, const exception_ptr& y);
 
     friend void rethrow_exception(exception_ptr p);
+    friend exception_ptr current_exception() noexcept;
+
+private:
+    exception_ptr(void* ptr) noexcept : _ptr(ptr) {}
 };
 
 exception_ptr current_exception() noexcept;

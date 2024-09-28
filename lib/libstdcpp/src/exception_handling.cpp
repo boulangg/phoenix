@@ -338,3 +338,31 @@ void __cxa_bad_typeid ()
 
 }*/
 }
+
+namespace std {
+namespace details {
+
+void* __exc_get_cuurent_ptr()
+{
+    return thrown_exception_from_cxa_exception(__cxa_get_globals()->caughtExceptions);
+}
+
+void __exc_increment_refCount(void* ptr)
+{
+    __cxa_exception* exception = cxa_exception_from_thrown_exception(ptr);
+    exception->handlerCount++;
+}
+
+void __exc_decrement_refcount(void* ptr)
+{
+    __cxa_exception* exception = cxa_exception_from_thrown_exception(ptr);
+    exception->handlerCount--;
+}
+
+void __exc_rethrow_exception(void* ptr)
+{
+    abort();
+}
+
+}
+}
