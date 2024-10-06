@@ -361,6 +361,8 @@ void __exc_decrement_refcount(void* ptr)
 
 void __exc_rethrow_exception(void* ptr)
 {
+    // TODO implem: __exc_rethrow_exception
+    (void)ptr;
     abort();
 }
 

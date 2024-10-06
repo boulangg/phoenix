@@ -9,6 +9,9 @@
 #include <details/function.h>
 #include <details/hash.h>
 
+#include <def/functional_reference_wrapper.h>
+#include <def/functional_invoke.h>
+
 namespace std {
 
 template <class T>

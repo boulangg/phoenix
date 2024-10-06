@@ -59,3 +59,5 @@ _start:
 .global multiboot_magic
 	.comm multiboot_magic, 4
 	.comm multiboot_info, 4
+
+.section .note.GNU-stack,"",@progbits

@@ -10,8 +10,10 @@
 # We welcome patches that add distribution-specific mechanisms to find the
 # preferred terminal emulator. On Debian, there is the x-terminal-emulator
 # symlink for example.
+        echo "$@"
 for terminal in "$TERMINAL" x-terminal-emulator urxvt rxvt termit terminator Eterm aterm uxterm xterm gnome-terminal roxterm xfce4-terminal termite lxterminal mate-terminal terminology st qterminal lilyterm tilix terminix konsole; do
     if command -v "$terminal" > /dev/null 2>&1; then
+        echo "$@"
         exec "$terminal" "$@"
     fi
 done

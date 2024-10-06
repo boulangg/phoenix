@@ -47,3 +47,6 @@ do
 	printf "_user_apps_name_$filename:\n" >> $2
 	printf "\t.asciz \"$filename\"\n" >> $2
 done
+
+# disable executable stack
+printf ".section .note.GNU-stack,\"\",@progbits" >> $2

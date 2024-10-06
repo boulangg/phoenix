@@ -344,3 +344,5 @@ noCPUIDMessage:
 	.ascii "CPUID not supported by the processor\0"
 noLongModeMessage:
 	.ascii "64 bits mode not supported by the processor\0"
+ 
+.section .note.GNU-stack,"",@progbits

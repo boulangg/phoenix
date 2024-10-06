@@ -42,3 +42,5 @@ SYSCALL(227, sys_clock_settime)
 SYSCALL(228, sys_clock_gettime)
 SYSCALL(229, sys_clock_getres)
 SYSCALL(217, sys_getdents64)
+
+.section .note.GNU-stack,"",@progbits

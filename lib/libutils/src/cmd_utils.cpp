@@ -29,7 +29,7 @@ std::string string_format(const std::string& format, Args... args)
     char* buf = new char[size];
     std::snprintf(buf, size, format.c_str(), args...);
     auto ret = std::string(buf, size - 1); // We don't want the '\0' inside
-    delete buf;
+    delete[] buf;
     return ret;
 }
 /*

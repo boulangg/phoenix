@@ -44,7 +44,7 @@ public:
 	Event(EventType evType, uint64_t id) : _evType(evType), _id(id)
 	{}
 
-	bool operator==(const Event& ev)
+	bool operator==(const Event& ev) const
 	{
 		return (_evType == ev._evType && _id == ev._id);
 	}

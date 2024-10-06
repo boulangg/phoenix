@@ -63,3 +63,5 @@ setContext:
 	retq
 	.cfi_endproc
 	.size setContext, . - setContext
+
+.section .note.GNU-stack,"",@progbits

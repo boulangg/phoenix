@@ -94,3 +94,5 @@ nom: \
 
 //TRAITANT_IT(IT_32_handler, PIT_handler)
 //TRAITANT_IT(IT_33_handler, KEYBOARD_handler)
+
+.section .note.GNU-stack,"",@progbits

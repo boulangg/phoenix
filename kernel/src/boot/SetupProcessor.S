@@ -141,3 +141,5 @@ idtr:
 .align 8
 tr:
 	.word 0x00		# selector
+	
+.section .note.GNU-stack,"",@progbits
