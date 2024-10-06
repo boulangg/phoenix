@@ -3,8 +3,8 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstdint>
 #include <type_traits>
@@ -34,7 +34,7 @@ public:
     friend constexpr bool operator==(partial_ordering v, partial_ordering w) noexcept = default;
 
     template <class Zero, typename = std::enable_if_t<std::is_same<Zero, int>{}>>
-        friend constexpr bool operator<(partial_ordering v, Zero) noexcept
+    friend constexpr bool operator<(partial_ordering v, Zero) noexcept
     {
         return v == less;
     }

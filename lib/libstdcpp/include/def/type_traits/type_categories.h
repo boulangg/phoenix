@@ -3,16 +3,16 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
+
+#pragma once
 
 #include <cstddef>
 #include <stdfloat>
 
-#include <def/type_traits/const_volatility_specifiers.h>
-#include <def/type_traits/integral_constant.h>
 #include <def/type_traits/_is_const.h>
 #include <def/type_traits/_is_same.h>
+#include <def/type_traits/const_volatility_specifiers.h>
+#include <def/type_traits/integral_constant.h>
 
 namespace std {
 // Primary type categories

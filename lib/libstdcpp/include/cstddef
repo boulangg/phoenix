@@ -12,4 +12,73 @@ namespace std {
 using ::ptrdiff_t;
 using ::size_t;
 using nullptr_t = decltype(nullptr);
+using max_align_t = short;
+
+enum class byte : unsigned char
+{
+};
+}
+
+#include <def/type_traits/_enable_if.h>
+#include <def/type_traits/type_categories.h>
+
+namespace std {
+// template <class IntegerType, typename = std::enable_if_t<std::is_integral_v<IntegerType>>>
+// constexpr IntegerType to_integer(std::byte b) noexcept
+//{
+//     return IntegerType(b);
+// }
+
+template <class IntegerType>
+constexpr std::byte& operator<<=(std::byte& b, IntegerType shift) noexcept
+{
+    return b = b << shift;
+}
+template <class IntegerType>
+constexpr std::byte& operator>>=(std::byte& b, IntegerType shift) noexcept
+{
+    return b = b >> shift;
+}
+
+template <class IntegerType>
+constexpr std::byte operator<<(std::byte b, IntegerType shift) noexcept
+{
+    return std::byte(static_cast<unsigned int>(b) << shift);
+}
+template <class IntegerType>
+constexpr std::byte operator>>(std::byte b, IntegerType shift) noexcept
+{
+    return std::byte(static_cast<unsigned int>(b) >> shift);
+}
+
+constexpr std::byte& operator|=(std::byte& l, std::byte r) noexcept
+{
+    return l = static_cast<std::byte>(static_cast<unsigned int>(l) | static_cast<unsigned int>(r));
+}
+constexpr std::byte& operator&=(std::byte& l, std::byte r) noexcept
+{
+    return l = static_cast<std::byte>(static_cast<unsigned int>(l) & static_cast<unsigned int>(r));
+}
+constexpr std::byte& operator^=(std::byte& l, std::byte r) noexcept
+{
+    return l = static_cast<std::byte>(static_cast<unsigned int>(l) ^ static_cast<unsigned int>(r));
+}
+
+constexpr std::byte operator|(std::byte l, std::byte r) noexcept
+{
+    return std::byte(static_cast<unsigned int>(l) | static_cast<unsigned int>(r));
+}
+constexpr std::byte operator&(std::byte l, std::byte r) noexcept
+{
+    return std::byte(static_cast<unsigned int>(l) & static_cast<unsigned int>(r));
+}
+constexpr std::byte operator^(std::byte l, std::byte r) noexcept
+{
+    return std::byte(static_cast<unsigned int>(l) ^ static_cast<unsigned int>(r));
+}
+constexpr std::byte operator~(std::byte b) noexcept
+{
+    return std::byte(~static_cast<unsigned int>(b));
+}
+
 }

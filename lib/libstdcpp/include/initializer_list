@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 namespace std {
 
 template <class T>
