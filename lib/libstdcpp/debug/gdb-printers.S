@@ -4,3 +4,5 @@
 .incbin "gdb-printers.py"
 .byte 0
 .popsection
+
+.section .note.GNU-stack,"",@progbits

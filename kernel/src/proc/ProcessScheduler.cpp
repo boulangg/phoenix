@@ -263,7 +263,7 @@ void ProcessScheduler::wakeUp(Event ev)
     // TODO remove pair(event, process) when a process wait on
     // multiple events
     for (auto it = events.begin(); it != events.end();) {
-        auto item = *it;
+        auto& item = *it;
         if ((item.first == ev) && (item.second->getState() == ProcessState::EventBlocked)) {
             it = events.erase(it);
             item.second->setState(ProcessState::Ready);

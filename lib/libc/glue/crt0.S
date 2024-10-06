@@ -22,3 +22,5 @@ _start:
 
 0:
 	loop 0b
+
+.section .note.GNU-stack,"",@progbits

@@ -194,7 +194,7 @@ void print_program_header(FILE* fd, const Elf64_Phdr& ph)
         fseek(fd, ph.p_offset, SEEK_SET);
         fread((void*)interpStr, ph.p_filesz, 1, fd);
         printf("      [Requesting program interpreter: %s]\n", interpStr);
-        delete interpStr;
+        delete[] interpStr;
     }
 }
 
@@ -350,7 +350,7 @@ void print_section_headers(FILE* fd, const Elf64_Ehdr& fileHeader)
     printf("  C (compressed), x (unknown), o (OS specific), E (exclude),\n");
     printf("  D (mbind), l (large), p (processor specific)\n");
 
-    delete shstr;
+    delete[] shstr;
 }
 
 Elf64_Shdr find_section_header(FILE* fd, const Elf64_Ehdr& fileHeader, const char* sectionName)

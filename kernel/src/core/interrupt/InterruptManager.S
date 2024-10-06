@@ -151,4 +151,4 @@ INTERRUPT_HANDLER(0D);
 INTERRUPT_HANDLER(0E);
 INTERRUPT_HANDLER(0F);
 
-
+.section .note.GNU-stack,"",@progbits

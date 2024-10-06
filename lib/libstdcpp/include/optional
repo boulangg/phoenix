@@ -54,12 +54,22 @@ private:
                     is_assignable<_T&, const optional<_U>&>, is_assignable<_T&, optional<_U>&&>,
                     is_assignable<_T&, const optional<_U>&&>>;
 
+    template <class X, class Y>
+    static constexpr bool convertsFromAnyCvref =
+        disjunction_v<is_constructible<X, Y&>, is_convertible<Y&, X>, is_constructible<X, Y>, is_convertible<Y, X>,
+                      is_constructible<X, const Y&>, is_convertible<const Y&, X>, is_constructible<X, const Y>,
+                      is_convertible<const Y, X>>;
+
 public:
-    typedef T value_type;
+    using value_type = T;
 
-    constexpr optional() noexcept {}
+private:
+    bool _has_value = false;
+    T _value;
 
-    constexpr optional(std::nullopt_t) noexcept {}
+public:
+    constexpr optional() noexcept : _has_value(false), _value() {}
+    constexpr optional(std::nullopt_t) noexcept : _has_value(false), _value() {}
 
     constexpr optional(const optional& other) : _has_value(other._has_value), _value(*other) {}
 
@@ -357,10 +367,6 @@ public:
     //	_value.T::T(ilist, std::forward<Args>(args)...);
     //	return _value;
     //}
-
-private:
-    bool _has_value = false;
-    T _value;
 };
 
 template <class T, class U>

@@ -15,4 +15,5 @@ printf "_initrd_start:\n" >> $2
 printf ".incbin \"$1\"\n" >> $2
 printf ".globl _initrd_end\n" >> $2
 printf "_initrd_end:\n" >> $2
+printf ".section .note.GNU-stack,\"\",@progbits" >> $2
 

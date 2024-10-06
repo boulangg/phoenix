@@ -7,16 +7,9 @@
 #pragma once
 
 #include <new>
-#include <type_traits>
-#include <utility>
+#include <def/memory_address_of.h>
 
 namespace std {
-
-template <class T, typename = typename std::enable_if<!std::is_object<T>::value, T*>::type>
-constexpr T* addressof(T& arg) noexcept
-{
-    return &arg;
-}
 
 template <class T, class... Args>
 constexpr T* construct_at(T* p, Args&&... args)
