@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <type_traits>
+#include <concepts>
 
 namespace std {
 
@@ -204,5 +205,89 @@ inline constexpr strong_ordering strong_ordering::less{-1};
 inline constexpr strong_ordering strong_ordering::equivalent{0};
 inline constexpr strong_ordering strong_ordering::equal{0};
 inline constexpr strong_ordering strong_ordering::greater{1};
+
+
+namespace detail {
+template <unsigned int>
+struct common_cmpcat_base
+{
+    using type = void;
+};
+template <>
+struct common_cmpcat_base<0u>
+{
+    using type = std::strong_ordering;
+};
+template <>
+struct common_cmpcat_base<2u>
+{
+    using type = std::partial_ordering;
+};
+template <>
+struct common_cmpcat_base<4u>
+{
+    using type = std::weak_ordering;
+};
+template <>
+struct common_cmpcat_base<6u>
+{
+    using type = std::partial_ordering;
+};
+} // namespace detail
+
+template <class... Ts>
+struct common_comparison_category :
+    detail::common_cmpcat_base<(0u | ... |
+                                (std::is_same_v<Ts, std::strong_ordering>    ? 0u
+                                 : std::is_same_v<Ts, std::weak_ordering>    ? 4u
+                                 : std::is_same_v<Ts, std::partial_ordering> ? 2u
+                                                                             : 1u))>
+{};
+template< class... Ts >
+using common_comparison_category_t = common_comparison_category<Ts...>::type;
+
+namespace details {
+template <class T, class Cat>
+concept __ComparesAs =
+    std::same_as<std::common_comparison_category_t<T, Cat>, Cat>;
+}
+
+template <class T, class Cat = std::partial_ordering>
+concept three_way_comparable = __WeaklyEqualityComparableWith<T, T> && __PartiallyOrderedWith<T, T> &&
+                               requires(const std::remove_reference_t<T>& a, const std::remove_reference_t<T>& b) {
+                                   {
+                                       a <=> b
+                                   } -> details::__ComparesAs<Cat>;
+                               };
+
+template <class T, class U, class Cat = std::partial_ordering>
+concept three_way_comparable_with =
+    std::three_way_comparable<T, Cat> && std::three_way_comparable<U, Cat> && __ComparisonCommonTypeWith<T, U> &&
+    std::three_way_comparable<
+        std::common_reference_t<const std::remove_reference_t<T>&, const std::remove_reference_t<U>&>, Cat> &&
+    __WeaklyEqualityComparableWith<T, U> && __PartiallyOrderedWith<T, U> &&
+    requires(const std::remove_reference_t<T>& t, const std::remove_reference_t<U>& u) {
+        {
+            t <=> u
+        } -> details::__ComparesAs<Cat>;
+        {
+            u <=> t
+        } -> details::__ComparesAs<Cat>;
+    };
+
+template <class T, class U = T>
+using compare_three_way_result_t =
+    decltype(std::declval<const std::remove_reference_t<T>&>() <=> std::declval<const std::remove_reference_t<U>&>());
+
+template <class T, class U = T>
+struct compare_three_way_result
+{};
+
+template <class T, class U>
+    requires requires { typename std::compare_three_way_result_t<T, U>; }
+struct compare_three_way_result<T, U>
+{
+    using type = compare_three_way_result_t<T, U>;
+};
 
 }

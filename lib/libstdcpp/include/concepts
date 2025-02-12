@@ -6,20 +6,14 @@
 
 #pragma once
 
-#include <type_traits>
 #include <functional>
+#include <type_traits>
+
+#include <def/concepts/_same_as.h>
 
 namespace std {
 
 // Core language concepts
-namespace detail {
-template <class T, class U>
-concept SameHelper = std::is_same_v<T, U>;
-}
-
-template <class T, class U>
-concept same_as = detail::SameHelper<T, U> && detail::SameHelper<U, T>;
-
 template <class Derived, class Base>
 concept derived_from =
     std::is_base_of_v<Base, Derived> && std::is_convertible_v<const volatile Derived*, const volatile Base*>;
@@ -28,14 +22,14 @@ template <class From, class To>
 concept convertible_to = std::is_convertible_v<From, To> && requires { static_cast<To>(std::declval<From>()); };
 
 // TODO implem: common_reference_with (requires common_reference_t)
-//template <class T, class U>
-//concept common_reference_with =
+// template <class T, class U>
+// concept common_reference_with =
 //    std::same_as<std::common_reference_t<T, U>, std::common_reference_t<U, T>> &&
 //    std::convertible_to<T, std::common_reference_t<T, U>> && std::convertible_to<U, std::common_reference_t<T, U>>;
 
 // TODO implem: common_with (requires common_reference_with)
-//template <class T, class U>
-//concept common_with =
+// template <class T, class U>
+// concept common_with =
 //    std::same_as<std::common_type_t<T, U>, std::common_type_t<U, T>> &&
 //    requires {
 //        static_cast<std::common_type_t<T, U>>(std::declval<T>());
@@ -58,8 +52,8 @@ template <class T>
 concept floating_point = std::is_floating_point_v<T>;
 
 // TODO implem: common_with (requires common_reference_with)
-//template <class LHS, class RHS>
-//concept assignable_from =
+// template <class LHS, class RHS>
+// concept assignable_from =
 //    std::is_lvalue_reference_v<LHS> &&
 //    std::common_reference_with<const std::remove_reference_t<LHS>&, const std::remove_reference_t<RHS>&> &&
 //    requires(LHS lhs, RHS&& rhs) {
@@ -69,20 +63,20 @@ concept floating_point = std::is_floating_point_v<T>;
 //    };
 
 // TODO implem: ranges::swappable
-//namespace ranges {
-//inline namespace /* unspecified */ {
-//inline constexpr /* unspecified */ swap = /* unspecified */;
+// namespace ranges {
+// inline namespace /* unspecified */ {
+// inline constexpr /* unspecified */ swap = /* unspecified */;
 //}
-//template <class T, class U>
-//constexpr void ranges::swap(T&& t, U&& u) noexcept(/* see below */);
+// template <class T, class U>
+// constexpr void ranges::swap(T&& t, U&& u) noexcept(/* see below */);
 //}
 //
-//template <class T>
-//concept swappable = requires(T& a, T& b) { ranges::swap(a, b); };
+// template <class T>
+// concept swappable = requires(T& a, T& b) { ranges::swap(a, b); };
 
 // TODO implem: swappable_with (requires common_reference_with and ranges::swap)
-//template <class T, class U>
-//concept swappable_with = std::common_reference_with<T, U> && requires(T&& t, U&& u) {
+// template <class T, class U>
+// concept swappable_with = std::common_reference_with<T, U> && requires(T&& t, U&& u) {
 //    ranges::swap(std::forward<T>(t), std::forward<T>(t));
 //    ranges::swap(std::forward<U>(u), std::forward<U>(u));
 //    ranges::swap(std::forward<T>(t), std::forward<U>(u));
@@ -139,23 +133,23 @@ concept __WeaklyEqualityComparableWith =
         } -> boolean_testable;
     };
 
-// TODO implem: __ComparisonCommonTypeWith (requires common_reference_t)
-//template <class T, class U, class C = std::common_reference_t<const T&, const U&>>
-//concept _ComparisonCommonTypeWithImpl =
-//    std::same_as<std::common_reference_t<const T&, const U&>, std::common_reference_t<const U&, const T&>> && requires {
-//        requires std::convertible_to<const T&, const C&> || std::convertible_to<T, const C&>;
-//        requires std::convertible_to<const U&, const C&> || std::convertible_to<U, const C&>;
-//    };
-//template <class T, class U>
-//concept __ComparisonCommonTypeWith = _ComparisonCommonTypeWithImpl<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
+template <class T, class U, class C = std::common_reference_t<const T&, const U&>>
+concept _ComparisonCommonTypeWithImpl =
+std::same_as<std::common_reference_t<const T&, const U&>, std::common_reference_t<const U&, const T&>> && requires
+{
+    requires std::convertible_to<const T&, const C&> || std::convertible_to<T, const C&>;
+    requires std::convertible_to<const U&, const C&> || std::convertible_to<U, const C&>;
+};
+template <class T, class U>
+concept __ComparisonCommonTypeWith = _ComparisonCommonTypeWithImpl<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
 }
 
 template <class T>
 concept equality_comparable = __WeaklyEqualityComparableWith<T, T>;
 
 // TODO implem: equality_comparable_with (requires __ComparisonCommonTypeWith)
-//template <class T, class U>
-//concept equality_comparable_with =
+// template <class T, class U>
+// concept equality_comparable_with =
 //    std::equality_comparable<T> && std::equality_comparable<U> && __ComparisonCommonTypeWith<T, U> &&
 //    std::equality_comparable<
 //        std::common_reference_t<const std::remove_reference_t<T>&, const std::remove_reference_t<U>&>> &&
@@ -193,8 +187,8 @@ template <class T>
 concept totally_ordered = std::equality_comparable<T> && __PartiallyOrderedWith<T, T>;
 
 // TODO implem: totally_ordered_with (requires equality_comparable_with)
-//template <class T, class U>
-//concept totally_ordered_with =
+// template <class T, class U>
+// concept totally_ordered_with =
 //    std::totally_ordered<T> && std::totally_ordered<U> && std::equality_comparable_with<T, U> &&
 //    std::totally_ordered<
 //        std::common_reference_t<const std::remove_reference_t<T>&, const std::remove_reference_t<U>&>> &&
@@ -202,49 +196,50 @@ concept totally_ordered = std::equality_comparable<T> && __PartiallyOrderedWith<
 
 // Object concepts
 // TODO implem: movable (requires assignable_from)
-//template <class T>
-//concept movable = std::is_object_v<T> && std::move_constructible<T> && std::assignable_from<T&, T> && std::swappable<T>;
+// template <class T>
+// concept movable = std::is_object_v<T> && std::move_constructible<T> && std::assignable_from<T&, T> &&
+// std::swappable<T>;
 
 // TODO implem: copyable (requires assignable_from)
-//template <class T>
-//concept copyable = std::copy_constructible<T> && std::movable<T> && std::assignable_from<T&, T&> &&
+// template <class T>
+// concept copyable = std::copy_constructible<T> && std::movable<T> && std::assignable_from<T&, T&> &&
 //                   std::assignable_from<T&, const T&> && std::assignable_from<T&, const T>;
 
 // TODO implem: semiregular (requires copyable)
-//template <class T>
-//concept semiregular = std::copyable<T> && std::default_initializable<T>;
+// template <class T>
+// concept semiregular = std::copyable<T> && std::default_initializable<T>;
 
 // TODO implem: regular (requires semiregular)
-//template <class T>
-//concept regular = std::semiregular<T> && std::equality_comparable<T>;
+// template <class T>
+// concept regular = std::semiregular<T> && std::equality_comparable<T>;
 
 // Callable concepts
 // TODO implem: invocable (requires std::invoke)
-//template <class F, class... Args>
-//concept invocable = requires(F&& f, Args&&... args) {
+// template <class F, class... Args>
+// concept invocable = requires(F&& f, Args&&... args) {
 //    std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
 //    /* not required to be equality-preserving */
 //};
 
 // TODO implem: regular_invocable (requires invocable)
-//template <class F, class... Args>
-//concept regular_invocable = std::invocable<F, Args...>;
+// template <class F, class... Args>
+// concept regular_invocable = std::invocable<F, Args...>;
 
 // TODO implem: predicate (requires regular_invocable)
-//template <class F, class... Args>
-//concept predicate = std::regular_invocable<F, Args...> && boolean_testable<std::invoke_result_t<F, Args...>>;
+// template <class F, class... Args>
+// concept predicate = std::regular_invocable<F, Args...> && boolean_testable<std::invoke_result_t<F, Args...>>;
 
 // TODO implem: relation (requires predicate)
-//template <class R, class T, class U>
-//concept relation =
+// template <class R, class T, class U>
+// concept relation =
 //    std::predicate<R, T, T> && std::predicate<R, U, U> && std::predicate<R, T, U> && std::predicate<R, U, T>;
 
 // TODO implem: equivalence_relation (requires relation)
-//template <class R, class T, class U>
-//concept equivalence_relation = std::relation<R, T, U>;
+// template <class R, class T, class U>
+// concept equivalence_relation = std::relation<R, T, U>;
 
 // TODO implem: strict_weak_order (requires relation)
-//template <class R, class T, class U>
-//concept strict_weak_order = std::relation<R, T, U>;
+// template <class R, class T, class U>
+// concept strict_weak_order = std::relation<R, T, U>;
 
 }

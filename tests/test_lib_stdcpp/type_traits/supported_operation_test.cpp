@@ -191,10 +191,9 @@ struct Bar
 };
 
 static_assert(std::is_destructible_v<std::string> == true);
-// TODO implem: is_trivially_destructible_v for is_destructible test
-//static_assert(std::is_trivially_destructible_v<Foo> == false);
+static_assert(std::is_trivially_destructible_v<Foo> == false);
 static_assert(std::is_nothrow_destructible_v<Foo> == true);
-//static_assert(std::is_trivially_destructible_v<Bar> == true);
+static_assert(std::is_trivially_destructible_v<Bar> == true);
 }
 
 // has_virtual_destructor

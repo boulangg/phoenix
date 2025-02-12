@@ -3,27 +3,26 @@
  * The file is distributed under the MIT license
  * The license is available in the LICENSE file or at https://github.com/boulangg/phoenix/blob/master/LICENSE
  */
- 
- #pragma once
 
+#pragma once
+
+#include <def/type_traits/_conditional.h>
+#include <def/type_traits/arrays.h>
+#include <def/type_traits/pointers.h>
 #include <def/type_traits/references.h>
 #include <def/type_traits/type_categories.h>
-#include <def/type_traits/_conditional.h>
-#include <def/type_traits/pointers.h>
-#include <def/type_traits/arrays.h>
 
-namespace std{
+namespace std {
 template <class T>
 struct decay
 {
 private:
-    typedef typename std::remove_reference<T>::type U;
+    using U = typename std::remove_reference<T>::type;
 
 public:
-    typedef typename std::conditional<
-        std::is_array<U>::value, typename std::add_pointer<typename std::remove_extent<U>::type>::type,
-        typename std::conditional<std::is_function<U>::value, typename std::add_pointer<U>::type,
-                                  typename std::remove_cv<U>::type>::type>::type type;
+    using type =
+        std::conditional_t<std::is_array_v<U>, std::add_pointer_t<std::remove_extent_t<U>>,
+                           std::conditional_t<std::is_function_v<U>, std::add_pointer_t<U>, std::remove_cv_t<U>>>;
 };
 template <class T>
 using decay_t = typename decay<T>::type;

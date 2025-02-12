@@ -8,31 +8,11 @@
 
 #include <def/type_traits/const_volatility_specifiers.h>
 #include <def/type_traits/type_categories.h>
+#include <def/type_traits/_copy_cv_ref.h>
 
 namespace std {
 // TODO implem: make_signed for enum
 namespace details {
-template <class T, class U>
-struct __copy_cv
-{
-    typedef U type;
-};
-template <class T, class U>
-struct __copy_cv<const T, U>
-{
-    typedef const std::remove_cv_t<U> type;
-};
-template <class T, class U>
-struct __copy_cv<volatile T, U>
-{
-    typedef volatile std::remove_cv_t<U> type;
-};
-template <class T, class U>
-struct __copy_cv<const volatile T, U>
-{
-    typedef const volatile std::remove_cv_t<U> type;
-};
-
 template <class T, bool = std::is_integral_v<T> || std::is_enum_v<T>>
 struct __make_signed{};
 

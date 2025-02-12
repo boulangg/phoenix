@@ -11,21 +11,13 @@
 #include <def/utility_declval.h>
 
 #include <def/type_traits/_is_const.h>
+#include <def/type_traits/_is_volatile.h>
 #include <def/type_traits/integral_constant.h>
 #include <def/type_traits/type_categories.h>
 #include <def/type_traits/type_relationship.h>
 #include <def/type_traits/misc_transformations.h>
 
 namespace std {
-template <class T>
-struct is_volatile : std::false_type
-{};
-template <class T>
-struct is_volatile<volatile T> : std::true_type
-{};
-template <class T>
-constexpr bool is_volatile_v = is_volatile<T>::value;
-
 template <class T>
 struct is_trivial : std::bool_constant<__is_trivial(T)>
 {};
