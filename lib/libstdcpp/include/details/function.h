@@ -6,9 +6,10 @@
 
 #pragma once
 
-#include <concepts>
 #include <memory>
 #include <utility>
+
+#include <def/concepts/_same_as.h>
 
 namespace std {
 
@@ -109,21 +110,17 @@ private:
 
 namespace detail {
 template <class R, class F, class... Args>
-concept Functor = requires(F f, Args... args)
-{
+concept Functor = requires(F f, Args... args) {
     {
         f.operator()(args...)
-    }
-    ->same_as<R>;
+    } -> std::same_as<R>;
 };
 
 template <class R, class F, class G, class... Args>
-concept MemberFunction = requires(F fn, G g, Args... args)
-{
+concept MemberFunction = requires(F fn, G g, Args... args) {
     {
         (g.*fn)(args...)
-    }
-    ->same_as<R>;
+    } -> std::same_as<R>;
 };
 }
 
@@ -142,21 +139,23 @@ public:
     function(R (*t)(Args...)) : _callable(new callable_function<R, Args...>(t)) {}
 
     template <class F>
-    requires detail::Functor<R, F, Args...> function(F&& f) : _callable(new callable_functor<R, F, Args...>(f))
+        requires detail::Functor<R, F, Args...>
+    function(F&& f) : _callable(new callable_functor<R, F, Args...>(f))
     {}
 
     template <class F>
-    requires detail::Functor<R, F, Args...> function(const F&& f) : _callable(new callable_functor<R, F, Args...>(f))
+        requires detail::Functor<R, F, Args...>
+    function(const F&& f) : _callable(new callable_functor<R, F, Args...>(f))
     {}
 
     template <class G, class... Args2>
-    requires detail::MemberFunction<R, R (G::*)(Args2...), G, Args2...> function(R (G::*f)(Args2...)) :
-        _callable(new callable_member<R, G, Args2...>(f))
+        requires detail::MemberFunction<R, R (G::*)(Args2...), G, Args2...>
+    function(R (G::*f)(Args2...)) : _callable(new callable_member<R, G, Args2...>(f))
     {}
 
     template <class G, class... Args2>
-    requires detail::MemberFunction<R, R (G::*)(Args2...), G, Args2...> function(const R (G::*f)(Args2...)) :
-        _callable(new callable_member<R, G, Args2...>(f))
+        requires detail::MemberFunction<R, R (G::*)(Args2...), G, Args2...>
+    function(const R (G::*f)(Args2...)) : _callable(new callable_member<R, G, Args2...>(f))
     {}
 
     function(const function& other) : _callable(other._callable ? other._callable->clone() : nullptr) {}

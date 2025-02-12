@@ -52,18 +52,29 @@ static_assert(std::is_same_v<std::conditional_t<sizeof(int) >= sizeof(double), i
 }
 
 // common_type
-// TODO test: common_type
+namespace common_type {
+static_assert(std::is_same_v<std::common_type_t<int, double>, double> == true);
+static_assert(std::is_same_v<std::common_type_t<int, float>, int> == false);
+static_assert(std::is_same_v<std::common_type_t<int, char>, int> == true);
+}
 
 // common_reference
-// namespace common_reference {
-// TODO implem: common_reference for common_reference test
-// static_assert(
-//    std::is_same_v<int&,
-//                   std::common_reference_t<std::add_lvalue_reference_t<int>, std::add_lvalue_reference_t<int>&,
-//                                           std::add_lvalue_reference_t<int>&&, std::add_lvalue_reference_t<int> const,
-//                                           std::add_lvalue_reference_t<int> const&>> == true);
-// TODO test: basic_common_reference
-//}
+namespace common_reference {
+static_assert(std::is_same_v<std::details::__simple_common_reference<int&, int&>::type, int&> == true);
+static_assert(std::is_same_v<std::details::__simple_common_reference_t<int&, int&>, int&> == true);
+static_assert(std::is_same_v<std::details::__simple_common_reference<const int&, int&>::type, const int&> == true);
+static_assert(std::is_same_v<std::details::__simple_common_reference<int&, const int&>::type, const int&> == true);
+
+static_assert(std::is_same_v<std::details::__simple_common_reference<int&&, int&&>::type, int&&> == true);
+static_assert(std::is_same_v<std::details::__simple_common_reference<const int&&, int&&>::type, const int&&> == true);
+
+static_assert(
+    std::is_same_v<int&,
+                   std::common_reference_t<std::add_lvalue_reference_t<int&>, std::add_lvalue_reference_t<int>&,
+                                           std::add_lvalue_reference_t<int>&&, const std::add_lvalue_reference_t<int>,
+                                           std::add_lvalue_reference_t<int> const&>> == true);
+// TODO test : basic_common_reference
+}
 
 // underlying_type
 namespace underlying_type {

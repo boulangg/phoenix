@@ -22,12 +22,14 @@ static_assert(std::is_same_v<std::remove_reference_t<const int&>, const int> == 
 // add_reference
 namespace add_reference {
 using non_ref = int;
-static_assert(std::is_lvalue_reference_v<non_ref> == false);
-
 using l_ref = std::add_lvalue_reference_t<non_ref>;
-static_assert(std::is_lvalue_reference_v<l_ref> == true);
-
 using r_ref = std::add_rvalue_reference_t<non_ref>;
+
+static_assert(std::is_lvalue_reference_v<non_ref> == false);
+static_assert(std::is_lvalue_reference_v<l_ref> == true);
+static_assert(std::is_lvalue_reference_v<r_ref> == false);
+static_assert(std::is_rvalue_reference_v<non_ref> == false);
+static_assert(std::is_rvalue_reference_v<l_ref> == false);
 static_assert(std::is_rvalue_reference_v<r_ref> == true);
 
 using void_ref = std::add_lvalue_reference_t<void>;

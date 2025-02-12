@@ -10,6 +10,7 @@
 #include <def/type_traits/integral_constant.h>
 #include <def/type_traits/type_categories.h>
 #include <def/utility_declval.h>
+#include <def/type_traits/logical_operations.h>
 
 namespace std {
 // is_constructible
@@ -204,15 +205,19 @@ template <typename t>
 template <class T>
 constexpr bool is_destructible_v = is_destructible<T>::value;
 
-// TODO implem: is_trivially_destructible
-// template <typename t>
-// struct is_trivially_destructible : std::integral_constant<bool, std::meta::type_is_trivially_destructible(^t)>
-//{};
-// template <class T>
-// constexpr bool is_trivially_destructible_v = is_trivially_destructible<T>::value;
+#if __has_builtin(__has_trivial_destructor)
+// is_trivially_destructible
+template <typename T>
+struct is_trivially_destructible : conjunction<is_destructible<T>, bool_constant<__has_trivial_destructor(T)>>
+{};
+ template <class T>
+ constexpr bool is_trivially_destructible_v = is_trivially_destructible<T>::value;
+#else
+#error is_trivially_destructible is not implemented
+#endif // __has_builtin(__is_trivially_destructible)
 
 template <typename t>
-    struct is_nothrow_destructible : std::integral_constant < bool,
+     struct is_nothrow_destructible : std::bool_constant<
     requires(t object)
 {
     {
