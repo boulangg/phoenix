@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.19)
 
 project(phoenix)
 enable_language(C CXX ASM)
@@ -39,7 +39,7 @@ add_custom_command(	OUTPUT ${disk_name}
 add_custom_target(	launch
 					COMMAND ${terminal} -e "${qemu} ${qemu_opts}" &
 					DEPENDS ${drive_name} ${disk_name})
-set_target_properties(launch PROPERTIES FOLDER kernel)
+set_target_properties(launch PROPERTIES FOLDER kernel ${disk_name} ${drive_name})
 
 
 set(kernel_debug_dir ${CMAKE_CURRENT_SOURCE_DIR}/bin)

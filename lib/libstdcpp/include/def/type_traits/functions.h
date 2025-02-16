@@ -19,11 +19,15 @@ namespace std {
 // Constant evaluation context
 constexpr bool is_constant_evaluated() noexcept
 {
-    if consteval {
+#if __STDC_VERSION__ <= 202000L
+    return __builtin_is_constant_evaluated();
+#else
+    if (consteval) {
         return true;
     } else {
         return false;
     }
+#endif
 }
 
 // TODO implem: is_within_lifetime

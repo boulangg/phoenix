@@ -3,10 +3,16 @@
 # Phoenix
 
 Compiling (and testing) this project required the foolowing tools:
-* GCC 13.2.0 (or higher)
+* GCC/G++ 13.3.0 (or higher)
 * GDB 15.0.50 (or higher)
 * GRUB 2 (at least)
-* libxorriso for creating the iso disk image (with grub-mkrescue).
+* CMake 3.19
+* xorriso for creating the iso disk image (with grub-mkrescue).
+* xterm to open separate windows for make launch
+
+To install on Linux:
+
+	sudo apt install cmake gcc g++ qemu-system gdb grub2 xorriso
 
 To run the project:
 
