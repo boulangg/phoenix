@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.19)
 
 project(kernel)
 enable_language(C CXX ASM)
@@ -100,6 +100,7 @@ SET(CMAKE_EXE_LINKER_FLAGS  "-nodefaultlibs -g -specs=${CMAKE_CURRENT_SOURCE_DIR
 
 add_executable(kernel ${kernel_src} ${initrd_src} ${user_apps_src})
 target_include_directories(kernel PUBLIC ${lib_inc})
+target_compile_options(kernel PUBLIC -mcmodel=kernel -mno-red-zone -fno-pie -mgeneral-regs-only)
 target_link_libraries(kernel c_kernel stdcpp nostd_options kernel_options)
 add_dependencies(kernel initrd_disk linker_file)
 set_target_properties(kernel 

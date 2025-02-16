@@ -12,21 +12,6 @@
 #include <def/type_traits/references.h>
 #include <def/type_traits/type_relationship.h>
 
-namespace N {
-template <class T>
-struct Q;
-}
-template <class T>
-    requires false
-struct N::Q<T>
-{};
-template <class T>
-    requires true
-struct N::Q<T>
-{};
-
-
-
 namespace std {
 // Declaration
 template <class...>

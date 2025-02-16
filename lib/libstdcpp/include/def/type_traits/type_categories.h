@@ -41,16 +41,18 @@ constexpr bool is_integral_v = is_integral<T>::value;
 template <class T>
 struct is_floating_point :
     std::integral_constant<bool,
-                           // Note: standard floating-point types
-                           std::is_same<float, typename std::remove_cv<T>::type>::value ||
-                               std::is_same<double, typename std::remove_cv<T>::type>::value ||
-                               std::is_same<long double, typename std::remove_cv<T>::type>::value ||
-                               // TODO Note: extended floating-point types (C++23, if supported)
-                               std::is_same<std::float16_t, typename std::remove_cv<T>::type>::value ||
+#if __STDC_VERSION__ >= 202311L
+                           // TODO Note: extended floating-point types (C++23, if supported)
+                           std::is_same<std::float16_t, typename std::remove_cv<T>::type>::value ||
                                std::is_same<std::float32_t, typename std::remove_cv<T>::type>::value ||
                                std::is_same<std::float64_t, typename std::remove_cv<T>::type>::value ||
                                std::is_same<std::float128_t, typename std::remove_cv<T>::type>::value ||
-                               std::is_same<std::bfloat16_t, typename std::remove_cv<T>::type>::value>
+                               std::is_same<std::bfloat16_t, typename std::remove_cv<T>::type>::value ||
+#endif
+                           // Note: standard floating-point types
+                           std::is_same<float, typename std::remove_cv<T>::type>::value ||
+                               std::is_same<double, typename std::remove_cv<T>::type>::value ||
+                               std::is_same<long double, typename std::remove_cv<T>::type>::value>
 {};
 template <class T>
 constexpr bool is_floating_point_v = is_floating_point<T>::value;
